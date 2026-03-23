@@ -1,17 +1,8 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 WORKDIR /app
-ENV NODE_ENV=development
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-FROM node:20-alpine AS production
-WORKDIR /app
-ENV NODE_ENV=production
 COPY package*.json ./
 RUN npm ci --only=production
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/src/email-templates ./src/email-templates
+COPY dist ./dist
+COPY src/email-templates ./src/email-templates
 EXPOSE 3000
 CMD ["node", "dist/main"]
