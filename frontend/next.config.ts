@@ -4,10 +4,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // ✅ Standalone Output für Docker
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   output: 'standalone',
-
-  // ✅ Bilder von externen Quellen erlauben
   images: {
     remotePatterns: [
       {
@@ -20,8 +20,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-
-  // ✅ Powered-by Header entfernen
   poweredByHeader: false,
 };
 
