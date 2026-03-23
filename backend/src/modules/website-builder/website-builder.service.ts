@@ -1,0 +1,836 @@
+// 📂 PFAD: backend/src/modules/website-builder/website-builder.service.ts
+
+/**
+ * 🎨 WEBSITE BUILDER SERVICE
+ * Service mit Drizzle Queries (Multi-Tenant)
+ */
+
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
+import { DRIZZLE } from '../../core/database/drizzle.module';
+import type { DrizzleDB } from '../../core/database/drizzle.module';
+import {
+  wbTemplates,
+  wbPages,
+  wbSections,
+  wbGlobalTemplates,
+  wbGlobalTemplatePages,
+  wbGlobalTemplateSections,
+} from '../../drizzle/website-builder.schema';
+import { eq, and, desc, asc } from 'drizzle-orm';
+import { CreateTemplateInput } from './dto/create-template.input';
+import { UpdateTemplateInput } from './dto/update-template.input';
+import { CreatePageInput } from './dto/create-page.input';
+import { UpdatePageInput } from './dto/update-page.input';
+import { CreateSectionInput } from './dto/create-section.input';
+import { UpdateSectionInput } from './dto/update-section.input';
+import { WbGlobalSection } from './entities/wb-global-section.entity';
+
+@Injectable()
+export class WebsiteBuilderService {
+  constructor(@Inject(DRIZZLE) private db: DrizzleDB) {}
+
+  // ==================== GLOBAL TEMPLATES ====================
+
+  async findAllGlobalTemplates(limit?: number) {
+    const results = await this.db
+      .select()
+      .from(wbGlobalTemplates)
+      .where(eq(wbGlobalTemplates.isActive, true))
+      .orderBy(desc(wbGlobalTemplates.createdAt));
+
+    return limit ? results.slice(0, limit) : results;
+  }
+
+  async findOneGlobalTemplate(id: string) {
+    const [template] = await this.db
+      .select()
+      .from(wbGlobalTemplates)
+      .where(eq(wbGlobalTemplates.id, id));
+
+    return template || null;
+  }
+
+  async cloneGlobalTemplate(globalTemplateId: string, tenantId: string) {
+    // 1. Get Global Template
+    const globalTemplate = await this.findOneGlobalTemplate(globalTemplateId);
+    if (!globalTemplate) {
+      throw new NotFoundException('Global Template not found');
+    }
+
+    // 2. Create Tenant Template
+    const [newTemplate] = await this.db
+      .insert(wbTemplates)
+      .values({
+        tenantId,
+        globalTemplateId,
+        name: globalTemplate.name,
+        description: globalTemplate.description,
+        thumbnailUrl: globalTemplate.thumbnailUrl,
+        isActive: true,
+        isDefault: false,
+        settings: globalTemplate.settings || {},
+      })
+      .returning();
+
+    // 3. Get Global Template Pages
+    const globalPages = await this.db
+      .select()
+      .from(wbGlobalTemplatePages)
+      .where(eq(wbGlobalTemplatePages.templateId, globalTemplateId))
+      .orderBy(asc(wbGlobalTemplatePages.order));
+
+    // 4. Clone Pages & Sections
+    for (const globalPage of globalPages) {
+      const [newPage] = await this.db
+        .insert(wbPages)
+        .values({
+          tenantId,
+          templateId: newTemplate.id,
+          name: globalPage.name,
+          slug: globalPage.slug,
+          description: globalPage.description,
+          isActive: true,
+          isHomepage: globalPage.isHomepage,
+          order: globalPage.order,
+          settings: {},
+        })
+        .returning();
+
+      // Get sections for this page
+      const globalSections = await this.db
+        .select()
+        .from(wbGlobalTemplateSections)
+        .where(eq(wbGlobalTemplateSections.pageId, globalPage.id))
+        .orderBy(asc(wbGlobalTemplateSections.order));
+
+      // Clone sections
+      for (const globalSection of globalSections) {
+        await this.db.insert(wbSections).values({
+          tenantId: tenantId,
+          pageId: newPage.id,
+          name: globalSection.name,
+          type: globalSection.type as any,
+          order: globalSection.order,
+          isActive: true,
+          content: globalSection.content || {},
+          styling: globalSection.styling || null,
+        });
+      }
+    }
+
+    // 5. Return complete template
+    return this.findOneTemplate(newTemplate.id, tenantId);
+  }
+
+  // ==================== TEMPLATES ====================
+
+  async createTemplate(tenantId: string, input: CreateTemplateInput) {
+    console.log('🔵 Service createTemplate:', { tenantId, input });
+
+    const [template] = await this.db
+      .insert(wbTemplates)
+      .values({
+        tenantId,
+        name: input.name,
+        description: input.description,
+        thumbnailUrl: input.thumbnailUrl,
+        isActive: input.isActive ?? true,
+        isDefault: input.isDefault ?? false,
+        settings: input.settings || {},
+      })
+      .returning();
+
+    return template;
+  }
+
+  async findAllTemplates(tenantId: string) {
+    const templates = await this.db.query.wbTemplates.findMany({
+      where: eq(wbTemplates.tenantId, tenantId),
+      with: {
+        pages: {
+          orderBy: asc(wbPages.order),
+          with: {
+            sections: {
+              orderBy: asc(wbSections.order),
+            },
+          },
+        },
+      },
+      orderBy: desc(wbTemplates.createdAt),
+    });
+
+    return templates;
+  }
+
+  async findOneTemplate(id: string, tenantId: string) {
+    const template = await this.db.query.wbTemplates.findFirst({
+      where: and(eq(wbTemplates.id, id), eq(wbTemplates.tenantId, tenantId)),
+      with: {
+        pages: {
+          orderBy: asc(wbPages.order),
+          with: {
+            sections: {
+              orderBy: asc(wbSections.order),
+            },
+          },
+        },
+      },
+    });
+
+    if (!template) {
+      throw new NotFoundException(`Template with ID ${id} not found`);
+    }
+
+    return template;
+  }
+
+  async findDefaultTemplate(tenantId: string) {
+    const template = await this.db.query.wbTemplates.findFirst({
+      where: and(
+        eq(wbTemplates.tenantId, tenantId),
+        eq(wbTemplates.isDefault, true),
+      ),
+      with: {
+        pages: {
+          orderBy: asc(wbPages.order),
+          with: {
+            sections: {
+              orderBy: asc(wbSections.order),
+            },
+          },
+        },
+      },
+    });
+
+    return template || null;
+  }
+
+  async updateTemplate(
+    id: string,
+    tenantId: string,
+    input: UpdateTemplateInput,
+  ) {
+    await this.findOneTemplate(id, tenantId);
+
+    const [updated] = await this.db
+      .update(wbTemplates)
+      .set({
+        ...input,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(wbTemplates.id, id), eq(wbTemplates.tenantId, tenantId)))
+      .returning();
+
+    return updated;
+  }
+
+  async deleteTemplate(id: string, tenantId: string) {
+    await this.findOneTemplate(id, tenantId);
+
+    await this.db
+      .delete(wbTemplates)
+      .where(and(eq(wbTemplates.id, id), eq(wbTemplates.tenantId, tenantId)));
+
+    return true;
+  }
+
+  async cloneTemplate(id: string, tenantId: string, newName?: string) {
+    const original = await this.findOneTemplate(id, tenantId);
+
+    const [cloned] = await this.db
+      .insert(wbTemplates)
+      .values({
+        tenantId,
+        name: newName || `${original.name} (Copy)`,
+        description: original.description,
+        thumbnailUrl: original.thumbnailUrl,
+        isActive: original.isActive,
+        isDefault: false,
+        settings: original.settings,
+      })
+      .returning();
+
+    for (const page of original.pages) {
+      const [clonedPage] = await this.db
+        .insert(wbPages)
+        .values({
+          tenantId,
+          templateId: cloned.id,
+          name: page.name,
+          slug: page.slug,
+          description: page.description,
+          metaTitle: page.metaTitle,
+          metaDescription: page.metaDescription,
+          metaKeywords: page.metaKeywords,
+          isActive: page.isActive,
+          isHomepage: page.isHomepage,
+          order: page.order,
+          settings: page.settings,
+        })
+        .returning();
+
+      for (const section of page.sections) {
+        await this.db.insert(wbSections).values({
+          tenantId,
+          pageId: clonedPage.id,
+          name: section.name,
+          type: section.type,
+          order: section.order,
+          isActive: section.isActive,
+          content: section.content,
+          styling: section.styling,
+        });
+      }
+    }
+
+    return this.findOneTemplate(cloned.id, tenantId);
+  }
+
+  async setAsDefaultTemplate(id: string, tenantId: string) {
+    await this.findOneTemplate(id, tenantId);
+
+    await this.db
+      .update(wbTemplates)
+      .set({ isDefault: false })
+      .where(eq(wbTemplates.tenantId, tenantId));
+
+    const [updated] = await this.db
+      .update(wbTemplates)
+      .set({ isDefault: true })
+      .where(and(eq(wbTemplates.id, id), eq(wbTemplates.tenantId, tenantId)))
+      .returning();
+
+    return updated;
+  }
+
+  // ==================== PAGES ====================
+
+  async createPage(tenantId: string, input: CreatePageInput) {
+    await this.findOneTemplate(input.templateId, tenantId);
+
+    const existing = await this.db.query.wbPages.findFirst({
+      where: and(
+        eq(wbPages.tenantId, tenantId),
+        eq(wbPages.templateId, input.templateId),
+        eq(wbPages.slug, input.slug),
+      ),
+    });
+
+    if (existing) {
+      throw new ConflictException(
+        `Page with slug "${input.slug}" already exists in this template`,
+      );
+    }
+
+    const [page] = await this.db
+      .insert(wbPages)
+      .values({
+        tenantId,
+        templateId: input.templateId,
+        name: input.name,
+        slug: input.slug,
+        description: input.description,
+        metaTitle: input.metaTitle,
+        metaDescription: input.metaDescription,
+        metaKeywords: input.metaKeywords,
+        isActive: input.isActive ?? true,
+        isHomepage: input.isHomepage ?? false,
+        order: input.order ?? 0,
+        settings: input.settings || {},
+      })
+      .returning();
+
+    return page;
+  }
+
+  async findAllPages(tenantId: string, templateId?: string) {
+    const pages = await this.db.query.wbPages.findMany({
+      where: templateId
+        ? and(
+            eq(wbPages.tenantId, tenantId),
+            eq(wbPages.templateId, templateId),
+          )
+        : eq(wbPages.tenantId, tenantId),
+      with: {
+        sections: {
+          orderBy: asc(wbSections.order),
+        },
+      },
+      orderBy: asc(wbPages.order),
+    });
+
+    return pages;
+  }
+
+  async findOnePage(id: string, tenantId: string) {
+    const page = await this.db.query.wbPages.findFirst({
+      where: and(eq(wbPages.id, id), eq(wbPages.tenantId, tenantId)),
+      with: {
+        sections: {
+          orderBy: asc(wbSections.order),
+        },
+        template: true,
+      },
+    });
+
+    if (!page) {
+      throw new NotFoundException(`Page with ID ${id} not found`);
+    }
+
+    return page;
+  }
+
+  async findPageBySlug(slug: string, tenantId: string, templateId?: string) {
+    const page = await this.db.query.wbPages.findFirst({
+      where: templateId
+        ? and(
+            eq(wbPages.tenantId, tenantId),
+            eq(wbPages.templateId, templateId),
+            eq(wbPages.slug, slug),
+          )
+        : and(eq(wbPages.tenantId, tenantId), eq(wbPages.slug, slug)),
+      with: {
+        sections: {
+          where: eq(wbSections.isActive, true),
+          orderBy: asc(wbSections.order),
+        },
+      },
+    });
+
+    return page || null;
+  }
+
+  async findHomepage(tenantId: string, templateId: string) {
+    const page = await this.db.query.wbPages.findFirst({
+      where: and(
+        eq(wbPages.tenantId, tenantId),
+        eq(wbPages.templateId, templateId),
+        eq(wbPages.isHomepage, true),
+      ),
+      with: {
+        sections: {
+          where: eq(wbSections.isActive, true),
+          orderBy: asc(wbSections.order),
+        },
+      },
+    });
+
+    return page || null;
+  }
+
+  async updatePage(id: string, tenantId: string, input: UpdatePageInput) {
+    await this.findOnePage(id, tenantId);
+
+    if (input.slug) {
+      const existing = await this.db.query.wbPages.findFirst({
+        where: and(
+          eq(wbPages.tenantId, tenantId),
+          eq(wbPages.slug, input.slug),
+        ),
+      });
+
+      if (existing && existing.id !== id) {
+        throw new ConflictException(
+          `Page with slug "${input.slug}" already exists`,
+        );
+      }
+    }
+
+    const [updated] = await this.db
+      .update(wbPages)
+      .set({
+        ...input,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(wbPages.id, id), eq(wbPages.tenantId, tenantId)))
+      .returning();
+
+    return updated;
+  }
+
+  async deletePage(id: string, tenantId: string) {
+    await this.findOnePage(id, tenantId);
+
+    await this.db
+      .delete(wbPages)
+      .where(and(eq(wbPages.id, id), eq(wbPages.tenantId, tenantId)));
+
+    return true;
+  }
+
+  async reorderSections(
+    pageId: string,
+    tenantId: string,
+    sectionIds: string[],
+  ) {
+    await this.findOnePage(pageId, tenantId);
+
+    for (let i = 0; i < sectionIds.length; i++) {
+      await this.db
+        .update(wbSections)
+        .set({ order: i })
+        .where(
+          and(
+            eq(wbSections.id, sectionIds[i]),
+            eq(wbSections.pageId, pageId),
+            eq(wbSections.tenantId, tenantId),
+          ),
+        );
+    }
+
+    return this.findOnePage(pageId, tenantId);
+  }
+
+  // ==================== SECTIONS ====================
+
+  async createSection(tenantId: string, input: CreateSectionInput) {
+    await this.findOnePage(input.pageId, tenantId);
+
+    const [section] = await this.db
+      .insert(wbSections)
+      .values({
+        tenantId,
+        pageId: input.pageId,
+        name: input.name,
+        type: input.type,
+        order: input.order ?? 0,
+        isActive: input.isActive ?? true,
+        content: input.content || {},
+        styling: input.styling || null,
+      })
+      .returning();
+
+    return section;
+  }
+
+  async findAllSections(tenantId: string, pageId?: string) {
+    const sections = await this.db.query.wbSections.findMany({
+      where: pageId
+        ? and(eq(wbSections.tenantId, tenantId), eq(wbSections.pageId, pageId))
+        : eq(wbSections.tenantId, tenantId),
+      orderBy: asc(wbSections.order),
+    });
+
+    return sections;
+  }
+
+  async findOneSection(id: string, tenantId: string) {
+    const section = await this.db.query.wbSections.findFirst({
+      where: and(eq(wbSections.id, id), eq(wbSections.tenantId, tenantId)),
+      with: {
+        page: true,
+      },
+    });
+
+    if (!section) {
+      throw new NotFoundException(`Section with ID ${id} not found`);
+    }
+
+    return section;
+  }
+
+  async updateSection(id: string, tenantId: string, input: UpdateSectionInput) {
+    await this.findOneSection(id, tenantId);
+
+    const [updated] = await this.db
+      .update(wbSections)
+      .set({
+        ...input,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(wbSections.id, id), eq(wbSections.tenantId, tenantId)))
+      .returning();
+
+    return updated;
+  }
+
+  async deleteSection(id: string, tenantId: string) {
+    await this.findOneSection(id, tenantId);
+
+    await this.db
+      .delete(wbSections)
+      .where(and(eq(wbSections.id, id), eq(wbSections.tenantId, tenantId)));
+
+    return true;
+  }
+
+  async duplicateSection(id: string, tenantId: string) {
+    const original = await this.findOneSection(id, tenantId);
+
+    const [duplicated] = await this.db
+      .insert(wbSections)
+      .values({
+        tenantId,
+        pageId: original.pageId,
+        name: `${original.name} (Copy)`,
+        type: original.type,
+        order: original.order + 1,
+        isActive: original.isActive,
+        content: original.content,
+        styling: original.styling,
+      })
+      .returning();
+
+    return duplicated;
+  }
+
+  async toggleSectionVisibility(id: string, tenantId: string) {
+    const section = await this.findOneSection(id, tenantId);
+
+    const [updated] = await this.db
+      .update(wbSections)
+      .set({ isActive: !section.isActive })
+      .where(and(eq(wbSections.id, id), eq(wbSections.tenantId, tenantId)))
+      .returning();
+
+    return updated;
+  }
+
+  async moveSection(id: string, tenantId: string, targetPageId: string) {
+    await this.findOneSection(id, tenantId);
+    await this.findOnePage(targetPageId, tenantId);
+
+    const [moved] = await this.db
+      .update(wbSections)
+      .set({ pageId: targetPageId })
+      .where(and(eq(wbSections.id, id), eq(wbSections.tenantId, tenantId)))
+      .returning();
+
+    return moved;
+  }
+  // ==================== GLOBAL SECTIONS ====================
+
+  async findAllGlobalSections() {
+    const sections = await this.db
+      .select()
+      .from(wbGlobalTemplateSections)
+      .orderBy(asc(wbGlobalTemplateSections.order));
+
+    return sections;
+  }
+
+  async findOneGlobalSection(id: string) {
+    const [section] = await this.db
+      .select()
+      .from(wbGlobalTemplateSections)
+      .where(eq(wbGlobalTemplateSections.id, id));
+
+    return section || null;
+  }
+
+  async cloneGlobalSection(
+    globalSectionId: string,
+    pageId: string,
+    tenantId: string,
+  ) {
+    // 1. Get Global Section
+    const globalSection = await this.findOneGlobalSection(globalSectionId);
+    if (!globalSection) {
+      throw new NotFoundException('Global Section not found');
+    }
+
+    // 2. Verify Page exists
+    await this.findOnePage(pageId, tenantId);
+
+    // 3. Get current section count for order
+    const existingSections = await this.findAllSections(tenantId, pageId);
+    const newOrder = existingSections.length;
+
+    // 4. Clone Section
+    const [newSection] = await this.db
+      .insert(wbSections)
+      .values({
+        tenantId,
+        pageId,
+        name: globalSection.name,
+        type: globalSection.type as any,
+        order: newOrder,
+        isActive: true,
+        content: globalSection.content || {},
+        styling: globalSection.styling || null,
+      })
+      .returning();
+
+    return newSection;
+  }
+  // ==================== DEFAULT TEMPLATE BEI REGISTRATION ====================
+
+  /**
+   * Wird automatisch nach der Registration aufgerufen.
+   * Erstellt ein passendes Default-Template je nach Paket.
+   *
+   * page/landing  → 1 Seite (Homepage) mit Hero
+   * creator       → 3 Seiten (Home, About, Kontakt)
+   * business+     → 5 Seiten (Home, About, Services, Blog, Kontakt)
+   */
+  async createDefaultTemplate(
+    tenantId: string,
+    tenantName: string,
+    packageType: string,
+  ) {
+    // Paket-basierte Seitenstruktur
+    const pageConfigs: Array<{
+      name: string;
+      slug: string;
+      isHomepage: boolean;
+      order: number;
+      sections: Array<{
+        name: string;
+        type: string;
+        content: Record<string, any>;
+      }>;
+    }> = [];
+
+    // Homepage — alle Pakete bekommen sie
+    pageConfigs.push({
+      name: 'Startseite',
+      slug: 'home',
+      isHomepage: true,
+      order: 0,
+      sections: [
+        {
+          name: 'Hero',
+          type: 'hero',
+          content: {
+            heading: `Willkommen bei ${tenantName}`,
+            subheading: 'Ihre professionelle Online-Präsenz',
+            buttonText: 'Mehr erfahren',
+            buttonLink: '#',
+          },
+        },
+      ],
+    });
+
+    // creator+ bekommt About + Kontakt
+    if (
+      ['creator', 'business', 'shop', 'professional', 'enterprise'].includes(
+        packageType,
+      )
+    ) {
+      pageConfigs.push(
+        {
+          name: 'Über uns',
+          slug: 'ueber-uns',
+          isHomepage: false,
+          order: 1,
+          sections: [
+            {
+              name: 'About',
+              type: 'about',
+              content: {
+                title: `Über ${tenantName}`,
+                description: 'Hier können Sie Ihre Geschichte erzählen.',
+              },
+            },
+          ],
+        },
+        {
+          name: 'Kontakt',
+          slug: 'kontakt',
+          isHomepage: false,
+          order: 2,
+          sections: [
+            {
+              name: 'Kontakt',
+              type: 'contact',
+              content: {
+                title: 'Kontakt aufnehmen',
+                subtitle: 'Wir freuen uns von Ihnen zu hören.',
+              },
+            },
+          ],
+        },
+      );
+    }
+
+    // business+ bekommt zusätzlich Services
+    if (
+      ['business', 'shop', 'professional', 'enterprise'].includes(packageType)
+    ) {
+      pageConfigs.push({
+        name: 'Leistungen',
+        slug: 'leistungen',
+        isHomepage: false,
+        order: 3,
+        sections: [
+          {
+            name: 'Leistungen',
+            type: 'features',
+            content: {
+              title: 'Unsere Leistungen',
+              subtitle: 'Was wir für Sie tun können',
+              items: [
+                {
+                  title: 'Leistung 1',
+                  description: 'Beschreibung',
+                  icon: '⭐',
+                },
+                {
+                  title: 'Leistung 2',
+                  description: 'Beschreibung',
+                  icon: '🚀',
+                },
+                {
+                  title: 'Leistung 3',
+                  description: 'Beschreibung',
+                  icon: '💡',
+                },
+              ],
+            },
+          },
+        ],
+      });
+    }
+
+    // 1. Template erstellen
+    const [template] = await this.db
+      .insert(wbTemplates)
+      .values({
+        tenantId,
+        name: 'Meine Website',
+        description: 'Standard-Template',
+        isActive: true,
+        isDefault: true,
+        settings: {},
+      })
+      .returning();
+
+    // 2. Seiten + Sections erstellen
+    for (const pageConfig of pageConfigs) {
+      const [page] = await this.db
+        .insert(wbPages)
+        .values({
+          tenantId,
+          templateId: template.id,
+          name: pageConfig.name,
+          slug: pageConfig.slug,
+          isActive: true,
+          isHomepage: pageConfig.isHomepage,
+          order: pageConfig.order,
+          settings: {},
+        })
+        .returning();
+
+      for (let i = 0; i < pageConfig.sections.length; i++) {
+        const s = pageConfig.sections[i];
+        await this.db.insert(wbSections).values({
+          tenantId,
+          pageId: page.id,
+          name: s.name,
+          type: s.type as any,
+          order: i,
+          isActive: true,
+          content: s.content,
+          styling: null,
+        });
+      }
+    }
+
+    return template;
+  }
+}

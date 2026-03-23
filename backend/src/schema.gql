@@ -1,0 +1,1261 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AddonDefinitionType {
+  description: String!
+  limits: PackageLimitsType!
+  name: String!
+  price: Int!
+  type: AddonType!
+}
+
+enum AddonType {
+  AI_CONTENT
+  BOOKING
+  EMAIL_BUSINESS
+  EMAIL_STARTER
+  EXTRA_AI_CREDITS
+  EXTRA_PRODUCTS
+  EXTRA_USERS
+  FORM_BUILDER
+  I18N
+  NEWSLETTER
+  SHOP_BUSINESS
+  SHOP_MODULE
+  SHOP_PRO
+}
+
+input AiGenerateInput {
+  context: String
+  keywords: [String!]
+  language: String
+  maxLength: Int
+  prompt: String
+  tone: String
+  type: String!
+}
+
+type AiResultType {
+  content: String!
+  excerpt: String
+  metaDescription: String
+  metaTitle: String
+  tags: [String!]
+  title: String
+  tokensUsed: Int!
+}
+
+type AppointmentType {
+  cancellationReason: String
+  createdAt: DateTime!
+  customerEmail: String!
+  customerName: String!
+  customerNotes: String
+  customerPhone: String
+  date: String!
+  endTime: String!
+  id: String!
+  serviceColor: String
+  serviceId: String!
+  serviceName: String
+  startTime: String!
+  status: String!
+}
+
+type AuthResponse {
+  accessToken: String!
+  refreshToken: String!
+  tenant: Tenant!
+  user: User!
+}
+
+input AvailabilitySlotInput {
+  dayOfWeek: Int!
+  endTime: String!
+  isActive: Boolean!
+  startTime: String!
+}
+
+type AvailablePackagesResponse {
+  addons: [AddonDefinitionType!]!
+  packages: [PackageDefinitionType!]!
+}
+
+type BookingAvailabilityType {
+  dayOfWeek: Int!
+  endTime: String!
+  isActive: Boolean!
+  startTime: String!
+}
+
+type BookingServiceType {
+  bufferMinutes: Int!
+  color: String!
+  description: String
+  durationMinutes: Int!
+  id: String!
+  isActive: Boolean!
+  maxBookingsPerSlot: Int!
+  name: String!
+  price: Int!
+  requiresConfirmation: Boolean!
+  slug: String!
+}
+
+input BookingSettingsInput {
+  bookingPageDescription: String
+  bookingPageTitle: String
+  cancellationPolicy: String
+  confirmationEmailEnabled: Boolean
+  maxAdvanceDays: Int
+  minNoticeHours: Int
+  reminderEmailHours: Int
+  slotIntervalMinutes: Int
+  timezone: String
+}
+
+type BookingSettingsType {
+  bookingPageDescription: String
+  bookingPageTitle: String
+  cancellationPolicy: String
+  confirmationEmailEnabled: Boolean!
+  maxAdvanceDays: Int!
+  minNoticeHours: Int!
+  reminderEmailHours: Int!
+  slotIntervalMinutes: Int!
+  timezone: String!
+}
+
+type BrandingSettingsType {
+  faviconUrl: String
+  hidePoweredBy: Boolean
+  logoInitial: String
+  logoUrl: String
+  platformName: String
+  primaryColor: String
+}
+
+type BulkImportResult {
+  errors: [String!]!
+  failed: Int!
+  skipped: Int!
+  success: Int!
+}
+
+type CampaignStats {
+  bounced: Int!
+  clickRate: Int!
+  clicked: Int!
+  delivered: Int!
+  openRate: Int!
+  opened: Int!
+  sent: Int!
+  total: Int!
+  unsubscribed: Int!
+}
+
+type CategoriesResponse {
+  categories: [Category!]!
+  total: Int!
+}
+
+type Category {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  image: String
+  isActive: Boolean!
+  name: String!
+  slug: String!
+}
+
+type CommentCountsType {
+  approved: Int!
+  pending: Int!
+  spam: Int!
+  trash: Int!
+}
+
+type CommentType {
+  authorEmail: String!
+  authorName: String!
+  authorUrl: String
+  content: String!
+  createdAt: DateTime!
+  id: String!
+  isPinned: Boolean!
+  likes: Int!
+  parentId: String
+  postId: String!
+  postTitle: String
+  status: String!
+}
+
+input CreateBookingServiceInput {
+  bufferMinutes: Int! = 0
+  color: String! = "#3b82f6"
+  description: String
+  durationMinutes: Int!
+  maxBookingsPerSlot: Int! = 1
+  name: String!
+  price: Int! = 0
+  requiresConfirmation: Boolean! = false
+}
+
+input CreateCampaignInput {
+  excludeTags: [String!]
+  filterTags: [String!]
+  fromEmail: String
+  fromName: String
+  htmlContent: String!
+  name: String!
+  plainTextContent: String
+  previewText: String
+  replyTo: String
+  scheduledAt: DateTime
+  subject: String!
+}
+
+input CreateCategoryInput {
+  description: String
+  image: String
+  isActive: Boolean! = true
+  name: String!
+}
+
+input CreateFormInput {
+  description: String
+  fields: JSON!
+  name: String!
+  notificationEmail: String
+  redirectUrl: String
+  settings: JSON
+  submitButtonText: String
+  successMessage: String
+}
+
+input CreateNavigationInput {
+  description: String
+  isActive: Boolean! = true
+  location: String!
+  name: String!
+}
+
+input CreateNavigationItemInput {
+  categoryId: String
+  cssClass: String
+  icon: String
+  label: String!
+  openInNewTab: Boolean! = false
+  order: Int! = 0
+  pageId: String
+  parentId: String
+  postId: String
+  type: String!
+  url: String
+}
+
+input CreateOrderInput {
+  customerAddress: String
+  customerEmail: String!
+  customerName: String!
+  items: [OrderItemInput!]!
+  notes: String
+  shipping: Int! = 0
+  subtotal: Int!
+  tax: Int! = 0
+  total: Int!
+}
+
+input CreatePageInput {
+  content: String!
+  excerpt: String
+  featuredImage: String
+  metaDescription: String
+  slug: String!
+  status: PageStatus
+  template: PageTemplate
+  title: String!
+}
+
+input CreatePostInput {
+  categoryId: String
+  content: String!
+  excerpt: String
+  featuredImage: String
+  metaDescription: String
+  publishedAt: String
+  slug: String!
+  status: PostStatus
+  tags: [String!]
+  title: String!
+}
+
+input CreateProductInput {
+  categoryId: String
+  compareAtPrice: Int
+  description: String
+  images: [String!]
+  isActive: Boolean! = true
+  isFeatured: Boolean! = false
+  name: String!
+  price: Int!
+  stock: Int! = 0
+}
+
+input CreateSectionInput {
+  content: JSON
+  isActive: Boolean
+  name: String!
+  order: Int
+  pageId: String!
+  styling: JSON
+  type: SectionType!
+}
+
+input CreateSubscriberInput {
+  customFields: JSON
+  email: String!
+  firstName: String
+  lastName: String
+  source: String
+  tags: [String!]
+}
+
+input CreateTemplateInput {
+  description: String
+  isActive: Boolean
+  isDefault: Boolean
+  name: String!
+  settings: JSON
+  thumbnailUrl: String
+}
+
+type CurrentUserResponse {
+  tenant: Tenant!
+  user: User!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type EmailSettings {
+  fromEmail: String!
+  fromName: String
+  id: String!
+  isEnabled: Boolean!
+  isVerified: Boolean!
+  lastTestedAt: DateTime
+  provider: String!
+  replyTo: String
+  smtpHost: String
+  smtpPort: Float
+  smtpSecure: Boolean
+  smtpUser: String
+}
+
+input EmailSettingsInput {
+  fromEmail: String!
+  fromName: String
+  provider: String!
+  replyTo: String
+  smtpHost: String
+  smtpPassword: String
+  smtpPort: Float
+  smtpSecure: Boolean
+  smtpUser: String
+}
+
+input ForgotPasswordInput {
+  email: String!
+}
+
+type FormSubmissionType {
+  createdAt: DateTime!
+  data: JSON!
+  formId: String!
+  id: String!
+  isRead: Boolean!
+  isStarred: Boolean!
+  notes: String
+}
+
+type FormType {
+  createdAt: DateTime!
+  description: String
+  fields: JSON!
+  id: String!
+  isActive: Boolean!
+  name: String!
+  notificationEmail: String
+  redirectUrl: String
+  settings: JSON
+  slug: String!
+  submissionsCount: Int!
+  submitButtonText: String!
+  successMessage: String!
+}
+
+input ItemOrderInput {
+  id: String!
+  order: Int!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
+type LocaleSettingsType {
+  defaultLocale: String!
+  enabledLocales: [String!]!
+  supportedLocales: [String!]!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type MediaFile {
+  alt: String
+  createdAt: DateTime!
+  description: String
+  fileSize: Int!
+  filename: String!
+  folder: String
+  height: Int
+  id: String!
+  mimeType: String!
+  originalFilename: String!
+  tags: [String!]!
+  thumbnailUrl: String
+  title: String
+  type: String!
+  url: String!
+  width: Int
+}
+
+type Mutation {
+  activateAddon(addonType: String!, quantity: Float = 1): Boolean!
+  addBookingBlockedDate(date: String!, reason: String): Boolean!
+  aiGenerate(input: AiGenerateInput!): AiResultType!
+  aiImprove(content: String!, instruction: String!): String!
+  aiSuggest(count: Float! = 5, input: String!, type: String!): [String!]!
+  aiTranslate(content: String!, targetLanguage: String!): String!
+  approveComment(id: String!): Boolean!
+  bulkImportSubscribers(subscribers: [CreateSubscriberInput!]!): BulkImportResult!
+  cancelBookingAppointment(id: String!, reason: String): Boolean!
+  changePackage(targetPackage: String!): String!
+  cloneGlobalSection(globalSectionId: String!, pageId: String!, tenantId: String!): Section!
+  cloneGlobalTemplate(globalTemplateId: String!, tenantId: String!): Template!
+  cloneTemplate(id: String!, newName: String, tenantId: String!): Template!
+  createBookingService(input: CreateBookingServiceInput!): BookingServiceType!
+  createCampaign(input: CreateCampaignInput!): NewsletterCampaign!
+  createCategory(input: CreateCategoryInput!): Category!
+  createForm(input: CreateFormInput!): FormType!
+  createNavigation(input: CreateNavigationInput!): Navigation!
+  createNavigationItem(input: CreateNavigationItemInput!, navigationId: String!): NavigationItem!
+  createOrder(input: CreateOrderInput!): Order!
+  createPage(input: CreatePageInput!): Page!
+  createPost(input: CreatePostInput!): Post!
+  createProduct(input: CreateProductInput!): Product!
+  createSection(input: CreateSectionInput!, tenantId: String!): Section!
+  createSubscriber(input: CreateSubscriberInput!): NewsletterSubscriber!
+  createTemplate(input: CreateTemplateInput!, tenantId: String!): Template!
+  deactivateAddon(addonType: String!): Boolean!
+  deleteBookingService(id: String!): Boolean!
+  deleteCampaign(id: String!): Boolean!
+  deleteCategory(id: String!): Boolean!
+  deleteComment(id: String!): Boolean!
+  deleteEmailSettings: Boolean!
+  deleteForm(id: String!): Boolean!
+  deleteMedia(id: String!): Boolean!
+  deleteNavigation(id: String!): Boolean!
+  deleteNavigationItem(itemId: String!): Boolean!
+  deletePage(id: String!): Boolean!
+  deletePost(id: String!): Boolean!
+  deleteProduct(id: String!): Boolean!
+  deleteSection(id: String!, tenantId: String!): Boolean!
+  deleteSubmission(id: String!): Boolean!
+  deleteSubscriber(id: String!): Boolean!
+  deleteSupportTicket(id: String!): Boolean!
+  deleteTemplate(id: String!, tenantId: String!): Boolean!
+  deleteTranslations(entityId: String!, entityType: String!, locale: String): Boolean!
+  duplicateCampaign(id: String!): NewsletterCampaign!
+  duplicatePage(id: String!): Page!
+  duplicateSection(id: String!, tenantId: String!): Section!
+  forgotPassword(input: ForgotPasswordInput!): SuccessResponse!
+  login(input: LoginInput!): AuthResponse!
+  markCommentAsSpam(id: String!): Boolean!
+  markSubmissionRead(id: String!, read: Boolean!): Boolean!
+  moveSection(id: String!, targetPageId: String!, tenantId: String!): Section!
+  pinComment(id: String!, pinned: Boolean!): Boolean!
+  refreshToken(input: RefreshTokenInput!): AuthResponse!
+  register(input: RegisterInput!): AuthResponse!
+  rejectComment(id: String!): Boolean!
+  removeBookingBlockedDate(id: String!): Boolean!
+  reorderNavigationItems(itemOrders: [ItemOrderInput!]!, navigationId: String!): Boolean!
+  reorderSections(pageId: String!, sectionIds: [String!]!, tenantId: String!): WbPage!
+  replyToTicket(content: String!, isInternal: Boolean! = false, ticketId: String!): SupportMessageType!
+  resendVerificationEmail: SuccessResponse!
+  resetPassword(input: ResetPasswordInput!): SuccessResponse!
+  sendCampaign(id: String!): SendCampaignResult!
+  setBookingAvailability(slots: [AvailabilitySlotInput!]!): [BookingAvailabilityType!]!
+  setDefaultTemplate(id: String!, tenantId: String!): Template!
+  setTranslation(entityId: String!, entityType: String!, field: String!, locale: String!, value: String!): Boolean!
+  setTranslationsBatch(entityId: String!, entityType: String!, locale: String!, translations: JSON!): Boolean!
+  setUiTranslation(key: String!, locale: String!, value: String!): Boolean!
+  testEmailSettings(testTo: String!): TestEmailResult!
+  toggleSectionVisibility(id: String!, tenantId: String!): Section!
+  updateAppointmentStatus(id: String!, status: String!): Boolean!
+  updateBookingSettings(input: BookingSettingsInput!): Boolean!
+  updateBranding(input: UpdateBrandingInput!): BrandingSettingsType!
+  updateCampaign(id: String!, input: UpdateCampaignInput!): NewsletterCampaign!
+  updateCategory(id: String!, input: UpdateCategoryInput!): Category!
+  updateEmailSettings(input: EmailSettingsInput!): EmailSettings!
+  updateForm(id: String!, input: CreateFormInput!): FormType!
+  updateLocaleSettings(defaultLocale: String!, enabledLocales: [String!]!): Boolean!
+  updateMedia(id: String!, input: UpdateMediaInput!): MediaFile!
+  updateNavigation(id: String!, input: UpdateNavigationInput!): Navigation!
+  updateNavigationItem(input: UpdateNavigationItemInput!, itemId: String!): NavigationItem!
+  updateOrderStatus(id: String!, status: String!): Order!
+  updatePage(id: String!, input: UpdatePageInput!): Page!
+  updatePost(id: String!, input: UpdatePostInput!): Post!
+  updateProduct(id: String!, input: UpdateProductInput!): Product!
+  updateSection(id: String!, input: UpdateSectionInput!, tenantId: String!): Section!
+  updateSeoMeta(entityId: String!, entityType: String!, input: SeoMetaInput!): SeoMeta!
+  updateShopTemplate(template: String!): CurrentUserResponse!
+  updateSubscriber(id: String!, input: UpdateSubscriberInput!): NewsletterSubscriber!
+  updateSupportTicket(id: String!, input: UpdateTicketInput!): SupportTicketType!
+  updateTemplate(id: String!, input: UpdateTemplateInput!, tenantId: String!): Template!
+  uploadMedia(alt: String, file: Upload!, folder: String, title: String): MediaFile!
+  verifyEmail(input: VerifyEmailInput!): SuccessResponse!
+}
+
+type Navigation {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  isActive: Boolean!
+  items: [NavigationItem!]
+  location: String!
+  name: String!
+  tenantId: String!
+  updatedAt: DateTime!
+}
+
+type NavigationItem {
+  categoryId: String
+  children: [NavigationItem!]
+  createdAt: DateTime!
+  cssClass: String
+  icon: String
+  id: ID!
+  label: String!
+  navigationId: String!
+  openInNewTab: Boolean!
+  order: Int!
+  pageId: String
+  parentId: String
+  postId: String
+  type: String!
+  updatedAt: DateTime!
+  url: String
+}
+
+type NewsletterCampaign {
+  bouncedCount: Int!
+  clickedCount: Int!
+  completedAt: DateTime
+  createdAt: DateTime!
+  deliveredCount: Int!
+  excludeTags: [String!]!
+  filterTags: [String!]!
+  fromEmail: String
+  fromName: String
+  htmlContent: String!
+  id: String!
+  name: String!
+  openedCount: Int!
+  plainTextContent: String
+  previewText: String
+  replyTo: String
+  scheduledAt: DateTime
+  sendAt: DateTime
+  sentCount: Int!
+  status: String!
+  subject: String!
+  totalRecipients: Int!
+  unsubscribedCount: Int!
+  updatedAt: DateTime!
+}
+
+type NewsletterSubscriber {
+  confirmedAt: DateTime
+  createdAt: DateTime!
+  customFields: JSON
+  email: String!
+  firstName: String
+  id: String!
+  lastName: String
+  source: String
+  status: String!
+  subscribedAt: DateTime
+  tags: [String!]!
+  unsubscribedAt: DateTime
+}
+
+type Order {
+  createdAt: DateTime!
+  customerAddress: String
+  customerEmail: String!
+  customerName: String!
+  id: ID!
+  items: [OrderItem!]
+  notes: String
+  orderNumber: String!
+  shipping: Int!
+  status: OrderStatus!
+  subtotal: Int!
+  tax: Int!
+  total: Int!
+}
+
+type OrderItem {
+  id: ID!
+  productName: String!
+  productPrice: Int!
+  quantity: Int!
+  total: Int!
+}
+
+input OrderItemInput {
+  productId: String!
+  productName: String!
+  productPrice: Int!
+  quantity: Int!
+}
+
+enum OrderStatus {
+  CANCELLED
+  COMPLETED
+  PENDING
+  PROCESSING
+}
+
+type OrdersResponse {
+  orders: [Order!]!
+  total: Int!
+}
+
+type PackageDefinitionType {
+  description: String!
+  features: [String!]!
+  limits: PackageLimitsType!
+  name: String!
+  price: Int!
+  type: String!
+}
+
+type PackageLimitsType {
+  aiCredits: Int!
+  emailsPerMonth: Int!
+  pages: Int!
+  posts: Int!
+  products: Int!
+  storageMb: Int!
+  subscribers: Int!
+  users: Int!
+}
+
+enum PackageType {
+  BUSINESS
+  ENTERPRISE
+  STARTER
+}
+
+type Page {
+  content: String
+  createdAt: DateTime!
+  excerpt: String
+  featuredImage: String
+  id: ID!
+  isPublished: Boolean!
+  metaDescription: String
+  publishedAt: DateTime
+  slug: String!
+  status: PageStatus!
+  template: PageTemplate!
+  title: String!
+  updatedAt: DateTime!
+}
+
+enum PageStatus {
+  archived
+  draft
+  published
+}
+
+enum PageTemplate {
+  about
+  blank
+  contact
+  default
+  landing
+}
+
+type Post {
+  categoryId: String
+  content: String
+  createdAt: DateTime!
+  excerpt: String
+  featuredImage: String
+  id: ID!
+  isPublished: Boolean!
+  metaDescription: String
+  publishedAt: DateTime
+  slug: String!
+  status: PostStatus!
+  tags: [String!]
+  title: String!
+  updatedAt: DateTime!
+}
+
+enum PostStatus {
+  archived
+  draft
+  published
+}
+
+type PostsResponse {
+  posts: [Post!]!
+  total: Float!
+}
+
+type Product {
+  category: Category
+  categoryId: String
+  compareAtPrice: Int
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  images: [String!]
+  isActive: Boolean!
+  isFeatured: Boolean!
+  name: String!
+  price: Int!
+  slug: String!
+  stock: Int!
+}
+
+type ProductsResponse {
+  products: [Product!]!
+  total: Int!
+}
+
+type Query {
+  allUiTranslations: JSON!
+  availablePackages: AvailablePackagesResponse!
+  bookingAppointments(endDate: String, startDate: String, status: String): [AppointmentType!]!
+  bookingAvailability: [BookingAvailabilityType!]!
+  bookingServices: [BookingServiceType!]!
+  bookingSettings: BookingSettingsType!
+  brandingSettings: BrandingSettingsType!
+  campaignStats(id: String!): CampaignStats!
+  categories: CategoriesResponse!
+  commentCounts: CommentCountsType!
+  comments(postId: String, status: String): [CommentType!]!
+  currentTenant: CurrentUserResponse!
+  emailSettings: EmailSettings
+  form(id: String!): FormType
+  formSubmissions(formId: String!): [FormSubmissionType!]!
+  forms: [FormType!]!
+  hello: String!
+  localeSettings: LocaleSettingsType!
+  me: CurrentUserResponse!
+  mediaFile(id: String!): MediaFile
+  mediaFiles(folder: String, limit: Int, offset: Int, search: String, type: String): [MediaFile!]!
+  mediaFolders: [String!]!
+  navigation(id: String!): Navigation!
+  navigationByLocation(location: String!): Navigation
+  navigationItems(navigationId: String!): [NavigationItem!]!
+  navigations: [Navigation!]!
+  newsletterCampaign(id: String!): NewsletterCampaign
+  newsletterCampaigns(limit: Int, offset: Int, status: String): [NewsletterCampaign!]!
+  newsletterSubscriber(id: String!): NewsletterSubscriber
+  newsletterSubscribers(limit: Int, offset: Int, search: String, status: String): [NewsletterSubscriber!]!
+  order(id: String!): Order!
+  orders: OrdersResponse!
+  page(id: String!): Page
+  pageBySlug(slug: String!): Page
+  pages(limit: Int, offset: Int, search: String, status: String): [Page!]!
+  post(id: String!): Post
+  posts(limit: Int, offset: Int, search: String, status: String): PostsResponse!
+  products: ProductsResponse!
+  publicCategories: [Category!]!
+  publicProducts: [Product!]!
+  seoMeta(entityId: String!, entityType: String!): SeoMeta
+  subscriberStats: SubscriberStats!
+  subscriberTags: [String!]!
+  supportStats: SupportStatsType!
+  supportTickets(priority: String, status: String): [SupportTicketType!]!
+  tenantSubscription: TenantSubscriptionInfo!
+  ticketMessages(ticketId: String!): [SupportMessageType!]!
+  translations(entityId: String!, entityType: String!, locale: String): [TranslationType!]!
+  uiTranslations(locale: String!): JSON!
+  users: UsersResponse!
+  wbDefaultTemplate(tenantId: String!): Template
+  wbGlobalSection(id: String!): WbGlobalSection
+  wbGlobalSections: [WbGlobalSection!]!
+  wbGlobalTemplate(id: String!): WbGlobalTemplate
+  wbGlobalTemplates(limit: Int): [WbGlobalTemplate!]!
+  wbHomepage(templateId: String!, tenantId: String!): WbPage
+  wbPage(id: String!, tenantId: String!): WbPage
+  wbPageBySlug(slug: String!, templateId: String, tenantId: String!): WbPage
+  wbPages(templateId: String, tenantId: String!): [WbPage!]!
+  wbSection(id: String!, tenantId: String!): Section
+  wbSections(pageId: String, tenantId: String!): [Section!]!
+  wbTemplate(id: String!, tenantId: String!): Template
+  wbTemplates(tenantId: String!): [Template!]!
+}
+
+input RefreshTokenInput {
+  refreshToken: String!
+}
+
+input RegisterInput {
+  companyName: String!
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+}
+
+input ResetPasswordInput {
+  newPassword: String!
+  token: String!
+}
+
+type Section {
+  content: JSON!
+  createdAt: DateTime!
+  id: ID!
+  isActive: Boolean!
+  name: String!
+  order: Int!
+  page: WbPage
+  pageId: String!
+  styling: JSON
+  tenantId: String!
+  type: SectionType!
+  updatedAt: DateTime!
+}
+
+"""Type of section"""
+enum SectionType {
+  about
+  blog
+  contact
+  cta
+  custom
+  faq
+  features
+  gallery
+  hero
+  html
+  pricing
+  services
+  stats
+  team
+  testimonials
+  text
+  video
+}
+
+type SendCampaignResult {
+  recipientCount: Int!
+  success: Boolean!
+}
+
+type SeoMeta {
+  canonicalUrl: String
+  id: String!
+  metaDescription: String
+  metaKeywords: String
+  metaTitle: String
+  nofollow: Boolean!
+  noindex: Boolean!
+  ogDescription: String
+  ogImage: String
+  ogTitle: String
+}
+
+input SeoMetaInput {
+  canonicalUrl: String
+  metaDescription: String
+  metaKeywords: String
+  metaTitle: String
+  nofollow: Boolean
+  noindex: Boolean
+  ogDescription: String
+  ogImage: String
+  ogTitle: String
+}
+
+type SubscriberStats {
+  active: Int!
+  pending: Int!
+  total: Int!
+  unsubscribed: Int!
+}
+
+type Subscription {
+  cancelAtPeriodEnd: Boolean!
+  createdAt: DateTime!
+  currentPeriodEnd: DateTime!
+  currentPeriodStart: DateTime!
+  id: ID!
+  package: String!
+  status: SubscriptionStatus!
+  stripeSubscriptionId: String
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  TRIALING
+}
+
+type SuccessResponse {
+  message: String!
+  success: Boolean!
+}
+
+type SupportMessageType {
+  authorEmail: String!
+  authorName: String!
+  content: String!
+  createdAt: DateTime!
+  id: String!
+  isInternal: Boolean!
+  isStaff: Boolean!
+  ticketId: String!
+}
+
+type SupportStatsType {
+  closed: Int!
+  open: Int!
+  resolved: Int!
+  total: Int!
+  urgent: Int!
+  waiting: Int!
+}
+
+type SupportTicketType {
+  assignedTo: String
+  createdAt: DateTime!
+  customerEmail: String!
+  customerName: String!
+  id: String!
+  lastMessage: String
+  messageCount: Int!
+  priority: String!
+  status: String!
+  subject: String!
+  ticketNumber: String!
+  updatedAt: DateTime!
+}
+
+type Template {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  isActive: Boolean!
+  isDefault: Boolean!
+  name: String!
+  pages: [WbPage!]
+  settings: JSON
+  tenantId: String!
+  thumbnailUrl: String
+  updatedAt: DateTime!
+}
+
+type Tenant {
+  createdAt: DateTime!
+  domain: String
+  id: ID!
+  isActive: Boolean!
+  name: String!
+  package: PackageType!
+  shopTemplate: String
+  slug: String!
+}
+
+type TenantAddon {
+  activatedAt: DateTime!
+  addonType: AddonType!
+  createdAt: DateTime!
+  expiresAt: DateTime
+  id: ID!
+  isActive: Boolean!
+  quantity: Int!
+}
+
+type TenantSubscriptionInfo {
+  addons: [TenantAddon!]!
+  currentPackage: String!
+  currentUsage: UsageStats!
+  limits: PackageLimitsType!
+  subscription: Subscription
+}
+
+type TestEmailResult {
+  error: String
+  success: Boolean!
+}
+
+type TranslationType {
+  entityId: String!
+  entityType: String!
+  field: String!
+  locale: String!
+  value: String!
+}
+
+input UpdateBrandingInput {
+  faviconUrl: String
+  hidePoweredBy: Boolean
+  logoInitial: String
+  logoUrl: String
+  platformName: String
+  primaryColor: String
+}
+
+input UpdateCampaignInput {
+  excludeTags: [String!]
+  filterTags: [String!]
+  fromEmail: String
+  fromName: String
+  htmlContent: String
+  name: String
+  plainTextContent: String
+  previewText: String
+  replyTo: String
+  scheduledAt: DateTime
+  status: String
+  subject: String
+}
+
+input UpdateCategoryInput {
+  description: String
+  image: String
+  isActive: Boolean
+  name: String
+}
+
+input UpdateMediaInput {
+  alt: String
+  description: String
+  folder: String
+  tags: [String!]
+  title: String
+}
+
+input UpdateNavigationInput {
+  description: String
+  isActive: Boolean
+  location: String
+  name: String
+}
+
+input UpdateNavigationItemInput {
+  categoryId: String
+  cssClass: String
+  icon: String
+  label: String
+  openInNewTab: Boolean
+  order: Int
+  pageId: String
+  parentId: String
+  postId: String
+  type: String
+  url: String
+}
+
+input UpdatePageInput {
+  content: String
+  excerpt: String
+  featuredImage: String
+  metaDescription: String
+  slug: String
+  status: PageStatus
+  template: PageTemplate
+  title: String
+}
+
+input UpdatePostInput {
+  categoryId: String
+  content: String
+  excerpt: String
+  featuredImage: String
+  metaDescription: String
+  publishedAt: String
+  slug: String
+  status: PostStatus
+  tags: [String!]
+  title: String
+}
+
+input UpdateProductInput {
+  categoryId: String
+  compareAtPrice: Int
+  description: String
+  images: [String!]
+  isActive: Boolean
+  isFeatured: Boolean
+  name: String
+  price: Int
+  stock: Int
+}
+
+input UpdateSectionInput {
+  content: JSON
+  isActive: Boolean
+  name: String
+  order: Int
+  styling: JSON
+  type: SectionType
+}
+
+input UpdateSubscriberInput {
+  customFields: JSON
+  firstName: String
+  lastName: String
+  status: String
+  tags: [String!]
+}
+
+input UpdateTemplateInput {
+  description: String
+  isActive: Boolean
+  isDefault: Boolean
+  name: String
+  settings: JSON
+  thumbnailUrl: String
+}
+
+input UpdateTicketInput {
+  assignedTo: String
+  priority: String
+  status: String
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type UsageStats {
+  apiCalls: Int!
+  emailsSent: Int!
+  month: String!
+  postsCreated: Int!
+  productsCreated: Int!
+  storageUsedMb: Int!
+}
+
+type User {
+  createdAt: DateTime!
+  email: String!
+  emailVerified: Boolean!
+  firstName: String
+  id: ID!
+  isActive: Boolean!
+  lastLoginAt: DateTime
+  lastName: String
+  role: UserRole!
+}
+
+type UserListItem {
+  createdAt: DateTime!
+  email: String!
+  emailVerified: Boolean!
+  firstName: String
+  id: ID!
+  isActive: Boolean!
+  lastLoginAt: DateTime
+  lastName: String
+  role: UserRole!
+}
+
+enum UserRole {
+  ADMIN
+  OWNER
+  USER
+}
+
+type UsersResponse {
+  total: Float!
+  users: [UserListItem!]!
+}
+
+input VerifyEmailInput {
+  token: String!
+}
+
+type WbGlobalSection {
+  category: String
+  content: JSON!
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  name: String!
+  order: Int!
+  styling: JSON
+  thumbnailUrl: String
+  type: SectionType!
+  updatedAt: DateTime!
+}
+
+type WbGlobalTemplate {
+  category: String
+  createdAt: DateTime!
+  demoUrl: String
+  description: String
+  id: ID!
+  isActive: Boolean!
+  isPremium: Boolean!
+  name: String!
+  previewUrl: String
+  settings: JSONObject
+  thumbnailUrl: String
+  updatedAt: DateTime!
+}
+
+type WbPage {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  isActive: Boolean!
+  isHomepage: Boolean!
+  metaDescription: String
+  metaKeywords: String
+  metaTitle: String
+  name: String!
+  order: Int!
+  sections: [Section!]
+  settings: JSON
+  slug: String!
+  template: Template
+  templateId: String!
+  tenantId: String!
+  updatedAt: DateTime!
+}
