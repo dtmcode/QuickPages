@@ -1,5 +1,3 @@
-# saas-platform/docker-compose.yml
-
 version: '3.8'
 
 services:
@@ -12,7 +10,6 @@ services:
       - app
 
   backend:
-backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
