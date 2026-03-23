@@ -2,7 +2,6 @@
 // 📂 PFAD: frontend-public/src/app/support/page.tsx
 
 import { useState, useEffect } from 'react';
-import { headers } from 'next/headers';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -61,11 +60,12 @@ export default function SupportPage() {
     priority: 'normal',
   });
 
-  useEffect(() => {
-    // Get tenant from x-tenant header via a data attribute set by layout
-    const slug = document.documentElement.dataset.tenant || 'demo';
-    setTenantSlug(slug);
-  }, []);
+useEffect(() => {
+  const slug = document.documentElement.dataset.tenant || 
+               window.location.hostname.split('.')[0] || 
+               'demo';
+  setTenantSlug(slug);
+}, []);
 
   const submitTicket = async () => {
     if (!form.customerName || !form.customerEmail || !form.subject || !form.message) {
