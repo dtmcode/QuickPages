@@ -1,5 +1,14 @@
 // 📂 PFAD: backend/src/modules/support/support.resolver.ts
-import { Resolver, Query, Mutation, Args, ObjectType, Field, Int, InputType } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ObjectType,
+  Field,
+  Int,
+  InputType,
+} from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../../core/auth/guards/gql-auth.guard';
 import { TenantId } from '../../core/auth/decorators/tenant-id.decorator';
@@ -73,7 +82,10 @@ export class SupportResolver {
     @Args('status', { nullable: true }) status?: string,
     @Args('priority', { nullable: true }) priority?: string,
   ) {
-    const rows = await this.supportService.getTickets(tenantId, { status, priority });
+    const rows = await this.supportService.getTickets(tenantId, {
+      status,
+      priority,
+    });
     return rows.map((r: any) => ({
       id: r.id,
       ticketNumber: r.ticket_number,
@@ -127,10 +139,17 @@ export class SupportResolver {
   ) {
     const r = await this.supportService.updateTicket(tenantId, id, input);
     return {
-      id: r.id, ticketNumber: r.ticket_number, subject: r.subject,
-      status: r.status, priority: r.priority, customerName: r.customer_name,
-      customerEmail: r.customer_email, assignedTo: r.assigned_to,
-      messageCount: 0, createdAt: r.created_at, updatedAt: r.updated_at,
+      id: r.id,
+      ticketNumber: r.ticket_number,
+      subject: r.subject,
+      status: r.status,
+      priority: r.priority,
+      customerName: r.customer_name,
+      customerEmail: r.customer_email,
+      assignedTo: r.assigned_to,
+      messageCount: 0,
+      createdAt: r.created_at,
+      updatedAt: r.updated_at,
     };
   }
 
@@ -151,9 +170,14 @@ export class SupportResolver {
       isInternal,
     });
     return {
-      id: r.id, ticketId: r.ticket_id, authorName: r.author_name,
-      authorEmail: r.author_email, content: r.content,
-      isStaff: r.is_staff, isInternal: r.is_internal, createdAt: r.created_at,
+      id: r.id,
+      ticketId: r.ticket_id,
+      authorName: r.author_name,
+      authorEmail: r.author_email,
+      content: r.content,
+      isStaff: r.is_staff,
+      isInternal: r.is_internal,
+      createdAt: r.created_at,
     };
   }
 

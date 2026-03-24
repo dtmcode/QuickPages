@@ -18,7 +18,10 @@ export class SupportService {
 
   // ===== TICKETS =====
 
-  async getTickets(tenantId: string, filters?: { status?: string; priority?: string }) {
+  async getTickets(
+    tenantId: string,
+    filters?: { status?: string; priority?: string },
+  ) {
     let query = sql`
       SELECT t.*, 
         (SELECT COUNT(*) FROM support_messages m WHERE m.ticket_id = t.id AND m.is_internal = false) as message_count,
@@ -27,7 +30,8 @@ export class SupportService {
       WHERE t.tenant_id = ${tenantId}
     `;
     if (filters?.status) query = sql`${query} AND t.status = ${filters.status}`;
-    if (filters?.priority) query = sql`${query} AND t.priority = ${filters.priority}`;
+    if (filters?.priority)
+      query = sql`${query} AND t.priority = ${filters.priority}`;
     query = sql`${query} ORDER BY t.updated_at DESC`;
     const result = await this.db.execute(query);
     return (result as any).rows || [];
@@ -49,13 +53,16 @@ export class SupportService {
     return (result as any).rows?.[0] || null;
   }
 
-  async createTicket(tenantId: string, data: {
-    subject: string;
-    customerName: string;
-    customerEmail: string;
-    message: string;
-    priority?: string;
-  }) {
+  async createTicket(
+    tenantId: string,
+    data: {
+      subject: string;
+      customerName: string;
+      customerEmail: string;
+      message: string;
+      priority?: string;
+    },
+  ) {
     const ticketNumber = this.generateTicketNumber();
     const token = crypto.randomBytes(24).toString('hex');
 
@@ -75,12 +82,16 @@ export class SupportService {
     return ticket;
   }
 
-  async updateTicket(tenantId: string, ticketId: string, data: {
-    status?: string;
-    priority?: string;
-    assignedTo?: string | null;
-    tags?: string[];
-  }) {
+  async updateTicket(
+    tenantId: string,
+    ticketId: string,
+    data: {
+      status?: string;
+      priority?: string;
+      assignedTo?: string | null;
+      tags?: string[];
+    },
+  ) {
     const result = await this.db.execute(
       sql`UPDATE support_tickets SET
             status = COALESCE(${data.status ?? null}, status),
@@ -113,13 +124,17 @@ export class SupportService {
     return (result as any).rows || [];
   }
 
-  async addMessage(tenantId: string, ticketId: string, data: {
-    authorName: string;
-    authorEmail: string;
-    content: string;
-    isStaff: boolean;
-    isInternal?: boolean;
-  }) {
+  async addMessage(
+    tenantId: string,
+    ticketId: string,
+    data: {
+      authorName: string;
+      authorEmail: string;
+      content: string;
+      isStaff: boolean;
+      isInternal?: boolean;
+    },
+  ) {
     // Verify ticket belongs to tenant
     const ticket = await this.getTicket(tenantId, ticketId);
     if (!ticket) throw new Error('Ticket nicht gefunden');
@@ -132,7 +147,8 @@ export class SupportService {
     );
 
     // Update ticket updated_at + reopen if customer replies
-    const newStatus = !data.isStaff && ticket.status === 'waiting' ? 'open' : ticket.status;
+    const newStatus =
+      !data.isStaff && ticket.status === 'waiting' ? 'open' : ticket.status;
     await this.db.execute(
       sql`UPDATE support_tickets SET updated_at = NOW(), status = ${newStatus}
           WHERE id = ${ticketId}`,
@@ -141,11 +157,14 @@ export class SupportService {
     return (result as any).rows?.[0];
   }
 
-  async addPublicMessage(token: string, data: {
-    authorName: string;
-    authorEmail: string;
-    content: string;
-  }) {
+  async addPublicMessage(
+    token: string,
+    data: {
+      authorName: string;
+      authorEmail: string;
+      content: string;
+    },
+  ) {
     const ticket = await this.getTicketByToken(token);
     if (!ticket) throw new Error('Ticket nicht gefunden');
     if (ticket.status === 'resolved' || ticket.status === 'closed') {
@@ -190,8 +209,11 @@ export class SupportService {
   }
 
   async getTenantIdBySlug(slug: string): Promise<string | null> {
-    const [t] = await this.db.select({ id: tenants.id }).from(tenants)
-      .where(eq(tenants.slug, slug)).limit(1);
+    const [t] = await this.db
+      .select({ id: tenants.id })
+      .from(tenants)
+      .where(eq(tenants.slug, slug))
+      .limit(1);
     return t?.id || null;
   }
 }

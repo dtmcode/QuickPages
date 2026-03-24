@@ -871,14 +871,18 @@ export const supportTickets = pgTable(
   'support_tickets',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
     ticketNumber: varchar('ticket_number', { length: 20 }).notNull().unique(),
     subject: varchar('subject', { length: 500 }).notNull(),
     status: varchar('status', { length: 50 }).notNull().default('open'),
     priority: varchar('priority', { length: 50 }).notNull().default('normal'),
     customerName: varchar('customer_name', { length: 255 }).notNull(),
     customerEmail: varchar('customer_email', { length: 255 }).notNull(),
-    assignedTo: uuid('assigned_to').references(() => users.id, { onDelete: 'set null' }),
+    assignedTo: uuid('assigned_to').references(() => users.id, {
+      onDelete: 'set null',
+    }),
     tags: text('tags').array().default([]),
     token: varchar('token', { length: 255 }).notNull().unique(),
     resolvedAt: timestamp('resolved_at'),
@@ -896,7 +900,9 @@ export const supportMessages = pgTable(
   'support_messages',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    ticketId: uuid('ticket_id').notNull().references(() => supportTickets.id, { onDelete: 'cascade' }),
+    ticketId: uuid('ticket_id')
+      .notNull()
+      .references(() => supportTickets.id, { onDelete: 'cascade' }),
     authorName: varchar('author_name', { length: 255 }).notNull(),
     authorEmail: varchar('author_email', { length: 255 }).notNull(),
     content: text('content').notNull(),
@@ -1190,12 +1196,27 @@ export const navigationItemsRelations = relations(
     }),
   }),
 );
-export const supportTicketsRelations = relations(supportTickets, ({ one, many }) => ({
-  tenant: one(tenants, { fields: [supportTickets.tenantId], references: [tenants.id] }),
-  assignedUser: one(users, { fields: [supportTickets.assignedTo], references: [users.id] }),
-  messages: many(supportMessages),
-}));
+export const supportTicketsRelations = relations(
+  supportTickets,
+  ({ one, many }) => ({
+    tenant: one(tenants, {
+      fields: [supportTickets.tenantId],
+      references: [tenants.id],
+    }),
+    assignedUser: one(users, {
+      fields: [supportTickets.assignedTo],
+      references: [users.id],
+    }),
+    messages: many(supportMessages),
+  }),
+);
 
-export const supportMessagesRelations = relations(supportMessages, ({ one }) => ({
-  ticket: one(supportTickets, { fields: [supportMessages.ticketId], references: [supportTickets.id] }),
-}));
+export const supportMessagesRelations = relations(
+  supportMessages,
+  ({ one }) => ({
+    ticket: one(supportTickets, {
+      fields: [supportMessages.ticketId],
+      references: [supportTickets.id],
+    }),
+  }),
+);

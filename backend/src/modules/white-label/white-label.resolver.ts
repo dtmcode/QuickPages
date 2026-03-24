@@ -1,5 +1,13 @@
 // 📂 PFAD: backend/src/modules/white-label/white-label.resolver.ts
-import { Resolver, Query, Mutation, Args, ObjectType, Field, InputType } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ObjectType,
+  Field,
+  InputType,
+} from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../../core/auth/guards/gql-auth.guard';
 import { TenantId } from '../../core/auth/decorators/tenant-id.decorator';
