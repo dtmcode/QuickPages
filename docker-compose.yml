@@ -8,28 +8,29 @@ services:
     networks:
       - app
   backend:
-  build:
-    context: ./backend
-    dockerfile: Dockerfile
-  restart: always
-  expose:
-    - '3000'
-  env_file:
-    - ./backend/.env
-  environment:
-    REDIS_HOST: redis
-    REDIS_PORT: 6379
-    NODE_ENV: production
-  depends_on:
-    - redis
-  networks:
-    app:
-    coolify:
-      aliases:
-        - quickpages-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    expose:
+      - '3000'
+    env_file:
+      - ./backend/.env
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      NODE_ENV: production
+    depends_on:
+      - redis
+    networks:
+      app:
+      coolify:
+        aliases:
+          - quickpages-backend
 volumes:
-  redis_data: null
+  redis_data:
 networks:
-  app: null
+  app:
+    driver: bridge
   coolify:
     external: true
