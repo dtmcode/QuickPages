@@ -64,9 +64,17 @@ export default function RegisterPage() {
        setRegistered(true); 
       return;              
     } catch (err: unknown) {
-       setError(err instanceof Error ? err.message : 'Registrierung fehlgeschlagen');
+  if (err instanceof Error) {
+    // Apollo GraphQL Fehler extrahieren
+    const message = err.message.includes('Die Subdomain') 
+      ? err.message 
+      : err.message.replace('ApolloError: ', '');
+    setError(message);
+  } else {
+    setError('Registrierung fehlgeschlagen');
+  }
   return;
-    }
+}
   };
 if (registered) {
     return (

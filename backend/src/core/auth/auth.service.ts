@@ -57,19 +57,33 @@ export class AuthService {
         throw new ConflictException('E-Mail bereits registriert');
       }
 
-      const slug = input.companyName
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, '-')
-        .replace(/-+/g, '-');
+const baseSlug = input.companyName
+  .toLowerCase()
+  .replace(/[^a-z0-9]/g, '-')
+  .replace(/-+/g, '-')
+  .replace(/^-|-$/g, '');
 
-      const [tenant] = await tx
-        .insert(tenants)
-        .values({
-          name: input.companyName,
-          slug: `${slug}-${Date.now()}`,
-          package: 'page',
-        })
-        .returning();
+const existingSlug = await tx
+  .select()
+  .from(tenants)
+  .where(eq(tenants.slug, baseSlug))
+  .limit(1);
+
+if (existingSlug.length > 0) {
+  const suggestion = `${baseSlug}-${Math.random().toString(36).substr(2, 4)}`;
+  throw new ConflictException(
+    `Die Subdomain "${baseSlug}" ist bereits vergeben. Alternativ: "${suggestion}"`,
+  );
+}
+
+const [tenant] = await tx
+  .insert(tenants)
+  .values({
+    name: input.companyName,
+    slug: baseSlug,
+    package: 'page',
+  })
+  .returning();
 
       const passwordHash = await bcrypt.hash(input.password, 10);
       const [user] = await tx

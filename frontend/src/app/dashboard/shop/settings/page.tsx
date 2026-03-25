@@ -1,5 +1,5 @@
 'use client';
-
+//frontend\src\app\dashboard\shop\settings\page.tsx
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
