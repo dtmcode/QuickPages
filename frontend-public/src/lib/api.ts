@@ -1,12 +1,10 @@
 // 📂 PFAD: frontend-public/src/lib/api.ts
 
 import { Tenant, Page, Post, Product, Category, Navigation } from '@/types';
-
 const isServer = typeof window === 'undefined';
 const API_URL = isServer 
-  ? (process.env.API_URL || 'http://10.0.1.9:3000')
+  ? (process.env.API_URL || 'http://localhost:3000')
   : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000');
-
 // ==================== WB TYPES ====================
 export interface WbSection {
   id: string;
