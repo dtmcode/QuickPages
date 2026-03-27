@@ -157,113 +157,72 @@ export class PublicService {
 
   // ==================== WEBSITE BUILDER ====================
 
-// ==================== WEBSITE BUILDER (2-STEP FIX) ====================
+  async getPublishedWbPages(tenantSlug: string, templateId: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
 
-async getPublishedWbPages(tenantSlug: string, templateId: string) {
-  const tenantId = await this.getTenantId(tenantSlug);
-
-  // Step 1: Pages holen
-  const pagesResult = await this.db
-    .select()
-    .from(wbPages)
-    .where(
-      and(
+    return this.db.query.wbPages.findMany({
+      where: and(
         eq(wbPages.tenantId, tenantId),
         eq(wbPages.templateId, templateId),
         eq(wbPages.isActive, true),
       ),
-    )
-    .orderBy(asc(wbPages.order));
+      with: {
+        sections: {
+          where: eq(wbSections.isActive, true),
+          orderBy: [asc(wbSections.order)],
+        },
+      },
+      orderBy: [asc(wbPages.order)],
+    });
+  }
 
-  // Step 2: Sections für jede Page laden
-  const pagesWithSections = await Promise.all(
-    pagesResult.map(async (page) => {
-      const sections = await this.db
-        .select()
-        .from(wbSections)
-        .where(
-          and(
-            eq(wbSections.pageId, page.id),
-            eq(wbSections.isActive, true),
-          ),
-        )
-        .orderBy(asc(wbSections.order));
-      return { ...page, sections };
-    }),
-  );
+  async getWbPageBySlug(
+    tenantSlug: string,
+    templateId: string,
+    pageSlug: string,
+  ) {
+    const tenantId = await this.getTenantId(tenantSlug);
 
-  return pagesWithSections;
-}
-
-async getWbPageBySlug(tenantSlug: string, templateId: string, pageSlug: string) {
-  const tenantId = await this.getTenantId(tenantSlug);
-
-  // Step 1: Page holen
-  const [wbPage] = await this.db
-    .select()
-    .from(wbPages)
-    .where(
-      and(
+    const wbPage = await this.db.query.wbPages.findFirst({
+      where: and(
         eq(wbPages.tenantId, tenantId),
         eq(wbPages.templateId, templateId),
         eq(wbPages.slug, pageSlug),
         eq(wbPages.isActive, true),
       ),
-    )
-    .limit(1);
+      with: {
+        sections: {
+          where: eq(wbSections.isActive, true),
+          orderBy: [asc(wbSections.order)],
+        },
+      },
+    });
 
-  if (!wbPage) throw new NotFoundException('Website Builder Page not found');
+    if (!wbPage) throw new NotFoundException('Website Builder Page not found');
 
-  // Step 2: Sections separat laden
-  const sections = await this.db
-    .select()
-    .from(wbSections)
-    .where(
-      and(
-        eq(wbSections.pageId, wbPage.id),
-        eq(wbSections.isActive, true),
-      ),
-    )
-    .orderBy(asc(wbSections.order));
+    return wbPage;
+  }
 
-  return { ...wbPage, sections };
-}
+  async getWbHomepage(tenantSlug: string, templateId: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
 
-async getWbHomepage(tenantSlug: string, templateId: string) {
-  const tenantId = await this.getTenantId(tenantSlug);
-
-  // Step 1: Page holen
-  const [homepage] = await this.db
-    .select()
-    .from(wbPages)
-    .where(
-      and(
+    const homepage = await this.db.query.wbPages.findFirst({
+      where: and(
         eq(wbPages.tenantId, tenantId),
         eq(wbPages.templateId, templateId),
         eq(wbPages.isHomepage, true),
         eq(wbPages.isActive, true),
       ),
-    )
-    .limit(1);
+      with: {
+        sections: {
+          where: eq(wbSections.isActive, true),
+          orderBy: [asc(wbSections.order)],
+        },
+      },
+    });
 
-  if (!homepage) return null;
-
-  // Step 2: Sections separat laden
-  const sections = await this.db
-    .select()
-    .from(wbSections)
-    .where(
-      and(
-        eq(wbSections.pageId, homepage.id),
-        eq(wbSections.isActive, true),
-      ),
-    )
-    .orderBy(asc(wbSections.order));
-
-  console.log(`🏠 Homepage "${homepage.name}": ${sections.length} sections loaded`);
-
-  return { ...homepage, sections };
-}
+    return homepage ?? null;
+  }
 
   async getDefaultTemplateId(tenantSlug: string): Promise<string | null> {
     const tenantId = await this.getTenantId(tenantSlug);
