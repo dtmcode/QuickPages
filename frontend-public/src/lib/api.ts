@@ -15,7 +15,14 @@ export interface WbSection {
   isActive: boolean;
   order: number;
 }
-
+export interface TenantBranding {
+  platformName?: string;
+  logoUrl?: string;
+  logoInitial?: string;
+  primaryColor?: string;
+  hidePoweredBy?: boolean;
+  faviconUrl?: string;
+}
 export interface WbPage {
   id: string;
   name: string;
@@ -118,7 +125,10 @@ class PublicAPI {
       return null;
     }
   }
-
+   // ==================== BRANDING ====================
+async getBranding(): Promise<TenantBranding> {
+  return this.fetchWithCache<TenantBranding>('/branding', 3600);
+}
   // ==================== WEBSITE BUILDER ====================
   async getWbHomepage(): Promise<WbPage> {
     return this.fetchWithCache<WbPage>('/wb/homepage', 60);

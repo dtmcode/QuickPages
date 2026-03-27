@@ -1,3 +1,5 @@
+// 📂 PFAD: frontend-public/src/app/layout.tsx
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -14,25 +16,24 @@ export async function generateMetadata(): Promise<Metadata> {
     const headersList = await headers();
     const tenantSlug = headersList.get('x-tenant') || 'demo';
     const api = getAPI(tenantSlug);
-    const [tenant, branding] = await Promise.all([
-      api.getSettings(),
-      api.getBranding().catch(() => null),
-    ]);
+    const tenant = await api.getSettings();
 
     return {
       title: {
-        default: branding?.platformName || tenant.name,
-        template: `%s | ${branding?.platformName || tenant.name}`,
+        default: tenant.name,
+        template: `%s | ${tenant.name}`,
       },
       description: `${tenant.name} — Entdecke unsere Produkte und Services`,
-      icons: branding?.faviconUrl ? { icon: branding.faviconUrl } : undefined,
       openGraph: {
-        title: branding?.platformName || tenant.name,
+        title: tenant.name,
         description: `${tenant.name} — Entdecke unsere Produkte und Services`,
-        siteName: branding?.platformName || tenant.name,
+        siteName: tenant.name,
         type: 'website',
       },
-      robots: { index: true, follow: true },
+      robots: {
+        index: true,
+        follow: true,
+      },
     };
   } catch {
     return {
@@ -51,17 +52,13 @@ export default async function RootLayout({
   const tenantSlug = headersList.get('x-tenant') || 'demo';
 
   let tenant = null;
-  let headerNav = null;
-  let footerNav = null;
-  let branding = null;
+  let navigation = null;
 
   try {
     const api = getAPI(tenantSlug);
-    [tenant, headerNav, footerNav, branding] = await Promise.all([
+    [tenant, navigation] = await Promise.all([
       api.getSettings(),
-      api.getNavigation('header').catch(() => null),
-      api.getNavigation('footer').catch(() => null),
-      api.getBranding().catch(() => null),
+      api.getNavigation('header'),
     ]);
   } catch (error) {
     console.error('Failed to load tenant:', error);
@@ -91,20 +88,11 @@ export default async function RootLayout({
     <html lang="de">
       <body className={inter.className}>
         <div className="min-h-screen flex flex-col">
-          <Header
-            navigation={headerNav}
-            tenantName={branding?.platformName || tenant.name}
-            logoUrl={branding?.logoUrl}
-            logoInitial={branding?.logoInitial}
-            primaryColor={branding?.primaryColor}
-          />
+          <Header navigation={navigation} tenantName={tenant.name} />
           <main className="flex-grow">{children}</main>
-          <Footer
-            navigation={footerNav}
-            tenantName={branding?.platformName || tenant.name}
-            hidePoweredBy={branding?.hidePoweredBy}
-          />
+          <Footer />
         </div>
+        {/* ✅ Analytics Tracker — Client Component, trackt Page Views automatisch */}
         <AnalyticsTracker tenantSlug={tenantSlug} />
       </body>
     </html>

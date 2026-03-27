@@ -264,7 +264,44 @@ export default function SettingsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </a>
-
+<a 
+          href="/dashboard/settings/payments"
+  className="flex items-center justify-between p-4 border border-green-200 dark:border-green-700 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+>
+  <div className="flex items-center gap-3">
+    <div className="text-2xl">💳</div>
+    <div>
+      <div className="font-semibold text-gray-900 dark:text-white">
+        Zahlungseinstellungen
+      </div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">
+        Stripe, PayPal, Banküberweisung
+      </div>
+    </div>
+  </div>
+  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+  </svg>
+          </a>
+          <a 
+href="/dashboard/settings/domain"
+  className="flex items-center justify-between p-4 border border-blue-200 dark:border-blue-700 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+>
+  <div className="flex items-center gap-3">
+    <div className="text-2xl">🌐</div>
+    <div>
+      <div className="font-semibold text-gray-900 dark:text-white">
+        Custom Domain
+      </div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">
+        Domain verbinden und verifizieren
+      </div>
+    </div>
+  </div>
+  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+  </svg>
+</a>
             <a 
           href="/dashboard/settings/white-label"
             className="flex items-center justify-between p-4 border border-purple-200 dark:border-purple-700 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"

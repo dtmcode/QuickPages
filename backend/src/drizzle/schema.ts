@@ -936,6 +936,8 @@ export const tenantsRelations = relations(tenants, ({ many, one }) => ({
   usageTracking: many(usageTracking),
   auditLogs: many(auditLogs),
   supportTickets: many(supportTickets),
+  customers: many(tenantCustomers),
+ paymentSettings: one(tenantPaymentSettings),
 }));
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -1220,3 +1222,60 @@ export const supportMessagesRelations = relations(
     }),
   }),
 );
+// ==================== TENANT CUSTOMERS (Public Member Area) ====================
+ 
+export const tenantCustomers = pgTable(
+  'tenant_customers',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    email: varchar('email', { length: 255 }).notNull(),
+    passwordHash: varchar('password_hash', { length: 255 }),
+    firstName: varchar('first_name', { length: 100 }),
+    lastName: varchar('last_name', { length: 100 }),
+    isActive: boolean('is_active').default(true).notNull(),
+    isMember: boolean('is_member').default(false).notNull(),
+    memberSince: timestamp('member_since'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    tenantEmailIdx: uniqueIndex('tenant_customers_tenant_email_idx').on(
+      table.tenantId,
+      table.email,
+    ),
+    tenantIdx: index('tenant_customers_tenant_idx').on(table.tenantId),
+  }),
+);
+ 
+// ==================== TENANT PAYMENT SETTINGS ====================
+ 
+export const tenantPaymentSettings = pgTable('tenant_payment_settings', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id')
+    .notNull()
+    .references(() => tenants.id, { onDelete: 'cascade' })
+    .unique(),
+  // Stripe
+  stripePublishableKey: varchar('stripe_publishable_key', { length: 500 }),
+  stripeSecretKeyEncrypted: text('stripe_secret_key_encrypted'),
+  stripeWebhookSecretEncrypted: text('stripe_webhook_secret_encrypted'),
+  stripeMode: varchar('stripe_mode', { length: 10 }).default('test'),
+  stripeActive: boolean('stripe_active').default(false),
+  // PayPal
+  paypalClientId: varchar('paypal_client_id', { length: 500 }),
+  paypalSecretEncrypted: text('paypal_secret_encrypted'),
+  paypalMode: varchar('paypal_mode', { length: 10 }).default('sandbox'),
+  paypalActive: boolean('paypal_active').default(false),
+  // Bank Transfer
+  bankActive: boolean('bank_active').default(false),
+  bankIban: varchar('bank_iban', { length: 50 }),
+  bankBic: varchar('bank_bic', { length: 20 }),
+  bankAccountHolder: varchar('bank_account_holder', { length: 255 }),
+  bankName: varchar('bank_name', { length: 255 }),
+  bankReference: varchar('bank_reference', { length: 255 }),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});

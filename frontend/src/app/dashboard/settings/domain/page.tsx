@@ -1,6 +1,6 @@
 'use client';
 
-/**
+/**frontend\src\app\dashboard\settings\domain\page.tsx
  * ==================== DOMAIN MANAGEMENT PAGE ====================
  * Dashboard → Einstellungen → Domain
  * 
