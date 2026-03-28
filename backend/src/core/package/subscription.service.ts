@@ -8,13 +8,16 @@ import {
   usageTracking,
 } from '../../drizzle/schema';
 import { eq, and } from 'drizzle-orm';
-import {
-  AddonType,
-  calculateTotalLimits,
-  PackageLimits,
-} from './package.helper'; // ← canUpgradeTo ENTFERNT
+import { PackageType, PACKAGES, ADDONS } from './package.helper';
+import { AddonType } from './dto/subscription.types';
 import { TenantSubscriptionInfo } from './dto/subscription.types';
-
+export interface PackageLimits {
+  users: number;
+  posts: number;
+  pages: number;
+  products: number;
+  emailsPerMonth: number;
+}
 @Injectable()
 export class SubscriptionService {
   constructor(@Inject(DRIZZLE) private db: DrizzleDB) {}
@@ -40,8 +43,38 @@ export class SubscriptionService {
         ),
       );
 
-    const addonTypes = activeAddons.map((a) => a.addonType as AddonType);
-    return calculateTotalLimits(tenant.package, addonTypes);
+    const pkg = PACKAGES[tenant.package as PackageType];
+    const base: PackageLimits = pkg
+      ? {
+          users: pkg.features.maxUsers,
+          posts: pkg.features.maxPosts,
+          pages: pkg.features.maxPages,
+          products: pkg.features.maxProducts,
+          emailsPerMonth: pkg.features.maxSubscribers,
+        }
+      : { users: 1, posts: 0, pages: 3, products: 0, emailsPerMonth: 0 };
+
+    return activeAddons.reduce((limits, addon) => {
+      const def = Object.values(ADDONS).find((a) => a.type === addon.addonType);
+      if (!def) return limits;
+      return {
+        users: def.adds.maxUsers
+          ? limits.users + def.adds.maxUsers
+          : limits.users,
+        posts: def.adds.maxPosts
+          ? limits.posts + def.adds.maxPosts
+          : limits.posts,
+        pages: def.adds.maxPages
+          ? limits.pages + def.adds.maxPages
+          : limits.pages,
+        products: def.adds.maxProducts
+          ? limits.products + def.adds.maxProducts
+          : limits.products,
+        emailsPerMonth: def.adds.maxSubscribers
+          ? limits.emailsPerMonth + def.adds.maxSubscribers
+          : limits.emailsPerMonth,
+      };
+    }, base);
   }
 
   async getCurrentUsage(tenantId: string) {
@@ -131,7 +164,7 @@ export class SubscriptionService {
 
   async activateAddon(
     tenantId: string,
-    addonType: AddonType,
+    addonType: string,
     quantity: number = 1,
   ) {
     const existing = await this.db
@@ -160,14 +193,14 @@ export class SubscriptionService {
     }
   }
 
-  async deactivateAddon(tenantId: string, addonType: AddonType) {
+  async deactivateAddon(tenantId: string, addonType: string) {
     await this.db
       .update(tenantAddons)
       .set({ isActive: false })
       .where(
         and(
           eq(tenantAddons.tenantId, tenantId),
-          eq(tenantAddons.addonType, addonType),
+          eq(tenantAddons.addonType, addonType as any),
         ),
       );
   }

@@ -14,13 +14,8 @@ import {
   AddonDefinitionType,
   AddonType,
 } from './dto/subscription.types';
-import {
-  PACKAGE_LIMITS,
-  PACKAGE_PRICES,
-  ADDON_DEFINITIONS,
-  PackageType,
-  type AddonDefinition,
-} from './package.helper';
+import { PACKAGES, ADDONS, PackageType } from './package.helper';
+
 
 @Resolver()
 export class SubscriptionResolver {
@@ -28,103 +23,45 @@ export class SubscriptionResolver {
 
   // ===== PUBLIC QUERIES =====
 
-  @Query(() => AvailablePackagesResponse)
-  availablePackages(): AvailablePackagesResponse {
-    const packages: PackageDefinitionType[] = [
-      {
-        type: 'page',
-        name: 'Page',
-        description: 'Eine professionelle Landing Page',
-        price: PACKAGE_PRICES[PackageType.PAGE],
-        limits: {
-          ...PACKAGE_LIMITS[PackageType.PAGE],
-        },
-        features: ['1 Landing Page', 'Website Builder', 'Basis-Analytics'],
-      },
-      {
-        type: 'landing',
-        name: 'Landing',
-        description: 'Bis zu 3 Landing Pages mit Domain',
-        price: PACKAGE_PRICES[PackageType.LANDING],
-        limits: {
-          ...PACKAGE_LIMITS[PackageType.LANDING],
-        },
-        features: ['3 Landing Pages', 'Eigene Domain', 'Kontaktformular'],
-      },
-      {
-        type: 'creator',
-        name: 'Creator',
-        description: 'Blog und mehrere Seiten',
-        price: PACKAGE_PRICES[PackageType.CREATOR],
-        limits: {
-          ...PACKAGE_LIMITS[PackageType.CREATOR],
-        },
-        features: ['10 Seiten', 'Blog (50 Posts)', 'Eigene Domain'],
-      },
-      {
-        type: 'business',
-        name: 'Business',
-        description: 'Newsletter, Booking, Forms',
-        price: PACKAGE_PRICES[PackageType.BUSINESS],
-        limits: {
-          ...PACKAGE_LIMITS[PackageType.BUSINESS],
-        },
-        features: ['30 Seiten', 'Newsletter', 'Booking', 'Form Builder'],
-      },
-      {
-        type: 'shop',
-        name: 'Shop',
-        description: 'Vollständiges Shop-System',
-        price: PACKAGE_PRICES[PackageType.SHOP],
-        limits: {
-          ...PACKAGE_LIMITS[PackageType.SHOP],
-        },
-        features: ['200 Produkte', 'Stripe Payments', 'Bestellverwaltung'],
-      },
-      {
-        type: 'professional',
-        name: 'Professional',
-        description: 'AI, Mehrsprachigkeit, großer Shop',
-        price: PACKAGE_PRICES[PackageType.PROFESSIONAL],
-        limits: {
-          ...PACKAGE_LIMITS[PackageType.PROFESSIONAL],
-        },
-        features: ['AI Content', 'Mehrsprachigkeit', '1.000 Produkte'],
-      },
-      {
-        type: 'enterprise',
-        name: 'Enterprise',
-        description: 'Unbegrenzte Ressourcen, White-Label',
-        price: PACKAGE_PRICES[PackageType.ENTERPRISE],
-        limits: {
-          ...PACKAGE_LIMITS[PackageType.ENTERPRISE],
-        },
-        features: ['White-Label', 'Unbegrenzte Ressourcen', 'Account Manager'],
-      },
-    ];
+@Query(() => AvailablePackagesResponse)
+availablePackages(): AvailablePackagesResponse {
+  const packages: PackageDefinitionType[] = Object.values(PACKAGES).map(pkg => ({
+    type: pkg.type,
+    name: pkg.name,
+    description: pkg.description,
+    price: pkg.priceMonthly,
+    limits: {
+      users:          pkg.features.maxUsers,
+      posts:          pkg.features.maxPosts,
+      pages:          pkg.features.maxPages,
+      products:       pkg.features.maxProducts,
+      emailsPerMonth: pkg.features.maxSubscribers,
+      subscribers:    pkg.features.maxSubscribers,
+      aiCredits:      pkg.features.aiCreditsPerMonth,
+      storageMb:      pkg.features.storageMb,
+    },
+    features: pkg.highlightFeatures,
+  }));
 
-    const addons: AddonDefinitionType[] = Object.entries(ADDON_DEFINITIONS).map(
-      ([key, def]: [string, AddonDefinition]) => ({
-        type: key as AddonType,
-        name: def.name,
-        description: def.description,
-        price: def.price,
-        limits: {
-          users: def.limits.users ?? 0,
-          posts: def.limits.posts ?? 0,
-          pages: def.limits.pages ?? 0,
-          products: def.limits.products ?? 0,
-          emailsPerMonth: def.limits.emailsPerMonth ?? 0,
-          subscribers: def.limits.subscribers ?? 0,
-          aiCredits: def.limits.aiCredits ?? 0,
-          storageMb: def.limits.storageMb ?? 0,
-        },
-      }),
-    );
+  const addons: AddonDefinitionType[] = Object.values(ADDONS).map(def => ({
+    type: def.type as any,
+    name: def.name,
+    description: def.description,
+    price: def.priceMonthly,
+    limits: {
+      users:          def.adds.maxUsers          ?? 0,
+      posts:          def.adds.maxPosts          ?? 0,
+      pages:          def.adds.maxPages          ?? 0,
+      products:       def.adds.maxProducts       ?? 0,
+      emailsPerMonth: def.adds.maxSubscribers    ?? 0,
+      subscribers:    def.adds.maxSubscribers    ?? 0,
+      aiCredits:      def.adds.aiCreditsPerMonth ?? 0,
+      storageMb:      0,
+    },
+  }));
 
-    return { packages, addons };
-  }
-
+  return { packages, addons };
+}
   // ===== PROTECTED QUERIES =====
 
   @Query(() => TenantSubscriptionInfo)

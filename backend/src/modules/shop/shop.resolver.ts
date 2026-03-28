@@ -4,7 +4,8 @@ import { GqlAuthGuard } from '../../core/auth/guards/gql-auth.guard';
 import { PackageGuard } from '../../core/package/guards/package.guard'; // ← NEU
 import { RequireFeature } from '../../core/package/decorators/require-feature.decorator'; // ← NEU
 import { TenantId } from '../../core/auth/decorators/tenant-id.decorator';
-import { isWithinLimit } from '../../core/package/package.helper'; // ← NEU
+import { PACKAGES, PackageType } from '../../core/package/package.helper';
+
 import {
   Product,
   ProductsResponse,
@@ -211,7 +212,9 @@ export class ShopResolver {
       .from(products)
       .where(eq(products.tenantId, tenantId));
 
-    if (!isWithinLimit(tenant.package, 'products', currentProducts.length)) {
+   const pkg = PACKAGES[tenant.package as PackageType];
+const maxProducts = pkg?.features.maxProducts ?? 0;
+if (maxProducts !== -1 && currentProducts.length >= maxProducts) {
       const limits = {
         starter: 0,
         business: 100,
