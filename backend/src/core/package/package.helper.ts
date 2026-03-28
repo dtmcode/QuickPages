@@ -1,398 +1,1125 @@
-// 📂 PFAD: backend/src/packages/package.helper.ts
+// 📂 PFAD: backend/src/modules/package/package.helper.ts
 
-export enum PackageType {
-  PAGE = 'page',
-  LANDING = 'landing',
-  CREATOR = 'creator',
-  BUSINESS = 'business',
-  SHOP = 'shop',
-  PROFESSIONAL = 'professional',
-  ENTERPRISE = 'enterprise',
-}
+// ==================== PACKAGE CATEGORIES ====================
+// 5 Kategorien, je 3 Stufen = 15 Pakete total
+// Jedes Paket enthält Website Builder (One-Page + Multi-Page)
+// One-Page vs Multi-Page ist eine Wizard-Entscheidung, kein Paket-Merkmal
 
-export enum AddonType {
-  // Alte Werte — bleiben für Backwards-Compat
-  SHOP_BUSINESS = 'shop_business',
-  SHOP_PRO = 'shop_pro',
-  EMAIL_STARTER = 'email_starter',
-  EMAIL_BUSINESS = 'email_business',
-  EXTRA_USERS = 'extra_users',
-  // Neue Werte
-  SHOP_MODULE = 'shop_module',
-  NEWSLETTER = 'newsletter',
-  BOOKING = 'booking',
-  AI_CONTENT = 'ai_content',
-  FORM_BUILDER = 'form_builder',
-  I18N = 'i18n',
-  EXTRA_PRODUCTS = 'extra_products',
-  EXTRA_AI_CREDITS = 'extra_ai_credits',
-}
+export type PackageType =
+  // Website (nur Builder)
+  | 'website_micro'
+  | 'website_standard'
+  | 'website_pro'
+  // Blog (Builder + CMS)
+  | 'blog_personal'
+  | 'blog_publisher'
+  | 'blog_magazine'
+  // Business (Builder + Booking + Forms + Newsletter)
+  | 'business_starter'
+  | 'business_professional'
+  | 'business_agency'
+  // Shop (Builder + Shop + Newsletter + Blog)
+  | 'shop_mini'
+  | 'shop_wachstum'
+  | 'shop_premium'
+  // Members (Builder + Members + Courses)
+  | 'members_community'
+  | 'members_kurse'
+  | 'members_academy';
 
-export interface PackageFeatures {
-  cms: boolean;
-  shop: boolean;
-  newsletter: boolean;
-  booking: boolean;
-  formBuilder: boolean;
-  analytics: boolean;
-  ai: boolean;
-  i18n: boolean;
-  customDomain: boolean;
-  whiteLabel: boolean;
-}
-
-export interface PackageLimits {
-  users: number;
-  posts: number;
-  pages: number;
-  products: number;
-  emailsPerMonth: number;
-  subscribers: number;
-  aiCredits: number;
-  storageMb: number;
-}
-
-// ==================== PACKAGE ORDER ====================
-export const PACKAGE_ORDER: PackageType[] = [
-  PackageType.PAGE,
-  PackageType.LANDING,
-  PackageType.CREATOR,
-  PackageType.BUSINESS,
-  PackageType.SHOP,
-  PackageType.PROFESSIONAL,
-  PackageType.ENTERPRISE,
-];
+export type AddonType =
+  | 'shop_module' // Shop für Website/Blog/Business Pakete
+  | 'shop_extra' // +500 Produkte (nur wenn shop_module aktiv)
+  | 'booking_module' // Booking für alle ohne Booking
+  | 'blog_module' // Blog für Website/Shop/Members
+  | 'newsletter_extra' // +1.000 Abonnenten
+  | 'members_module' // Mitglieder für alle anderen
+  | 'ai_content' // AI Credits
+  | 'extra_pages' // +10 Seiten
+  | 'extra_users' // +1 Benutzer
+  | 'i18n' // Mehrsprachigkeit
+  | 'custom_domain'; // Custom Domain
 
 // ==================== FEATURES ====================
-export const PACKAGE_FEATURES: Record<PackageType, PackageFeatures> = {
-  [PackageType.PAGE]: {
-    cms: false,
-    shop: false,
-    newsletter: false,
-    booking: false,
-    formBuilder: false,
-    analytics: true,
-    ai: false,
-    i18n: false,
-    customDomain: false,
-    whiteLabel: false,
-  },
-  [PackageType.LANDING]: {
-    cms: false,
-    shop: false,
-    newsletter: false,
-    booking: false,
-    formBuilder: true,
-    analytics: true,
-    ai: false,
-    i18n: false,
-    customDomain: true,
-    whiteLabel: false,
-  },
-  [PackageType.CREATOR]: {
-    cms: true,
-    shop: false,
-    newsletter: false,
-    booking: false,
-    formBuilder: true,
-    analytics: true,
-    ai: false,
-    i18n: false,
-    customDomain: true,
-    whiteLabel: false,
-  },
-  [PackageType.BUSINESS]: {
-    cms: true,
-    shop: false,
-    newsletter: true,
-    booking: true,
-    formBuilder: true,
-    analytics: true,
-    ai: false,
-    i18n: false,
-    customDomain: true,
-    whiteLabel: false,
-  },
-  [PackageType.SHOP]: {
-    cms: true,
-    shop: true,
-    newsletter: true,
-    booking: false,
-    formBuilder: true,
-    analytics: true,
-    ai: false,
-    i18n: false,
-    customDomain: true,
-    whiteLabel: false,
-  },
-  [PackageType.PROFESSIONAL]: {
-    cms: true,
-    shop: true,
-    newsletter: true,
-    booking: true,
-    formBuilder: true,
-    analytics: true,
-    ai: true,
-    i18n: true,
-    customDomain: true,
-    whiteLabel: false,
-  },
-  [PackageType.ENTERPRISE]: {
-    cms: true,
-    shop: true,
-    newsletter: true,
-    booking: true,
-    formBuilder: true,
-    analytics: true,
-    ai: true,
-    i18n: true,
-    customDomain: true,
-    whiteLabel: true,
-  },
-};
 
-// ==================== LIMITS ====================
-export const PACKAGE_LIMITS: Record<PackageType, PackageLimits> = {
-  [PackageType.PAGE]: {
-    users: 1,
-    posts: 0,
-    pages: 1,
-    products: 0,
-    emailsPerMonth: 0,
-    subscribers: 0,
-    aiCredits: 0,
-    storageMb: 100,
-  },
-  [PackageType.LANDING]: {
-    users: 1,
-    posts: 0,
-    pages: 3,
-    products: 0,
-    emailsPerMonth: 0,
-    subscribers: 0,
-    aiCredits: 0,
-    storageMb: 500,
-  },
-  [PackageType.CREATOR]: {
-    users: 2,
-    posts: 50,
-    pages: 10,
-    products: 0,
-    emailsPerMonth: 0,
-    subscribers: 0,
-    aiCredits: 0,
-    storageMb: 1024,
-  },
-  [PackageType.BUSINESS]: {
-    users: 5,
-    posts: 200,
-    pages: 30,
-    products: 0,
-    emailsPerMonth: 5000,
-    subscribers: 1000,
-    aiCredits: 0,
-    storageMb: 5120,
-  },
-  [PackageType.SHOP]: {
-    users: 10,
-    posts: 500,
-    pages: 50,
-    products: 200,
-    emailsPerMonth: 10000,
-    subscribers: 3000,
-    aiCredits: 0,
-    storageMb: 10240,
-  },
-  [PackageType.PROFESSIONAL]: {
-    users: 25,
-    posts: 1000,
-    pages: 100,
-    products: 1000,
-    emailsPerMonth: 30000,
-    subscribers: 10000,
-    aiCredits: 500,
-    storageMb: 25600,
-  },
-  [PackageType.ENTERPRISE]: {
-    users: -1,
-    posts: -1,
-    pages: -1,
-    products: -1,
-    emailsPerMonth: 100000,
-    subscribers: -1,
-    aiCredits: 2000,
-    storageMb: -1,
-  },
-};
+export interface PackageFeatures {
+  // Website Builder
+  websiteBuilder: boolean;
+  maxPages: number; // -1 = im höchsten Tier sehr hoch
 
-// ==================== PRICES (cents) ====================
-export const PACKAGE_PRICES: Record<PackageType, number> = {
-  [PackageType.PAGE]: 900, // €9
-  [PackageType.LANDING]: 1900, // €19
-  [PackageType.CREATOR]: 2900, // €29
-  [PackageType.BUSINESS]: 4900, // €49
-  [PackageType.SHOP]: 7900, // €79
-  [PackageType.PROFESSIONAL]: 12900, // €129
-  [PackageType.ENTERPRISE]: 24900, // €249
-};
+  // Blog / CMS
+  blog: boolean;
+  maxPosts: number;
+  maxAuthors: number;
+  comments: boolean;
 
-// ==================== ADDON DEFINITIONS ====================
-export interface AddonDefinition {
-  name: string;
-  description: string;
-  price: number; // cents
-  limits: Partial<PackageLimits>;
+  // Shop
+  shop: boolean;
+  maxProducts: number;
+  digitalProducts: boolean;
+  productVariants: boolean;
+
+  // Booking
+  booking: boolean;
+  maxBookingServices: number;
+
+  // Newsletter
+  newsletter: boolean;
+  maxSubscribers: number;
+
+  // Forms
+  forms: boolean;
+  maxForms: number;
+
+  // Members / Courses
+  members: boolean;
+  maxMembers: number;
+  courses: boolean;
+  maxCourses: number;
+  maxDownloads: number;
+
+  // Platform
+  analytics: 'basic' | 'advanced' | 'full';
+  customDomain: boolean;
+  aiContent: boolean;
+  aiCreditsPerMonth: number;
+  i18n: boolean;
+  maxUsers: number;
+  storageMb: number;
+  removeBranding: boolean;
 }
 
-export const ADDON_DEFINITIONS: Record<AddonType, AddonDefinition> = {
-  // Legacy (Backwards-Compat)
-  [AddonType.SHOP_BUSINESS]: {
-    name: 'Shop Business',
-    description: 'Upgrade auf 1.000 Produkte',
-    price: 2900,
-    limits: { products: 1000 },
-  },
-  [AddonType.SHOP_PRO]: {
-    name: 'Shop Pro',
-    description: 'Unbegrenzte Produkte',
-    price: 4900,
-    limits: { products: -1 },
-  },
-  [AddonType.EMAIL_STARTER]: {
-    name: 'Email Starter',
-    description: '10.000 Emails pro Monat',
-    price: 2900,
-    limits: { emailsPerMonth: 10000 },
-  },
-  [AddonType.EMAIL_BUSINESS]: {
-    name: 'Email Business',
-    description: '100.000 Emails pro Monat',
-    price: 5900,
-    limits: { emailsPerMonth: 100000 },
-  },
-  [AddonType.EXTRA_USERS]: {
-    name: 'Extra Benutzer',
-    description: '+1 Team-Account',
-    price: 300,
-    limits: { users: 1 },
-  },
-  // Neue Add-ons
-  [AddonType.SHOP_MODULE]: {
-    name: 'Shop Modul',
+// ==================== PACKAGE DEFINITION ====================
+
+export interface PackageDefinition {
+  type: PackageType;
+  category: 'website' | 'blog' | 'business' | 'shop' | 'members';
+  tier: 1 | 2 | 3;
+  name: string;
+  tagline: string;
+  description: string;
+  priceMonthly: number; // in cents
+  features: PackageFeatures;
+  highlightFeatures: string[]; // für die Pakete-Karte
+}
+
+// ==================== PACKAGE DATA ====================
+
+export const PACKAGES: Record<PackageType, PackageDefinition> = {
+  // ======================== WEBSITE ========================
+  // Nur Builder — für Visitenkarten, Portfolios, kleine Präsenzen
+  // Kein Blog, kein Shop, keine Buchung nötig
+
+  website_micro: {
+    type: 'website_micro',
+    category: 'website',
+    tier: 1,
+    name: 'Micro',
+    tagline: 'Einfach online sein',
     description:
-      'Produkte verkaufen mit Warenkorb und Bestellverwaltung (100 Produkte)',
-    price: 1500,
-    limits: { products: 100 },
+      'Deine digitale Visitenkarte. Schnell, einfach, professionell.',
+    priceMonthly: 900, // €9
+    features: {
+      websiteBuilder: true,
+      maxPages: 3,
+      blog: false,
+      maxPosts: 0,
+      maxAuthors: 0,
+      comments: false,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: false,
+      maxBookingServices: 0,
+      newsletter: false,
+      maxSubscribers: 0,
+      forms: true,
+      maxForms: 1,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'basic',
+      customDomain: false,
+      aiContent: false,
+      aiCreditsPerMonth: 0,
+      i18n: false,
+      maxUsers: 1,
+      storageMb: 500,
+      removeBranding: false,
+    },
+    highlightFeatures: [
+      '3 Seiten (inkl. Impressum & Datenschutz)',
+      'Website Builder (One-Page oder Multi-Page)',
+      '1 Kontaktformular',
+      'Basis-Analytics',
+      'SSL-Zertifikat',
+      'QuickPages Subdomain',
+    ],
   },
-  [AddonType.NEWSLETTER]: {
-    name: 'Newsletter',
-    description: 'E-Mail-Kampagnen an bis zu 500 Abonnenten',
-    price: 900,
-    limits: { subscribers: 500, emailsPerMonth: 2000 },
+
+  website_standard: {
+    type: 'website_standard',
+    category: 'website',
+    tier: 2,
+    name: 'Standard',
+    tagline: 'Professioneller Auftritt',
+    description: 'Mehr Seiten, eigene Domain und erweiterte Features.',
+    priceMonthly: 1900, // €19
+    features: {
+      websiteBuilder: true,
+      maxPages: 10,
+      blog: false,
+      maxPosts: 0,
+      maxAuthors: 0,
+      comments: false,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: false,
+      maxBookingServices: 0,
+      newsletter: false,
+      maxSubscribers: 0,
+      forms: true,
+      maxForms: 3,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'advanced',
+      customDomain: true,
+      aiContent: false,
+      aiCreditsPerMonth: 0,
+      i18n: false,
+      maxUsers: 2,
+      storageMb: 2000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '10 Seiten (inkl. Pflichtseiten)',
+      'Eigene Domain',
+      '3 Kontaktformulare',
+      'Erweiterte Analytics',
+      'Kein QuickPages-Branding',
+      '2 GB Speicher',
+    ],
   },
-  [AddonType.BOOKING]: {
-    name: 'Booking System',
-    description: 'Online-Terminbuchung mit Kalender und Bestätigungen',
-    price: 900,
-    limits: {},
+
+  website_pro: {
+    type: 'website_pro',
+    category: 'website',
+    tier: 3,
+    name: 'Pro',
+    tagline: 'Alles für deine Website',
+    description:
+      'Maximale Flexibilität für deine professionelle Online-Präsenz.',
+    priceMonthly: 2900, // €29
+    features: {
+      websiteBuilder: true,
+      maxPages: 30,
+      blog: false,
+      maxPosts: 0,
+      maxAuthors: 0,
+      comments: false,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: false,
+      maxBookingServices: 0,
+      newsletter: false,
+      maxSubscribers: 0,
+      forms: true,
+      maxForms: 10,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'full',
+      customDomain: true,
+      aiContent: false,
+      aiCreditsPerMonth: 0,
+      i18n: false,
+      maxUsers: 3,
+      storageMb: 10000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '30 Seiten',
+      'Eigene Domain',
+      '10 Formulare',
+      'Volle Analytics',
+      '10 GB Speicher',
+      '3 Team-Mitglieder',
+    ],
   },
-  [AddonType.AI_CONTENT]: {
-    name: 'AI Content',
-    description: '100 KI-Anfragen pro Monat',
-    price: 900,
-    limits: { aiCredits: 100 },
+
+  // ======================== BLOG ========================
+  // Builder + CMS — für Blogger, Creator, Journalisten
+
+  blog_personal: {
+    type: 'blog_personal',
+    category: 'blog',
+    tier: 1,
+    name: 'Personal',
+    tagline: 'Deine Stimme im Web',
+    description: 'Starte deinen Blog. Schreibe, teile, wachse.',
+    priceMonthly: 1900, // €19
+    features: {
+      websiteBuilder: true,
+      maxPages: 10,
+      blog: true,
+      maxPosts: 100,
+      maxAuthors: 1,
+      comments: true,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: false,
+      maxBookingServices: 0,
+      newsletter: false,
+      maxSubscribers: 0,
+      forms: true,
+      maxForms: 2,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'advanced',
+      customDomain: true,
+      aiContent: false,
+      aiCreditsPerMonth: 0,
+      i18n: false,
+      maxUsers: 1,
+      storageMb: 3000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '100 Blog-Beiträge',
+      'Blog-Kommentare',
+      '10 Seiten',
+      'Eigene Domain',
+      'Erweiterte Analytics',
+      '3 GB Speicher',
+    ],
   },
-  [AddonType.FORM_BUILDER]: {
-    name: 'Form Builder',
-    description: 'Beliebige Formulare mit 10 Feldtypen',
-    price: 500,
-    limits: {},
+
+  blog_publisher: {
+    type: 'blog_publisher',
+    category: 'blog',
+    tier: 2,
+    name: 'Publisher',
+    tagline: 'Professionell publizieren',
+    description: 'Mehr Inhalte, Newsletter und Team-Autoren.',
+    priceMonthly: 3900, // €39
+    features: {
+      websiteBuilder: true,
+      maxPages: 20,
+      blog: true,
+      maxPosts: 500,
+      maxAuthors: 3,
+      comments: true,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: false,
+      maxBookingServices: 0,
+      newsletter: true,
+      maxSubscribers: 500,
+      forms: true,
+      maxForms: 5,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'full',
+      customDomain: true,
+      aiContent: false,
+      aiCreditsPerMonth: 0,
+      i18n: false,
+      maxUsers: 3,
+      storageMb: 10000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '500 Blog-Beiträge',
+      '3 Autoren',
+      'Newsletter (500 Abonnenten)',
+      '20 Seiten',
+      'Volle Analytics',
+      '10 GB Speicher',
+    ],
   },
-  [AddonType.I18N]: {
-    name: 'Mehrsprachigkeit',
-    description: 'Website in bis zu 13 Sprachen',
-    price: 500,
-    limits: {},
+
+  blog_magazine: {
+    type: 'blog_magazine',
+    category: 'blog',
+    tier: 3,
+    name: 'Magazine',
+    tagline: 'Dein Online-Magazin',
+    description: 'Für Redaktionen, Magazine und professionelle Publisher.',
+    priceMonthly: 7900, // €79
+    features: {
+      websiteBuilder: true,
+      maxPages: 50,
+      blog: true,
+      maxPosts: 2000,
+      maxAuthors: 10,
+      comments: true,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: false,
+      maxBookingServices: 0,
+      newsletter: true,
+      maxSubscribers: 5000,
+      forms: true,
+      maxForms: 15,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'full',
+      customDomain: true,
+      aiContent: true,
+      aiCreditsPerMonth: 100,
+      i18n: true,
+      maxUsers: 10,
+      storageMb: 50000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '2.000 Blog-Beiträge',
+      '10 Autoren',
+      'Newsletter (5.000 Abonnenten)',
+      'AI Content (100 Credits/Monat)',
+      'Mehrsprachigkeit',
+      '50 GB Speicher',
+    ],
   },
-  [AddonType.EXTRA_PRODUCTS]: {
-    name: 'Mehr Produkte (+100)',
-    description: '+100 zusätzliche Produkte im Shop',
-    price: 500,
-    limits: { products: 100 },
+
+  // ======================== BUSINESS ========================
+  // Builder + Booking + Forms + Newsletter
+  // Für: Friseur, Arzt, Coach, Berater, Handwerker, Restaurant
+
+  business_starter: {
+    type: 'business_starter',
+    category: 'business',
+    tier: 1,
+    name: 'Starter',
+    tagline: 'Dein Business online',
+    description:
+      'Terminbuchung, Kontaktformulare und Newsletter für lokale Unternehmen.',
+    priceMonthly: 2900, // €29
+    features: {
+      websiteBuilder: true,
+      maxPages: 15,
+      blog: false,
+      maxPosts: 0,
+      maxAuthors: 0,
+      comments: false,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: true,
+      maxBookingServices: 3,
+      newsletter: true,
+      maxSubscribers: 500,
+      forms: true,
+      maxForms: 5,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'advanced',
+      customDomain: true,
+      aiContent: false,
+      aiCreditsPerMonth: 0,
+      i18n: false,
+      maxUsers: 3,
+      storageMb: 5000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '15 Seiten',
+      'Online-Terminbuchung (3 Services)',
+      'Newsletter (500 Abonnenten)',
+      '5 Formulare',
+      'Eigene Domain',
+      '5 GB Speicher',
+    ],
   },
-  [AddonType.EXTRA_AI_CREDITS]: {
-    name: 'AI Credits (+200)',
-    description: '+200 zusätzliche KI-Anfragen',
-    price: 700,
-    limits: { aiCredits: 200 },
+
+  business_professional: {
+    type: 'business_professional',
+    category: 'business',
+    tier: 2,
+    name: 'Professional',
+    tagline: 'Mehr Power für dein Business',
+    description: 'Blog, mehr Termine, mehr Abonnenten und AI-Unterstützung.',
+    priceMonthly: 5900, // €59
+    features: {
+      websiteBuilder: true,
+      maxPages: 50,
+      blog: true,
+      maxPosts: 200,
+      maxAuthors: 3,
+      comments: true,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: true,
+      maxBookingServices: 10,
+      newsletter: true,
+      maxSubscribers: 5000,
+      forms: true,
+      maxForms: 20,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'full',
+      customDomain: true,
+      aiContent: true,
+      aiCreditsPerMonth: 100,
+      i18n: false,
+      maxUsers: 5,
+      storageMb: 20000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '50 Seiten',
+      'Terminbuchung (10 Services)',
+      'Blog (200 Beiträge)',
+      'Newsletter (5.000 Abonnenten)',
+      'AI Content (100 Credits/Monat)',
+      '20 GB Speicher',
+    ],
+  },
+
+  business_agency: {
+    type: 'business_agency',
+    category: 'business',
+    tier: 3,
+    name: 'Agency',
+    tagline: 'Für Agenturen und große Teams',
+    description: 'Verwalte mehrere Standorte oder Kunden-Websites.',
+    priceMonthly: 9900, // €99
+    features: {
+      websiteBuilder: true,
+      maxPages: 150,
+      blog: true,
+      maxPosts: 1000,
+      maxAuthors: 10,
+      comments: true,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: true,
+      maxBookingServices: 30,
+      newsletter: true,
+      maxSubscribers: 20000,
+      forms: true,
+      maxForms: 50,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'full',
+      customDomain: true,
+      aiContent: true,
+      aiCreditsPerMonth: 500,
+      i18n: true,
+      maxUsers: 15,
+      storageMb: 100000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '150 Seiten',
+      'Terminbuchung (30 Services)',
+      'Newsletter (20.000 Abonnenten)',
+      'AI Content (500 Credits/Monat)',
+      'Mehrsprachigkeit',
+      '100 GB Speicher',
+    ],
+  },
+
+  // ======================== SHOP ========================
+  // Builder + Shop + Newsletter + Blog
+  // Für: Online-Händler, Handmade, digitale Produkte
+
+  shop_mini: {
+    type: 'shop_mini',
+    category: 'shop',
+    tier: 1,
+    name: 'Mini',
+    tagline: 'Dein erster Online-Shop',
+    description: 'Starte deinen Shop und verkaufe deine ersten Produkte.',
+    priceMonthly: 3900, // €39
+    features: {
+      websiteBuilder: true,
+      maxPages: 20,
+      blog: false,
+      maxPosts: 0,
+      maxAuthors: 0,
+      comments: false,
+      shop: true,
+      maxProducts: 100,
+      digitalProducts: false,
+      productVariants: false,
+      booking: false,
+      maxBookingServices: 0,
+      newsletter: true,
+      maxSubscribers: 500,
+      forms: true,
+      maxForms: 3,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'advanced',
+      customDomain: true,
+      aiContent: false,
+      aiCreditsPerMonth: 0,
+      i18n: false,
+      maxUsers: 2,
+      storageMb: 10000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '100 Produkte',
+      'Stripe-Zahlungen',
+      'Bestellverwaltung',
+      'Newsletter (500 Abonnenten)',
+      '20 Seiten',
+      '10 GB Speicher',
+    ],
+  },
+
+  shop_wachstum: {
+    type: 'shop_wachstum',
+    category: 'shop',
+    tier: 2,
+    name: 'Wachstum',
+    tagline: 'Dein Shop skaliert',
+    description: 'Mehr Produkte, Varianten, digitale Downloads und Blog.',
+    priceMonthly: 6900, // €69
+    features: {
+      websiteBuilder: true,
+      maxPages: 50,
+      blog: true,
+      maxPosts: 100,
+      maxAuthors: 2,
+      comments: false,
+      shop: true,
+      maxProducts: 500,
+      digitalProducts: true,
+      productVariants: true,
+      booking: false,
+      maxBookingServices: 0,
+      newsletter: true,
+      maxSubscribers: 3000,
+      forms: true,
+      maxForms: 10,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'full',
+      customDomain: true,
+      aiContent: false,
+      aiCreditsPerMonth: 0,
+      i18n: false,
+      maxUsers: 5,
+      storageMb: 30000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '500 Produkte',
+      'Produktvarianten & digitale Downloads',
+      'Blog (100 Beiträge)',
+      'Newsletter (3.000 Abonnenten)',
+      '50 Seiten',
+      '30 GB Speicher',
+    ],
+  },
+
+  shop_premium: {
+    type: 'shop_premium',
+    category: 'shop',
+    tier: 3,
+    name: 'Premium',
+    tagline: 'Der professionelle Shop',
+    description: 'Für etablierte Shops mit hohem Volumen und AI-Unterstützung.',
+    priceMonthly: 11900, // €119
+    features: {
+      websiteBuilder: true,
+      maxPages: 100,
+      blog: true,
+      maxPosts: 500,
+      maxAuthors: 5,
+      comments: true,
+      shop: true,
+      maxProducts: 2000,
+      digitalProducts: true,
+      productVariants: true,
+      booking: false,
+      maxBookingServices: 0,
+      newsletter: true,
+      maxSubscribers: 10000,
+      forms: true,
+      maxForms: 20,
+      members: false,
+      maxMembers: 0,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 0,
+      analytics: 'full',
+      customDomain: true,
+      aiContent: true,
+      aiCreditsPerMonth: 200,
+      i18n: true,
+      maxUsers: 10,
+      storageMb: 100000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '2.000 Produkte',
+      'Varianten + digitale Produkte',
+      'Newsletter (10.000 Abonnenten)',
+      'AI Content (200 Credits/Monat)',
+      'Mehrsprachigkeit',
+      '100 GB Speicher',
+    ],
+  },
+
+  // ======================== MEMBERS ========================
+  // Builder + Members + Courses
+  // Für: Online-Kurse, Communities, Premium-Content
+
+  members_community: {
+    type: 'members_community',
+    category: 'members',
+    tier: 1,
+    name: 'Community',
+    tagline: 'Deine geschlossene Gruppe',
+    description:
+      'Baue eine Community mit geschützten Inhalten und Mitgliederbereichen.',
+    priceMonthly: 2900, // €29
+    features: {
+      websiteBuilder: true,
+      maxPages: 20,
+      blog: false,
+      maxPosts: 0,
+      maxAuthors: 0,
+      comments: false,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: false,
+      maxBookingServices: 0,
+      newsletter: false,
+      maxSubscribers: 0,
+      forms: true,
+      maxForms: 3,
+      members: true,
+      maxMembers: 100,
+      courses: false,
+      maxCourses: 0,
+      maxDownloads: 10,
+      analytics: 'advanced',
+      customDomain: true,
+      aiContent: false,
+      aiCreditsPerMonth: 0,
+      i18n: false,
+      maxUsers: 2,
+      storageMb: 5000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '100 Mitglieder',
+      'Geschützter Bereich',
+      '10 Download-Dateien',
+      '20 Seiten',
+      'Eigene Domain',
+      '5 GB Speicher',
+    ],
+  },
+
+  members_kurse: {
+    type: 'members_kurse',
+    category: 'members',
+    tier: 2,
+    name: 'Kurse',
+    tagline: 'Deine Online-Akademie',
+    description:
+      'Erstelle und verkaufe Online-Kurse mit strukturierten Inhalten.',
+    priceMonthly: 5900, // €59
+    features: {
+      websiteBuilder: true,
+      maxPages: 50,
+      blog: true,
+      maxPosts: 50,
+      maxAuthors: 1,
+      comments: false,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: false,
+      maxBookingServices: 0,
+      newsletter: true,
+      maxSubscribers: 500,
+      forms: true,
+      maxForms: 10,
+      members: true,
+      maxMembers: 500,
+      courses: true,
+      maxCourses: 5,
+      maxDownloads: 100,
+      analytics: 'full',
+      customDomain: true,
+      aiContent: false,
+      aiCreditsPerMonth: 0,
+      i18n: false,
+      maxUsers: 3,
+      storageMb: 30000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '500 Mitglieder',
+      '5 Online-Kurse',
+      '100 Download-Dateien',
+      'Newsletter (500 Abonnenten)',
+      '50 Seiten',
+      '30 GB Speicher',
+    ],
+  },
+
+  members_academy: {
+    type: 'members_academy',
+    category: 'members',
+    tier: 3,
+    name: 'Academy',
+    tagline: 'Deine vollständige Lernplattform',
+    description:
+      'Für professionelle Trainer und Bildungsanbieter mit vollem Funktionsumfang.',
+    priceMonthly: 9900, // €99
+    features: {
+      websiteBuilder: true,
+      maxPages: 100,
+      blog: true,
+      maxPosts: 200,
+      maxAuthors: 5,
+      comments: true,
+      shop: false,
+      maxProducts: 0,
+      digitalProducts: false,
+      productVariants: false,
+      booking: true,
+      maxBookingServices: 5,
+      newsletter: true,
+      maxSubscribers: 5000,
+      forms: true,
+      maxForms: 20,
+      members: true,
+      maxMembers: 2000,
+      courses: true,
+      maxCourses: 30,
+      maxDownloads: 500,
+      analytics: 'full',
+      customDomain: true,
+      aiContent: true,
+      aiCreditsPerMonth: 100,
+      i18n: false,
+      maxUsers: 10,
+      storageMb: 100000,
+      removeBranding: true,
+    },
+    highlightFeatures: [
+      '2.000 Mitglieder',
+      '30 Online-Kurse',
+      '500 Download-Dateien',
+      'Terminbuchung (5 Services)',
+      'AI Content (100 Credits/Monat)',
+      '100 GB Speicher',
+    ],
   },
 };
+
+// ==================== ADD-ONS ====================
+
+export interface AddonDefinition {
+  type: AddonType;
+  name: string;
+  description: string;
+  priceMonthly: number; // cents
+  icon: string;
+  // Was wird hinzugefügt
+  adds: Partial<PackageFeatures>;
+  // Ab welchem Paket verfügbar (leer = alle)
+  availableForCategories: Array<
+    'website' | 'blog' | 'business' | 'shop' | 'members' | 'all'
+  >;
+  // Voraussetzungen
+  requires?: AddonType[];
+}
+
+export const ADDONS: Record<AddonType, AddonDefinition> = {
+  shop_module: {
+    type: 'shop_module',
+    name: 'Shop-Modul',
+    description:
+      '100 Produkte, Warenkorb, Stripe-Zahlung und Bestellverwaltung.',
+    priceMonthly: 1900, // €19
+    icon: '🛒',
+    adds: { shop: true, maxProducts: 100 },
+    availableForCategories: ['website', 'blog', 'business', 'members'],
+  },
+  shop_extra: {
+    type: 'shop_extra',
+    name: 'Shop-Erweiterung',
+    description: '+500 Produkte, Varianten und digitale Downloads.',
+    priceMonthly: 1500, // €15
+    icon: '📦',
+    adds: { maxProducts: 500, digitalProducts: true, productVariants: true },
+    availableForCategories: ['all'],
+    requires: ['shop_module'],
+  },
+  booking_module: {
+    type: 'booking_module',
+    name: 'Booking-Modul',
+    description:
+      'Online-Terminbuchung mit bis zu 5 Services, Kalender und Bestätigungs-Emails.',
+    priceMonthly: 1200, // €12
+    icon: '📅',
+    adds: { booking: true, maxBookingServices: 5 },
+    availableForCategories: ['website', 'blog', 'shop', 'members'],
+  },
+  blog_module: {
+    type: 'blog_module',
+    name: 'Blog-Modul',
+    description: '100 Blog-Beiträge mit Kommentaren und Kategorien.',
+    priceMonthly: 900, // €9
+    icon: '✍️',
+    adds: { blog: true, maxPosts: 100, maxAuthors: 1, comments: true },
+    availableForCategories: ['website', 'shop', 'members'],
+  },
+  newsletter_extra: {
+    type: 'newsletter_extra',
+    name: 'Newsletter-Erweiterung',
+    description: '+1.000 Newsletter-Abonnenten.',
+    priceMonthly: 900, // €9
+    icon: '📧',
+    adds: { newsletter: true, maxSubscribers: 1000 },
+    availableForCategories: ['all'],
+  },
+  members_module: {
+    type: 'members_module',
+    name: 'Mitglieder-Modul',
+    description:
+      'Geschützter Bereich für bis zu 100 Mitglieder mit Download-Bereich.',
+    priceMonthly: 1900, // €19
+    icon: '🔐',
+    adds: { members: true, maxMembers: 100, maxDownloads: 10 },
+    availableForCategories: ['website', 'blog', 'business', 'shop'],
+  },
+  ai_content: {
+    type: 'ai_content',
+    name: 'AI Content',
+    description:
+      '200 AI-Credits/Monat für Texte, Verbesserungen und Übersetzungen.',
+    priceMonthly: 1400, // €14
+    icon: '🤖',
+    adds: { aiContent: true, aiCreditsPerMonth: 200 },
+    availableForCategories: ['all'],
+  },
+  extra_pages: {
+    type: 'extra_pages',
+    name: 'Extra Seiten',
+    description: '+10 Seiten für deine Website.',
+    priceMonthly: 500, // €5
+    icon: '📄',
+    adds: { maxPages: 10 },
+    availableForCategories: ['all'],
+  },
+  extra_users: {
+    type: 'extra_users',
+    name: 'Extra Benutzer',
+    description: '+1 Team-Mitglied mit Dashboard-Zugang.',
+    priceMonthly: 400, // €4
+    icon: '👤',
+    adds: { maxUsers: 1 },
+    availableForCategories: ['all'],
+  },
+  i18n: {
+    type: 'i18n',
+    name: 'Mehrsprachigkeit',
+    description: 'Deine Website in bis zu 13 Sprachen übersetzen.',
+    priceMonthly: 900, // €9
+    icon: '🌍',
+    adds: { i18n: true },
+    availableForCategories: ['all'],
+  },
+  custom_domain: {
+    type: 'custom_domain',
+    name: 'Eigene Domain',
+    description: 'Verbinde deine eigene Domain (z.B. meine-firma.de).',
+    priceMonthly: 0, // kostenlos ab Standard
+    icon: '🌐',
+    adds: { customDomain: true },
+    availableForCategories: ['all'],
+  },
+};
+
+// ==================== CATEGORY DISPLAY ====================
+
+export const PACKAGE_CATEGORIES = [
+  {
+    id: 'website' as const,
+    label: 'Website',
+    icon: '🌐',
+    tagline: 'Einfach online sein',
+    description:
+      'Für alle die einen professionellen Auftritt brauchen — ohne Shop, Blog oder Buchungen.',
+    color: 'from-blue-500 to-cyan-500',
+    examples: 'Friseur, Arzt, Handwerker, Fotograf, Visitenkarte',
+    tiers: [
+      'website_micro',
+      'website_standard',
+      'website_pro',
+    ] as PackageType[],
+  },
+  {
+    id: 'blog' as const,
+    label: 'Blog',
+    icon: '✍️',
+    tagline: 'Publizieren & Wachsen',
+    description:
+      'Für Blogger, Creator und Redaktionen die regelmäßig Inhalte veröffentlichen.',
+    color: 'from-green-500 to-teal-500',
+    examples: 'Blogger, Journalist, Creator, Online-Magazin',
+    tiers: [
+      'blog_personal',
+      'blog_publisher',
+      'blog_magazine',
+    ] as PackageType[],
+  },
+  {
+    id: 'business' as const,
+    label: 'Business',
+    icon: '💼',
+    tagline: 'Termine, Kunden, Wachstum',
+    description:
+      'Für lokale Unternehmen und Dienstleister die Termine buchen und Kunden verwalten.',
+    color: 'from-violet-500 to-purple-600',
+    examples: 'Coach, Berater, Restaurant, Physiotherapeut, Agentur',
+    tiers: [
+      'business_starter',
+      'business_professional',
+      'business_agency',
+    ] as PackageType[],
+  },
+  {
+    id: 'shop' as const,
+    label: 'Shop',
+    icon: '🛒',
+    tagline: 'Produkte verkaufen',
+    description:
+      'Für Online-Händler die physische oder digitale Produkte verkaufen wollen.',
+    color: 'from-orange-500 to-red-500',
+    examples: 'Online-Shop, Handmade, digitale Produkte, Dropshipping',
+    tiers: ['shop_mini', 'shop_wachstum', 'shop_premium'] as PackageType[],
+  },
+  {
+    id: 'members' as const,
+    label: 'Mitglieder',
+    icon: '🔐',
+    tagline: 'Community & Kurse',
+    description:
+      'Für alle die exklusive Inhalte, Kurse oder Communities aufbauen wollen.',
+    color: 'from-pink-500 to-rose-600',
+    examples: 'Online-Kurs, Community, Coaching-Programm, Membership-Site',
+    tiers: [
+      'members_community',
+      'members_kurse',
+      'members_academy',
+    ] as PackageType[],
+  },
+];
 
 // ==================== HELPER FUNCTIONS ====================
 
+export function getPackage(type: PackageType): PackageDefinition {
+  return PACKAGES[type];
+}
+
 export function hasFeature(
-  packageType: string,
+  packageType: PackageType,
   feature: keyof PackageFeatures,
 ): boolean {
-  const pkg = packageType as PackageType;
-  return PACKAGE_FEATURES[pkg]?.[feature] ?? false;
+  const pkg = PACKAGES[packageType];
+  if (!pkg) return false;
+  const val = pkg.features[feature];
+  if (typeof val === 'boolean') return val;
+  if (typeof val === 'number') return val > 0;
+  return !!val;
 }
 
-export function getBaseLimit(
-  packageType: string,
-  limit: keyof PackageLimits,
+export function getLimit(
+  packageType: PackageType,
+  limit: keyof PackageFeatures,
 ): number {
-  const pkg = packageType as PackageType;
-  return PACKAGE_LIMITS[pkg]?.[limit] ?? 0;
-}
-
-export function calculateTotalLimits(
-  packageType: string,
-  addons: AddonType[],
-): PackageLimits {
-  const baseLimits = {
-    ...(PACKAGE_LIMITS[packageType as PackageType] ??
-      PACKAGE_LIMITS[PackageType.PAGE]),
-  };
-
-  addons.forEach((addon) => {
-    const addonDef = ADDON_DEFINITIONS[addon];
-    if (!addonDef) return;
-    const addonLimits = addonDef.limits;
-    Object.entries(addonLimits).forEach(([key, value]) => {
-      const limitKey = key as keyof PackageLimits;
-      if (value === -1) {
-        baseLimits[limitKey] = -1;
-      } else if (baseLimits[limitKey] !== -1) {
-        baseLimits[limitKey] += value as number;
-      }
-    });
-  });
-
-  return baseLimits;
-}
-
-export function isWithinLimit(
-  packageType: string,
-  limitKey: keyof PackageLimits,
-  current: number,
-): boolean {
-  const limit = getBaseLimit(packageType, limitKey);
-  if (limit === -1) return true;
-  return current < limit;
-}
-
-export function getPackageIndex(packageType: string): number {
-  return PACKAGE_ORDER.indexOf(packageType as PackageType);
-}
-
-export function canChangeTo(
-  currentPackage: string,
-  targetPackage: string,
-): boolean {
-  return currentPackage !== targetPackage;
+  const pkg = PACKAGES[packageType];
+  if (!pkg) return 0;
+  const val = pkg.features[limit];
+  return typeof val === 'number' ? val : 0;
 }
 
 export function formatPrice(cents: number): string {
-  return `€${(cents / 100).toFixed(2)}`;
+  return `€${(cents / 100).toFixed(0)}`;
 }
+
+export function formatLimit(
+  val: number,
+  singular: string,
+  plural?: string,
+): string {
+  if (val <= 0) return '—';
+  const label = plural && val !== 1 ? plural : singular;
+  return `${val.toLocaleString('de-DE')} ${label}`;
+}
+
+export function getCategoryPackages(category: string): PackageDefinition[] {
+  return Object.values(PACKAGES).filter((p) => p.category === category);
+}
+
+// Immer inklusive — in jeder Paket-Karte anzeigen
+export const ALWAYS_INCLUDED = [
+  '✅ Impressum, Datenschutz & AGB inklusive',
+  '✅ SSL-Zertifikat',
+  '✅ Dashboard mit allen aktiven Modulen',
+  '✅ Website Builder (One-Page oder Multi-Page)',
+  '✅ DSGVO-konform, Made in Germany',
+  '✅ Subdomain (deinname.quickpages.de)',
+];
