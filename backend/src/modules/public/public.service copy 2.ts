@@ -80,7 +80,9 @@ export class PublicService {
     };
   }
 
-  async getTenantBranding(tenantSlug: string): Promise<Record<string, unknown>> {
+  async getTenantBranding(
+    tenantSlug: string,
+  ): Promise<Record<string, unknown>> {
     const [tenant] = await this.db
       .select({ package: tenants.package, branding: tenants.branding })
       .from(tenants)
@@ -144,12 +146,7 @@ export class PublicService {
     const [seo] = await this.db
       .select()
       .from(seoMeta)
-      .where(
-        and(
-          eq(seoMeta.entityType, 'page'),
-          eq(seoMeta.entityId, page.id),
-        ),
-      )
+      .where(and(eq(seoMeta.entityType, 'page'), eq(seoMeta.entityId, page.id)))
       .limit(1);
 
     return { ...page, seo: seo ?? null };
@@ -280,12 +277,7 @@ export class PublicService {
     const [seo] = await this.db
       .select()
       .from(seoMeta)
-      .where(
-        and(
-          eq(seoMeta.entityType, 'post'),
-          eq(seoMeta.entityId, post.id),
-        ),
-      )
+      .where(and(eq(seoMeta.entityType, 'post'), eq(seoMeta.entityId, post.id)))
       .limit(1);
 
     return { ...post, seo: seo ?? null };
@@ -299,9 +291,7 @@ export class PublicService {
     return this.db
       .select()
       .from(products)
-      .where(
-        and(eq(products.tenantId, tenantId), eq(products.isActive, true)),
-      )
+      .where(and(eq(products.tenantId, tenantId), eq(products.isActive, true)))
       .orderBy(desc(products.createdAt));
   }
 
@@ -345,10 +335,7 @@ export class PublicService {
       .select()
       .from(categories)
       .where(
-        and(
-          eq(categories.tenantId, tenantId),
-          eq(categories.isActive, true),
-        ),
+        and(eq(categories.tenantId, tenantId), eq(categories.isActive, true)),
       );
   }
 

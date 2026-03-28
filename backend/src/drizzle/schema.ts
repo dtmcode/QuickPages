@@ -937,7 +937,7 @@ export const tenantsRelations = relations(tenants, ({ many, one }) => ({
   auditLogs: many(auditLogs),
   supportTickets: many(supportTickets),
   customers: many(tenantCustomers),
- paymentSettings: one(tenantPaymentSettings),
+  paymentSettings: one(tenantPaymentSettings),
 }));
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -1223,7 +1223,7 @@ export const supportMessagesRelations = relations(
   }),
 );
 // ==================== TENANT CUSTOMERS (Public Member Area) ====================
- 
+
 export const tenantCustomers = pgTable(
   'tenant_customers',
   {
@@ -1249,9 +1249,9 @@ export const tenantCustomers = pgTable(
     tenantIdx: index('tenant_customers_tenant_idx').on(table.tenantId),
   }),
 );
- 
+
 // ==================== TENANT PAYMENT SETTINGS ====================
- 
+
 export const tenantPaymentSettings = pgTable('tenant_payment_settings', {
   id: uuid('id').defaultRandom().primaryKey(),
   tenantId: uuid('tenant_id')

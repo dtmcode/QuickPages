@@ -64,23 +64,34 @@ export class PlatformPaymentsResolver {
   @UseGuards(GqlAuthGuard)
   async changePackage(
     @Args('targetPackage') targetPackage: string,
-    @Args('successUrl', { nullable: true, defaultValue: '' }) successUrl: string,
+    @Args('successUrl', { nullable: true, defaultValue: '' })
+    successUrl: string,
     @Args('cancelUrl', { nullable: true, defaultValue: '' }) cancelUrl: string,
     @TenantId() tenantId: string,
     @CurrentUser() user: JwtPayload,
   ): Promise<CheckoutSessionResult> {
-    if (user.role !== 'owner') throw new Error('Nur der Owner kann das Paket ändern');
+    if (user.role !== 'owner')
+      throw new Error('Nur der Owner kann das Paket ändern');
 
     // User Email holen
-    const [dbUser] = await this.db.select().from(users).where(eq(users.id, user.sub)).limit(1);
+    const [dbUser] = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.id, user.userId))
+      .limit(1);
+
     const email = dbUser?.email || '';
 
     const result = await this.platformPaymentsService.createPackageCheckout({
       tenantId,
       targetPackage,
       userEmail: email,
-      successUrl: successUrl || `${process.env.FRONTEND_URL || 'http://localhost:3001'}/dashboard/packages?success=true&package=${targetPackage}`,
-      cancelUrl: cancelUrl || `${process.env.FRONTEND_URL || 'http://localhost:3001'}/dashboard/packages?cancelled=true`,
+      successUrl:
+        successUrl ||
+        `${process.env.FRONTEND_URL || 'http://localhost:3001'}/dashboard/packages?success=true&package=${targetPackage}`,
+      cancelUrl:
+        cancelUrl ||
+        `${process.env.FRONTEND_URL || 'http://localhost:3001'}/dashboard/packages?cancelled=true`,
     });
 
     return result;
@@ -92,20 +103,28 @@ export class PlatformPaymentsResolver {
   @UseGuards(GqlAuthGuard)
   async createAddonCheckout(
     @Args('addonType') addonType: string,
-    @Args('successUrl', { nullable: true, defaultValue: '' }) successUrl: string,
+    @Args('successUrl', { nullable: true, defaultValue: '' })
+    successUrl: string,
     @Args('cancelUrl', { nullable: true, defaultValue: '' }) cancelUrl: string,
     @TenantId() tenantId: string,
     @CurrentUser() user: JwtPayload,
   ): Promise<CheckoutSessionResult> {
-    if (user.role !== 'owner') throw new Error('Nur der Owner kann Add-ons kaufen');
+    if (user.role !== 'owner')
+      throw new Error('Nur der Owner kann Add-ons kaufen');
 
-    const [dbUser] = await this.db.select().from(users).where(eq(users.id, user.sub)).limit(1);
+    const [dbUser] = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.id, user.sub))
+      .limit(1);
 
     const result = await this.platformPaymentsService.createAddonCheckout({
       tenantId,
       addonType,
       userEmail: dbUser?.email || '',
-      successUrl: successUrl || `${process.env.FRONTEND_URL}/dashboard/packages?addon_success=true&addon=${addonType}`,
+      successUrl:
+        successUrl ||
+        `${process.env.FRONTEND_URL}/dashboard/packages?addon_success=true&addon=${addonType}`,
       cancelUrl: cancelUrl || `${process.env.FRONTEND_URL}/dashboard/packages`,
     });
 
@@ -121,8 +140,12 @@ export class PlatformPaymentsResolver {
     @TenantId() tenantId: string,
     @CurrentUser() user: JwtPayload,
   ): Promise<string> {
-    if (user.role !== 'owner') throw new Error('Nur der Owner kann das Billing Portal öffnen');
-    return this.platformPaymentsService.createBillingPortalSession(tenantId, returnUrl);
+    if (user.role !== 'owner')
+      throw new Error('Nur der Owner kann das Billing Portal öffnen');
+    return this.platformPaymentsService.createBillingPortalSession(
+      tenantId,
+      returnUrl,
+    );
   }
 
   // ===== ABO KÜNDIGEN =====
@@ -146,7 +169,8 @@ export class PlatformPaymentsResolver {
     @TenantId() tenantId: string,
     @CurrentUser() user: JwtPayload,
   ): Promise<boolean> {
-    if (user.role !== 'owner') throw new Error('Nur der Owner kann reaktivieren');
+    if (user.role !== 'owner')
+      throw new Error('Nur der Owner kann reaktivieren');
     await this.platformPaymentsService.reactivate(tenantId);
     return true;
   }
@@ -160,7 +184,8 @@ export class PlatformPaymentsResolver {
     @TenantId() tenantId: string,
     @CurrentUser() user: JwtPayload,
   ): Promise<boolean> {
-    if (user.role !== 'owner') throw new Error('Nur der Owner kann Add-ons aktivieren');
+    if (user.role !== 'owner')
+      throw new Error('Nur der Owner kann Add-ons aktivieren');
     await this.platformPaymentsService.directActivateAddon(tenantId, addonType);
     return true;
   }
@@ -172,8 +197,12 @@ export class PlatformPaymentsResolver {
     @TenantId() tenantId: string,
     @CurrentUser() user: JwtPayload,
   ): Promise<boolean> {
-    if (user.role !== 'owner') throw new Error('Nur der Owner kann Add-ons deaktivieren');
-    await this.platformPaymentsService.directDeactivateAddon(tenantId, addonType);
+    if (user.role !== 'owner')
+      throw new Error('Nur der Owner kann Add-ons deaktivieren');
+    await this.platformPaymentsService.directDeactivateAddon(
+      tenantId,
+      addonType,
+    );
     return true;
   }
 }

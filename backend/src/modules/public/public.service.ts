@@ -80,7 +80,9 @@ export class PublicService {
     };
   }
 
-  async getTenantBranding(tenantSlug: string): Promise<Record<string, unknown>> {
+  async getTenantBranding(
+    tenantSlug: string,
+  ): Promise<Record<string, unknown>> {
     const [tenant] = await this.db
       .select({ package: tenants.package, branding: tenants.branding })
       .from(tenants)
@@ -144,12 +146,7 @@ export class PublicService {
     const [seo] = await this.db
       .select()
       .from(seoMeta)
-      .where(
-        and(
-          eq(seoMeta.entityType, 'page'),
-          eq(seoMeta.entityId, page.id),
-        ),
-      )
+      .where(and(eq(seoMeta.entityType, 'page'), eq(seoMeta.entityId, page.id)))
       .limit(1);
 
     return { ...page, seo: seo ?? null };
@@ -157,113 +154,110 @@ export class PublicService {
 
   // ==================== WEBSITE BUILDER ====================
 
-// ==================== WEBSITE BUILDER (2-STEP FIX) ====================
+  // ==================== WEBSITE BUILDER (2-STEP FIX) ====================
 
-async getPublishedWbPages(tenantSlug: string, templateId: string) {
-  const tenantId = await this.getTenantId(tenantSlug);
+  async getPublishedWbPages(tenantSlug: string, templateId: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
 
-  // Step 1: Pages holen
-  const pagesResult = await this.db
-    .select()
-    .from(wbPages)
-    .where(
-      and(
-        eq(wbPages.tenantId, tenantId),
-        eq(wbPages.templateId, templateId),
-        eq(wbPages.isActive, true),
-      ),
-    )
-    .orderBy(asc(wbPages.order));
+    // Step 1: Pages holen
+    const pagesResult = await this.db
+      .select()
+      .from(wbPages)
+      .where(
+        and(
+          eq(wbPages.tenantId, tenantId),
+          eq(wbPages.templateId, templateId),
+          eq(wbPages.isActive, true),
+        ),
+      )
+      .orderBy(asc(wbPages.order));
 
-  // Step 2: Sections für jede Page laden
-  const pagesWithSections = await Promise.all(
-    pagesResult.map(async (page) => {
-      const sections = await this.db
-        .select()
-        .from(wbSections)
-        .where(
-          and(
-            eq(wbSections.pageId, page.id),
-            eq(wbSections.isActive, true),
-          ),
-        )
-        .orderBy(asc(wbSections.order));
-      return { ...page, sections };
-    }),
-  );
+    // Step 2: Sections für jede Page laden
+    const pagesWithSections = await Promise.all(
+      pagesResult.map(async (page) => {
+        const sections = await this.db
+          .select()
+          .from(wbSections)
+          .where(
+            and(eq(wbSections.pageId, page.id), eq(wbSections.isActive, true)),
+          )
+          .orderBy(asc(wbSections.order));
+        return { ...page, sections };
+      }),
+    );
 
-  return pagesWithSections;
-}
+    return pagesWithSections;
+  }
 
-async getWbPageBySlug(tenantSlug: string, templateId: string, pageSlug: string) {
-  const tenantId = await this.getTenantId(tenantSlug);
+  async getWbPageBySlug(
+    tenantSlug: string,
+    templateId: string,
+    pageSlug: string,
+  ) {
+    const tenantId = await this.getTenantId(tenantSlug);
 
-  // Step 1: Page holen
-  const [wbPage] = await this.db
-    .select()
-    .from(wbPages)
-    .where(
-      and(
-        eq(wbPages.tenantId, tenantId),
-        eq(wbPages.templateId, templateId),
-        eq(wbPages.slug, pageSlug),
-        eq(wbPages.isActive, true),
-      ),
-    )
-    .limit(1);
+    // Step 1: Page holen
+    const [wbPage] = await this.db
+      .select()
+      .from(wbPages)
+      .where(
+        and(
+          eq(wbPages.tenantId, tenantId),
+          eq(wbPages.templateId, templateId),
+          eq(wbPages.slug, pageSlug),
+          eq(wbPages.isActive, true),
+        ),
+      )
+      .limit(1);
 
-  if (!wbPage) throw new NotFoundException('Website Builder Page not found');
+    if (!wbPage) throw new NotFoundException('Website Builder Page not found');
 
-  // Step 2: Sections separat laden
-  const sections = await this.db
-    .select()
-    .from(wbSections)
-    .where(
-      and(
-        eq(wbSections.pageId, wbPage.id),
-        eq(wbSections.isActive, true),
-      ),
-    )
-    .orderBy(asc(wbSections.order));
+    // Step 2: Sections separat laden
+    const sections = await this.db
+      .select()
+      .from(wbSections)
+      .where(
+        and(eq(wbSections.pageId, wbPage.id), eq(wbSections.isActive, true)),
+      )
+      .orderBy(asc(wbSections.order));
 
-  return { ...wbPage, sections };
-}
+    return { ...wbPage, sections };
+  }
 
-async getWbHomepage(tenantSlug: string, templateId: string) {
-  const tenantId = await this.getTenantId(tenantSlug);
+  async getWbHomepage(tenantSlug: string, templateId: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
 
-  // Step 1: Page holen
-  const [homepage] = await this.db
-    .select()
-    .from(wbPages)
-    .where(
-      and(
-        eq(wbPages.tenantId, tenantId),
-        eq(wbPages.templateId, templateId),
-        eq(wbPages.isHomepage, true),
-        eq(wbPages.isActive, true),
-      ),
-    )
-    .limit(1);
+    // Step 1: Page holen
+    const [homepage] = await this.db
+      .select()
+      .from(wbPages)
+      .where(
+        and(
+          eq(wbPages.tenantId, tenantId),
+          eq(wbPages.templateId, templateId),
+          eq(wbPages.isHomepage, true),
+          eq(wbPages.isActive, true),
+        ),
+      )
+      .limit(1);
 
-  if (!homepage) return null;
+    if (!homepage) return null;
 
-  // Step 2: Sections separat laden
-  const sections = await this.db
-    .select()
-    .from(wbSections)
-    .where(
-      and(
-        eq(wbSections.pageId, homepage.id),
-        eq(wbSections.isActive, true),
-      ),
-    )
-    .orderBy(asc(wbSections.order));
+    // Step 2: Sections separat laden
+    const sections = await this.db
+      .select()
+      .from(wbSections)
+      .where(
+        and(eq(wbSections.pageId, homepage.id), eq(wbSections.isActive, true)),
+      )
+      .orderBy(asc(wbSections.order));
 
-  console.log(`🏠 Homepage "${homepage.name}": ${sections.length} sections loaded`);
+    console.log(
+      `🏠 Homepage "${homepage.name}": ${sections.length} sections loaded`,
+    );
 
-  return { ...homepage, sections };
-}
+    return { ...homepage, sections };
+  }
 
   async getDefaultTemplateId(tenantSlug: string): Promise<string | null> {
     const tenantId = await this.getTenantId(tenantSlug);
@@ -321,12 +315,7 @@ async getWbHomepage(tenantSlug: string, templateId: string) {
     const [seo] = await this.db
       .select()
       .from(seoMeta)
-      .where(
-        and(
-          eq(seoMeta.entityType, 'post'),
-          eq(seoMeta.entityId, post.id),
-        ),
-      )
+      .where(and(eq(seoMeta.entityType, 'post'), eq(seoMeta.entityId, post.id)))
       .limit(1);
 
     return { ...post, seo: seo ?? null };
@@ -340,9 +329,7 @@ async getWbHomepage(tenantSlug: string, templateId: string) {
     return this.db
       .select()
       .from(products)
-      .where(
-        and(eq(products.tenantId, tenantId), eq(products.isActive, true)),
-      )
+      .where(and(eq(products.tenantId, tenantId), eq(products.isActive, true)))
       .orderBy(desc(products.createdAt));
   }
 
@@ -386,10 +373,7 @@ async getWbHomepage(tenantSlug: string, templateId: string) {
       .select()
       .from(categories)
       .where(
-        and(
-          eq(categories.tenantId, tenantId),
-          eq(categories.isActive, true),
-        ),
+        and(eq(categories.tenantId, tenantId), eq(categories.isActive, true)),
       );
   }
 

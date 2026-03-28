@@ -6,7 +6,12 @@ import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { DRIZZLE } from '../../../core/database/drizzle.module';
 import type { DrizzleDB } from '../../../core/database/drizzle.module';
-import { tenants, subscriptions, tenantAddons, users } from '../../../drizzle/schema';
+import {
+  tenants,
+  subscriptions,
+  tenantAddons,
+  users,
+} from '../../../drizzle/schema';
 import { eq, and } from 'drizzle-orm';
 
 // ==================== CONSTANTS ====================
@@ -16,33 +21,33 @@ const BYPASS_SLUGS = ['myquickpages', 'platform-admin', 'demo-quickpages'];
 
 // Mapping: package_key → env variable mit Stripe Price ID
 const PACKAGE_PRICE_ENV: Record<string, string> = {
-  website_micro:         'STRIPE_PRICE_WEBSITE_MICRO',
-  website_standard:      'STRIPE_PRICE_WEBSITE_STANDARD',
-  website_pro:           'STRIPE_PRICE_WEBSITE_PRO',
-  blog_personal:         'STRIPE_PRICE_BLOG_PERSONAL',
-  blog_publisher:        'STRIPE_PRICE_BLOG_PUBLISHER',
-  blog_magazine:         'STRIPE_PRICE_BLOG_MAGAZINE',
-  business_starter:      'STRIPE_PRICE_BUSINESS_STARTER',
+  website_micro: 'STRIPE_PRICE_WEBSITE_MICRO',
+  website_standard: 'STRIPE_PRICE_WEBSITE_STANDARD',
+  website_pro: 'STRIPE_PRICE_WEBSITE_PRO',
+  blog_personal: 'STRIPE_PRICE_BLOG_PERSONAL',
+  blog_publisher: 'STRIPE_PRICE_BLOG_PUBLISHER',
+  blog_magazine: 'STRIPE_PRICE_BLOG_MAGAZINE',
+  business_starter: 'STRIPE_PRICE_BUSINESS_STARTER',
   business_professional: 'STRIPE_PRICE_BUSINESS_PROFESSIONAL',
-  business_agency:       'STRIPE_PRICE_BUSINESS_AGENCY',
-  shop_mini:             'STRIPE_PRICE_SHOP_MINI',
-  shop_wachstum:         'STRIPE_PRICE_SHOP_WACHSTUM',
-  shop_premium:          'STRIPE_PRICE_SHOP_PREMIUM',
-  members_community:     'STRIPE_PRICE_MEMBERS_COMMUNITY',
-  members_kurse:         'STRIPE_PRICE_MEMBERS_KURSE',
-  members_academy:       'STRIPE_PRICE_MEMBERS_ACADEMY',
+  business_agency: 'STRIPE_PRICE_BUSINESS_AGENCY',
+  shop_mini: 'STRIPE_PRICE_SHOP_MINI',
+  shop_wachstum: 'STRIPE_PRICE_SHOP_WACHSTUM',
+  shop_premium: 'STRIPE_PRICE_SHOP_PREMIUM',
+  members_community: 'STRIPE_PRICE_MEMBERS_COMMUNITY',
+  members_kurse: 'STRIPE_PRICE_MEMBERS_KURSE',
+  members_academy: 'STRIPE_PRICE_MEMBERS_ACADEMY',
 };
 
 const ADDON_PRICE_ENV: Record<string, string> = {
-  shop_module:      'STRIPE_PRICE_ADDON_SHOP_MODULE',
-  booking_module:   'STRIPE_PRICE_ADDON_BOOKING_MODULE',
-  blog_module:      'STRIPE_PRICE_ADDON_BLOG_MODULE',
-  members_module:   'STRIPE_PRICE_ADDON_MEMBERS_MODULE',
+  shop_module: 'STRIPE_PRICE_ADDON_SHOP_MODULE',
+  booking_module: 'STRIPE_PRICE_ADDON_BOOKING_MODULE',
+  blog_module: 'STRIPE_PRICE_ADDON_BLOG_MODULE',
+  members_module: 'STRIPE_PRICE_ADDON_MEMBERS_MODULE',
   newsletter_extra: 'STRIPE_PRICE_ADDON_NEWSLETTER_EXTRA',
-  ai_content:       'STRIPE_PRICE_ADDON_AI_CONTENT',
-  extra_pages:      'STRIPE_PRICE_ADDON_EXTRA_PAGES',
-  extra_users:      'STRIPE_PRICE_ADDON_EXTRA_USERS',
-  i18n:             'STRIPE_PRICE_ADDON_I18N',
+  ai_content: 'STRIPE_PRICE_ADDON_AI_CONTENT',
+  extra_pages: 'STRIPE_PRICE_ADDON_EXTRA_PAGES',
+  extra_users: 'STRIPE_PRICE_ADDON_EXTRA_USERS',
+  i18n: 'STRIPE_PRICE_ADDON_I18N',
 };
 
 // ==================== INTERFACES ====================
@@ -82,12 +87,19 @@ export class PlatformPaymentsService {
     if (!tenant) return false;
     if (BYPASS_SLUGS.includes(tenant.slug)) return true;
     const s = tenant.settings as Record<string, unknown> | null;
-    return s?.isSuperAdmin === true || s?.platformAdmin === true || s?.isDemo === true;
+    return (
+      s?.isSuperAdmin === true ||
+      s?.platformAdmin === true ||
+      s?.isDemo === true
+    );
   }
 
   // ==================== STRIPE CUSTOMER ====================
 
-  private async getOrCreateCustomer(tenant: any, userEmail: string): Promise<string> {
+  private async getOrCreateCustomer(
+    tenant: any,
+    userEmail: string,
+  ): Promise<string> {
     const settings = (tenant.settings as any) || {};
 
     if (settings.stripeCustomerId) {
@@ -100,10 +112,13 @@ export class PlatformPaymentsService {
     });
 
     // Customer ID im tenant.settings speichern
-    await this.db.update(tenants).set({
-      settings: { ...settings, stripeCustomerId: customer.id },
-      updatedAt: new Date(),
-    }).where(eq(tenants.id, tenant.id));
+    await this.db
+      .update(tenants)
+      .set({
+        settings: { ...settings, stripeCustomerId: customer.id },
+        updatedAt: new Date(),
+      })
+      .where(eq(tenants.id, tenant.id));
 
     return customer.id;
   }
@@ -117,9 +132,14 @@ export class PlatformPaymentsService {
     successUrl: string;
     cancelUrl: string;
   }): Promise<CheckoutResult> {
-    const { tenantId, targetPackage, userEmail, successUrl, cancelUrl } = params;
+    const { tenantId, targetPackage, userEmail, successUrl, cancelUrl } =
+      params;
 
-    const [tenant] = await this.db.select().from(tenants).where(eq(tenants.id, tenantId)).limit(1);
+    const [tenant] = await this.db
+      .select()
+      .from(tenants)
+      .where(eq(tenants.id, tenantId))
+      .limit(1);
     if (!tenant) throw new Error('Tenant nicht gefunden');
 
     // Bypass für Super-Admin / Demo → direkt wechseln
@@ -130,7 +150,9 @@ export class PlatformPaymentsService {
 
     // Stripe konfiguriert?
     if (!this.isStripeConfigured()) {
-      throw new Error('Stripe ist noch nicht konfiguriert. Bitte STRIPE_SECRET_KEY in .env setzen.');
+      throw new Error(
+        'Stripe ist noch nicht konfiguriert. Bitte STRIPE_SECRET_KEY in .env setzen.',
+      );
     }
 
     // Price ID aus .env
@@ -138,7 +160,10 @@ export class PlatformPaymentsService {
     if (!priceEnvKey) throw new Error(`Unbekanntes Paket: ${targetPackage}`);
 
     const priceId = this.config.get<string>(priceEnvKey);
-    if (!priceId) throw new Error(`Stripe Price für "${targetPackage}" fehlt. Bitte ${priceEnvKey} in .env eintragen.`);
+    if (!priceId)
+      throw new Error(
+        `Stripe Price für "${targetPackage}" fehlt. Bitte ${priceEnvKey} in .env eintragen.`,
+      );
 
     const customerId = await this.getOrCreateCustomer(tenant, userEmail);
 
@@ -177,7 +202,11 @@ export class PlatformPaymentsService {
   }): Promise<CheckoutResult> {
     const { tenantId, addonType, userEmail, successUrl, cancelUrl } = params;
 
-    const [tenant] = await this.db.select().from(tenants).where(eq(tenants.id, tenantId)).limit(1);
+    const [tenant] = await this.db
+      .select()
+      .from(tenants)
+      .where(eq(tenants.id, tenantId))
+      .limit(1);
     if (!tenant) throw new Error('Tenant nicht gefunden');
 
     // Bypass
@@ -194,7 +223,10 @@ export class PlatformPaymentsService {
     if (!priceEnvKey) throw new Error(`Unbekanntes Add-on: ${addonType}`);
 
     const priceId = this.config.get<string>(priceEnvKey);
-    if (!priceId) throw new Error(`Stripe Price für Add-on "${addonType}" fehlt. Bitte ${priceEnvKey} in .env eintragen.`);
+    if (!priceId)
+      throw new Error(
+        `Stripe Price für Add-on "${addonType}" fehlt. Bitte ${priceEnvKey} in .env eintragen.`,
+      );
 
     const customerId = await this.getOrCreateCustomer(tenant, userEmail);
 
@@ -215,13 +247,22 @@ export class PlatformPaymentsService {
 
   // ==================== BILLING PORTAL ====================
 
-  async createBillingPortalSession(tenantId: string, returnUrl: string): Promise<string> {
-    const [tenant] = await this.db.select().from(tenants).where(eq(tenants.id, tenantId)).limit(1);
+  async createBillingPortalSession(
+    tenantId: string,
+    returnUrl: string,
+  ): Promise<string> {
+    const [tenant] = await this.db
+      .select()
+      .from(tenants)
+      .where(eq(tenants.id, tenantId))
+      .limit(1);
     if (!tenant) throw new Error('Tenant nicht gefunden');
 
     const customerId = (tenant.settings as any)?.stripeCustomerId;
     if (!customerId) {
-      throw new Error('Noch kein Stripe-Kunde. Bitte zuerst ein Paket abonnieren.');
+      throw new Error(
+        'Noch kein Stripe-Kunde. Bitte zuerst ein Paket abonnieren.',
+      );
     }
 
     const session = await this.stripe.billingPortal.sessions.create({
@@ -248,18 +289,30 @@ export class PlatformPaymentsService {
     console.log(`📨 Stripe Webhook: ${event.type}`);
 
     switch (event.type) {
-
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        const { tenantId, targetPackage, addonType, type } = session.metadata || {};
+        const { tenantId, targetPackage, addonType, type } =
+          session.metadata || {};
         if (!tenantId) break;
 
         if (type === 'addon' && addonType) {
-          await this.directActivateAddon(tenantId, addonType, session.subscription as string);
-          console.log(`✅ Add-on aktiviert: ${addonType} für Tenant ${tenantId}`);
+          await this.directActivateAddon(
+            tenantId,
+            addonType,
+            session.subscription as string,
+          );
+          console.log(
+            `✅ Add-on aktiviert: ${addonType} für Tenant ${tenantId}`,
+          );
         } else if (targetPackage) {
-          await this.directChangePackage(tenantId, targetPackage, session.subscription as string);
-          console.log(`✅ Paket gewechselt: ${targetPackage} für Tenant ${tenantId}`);
+          await this.directChangePackage(
+            tenantId,
+            targetPackage,
+            session.subscription as string,
+          );
+          console.log(
+            `✅ Paket gewechselt: ${targetPackage} für Tenant ${tenantId}`,
+          );
         }
         break;
       }
@@ -269,13 +322,16 @@ export class PlatformPaymentsService {
         const { tenantId } = sub.metadata || {};
         if (!tenantId) break;
 
-        await this.db.update(subscriptions).set({
-          status: this.mapStatus(sub.status),
-          currentPeriodStart: new Date(sub.current_period_start * 1000),
-          currentPeriodEnd: new Date(sub.current_period_end * 1000),
-          cancelAtPeriodEnd: sub.cancel_at_period_end,
-          updatedAt: new Date(),
-        }).where(eq(subscriptions.stripeSubscriptionId, sub.id));
+        await this.db
+          .update(subscriptions)
+          .set({
+            status: this.mapStatus(sub.status),
+            currentPeriodStart: new Date(sub.current_period_start * 1000),
+            currentPeriodEnd: new Date(sub.current_period_end * 1000),
+            cancelAtPeriodEnd: sub.cancel_at_period_end,
+            updatedAt: new Date(),
+          })
+          .where(eq(subscriptions.stripeSubscriptionId, sub.id));
 
         console.log(`🔄 Subscription aktualisiert: Tenant ${tenantId}`);
         break;
@@ -285,14 +341,19 @@ export class PlatformPaymentsService {
         const invoice = event.data.object as Stripe.Invoice;
         if (!invoice.subscription) break;
 
-        const sub = await this.stripe.subscriptions.retrieve(invoice.subscription as string);
+        const sub = await this.stripe.subscriptions.retrieve(
+          invoice.subscription as string,
+        );
         const { tenantId } = sub.metadata || {};
         if (!tenantId) break;
 
-        await this.db.update(subscriptions).set({
-          status: 'past_due',
-          updatedAt: new Date(),
-        }).where(eq(subscriptions.stripeSubscriptionId, sub.id));
+        await this.db
+          .update(subscriptions)
+          .set({
+            status: 'past_due',
+            updatedAt: new Date(),
+          })
+          .where(eq(subscriptions.stripeSubscriptionId, sub.id));
 
         console.log(`⚠️  Zahlung fehlgeschlagen: Tenant ${tenantId}`);
         // TODO: Email an Owner senden
@@ -304,16 +365,22 @@ export class PlatformPaymentsService {
         const { tenantId } = sub.metadata || {};
         if (!tenantId) break;
 
-        await this.db.update(subscriptions).set({
-          status: 'cancelled',
-          updatedAt: new Date(),
-        }).where(eq(subscriptions.stripeSubscriptionId, sub.id));
+        await this.db
+          .update(subscriptions)
+          .set({
+            status: 'cancelled',
+            updatedAt: new Date(),
+          })
+          .where(eq(subscriptions.stripeSubscriptionId, sub.id));
 
         // Auf kleinstes Paket zurücksetzen
-        await this.db.update(tenants).set({
-          package: 'website_micro' as any,
-          updatedAt: new Date(),
-        }).where(eq(tenants.id, tenantId));
+        await this.db
+          .update(tenants)
+          .set({
+            package: 'website_micro' as any,
+            updatedAt: new Date(),
+          })
+          .where(eq(tenants.id, tenantId));
 
         console.log(`❌ Abo gekündigt: Tenant ${tenantId} → website_micro`);
         break;
@@ -332,14 +399,20 @@ export class PlatformPaymentsService {
     stripeSubscriptionId?: string,
   ): Promise<void> {
     // Tenant Package updaten
-    await this.db.update(tenants).set({
-      package: targetPackage as any,
-      updatedAt: new Date(),
-    }).where(eq(tenants.id, tenantId));
+    await this.db
+      .update(tenants)
+      .set({
+        package: targetPackage as any,
+        updatedAt: new Date(),
+      })
+      .where(eq(tenants.id, tenantId));
 
     // Subscription in DB anlegen/updaten
-    const [existing] = await this.db.select().from(subscriptions)
-      .where(eq(subscriptions.tenantId, tenantId)).limit(1);
+    const [existing] = await this.db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.tenantId, tenantId))
+      .limit(1);
 
     const now = new Date();
     const periodEnd = new Date(now);
@@ -348,14 +421,17 @@ export class PlatformPaymentsService {
     let stripeDetails = {};
     if (stripeSubscriptionId) {
       try {
-        const stripeSub = await this.stripe.subscriptions.retrieve(stripeSubscriptionId);
+        const stripeSub =
+          await this.stripe.subscriptions.retrieve(stripeSubscriptionId);
         stripeDetails = {
           currentPeriodStart: new Date(stripeSub.current_period_start * 1000),
           currentPeriodEnd: new Date(stripeSub.current_period_end * 1000),
           cancelAtPeriodEnd: stripeSub.cancel_at_period_end,
           stripeSubscriptionId,
         };
-      } catch { /* Stripe nicht verfügbar */ }
+      } catch {
+        /* Stripe nicht verfügbar */
+      }
     }
 
     const subData = {
@@ -368,7 +444,10 @@ export class PlatformPaymentsService {
     };
 
     if (existing) {
-      await this.db.update(subscriptions).set(subData).where(eq(subscriptions.id, existing.id));
+      await this.db
+        .update(subscriptions)
+        .set(subData)
+        .where(eq(subscriptions.id, existing.id));
     } else {
       await this.db.insert(subscriptions).values({ tenantId, ...subData });
     }
@@ -379,15 +458,25 @@ export class PlatformPaymentsService {
     addonType: string,
     stripeSubscriptionId?: string,
   ): Promise<void> {
-    const [existing] = await this.db.select().from(tenantAddons)
-      .where(and(eq(tenantAddons.tenantId, tenantId), eq(tenantAddons.addonType, addonType as any)))
+    const [existing] = await this.db
+      .select()
+      .from(tenantAddons)
+      .where(
+        and(
+          eq(tenantAddons.tenantId, tenantId),
+          eq(tenantAddons.addonType, addonType as any),
+        ),
+      )
       .limit(1);
 
     if (existing) {
-      await this.db.update(tenantAddons).set({
-        isActive: true,
-        ...(stripeSubscriptionId ? { stripeSubscriptionId } : {}),
-      }).where(eq(tenantAddons.id, existing.id));
+      await this.db
+        .update(tenantAddons)
+        .set({
+          isActive: true,
+          ...(stripeSubscriptionId ? { stripeSubscriptionId } : {}),
+        })
+        .where(eq(tenantAddons.id, existing.id));
     } else {
       await this.db.insert(tenantAddons).values({
         tenantId,
@@ -400,41 +489,76 @@ export class PlatformPaymentsService {
     }
   }
 
-  async directDeactivateAddon(tenantId: string, addonType: string): Promise<void> {
-    await this.db.update(tenantAddons).set({ isActive: false })
-      .where(and(eq(tenantAddons.tenantId, tenantId), eq(tenantAddons.addonType, addonType as any)));
+  async directDeactivateAddon(
+    tenantId: string,
+    addonType: string,
+  ): Promise<void> {
+    await this.db
+      .update(tenantAddons)
+      .set({ isActive: false })
+      .where(
+        and(
+          eq(tenantAddons.tenantId, tenantId),
+          eq(tenantAddons.addonType, addonType as any),
+        ),
+      );
   }
 
   async cancelAtPeriodEnd(tenantId: string): Promise<void> {
-    const [sub] = await this.db.select().from(subscriptions)
-      .where(eq(subscriptions.tenantId, tenantId)).limit(1);
+    const [sub] = await this.db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.tenantId, tenantId))
+      .limit(1);
 
-    if (!sub?.stripeSubscriptionId) throw new Error('Keine aktive Stripe-Subscription gefunden');
+    if (!sub?.stripeSubscriptionId)
+      throw new Error('Keine aktive Stripe-Subscription gefunden');
 
-    await this.stripe.subscriptions.update(sub.stripeSubscriptionId, { cancel_at_period_end: true });
-    await this.db.update(subscriptions).set({ cancelAtPeriodEnd: true, updatedAt: new Date() })
+    await this.stripe.subscriptions.update(sub.stripeSubscriptionId, {
+      cancel_at_period_end: true,
+    });
+    await this.db
+      .update(subscriptions)
+      .set({ cancelAtPeriodEnd: true, updatedAt: new Date() })
       .where(eq(subscriptions.id, sub.id));
   }
 
   async reactivate(tenantId: string): Promise<void> {
-    const [sub] = await this.db.select().from(subscriptions)
-      .where(eq(subscriptions.tenantId, tenantId)).limit(1);
+    const [sub] = await this.db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.tenantId, tenantId))
+      .limit(1);
 
-    if (!sub?.stripeSubscriptionId) throw new Error('Keine Subscription gefunden');
+    if (!sub?.stripeSubscriptionId)
+      throw new Error('Keine Subscription gefunden');
 
-    await this.stripe.subscriptions.update(sub.stripeSubscriptionId, { cancel_at_period_end: false });
-    await this.db.update(subscriptions).set({ cancelAtPeriodEnd: false, updatedAt: new Date() })
+    await this.stripe.subscriptions.update(sub.stripeSubscriptionId, {
+      cancel_at_period_end: false,
+    });
+    await this.db
+      .update(subscriptions)
+      .set({ cancelAtPeriodEnd: false, updatedAt: new Date() })
       .where(eq(subscriptions.id, sub.id));
   }
 
   // ==================== HELPERS ====================
 
-  private mapStatus(status: string): 'active' | 'cancelled' | 'past_due' | 'trialing' {
-    return ({
-      active: 'active', trialing: 'trialing',
-      past_due: 'past_due', canceled: 'cancelled',
-      incomplete: 'past_due', incomplete_expired: 'cancelled',
-      unpaid: 'past_due',
-    } as any)[status] || 'active';
+  private mapStatus(
+    status: string,
+  ): 'active' | 'cancelled' | 'past_due' | 'trialing' {
+    return (
+      (
+        {
+          active: 'active',
+          trialing: 'trialing',
+          past_due: 'past_due',
+          canceled: 'cancelled',
+          incomplete: 'past_due',
+          incomplete_expired: 'cancelled',
+          unpaid: 'past_due',
+        } as any
+      )[status] || 'active'
+    );
   }
 }
