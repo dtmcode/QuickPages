@@ -1,12 +1,8 @@
-// 📂 PFAD: frontend/src/app/register/page.tsx
-// Änderung: Nach Registrierung → /onboarding statt /dashboard
-
 'use client';
 
 import { useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const REGISTER_MUTATION = gql`
@@ -37,9 +33,9 @@ export default function RegisterPage() {
   const [lastName, setLastName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [error, setError] = useState('');
+  const [registered, setRegistered] = useState(false);
 
   const { login } = useAuth();
-  const router = useRouter();
   const [registerMutation, { loading }] = useMutation(REGISTER_MUTATION);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,7 +45,13 @@ export default function RegisterPage() {
     try {
       const { data } = await registerMutation({
         variables: {
-          input: { email, password, firstName, lastName, companyName },
+          input: {
+            email,
+            password,
+            firstName,
+            lastName,
+            companyName,  // ✅ Backend erwartet "companyName"
+          },
         },
       });
 
@@ -57,30 +59,55 @@ export default function RegisterPage() {
         data.register.accessToken,
         data.register.refreshToken,
         data.register.user,
-        data.register.tenant,
+        data.register.tenant
       );
-
-      // ✅ Nach Registrierung → Onboarding Wizard
-      router.push('/onboarding');
+       setRegistered(true); 
+      return;              
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message.replace('ApolloError: ', ''));
-      } else {
-        setError('Registrierung fehlgeschlagen');
-      }
-    }
+  if (err instanceof Error) {
+    // Apollo GraphQL Fehler extrahieren
+    const message = err.message.includes('Die Subdomain') 
+      ? err.message 
+      : err.message.replace('ApolloError: ', '');
+    setError(message);
+  } else {
+    setError('Registrierung fehlgeschlagen');
+  }
+  return;
+}
   };
-
+if (registered) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full p-8 bg-white rounded-lg shadow text-center">
+          <div className="text-6xl mb-4">📧</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Fast geschafft!</h2>
+          <p className="text-gray-600 mb-6">
+            Wir haben eine Bestätigungs-Email an <strong>{email}</strong> gesendet.
+            Bitte bestätige deine E-Mail-Adresse um alle Features freizuschalten.
+          </p>
+          <Link
+            href="/dashboard"
+            className="block w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-center"
+          >
+            Zum Dashboard →
+          </Link>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
         <div>
-          <h2 className="text-center text-3xl font-bold text-gray-900">Registrieren</h2>
+          <h2 className="text-center text-3xl font-bold text-gray-900">
+            Registrieren
+          </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Erstelle deinen Account und starte durch
           </p>
         </div>
-
+        
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
@@ -99,7 +126,7 @@ export default function RegisterPage() {
                 type="text"
                 required
                 value={companyName}
-                onChange={e => setCompanyName(e.target.value)}
+                onChange={(e) => setCompanyName(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Deine Firma GmbH"
               />
@@ -116,11 +143,12 @@ export default function RegisterPage() {
                   type="text"
                   required
                   value={firstName}
-                  onChange={e => setFirstName(e.target.value)}
+                  onChange={(e) => setFirstName(e.target.value)}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Max"
                 />
               </div>
+
               <div>
                 <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
                   Nachname *
@@ -131,7 +159,7 @@ export default function RegisterPage() {
                   type="text"
                   required
                   value={lastName}
-                  onChange={e => setLastName(e.target.value)}
+                  onChange={(e) => setLastName(e.target.value)}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Mustermann"
                 />
@@ -148,7 +176,7 @@ export default function RegisterPage() {
                 type="email"
                 required
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="max@beispiel.de"
               />
@@ -165,11 +193,13 @@ export default function RegisterPage() {
                 required
                 minLength={8}
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Mindestens 8 Zeichen"
               />
-              <p className="mt-1 text-xs text-gray-500">Mindestens 8 Zeichen</p>
+              <p className="mt-1 text-xs text-gray-500">
+                Mindestens 8 Zeichen
+              </p>
             </div>
           </div>
 
@@ -178,7 +208,7 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Wird registriert …' : 'Jetzt registrieren'}
+            {loading ? 'Wird registriert...' : 'Jetzt registrieren'}
           </button>
 
           <div className="text-center">

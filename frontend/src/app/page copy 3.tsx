@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { PackageTiers } from '@/components/packages/PackageTiers';
 
 /* ═══════════════════════════════════════════════════════════
    QuickPages Landing Page
@@ -268,23 +267,100 @@ export default function HomePage() {
       </section>
 
       {/* Packages */}
- <section id="pakete" className="py-16 sm:py-24 border-t border-border transition-colors duration-300">
-  <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="text-center mb-12">
-      <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ein Paket für jeden Bedarf</h2>
-      <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-        Starte klein, erweitere mit Add-ons, steige auf wenn du bereit bist.
-      </p>
-    </div>
-    <PackageTiers
-      mode="homepage"
-      ctaHref="/register"
-      ctaLabel="Jetzt starten"
-      defaultCategory="website"
-      showAlwaysIncluded
-    />
-  </div>
-</section>
+      <section id="pakete" className="py-16 sm:py-24 border-t border-border transition-colors duration-300">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ein Paket f&uuml;r jeden Bedarf</h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+              Starte klein, erweitere mit Add-ons, steige auf wenn du bereit bist.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-5 gap-4">
+            {PACKAGES.map((pkg, i) => {
+              const isExpanded = expandedPkg === i;
+              return (
+                <Card
+                  key={pkg.name}
+                  className={`relative flex flex-col ${
+                    pkg.highlight ? 'border-primary border-2 shadow-lg' : ''
+                  }`}
+                >
+                  {pkg.highlight && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                        Beliebt
+                      </span>
+                    </div>
+                  )}
+
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">{pkg.name}</CardTitle>
+                    <p className="text-xs text-muted-foreground">{pkg.target}</p>
+                    <div className="mt-2 flex items-baseline gap-1">
+                      <span className="text-3xl font-bold">&euro;{pkg.price}</span>
+                      <span className="text-sm text-muted-foreground">/mo</span>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="flex-1 flex flex-col pt-0">
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-4">{pkg.description}</p>
+
+                    <Link href="/register" className="mb-4">
+                      <Button fullWidth variant={pkg.highlight ? 'default' : 'outline'} className="text-sm">
+                        Jetzt starten
+                      </Button>
+                    </Link>
+
+                    <div className="border-t border-border pt-4 flex-1">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-3">Enthalten</p>
+                      <ul className="space-y-2">
+                        {pkg.features.slice(0, isExpanded ? undefined : 5).map((f, fi) => (
+                          <li key={fi} className="flex gap-2 text-xs">
+                            <svg className="w-3.5 h-3.5 mt-0.5 text-primary flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                            <span>
+                              <span className="font-medium">{f.label}</span>
+                              {f.detail && <span className="text-muted-foreground block mt-0.5 leading-snug">{f.detail}</span>}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      {pkg.features.length > 5 && (
+                        <button
+                          onClick={() => setExpandedPkg(isExpanded ? null : i)}
+                          className="mt-3 text-[11px] text-primary hover:underline"
+                        >
+                          {isExpanded ? 'Weniger anzeigen' : `+${pkg.features.length - 5} weitere`}
+                        </button>
+                      )}
+
+                      {pkg.addons && pkg.addons.length > 0 && (
+                        <div className="mt-4 pt-3 border-t border-border">
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Add-ons verf&uuml;gbar</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {pkg.addons.map((a, ai) => (
+                              <span key={ai} className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-accent text-accent-foreground border border-border">
+                                {a.name} {a.price}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {pkg.upgradeTip && (
+                        <p className="mt-4 text-[10px] text-muted-foreground leading-relaxed italic">{pkg.upgradeTip}</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
       {/* Add-ons */}
       <section id="addons" className="py-16 sm:py-24 border-t border-border bg-muted/30 transition-colors duration-300">

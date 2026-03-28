@@ -1,3 +1,5 @@
+// 📂 PFAD: frontend/src/app/dashboard/website-builder/website-templates/[templateId]/page.tsx
+
 'use client';
 
 import { useQuery, useMutation, gql } from '@apollo/client';
@@ -15,6 +17,10 @@ const GET_TEMPLATE = gql`
       thumbnailUrl
       isActive
       isDefault
+      globalTemplateId
+      settings
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -132,32 +138,85 @@ export default function TemplateDetailPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <Link href="/dashboard/website-builder/website-templates" className="text-blue-600 hover:underline mb-4 inline-block">
-        ← Zurück
+        ← Zurück zu Templates
       </Link>
 
       {/* Template Header */}
-      <div className="bg-white rounded-lg shadow p-6 mb-8">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">{template.name}</h1>
-            <p className="text-gray-600 mb-4">{template.description || 'Keine Beschreibung'}</p>
-            <div className="flex gap-2">
-              {template.isActive && <span className="px-3 py-1 bg-green-100 text-green-700 rounded text-sm">Aktiv</span>}
-              {template.isDefault && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm">Standard</span>}
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+        <div className="grid md:grid-cols-3 gap-6 p-6">
+          {/* Left: Info */}
+          <div className="md:col-span-2">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">{template.name}</h1>
+                <p className="text-gray-600 mb-4">{template.description || 'Keine Beschreibung'}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-2 mb-4">
+              {template.isActive && <span className="px-3 py-1 bg-green-100 text-green-700 rounded text-sm font-semibold">✓ Aktiv</span>}
+              {template.isDefault && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm font-semibold">⭐ Standard</span>}
+              {template.globalTemplateId && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded text-sm font-semibold">🌐 Von Vorlage</span>}
+            </div>
+
+            {/* Template Stats */}
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-blue-600">{pages.length}</div>
+                <div className="text-sm text-gray-600">Pages</div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-green-600">{pages.filter((p: any) => p.isActive).length}</div>
+                <div className="text-sm text-gray-600">Aktive Pages</div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-purple-600">{pages.filter((p: any) => p.isHomepage).length}</div>
+                <div className="text-sm text-gray-600">Homepage</div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              {!template.isDefault && (
+                <button onClick={handleSetDefault} className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-semibold">
+                  ⭐ Als Standard setzen
+                </button>
+              )}
+              <Link
+                href={`/dashboard/website-builder/website-templates/${templateId}/settings`}
+                className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition font-semibold"
+              >
+                ⚙️ Einstellungen
+              </Link>
             </div>
           </div>
-          {!template.isDefault && (
-            <button onClick={handleSetDefault} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-              Als Standard setzen
-            </button>
-          )}
+
+          {/* Right: Thumbnail */}
+          <div>
+            {template.thumbnailUrl ? (
+              <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden shadow-md">
+                <img src={template.thumbnailUrl} alt={template.name} className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                <div className="text-center text-gray-400">
+                  <div className="text-4xl mb-2">📄</div>
+                  <div className="text-sm">Kein Thumbnail</div>
+                </div>
+              </div>
+            )}
+            <div className="mt-3 text-xs text-gray-500 space-y-1">
+              <div>Erstellt: {new Date(template.createdAt).toLocaleDateString('de-DE')}</div>
+              <div>Geändert: {new Date(template.updatedAt).toLocaleDateString('de-DE')}</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Pages */}
+      {/* Pages Section */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Pages ({pages.length})</h2>
-        <button onClick={() => setShowCreatePage(!showCreatePage)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        <button onClick={() => setShowCreatePage(!showCreatePage)} className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition font-semibold">
           {showCreatePage ? 'Abbrechen' : '+ Neue Page'}
         </button>
       </div>
@@ -194,44 +253,70 @@ export default function TemplateDetailPage() {
       {/* Pages List */}
       {pages.length > 0 ? (
         <div className="grid gap-4">
-          {pages.map((page: any) => (
-            <div key={page.id} className="bg-white rounded-lg shadow p-6 flex justify-between items-center">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-xl font-semibold">{page.name}</h3>
-                  {page.isHomepage && <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">Homepage</span>}
-                  {page.isActive && <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Aktiv</span>}
+          {pages.sort((a: any, b: any) => a.order - b.order).map((page: any) => (
+            <div key={page.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition p-6">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-xl font-semibold">{page.name}</h3>
+                    {page.isHomepage && <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-semibold">🏠 Homepage</span>}
+                    {page.isActive && <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">✓ Aktiv</span>}
+                  </div>
+                  <p className="text-gray-600 text-sm mb-1">🔗 /{page.slug}</p>
+                  {page.description && <p className="text-gray-500 text-sm">{page.description}</p>}
                 </div>
-                <p className="text-gray-600 text-sm">/{page.slug}</p>
-                <p className="text-gray-500 text-sm mt-1">{page.description}</p>
-              </div>
-              <div className="flex gap-2">
-                {/* ✅ NEU: Visual Editor Button */}
-                <Link 
-                  href={`/dashboard/website-builder/website-templates/${templateId}/pages/${page.id}/visual`} 
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded hover:from-purple-700 hover:to-blue-700 flex items-center gap-2"
-                >
-                  🎨 Visual Editor
-                </Link>
-                <Link href={`/dashboard/website-builder/website-templates/${templateId}/pages/${page.id}`} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                  Bearbeiten
-                </Link>
-                <Link href={`/dashboard/website-builder/website-templates/${templateId}/pages/${page.id}/preview`} className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
-                  Preview
-                </Link>
-                <button onClick={() => handleDeletePage(page.id)} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-                  Löschen
-                </button>
+
+                {/* ── Buttons ── */}
+                <div className="flex gap-2 flex-wrap justify-end">
+
+                  {/* ✦ NEU: WYSIWYG Editor — öffnet in neuem Tab */}
+                  <Link
+                    href={`/dashboard/website-builder/website-templates/${templateId}/pages/${page.id}/wysiwyg`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-orange-600 hover:to-pink-600 transition font-semibold whitespace-nowrap"
+                  >
+                    ✦ WYSIWYG
+                  </Link>
+
+                  <Link
+                    href={`/dashboard/website-builder/website-templates/${templateId}/pages/${page.id}/visual`}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition font-semibold whitespace-nowrap"
+                  >
+                    🎨 Visual Editor
+                  </Link>
+
+                  <Link
+                    href={`/dashboard/website-builder/website-templates/${templateId}/pages/${page.id}`}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-semibold"
+                  >
+                    ✏️ Bearbeiten
+                  </Link>
+
+                  <Link
+                    href={`/dashboard/website-builder/website-templates/${templateId}/pages/${page.id}/preview`}
+                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition font-semibold"
+                  >
+                    👁️ Preview
+                  </Link>
+
+                  <button
+                    onClick={() => handleDeletePage(page.id)}
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition font-semibold"
+                  >
+                    🗑️ Löschen
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-white rounded-lg">
+        <div className="text-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300">
           <div className="text-6xl mb-4">📄</div>
-          <h3 className="text-xl font-semibold mb-2">Keine Pages</h3>
-          <p className="text-gray-600 mb-6">Erstelle deine erste Page!</p>
-          <button onClick={() => setShowCreatePage(true)} className="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700">
+          <h3 className="text-xl font-semibold mb-2">Keine Pages vorhanden</h3>
+          <p className="text-gray-600 mb-6">Erstelle deine erste Page, um loszulegen!</p>
+          <button onClick={() => setShowCreatePage(true)} className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition font-semibold">
             Erste Page erstellen
           </button>
         </div>
