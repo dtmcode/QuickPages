@@ -134,6 +134,14 @@ export const tenants = pgTable(
     name: varchar('name', { length: 200 }).notNull(),
     slug: varchar('slug', { length: 200 }).notNull().unique(),
     domain: varchar('domain', { length: 255 }),
+    customDomain: varchar('custom_domain', { length: 255 }),
+domainVerified: boolean('domain_verified').default(false),
+domainVerificationToken: varchar('domain_verification_token', { length: 100 }),
+domainVerifiedAt: timestamp('domain_verified_at'),
+dnsRecordsValid: boolean('dns_records_valid').default(false),
+sslStatus: varchar('ssl_status', { length: 20 }).default('none'),
+sslExpiresAt: timestamp('ssl_expires_at'),
+lastDnsCheck: timestamp('last_dns_check'),
     package: packageEnum('package').default('starter').notNull(),
     shopTemplate: shopTemplateEnum('shop_template').default('default'),
     settings: jsonb('settings').default({
@@ -161,7 +169,16 @@ export const tenants = pgTable(
     domainIdx: index('tenants_domain_idx').on(table.domain),
   }),
 );
-
+export const domainEvents = pgTable('domain_events', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id')
+    .references(() => tenants.id, { onDelete: 'cascade' })
+    .notNull(),
+  eventType: varchar('event_type', { length: 50 }).notNull(),
+  domain: varchar('domain', { length: 255 }),
+  details: text('details'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
 // ========== SUBSCRIPTIONS ==========
 export const subscriptions = pgTable(
   'subscriptions',
@@ -938,6 +955,7 @@ export const tenantsRelations = relations(tenants, ({ many, one }) => ({
   supportTickets: many(supportTickets),
   customers: many(tenantCustomers),
   paymentSettings: one(tenantPaymentSettings),
+  domainEvents: many(domainEvents),
 }));
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -1222,6 +1240,13 @@ export const supportMessagesRelations = relations(
     }),
   }),
 );
+export const domainEventsRelations = relations(domainEvents, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [domainEvents.tenantId],
+    references: [tenants.id],
+  }),
+}));
+
 // ==================== TENANT CUSTOMERS (Public Member Area) ====================
 
 export const tenantCustomers = pgTable(

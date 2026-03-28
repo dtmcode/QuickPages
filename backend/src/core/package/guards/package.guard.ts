@@ -50,7 +50,10 @@ export class PackageGuard implements CanActivate {
       return true;
     // ===== END BYPASS =====
 
-    const hasAccess = hasFeature(tenant.package as PackageType, requiredFeature as any);
+    const hasAccess = hasFeature(
+      tenant.package as PackageType,
+      requiredFeature as any,
+    );
 
     if (!hasAccess) {
       throw new Error(

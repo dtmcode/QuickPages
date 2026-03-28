@@ -30,6 +30,7 @@ import { I18nModule } from './modules/i18n/i18n.module';
 import { AiContentModule } from './modules/ai-content/ai-content.module';
 import { WhiteLabelModule } from './modules/white-label/white-label.module';
 import { SupportModule } from './modules/support/support.module';
+import { DomainModule } from './modules/domain/domain.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { SupportModule } from './modules/support/support.module';
 
     DrizzleModule,
     AuthModule,
+    DomainModule,
     CmsModule,
     ShopModule,
     PackageModule,

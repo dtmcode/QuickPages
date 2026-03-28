@@ -16,52 +16,53 @@ import {
 } from './dto/subscription.types';
 import { PACKAGES, ADDONS, PackageType } from './package.helper';
 
-
 @Resolver()
 export class SubscriptionResolver {
   constructor(private subscriptionService: SubscriptionService) {}
 
   // ===== PUBLIC QUERIES =====
 
-@Query(() => AvailablePackagesResponse)
-availablePackages(): AvailablePackagesResponse {
-  const packages: PackageDefinitionType[] = Object.values(PACKAGES).map(pkg => ({
-    type: pkg.type,
-    name: pkg.name,
-    description: pkg.description,
-    price: pkg.priceMonthly,
-    limits: {
-      users:          pkg.features.maxUsers,
-      posts:          pkg.features.maxPosts,
-      pages:          pkg.features.maxPages,
-      products:       pkg.features.maxProducts,
-      emailsPerMonth: pkg.features.maxSubscribers,
-      subscribers:    pkg.features.maxSubscribers,
-      aiCredits:      pkg.features.aiCreditsPerMonth,
-      storageMb:      pkg.features.storageMb,
-    },
-    features: pkg.highlightFeatures,
-  }));
+  @Query(() => AvailablePackagesResponse)
+  availablePackages(): AvailablePackagesResponse {
+    const packages: PackageDefinitionType[] = Object.values(PACKAGES).map(
+      (pkg) => ({
+        type: pkg.type,
+        name: pkg.name,
+        description: pkg.description,
+        price: pkg.priceMonthly,
+        limits: {
+          users: pkg.features.maxUsers,
+          posts: pkg.features.maxPosts,
+          pages: pkg.features.maxPages,
+          products: pkg.features.maxProducts,
+          emailsPerMonth: pkg.features.maxSubscribers,
+          subscribers: pkg.features.maxSubscribers,
+          aiCredits: pkg.features.aiCreditsPerMonth,
+          storageMb: pkg.features.storageMb,
+        },
+        features: pkg.highlightFeatures,
+      }),
+    );
 
-  const addons: AddonDefinitionType[] = Object.values(ADDONS).map(def => ({
-    type: def.type as any,
-    name: def.name,
-    description: def.description,
-    price: def.priceMonthly,
-    limits: {
-      users:          def.adds.maxUsers          ?? 0,
-      posts:          def.adds.maxPosts          ?? 0,
-      pages:          def.adds.maxPages          ?? 0,
-      products:       def.adds.maxProducts       ?? 0,
-      emailsPerMonth: def.adds.maxSubscribers    ?? 0,
-      subscribers:    def.adds.maxSubscribers    ?? 0,
-      aiCredits:      def.adds.aiCreditsPerMonth ?? 0,
-      storageMb:      0,
-    },
-  }));
+    const addons: AddonDefinitionType[] = Object.values(ADDONS).map((def) => ({
+      type: def.type as any,
+      name: def.name,
+      description: def.description,
+      price: def.priceMonthly,
+      limits: {
+        users: def.adds.maxUsers ?? 0,
+        posts: def.adds.maxPosts ?? 0,
+        pages: def.adds.maxPages ?? 0,
+        products: def.adds.maxProducts ?? 0,
+        emailsPerMonth: def.adds.maxSubscribers ?? 0,
+        subscribers: def.adds.maxSubscribers ?? 0,
+        aiCredits: def.adds.aiCreditsPerMonth ?? 0,
+        storageMb: 0,
+      },
+    }));
 
-  return { packages, addons };
-}
+    return { packages, addons };
+  }
   // ===== PROTECTED QUERIES =====
 
   @Query(() => TenantSubscriptionInfo)

@@ -212,9 +212,9 @@ export class ShopResolver {
       .from(products)
       .where(eq(products.tenantId, tenantId));
 
-   const pkg = PACKAGES[tenant.package as PackageType];
-const maxProducts = pkg?.features.maxProducts ?? 0;
-if (maxProducts !== -1 && currentProducts.length >= maxProducts) {
+    const pkg = PACKAGES[tenant.package as PackageType];
+    const maxProducts = pkg?.features.maxProducts ?? 0;
+    if (maxProducts !== -1 && currentProducts.length >= maxProducts) {
       const limits = {
         starter: 0,
         business: 100,

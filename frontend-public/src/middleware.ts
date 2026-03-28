@@ -1,33 +1,47 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+const PLATFORM_DOMAIN = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || '';
+const BACKEND_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL?.replace('/graphql', '') || 'http://localhost:3000';
+
+export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
+  const host = hostname.split(':')[0];
 
-  if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
-    const parts = hostname.split('.');
-    if (parts.length > 1 && parts[0] !== 'localhost') {
-      const subdomain = parts[0];
-      const response = NextResponse.next();
-      response.headers.set('x-tenant', subdomain);
-      return response;
-    }
-
+  // Localhost Dev
+  if (host === 'localhost' || host === '127.0.0.1') {
     const response = NextResponse.next();
     response.headers.set('x-tenant', 'demo');
     return response;
   }
 
-  const subdomain = hostname.split('.')[0];
-
-  if (subdomain === 'www' || subdomain === process.env.NEXT_PUBLIC_PLATFORM_DOMAIN) {
+  // Subdomain der Platform? (z.B. shop.quickpages.de)
+  if (PLATFORM_DOMAIN && host.endsWith(`.${PLATFORM_DOMAIN}`)) {
+    const subdomain = host.replace(`.${PLATFORM_DOMAIN}`, '');
+    if (subdomain && subdomain !== 'www') {
+      const response = NextResponse.next();
+      response.headers.set('x-tenant', subdomain);
+      return response;
+    }
     return NextResponse.next();
   }
 
-  const response = NextResponse.next();
-  response.headers.set('x-tenant', subdomain);
+  // Custom Domain → Backend fragen
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/domains/lookup?domain=${host}`, {
+      next: { revalidate: 300 }, // 5 min Cache
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const response = NextResponse.next();
+      response.headers.set('x-tenant', data.slug);
+      return response;
+    }
+  } catch {
+    // Backend nicht erreichbar, ignore
+  }
 
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
