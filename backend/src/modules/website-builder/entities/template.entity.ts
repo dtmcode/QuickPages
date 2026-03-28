@@ -30,6 +30,9 @@ export class Template {
   @Field()
   isDefault: boolean;
 
+  @Field({ nullable: true })
+  globalTemplateId?: string;
+
   @Field(() => GraphQLJSON, { nullable: true })
   settings?: Record<string, any>;
 
