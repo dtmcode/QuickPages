@@ -17,6 +17,9 @@ export interface PackageLimits {
   pages: number;
   products: number;
   emailsPerMonth: number;
+  subscribers: number;
+  aiCredits: number;
+  storageMb: number;
 }
 @Injectable()
 export class SubscriptionService {
@@ -51,8 +54,20 @@ export class SubscriptionService {
           pages: pkg.features.maxPages,
           products: pkg.features.maxProducts,
           emailsPerMonth: pkg.features.maxSubscribers,
+          subscribers: pkg.features.maxSubscribers,
+          aiCredits: pkg.features.aiCreditsPerMonth,
+          storageMb: pkg.features.storageMb,
         }
-      : { users: 1, posts: 0, pages: 3, products: 0, emailsPerMonth: 0 };
+      : {
+          users: 1,
+          posts: 0,
+          pages: 3,
+          products: 0,
+          emailsPerMonth: 0,
+          subscribers: 0,
+          aiCredits: 0,
+          storageMb: 0,
+        };
 
     return activeAddons.reduce((limits, addon) => {
       const def = Object.values(ADDONS).find((a) => a.type === addon.addonType);
@@ -73,6 +88,13 @@ export class SubscriptionService {
         emailsPerMonth: def.adds.maxSubscribers
           ? limits.emailsPerMonth + def.adds.maxSubscribers
           : limits.emailsPerMonth,
+        subscribers: def.adds.maxSubscribers
+          ? limits.subscribers + def.adds.maxSubscribers
+          : limits.subscribers,
+        aiCredits: def.adds.aiCreditsPerMonth
+          ? limits.aiCredits + def.adds.aiCreditsPerMonth
+          : limits.aiCredits,
+        storageMb: limits.storageMb,
       };
     }, base);
   }
