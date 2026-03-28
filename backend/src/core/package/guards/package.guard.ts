@@ -3,7 +3,8 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { REQUIRE_FEATURE_KEY } from '../decorators/require-feature.decorator';
-import { hasFeature } from '../package.helper';
+import { hasFeature, PackageType } from '../package.helper';
+
 import { DRIZZLE } from '../../database/drizzle.module';
 import { Inject } from '@nestjs/common';
 import type { DrizzleDB } from '../../database/drizzle.module';
