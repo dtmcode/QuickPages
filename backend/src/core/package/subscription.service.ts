@@ -173,7 +173,7 @@ export class SubscriptionService {
       .where(
         and(
           eq(tenantAddons.tenantId, tenantId),
-          eq(tenantAddons.addonType, addonType),
+          eq(tenantAddons.addonType, addonType as any),
         ),
       )
       .limit(1);
@@ -186,7 +186,7 @@ export class SubscriptionService {
     } else {
       await this.db.insert(tenantAddons).values({
         tenantId,
-        addonType,
+        addonType: addonType as any,
         quantity,
         isActive: true,
       });
