@@ -10,6 +10,8 @@ import type { DrizzleDB } from '../../database/drizzle.module';
 import { tenants } from '../../../drizzle/schema';
 import { eq } from 'drizzle-orm';
 
+const SUPERADMIN_SLUGS = ['myquickpages', 'platform-admin'];
+
 @Injectable()
 export class PackageGuard implements CanActivate {
   constructor(
@@ -23,17 +25,13 @@ export class PackageGuard implements CanActivate {
       [context.getHandler(), context.getClass()],
     );
 
-    if (!requiredFeature) {
-      return true;
-    }
+    if (!requiredFeature) return true;
 
     const ctx = GqlExecutionContext.create(context);
     const request = ctx.getContext().req;
     const tenantId = request.user?.tenantId;
 
-    if (!tenantId) {
-      throw new Error('Tenant ID nicht gefunden');
-    }
+    if (!tenantId) throw new Error('Tenant ID nicht gefunden');
 
     const [tenant] = await this.db
       .select()
@@ -41,18 +39,23 @@ export class PackageGuard implements CanActivate {
       .where(eq(tenants.id, tenantId))
       .limit(1);
 
-    if (!tenant) {
-      throw new Error('Tenant nicht gefunden');
-    }
+    if (!tenant) throw new Error('Tenant nicht gefunden');
+
+    // ===== SUPER-ADMIN BYPASS =====
+    if (SUPERADMIN_SLUGS.includes(tenant.slug)) return true;
+
+    const settings = tenant.settings as Record<string, unknown> | null;
+    if (settings?.isSuperAdmin === true || settings?.platformAdmin === true)
+      return true;
+    // ===== END BYPASS =====
 
     const hasAccess = hasFeature(tenant.package, requiredFeature as any);
 
     if (!hasAccess) {
       throw new Error(
-        `Diese Funktion ist in deinem ${tenant.package.toUpperCase()} Package nicht verfügbar. Upgrade erforderlich.`,
+        `Diese Funktion ist in deinem ${tenant.package.toUpperCase()} Package nicht verfügbar.`,
       );
     }
-
     return true;
   }
 }
