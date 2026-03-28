@@ -71,9 +71,7 @@ export class PlatformPaymentsService {
     if (!key) {
       console.warn('⚠️  STRIPE_SECRET_KEY nicht gesetzt — Stripe deaktiviert');
     }
-    this.stripe = new Stripe(key || 'sk_test_placeholder', {
-      apiVersion: '2024-06-20',
-    });
+    this.stripe = new Stripe(key || 'sk_test_placeholder');
   }
 
   // ==================== STATUS ====================
@@ -326,9 +324,11 @@ export class PlatformPaymentsService {
           .update(subscriptions)
           .set({
             status: this.mapStatus(sub.status),
-            currentPeriodStart: new Date(sub.current_period_start * 1000),
-            currentPeriodEnd: new Date(sub.current_period_end * 1000),
-            cancelAtPeriodEnd: sub.cancel_at_period_end,
+            currentPeriodStart: new Date(
+              (sub as any).current_period_start * 1000,
+            ),
+            currentPeriodEnd: new Date((sub as any).current_period_end * 1000),
+            cancelAtPeriodEnd: (sub as any).cancel_at_period_end,
             updatedAt: new Date(),
           })
           .where(eq(subscriptions.stripeSubscriptionId, sub.id));
@@ -339,10 +339,10 @@ export class PlatformPaymentsService {
 
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice;
-        if (!invoice.subscription) break;
-
+        const invoiceAny = invoice as any;
+        if (!invoiceAny.subscription) break;
         const sub = await this.stripe.subscriptions.retrieve(
-          invoice.subscription as string,
+          invoiceAny.subscription as string,
         );
         const { tenantId } = sub.metadata || {};
         if (!tenantId) break;
@@ -423,10 +423,13 @@ export class PlatformPaymentsService {
       try {
         const stripeSub =
           await this.stripe.subscriptions.retrieve(stripeSubscriptionId);
+        const stripeSubAny = stripeSub as any;
         stripeDetails = {
-          currentPeriodStart: new Date(stripeSub.current_period_start * 1000),
-          currentPeriodEnd: new Date(stripeSub.current_period_end * 1000),
-          cancelAtPeriodEnd: stripeSub.cancel_at_period_end,
+          currentPeriodStart: new Date(
+            stripeSubAny.current_period_start * 1000,
+          ),
+          currentPeriodEnd: new Date(stripeSubAny.current_period_end * 1000),
+          cancelAtPeriodEnd: stripeSubAny.cancel_at_period_end,
           stripeSubscriptionId,
         };
       } catch {

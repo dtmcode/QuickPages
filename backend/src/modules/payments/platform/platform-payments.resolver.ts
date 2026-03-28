@@ -46,9 +46,7 @@ export class PlatformPaymentsResolver {
 
   @Query(() => PlatformPaymentStatus)
   @UseGuards(GqlAuthGuard)
-  async platformPaymentStatus(
-    @TenantId() _tenantId: string,
-  ): Promise<PlatformPaymentStatus> {
+  platformPaymentStatus(): PlatformPaymentStatus {
     const configured = this.platformPaymentsService.isStripeConfigured();
     return {
       stripeConfigured: configured,
@@ -115,7 +113,7 @@ export class PlatformPaymentsResolver {
     const [dbUser] = await this.db
       .select()
       .from(users)
-      .where(eq(users.id, user.sub))
+      .where(eq(users.id, user.userId))
       .limit(1);
 
     const result = await this.platformPaymentsService.createAddonCheckout({
