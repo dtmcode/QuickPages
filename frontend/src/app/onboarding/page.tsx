@@ -181,8 +181,8 @@ const GET_GLOBAL_TEMPLATES = gql`
 `;
 
 const CLONE_GLOBAL_TEMPLATE = gql`
-  mutation OnboardingCloneTemplate($id: String!, $tenantId: String!) {
-    cloneGlobalTemplate(id: $id, tenantId: $tenantId) {
+  mutation OnboardingCloneTemplate($globalTemplateId: String!, $tenantId: String!) {
+  cloneGlobalTemplate(globalTemplateId: $globalTemplateId, tenantId: $tenantId) {
       id
       name
     }
