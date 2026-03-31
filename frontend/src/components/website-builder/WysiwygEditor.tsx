@@ -433,6 +433,96 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
         );
       case 'html':
         return <div style={innerWidth} dangerouslySetInnerHTML={{ __html: content.html || '<p style="opacity:0.5">HTML Bereich</p>' }} />;
+      case 'newsletter':
+  return (
+    <div style={{ ...innerWidth, textAlign: 'center' }}>
+      <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 0.75rem' }}>
+        {content.title || 'Newsletter'}
+      </h2>
+      {content.description && <p style={{ opacity: 0.8, marginBottom: '1.5rem' }}>{content.description}</p>}
+      <div style={{ display: 'flex', gap: 8, maxWidth: 440, margin: '0 auto' }}>
+        <div style={{ flex: 1, background: 'rgba(0,0,0,0.08)', borderRadius: '0.5rem', padding: '0.75rem 1rem', color: 'rgba(0,0,0,0.4)', fontSize: '0.875rem' }}>
+          {content.placeholder || 'deine@email.de'}
+        </div>
+        <span style={{ background: primary, color: '#fff', borderRadius: '0.5rem', padding: '0.75rem 1.25rem', fontWeight: 600, fontSize: '0.875rem' }}>
+          {content.buttonText || 'Abonnieren'}
+        </span>
+      </div>
+    </div>
+  );
+
+case 'booking':
+  return (
+    <div style={{ ...innerWidth, textAlign: 'center' }}>
+      <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 0.75rem' }}>
+        {content.title || 'Termin buchen'}
+      </h2>
+      {content.description && <p style={{ opacity: 0.8, marginBottom: '1.5rem' }}>{content.description}</p>}
+      <span style={{ display: 'inline-block', background: primary, color: '#fff', borderRadius: '0.5rem', padding: '0.75rem 2rem', fontWeight: 600 }}>
+        {content.buttonText || 'Jetzt buchen'}
+      </span>
+    </div>
+  );
+
+case 'map':
+  return (
+    <div style={innerWidth}>
+      {content.title && <h2 style={{ fontSize: headingSize, fontWeight: 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{content.title}</h2>}
+      <div style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', aspectRatio: '16/7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.35)', gap: '0.5rem' }}>
+        <span style={{ fontSize: '2.5rem' }}>🗺️</span>
+        <span style={{ fontSize: '0.875rem' }}>{content.address || 'Adresse eingeben'}</span>
+      </div>
+    </div>
+  );
+
+case 'countdown':
+  return (
+    <div style={{ ...innerWidth, textAlign: 'center' }}>
+      <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1rem' }}>{content.title || 'Countdown'}</h2>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1rem' }}>
+        {['Tage', 'Std', 'Min', 'Sek'].map(u => (
+          <div key={u} style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.5rem', padding: '1rem', minWidth: 64 }}>
+            <div style={{ fontSize: '2rem', fontWeight: 800 }}>00</div>
+            <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>{u}</div>
+          </div>
+        ))}
+      </div>
+      {content.description && <p style={{ opacity: 0.7 }}>{content.description}</p>}
+    </div>
+  );
+
+case 'social':
+  return (
+    <div style={{ ...innerWidth, textAlign: 'center' }}>
+      {content.title && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1.5rem' }}>{content.title}</h2>}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+        {(content.links || []).map((l: any, i: number) => (
+          <div key={i} style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', padding: '0.75rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>{l.icon}</span>
+            <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>{l.platform}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+case 'blog':
+  return (
+    <div style={innerWidth}>
+      {content.title && <h2 style={{ fontSize: headingSize, fontWeight: 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{content.title}</h2>}
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
+        {Array(content.count || 3).fill(null).map((_, i) => (
+          <div key={i} style={{ background: 'rgba(0,0,0,0.06)', borderRadius: '0.75rem', overflow: 'hidden' }}>
+            <div style={{ aspectRatio: '16/9', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.2)', fontSize: '1.5rem' }}>📰</div>
+            <div style={{ padding: '1rem' }}>
+              <div style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.875rem' }}>Blog-Post Titel</div>
+              <div style={{ fontSize: '0.75rem', opacity: 0.5 }}>Kurze Beschreibung...</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
       default:
         return <div style={{ textAlign: 'center', opacity: 0.4, fontSize: '0.875rem' }}>[{type.toUpperCase()}] {section.name}</div>;
     }
@@ -522,9 +612,77 @@ function ContentEditor({ section, onChange }: { section: Section; onChange: (c: 
     case 'gallery':
       return (<><Field label="Titel" field="title" /><ListEditor field="images" schema={[{ key: 'url', label: 'Bild URL' }, { key: 'alt', label: 'Alt-Text' }]} /></>);
     case 'faq':
+      
       return (<><Field label="Titel" field="title" /><ListEditor field="faqs" schema={[{ key: 'question', label: 'Frage' }, { key: 'answer', label: 'Antwort' }]} /></>);
     case 'video':
       return (<><Field label="Titel" field="title" /><Field label="Video URL (YouTube/Vimeo)" field="videoUrl" /><Field label="Poster Bild URL" field="videoPoster" /></>);
+    case 'newsletter':
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <Field label="Beschreibung" field="description" multi rows={3} />
+      <Field label="Button Text" field="buttonText" />
+      <Field label="Placeholder (E-Mail)" field="placeholder" />
+    </>
+  );
+
+case 'booking':
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <Field label="Beschreibung" field="description" multi rows={3} />
+      <Field label="Button Text" field="buttonText" />
+      <Field label="Button Link" field="buttonLink" />
+    </>
+  );
+
+case 'map':
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <Field label="Adresse" field="address" />
+      <Field label="Google Maps Embed URL" field="embedUrl" />
+    </>
+  );
+
+case 'countdown':
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <Field label="Zieldatum (YYYY-MM-DD)" field="targetDate" />
+      <Field label="Beschreibung" field="description" />
+    </>
+  );
+
+case 'social':
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <ListEditor field="links" schema={[
+        { key: 'platform', label: 'Plattform (z.B. Instagram)' },
+        { key: 'url', label: 'URL' },
+        { key: 'icon', label: 'Icon (Emoji)' },
+      ]} />
+    </>
+  );
+
+case 'blog':
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <div style={wrapStyle}>
+        <label style={labelStyle}>Anzahl Posts</label>
+        <select
+          value={content.count || 3}
+          onChange={e => update('count', Number(e.target.value))}
+          style={{ ...inputStyle, width: '100%' }}
+        >
+          {[3, 6, 9].map(n => <option key={n} value={n}>{n} Posts</option>)}
+        </select>
+      </div>
+    </>
+  );
+    
     case 'html':
       return (
         <div style={wrapStyle}>
