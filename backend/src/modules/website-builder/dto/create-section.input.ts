@@ -4,7 +4,13 @@
  */
 
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsString, IsOptional, IsBoolean, IsInt } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsInt,
+  IsEnum,
+} from 'class-validator';
 import GraphQLJSON from 'graphql-type-json';
 import { SectionType } from '../entities/section.entity';
 
@@ -19,6 +25,7 @@ export class CreateSectionInput {
   name: string;
 
   @Field(() => SectionType)
+  @IsEnum(SectionType)
   type: SectionType;
 
   @Field(() => Int, { nullable: true })
