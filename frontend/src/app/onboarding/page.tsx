@@ -825,7 +825,7 @@ export default function OnboardingPage(): React.ReactElement {
 
       if (templateId) {
         const cloneResult = await cloneTemplate({
-          variables: { id: templateId, tenantId: tenant.id },
+variables: { globalTemplateId: templateId, tenantId: tenant.id }
         });
         newTemplateId = cloneResult.data?.cloneGlobalTemplate?.id ?? null;
       }
