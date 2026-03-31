@@ -1113,10 +1113,15 @@ export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
       } else if (res.errors?.length) {
         setError(`Section konnte nicht erstellt werden: ${res.errors[0].message}`);
       }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setError(`Fehler beim Erstellen von "${label}": ${msg}`);
-    }
+   } catch (err: unknown) {
+  const apolloErr = err as any;
+  // GraphQL Validation-Fehler sind in graphQLErrors[0].extensions.response.message
+  const detail = apolloErr?.graphQLErrors?.[0]?.extensions?.response?.message;
+  const msg = Array.isArray(detail)
+    ? detail.join(' | ')
+    : (detail ?? apolloErr?.message ?? String(err));
+  setError(`Fehler beim Erstellen von "${label}": ${msg}`);
+}
   };
 
   const handleDelete = async (id: string) => {

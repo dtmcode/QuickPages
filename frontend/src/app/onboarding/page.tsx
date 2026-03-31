@@ -182,7 +182,7 @@ const GET_GLOBAL_TEMPLATES = gql`
 
 const CLONE_GLOBAL_TEMPLATE = gql`
   mutation OnboardingCloneTemplate($globalTemplateId: String!, $tenantId: String!) {
-  cloneGlobalTemplate(globalTemplateId: $globalTemplateId, tenantId: $tenantId) {
+    cloneGlobalTemplate(globalTemplateId: $globalTemplateId, tenantId: $tenantId) {
       id
       name
     }
@@ -223,8 +223,8 @@ const UPDATE_SECTION = gql`
 `;
 
 const UPDATE_BRANDING = gql`
-  mutation OnboardingUpdateBranding($input: BrandingSettingsInput!) {
-    updateBrandingSettings(input: $input) {
+  mutation OnboardingUpdateBranding($input: UpdateBrandingInput!) {
+    updateBranding(input: $input) {
       primaryColor
       logoUrl
     }

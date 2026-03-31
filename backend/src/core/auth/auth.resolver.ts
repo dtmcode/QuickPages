@@ -24,7 +24,12 @@ import { DRIZZLE } from '../database/drizzle.module';
 import type { DrizzleDB } from '../database/drizzle.module';
 import { users, tenants } from '../../drizzle/schema';
 import { eq } from 'drizzle-orm';
-import { UserRole, PackageType } from './dto/auth.types';
+import {
+  UserRole,
+  PackageType,
+  UpdateBrandingInput,
+  BrandingResult,
+} from './dto/auth.types';
 
 @Resolver()
 export class AuthResolver {
@@ -232,6 +237,39 @@ export class AuthResolver {
         isActive: tenant.isActive ?? true,
         createdAt: tenant.createdAt ?? new Date(),
       },
+    };
+  }
+  @Mutation(() => BrandingResult)
+  @UseGuards(GqlAuthGuard)
+  async updateBranding(
+    @Args('input') input: UpdateBrandingInput,
+    @TenantId() tenantId: string,
+  ): Promise<BrandingResult> {
+    const current = await this.db
+      .select({ branding: tenants.branding })
+      .from(tenants)
+      .where(eq(tenants.id, tenantId))
+      .limit(1);
+
+    const existingBranding =
+      (current[0]?.branding as Record<string, unknown>) ?? {};
+
+    await this.db
+      .update(tenants)
+      .set({
+        branding: {
+          ...existingBranding,
+          ...(input.primaryColor && { primaryColor: input.primaryColor }),
+          ...(input.logoUrl !== undefined && { logoUrl: input.logoUrl }),
+          ...(input.platformName && { platformName: input.platformName }),
+        },
+        updatedAt: new Date(),
+      })
+      .where(eq(tenants.id, tenantId));
+
+    return {
+      primaryColor: input.primaryColor,
+      logoUrl: input.logoUrl ?? undefined,
     };
   }
 }

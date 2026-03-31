@@ -1,6 +1,12 @@
 // 📂 PFAD: backend/src/core/auth/dto/auth.types.ts
 
-import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
+import {
+  ObjectType,
+  Field,
+  ID,
+  registerEnumType,
+  InputType,
+} from '@nestjs/graphql';
 
 // Enums
 export enum UserRole {
@@ -110,4 +116,24 @@ export class SuccessResponse {
 
   @Field()
   message: string;
+}
+@InputType()
+export class UpdateBrandingInput {
+  @Field({ nullable: true })
+  primaryColor?: string;
+
+  @Field({ nullable: true })
+  logoUrl?: string;
+
+  @Field({ nullable: true })
+  platformName?: string;
+}
+
+@ObjectType()
+export class BrandingResult {
+  @Field({ nullable: true })
+  primaryColor?: string;
+
+  @Field({ nullable: true })
+  logoUrl?: string;
 }
