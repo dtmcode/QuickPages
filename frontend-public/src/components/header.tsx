@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Navigation, NavigationItem } from '@/types';
+import { LanguageSwitcher } from '@/components/I18nProvider';
 
 interface HeaderProps {
   navigation: Navigation | null;
@@ -62,6 +63,8 @@ export function Header({
               ))}
             </div>
           )}
+          <div className="flex items-center gap-3">
+  <LanguageSwitcher />
 
           {/* Mobile Menu Button */}
           <button

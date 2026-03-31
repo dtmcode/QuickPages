@@ -6,6 +6,8 @@ import { getAPI } from '@/lib/api';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
+import { I18nProvider } from '@/components/I18nProvider';
+import { CustomerAuthProvider } from '@/contexts/customer-auth-context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -90,6 +92,8 @@ export default async function RootLayout({
   return (
     <html lang="de">
       <body className={inter.className}>
+        <I18nProvider tenant={tenantSlug}>
+           <CustomerAuthProvider>
         <div className="min-h-screen flex flex-col">
           <Header
             navigation={headerNav}
@@ -104,7 +108,9 @@ export default async function RootLayout({
             tenantName={branding?.platformName || tenant.name}
             hidePoweredBy={branding?.hidePoweredBy}
           />
-        </div>
+            </div>
+            </CustomerAuthProvider>
+          </I18nProvider>
         <AnalyticsTracker tenantSlug={tenantSlug} />
       </body>
     </html>

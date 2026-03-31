@@ -135,13 +135,17 @@ export const tenants = pgTable(
     slug: varchar('slug', { length: 200 }).notNull().unique(),
     domain: varchar('domain', { length: 255 }),
     customDomain: varchar('custom_domain', { length: 255 }),
-domainVerified: boolean('domain_verified').default(false),
-domainVerificationToken: varchar('domain_verification_token', { length: 100 }),
-domainVerifiedAt: timestamp('domain_verified_at'),
-dnsRecordsValid: boolean('dns_records_valid').default(false),
-sslStatus: varchar('ssl_status', { length: 20 }).default('none'),
-sslExpiresAt: timestamp('ssl_expires_at'),
-lastDnsCheck: timestamp('last_dns_check'),
+    domainVerified: boolean('domain_verified').default(false),
+    domainVerificationToken: varchar('domain_verification_token', {
+      length: 100,
+    }),
+    domainVerifiedAt: timestamp('domain_verified_at'),
+    dnsRecordsValid: boolean('dns_records_valid').default(false),
+    sslStatus: varchar('ssl_status', { length: 20 }).default('none'),
+    sslExpiresAt: timestamp('ssl_expires_at'),
+    lastDnsCheck: timestamp('last_dns_check'),
+    defaultLocale: varchar('default_locale', { length: 10 }).default('de'),
+    enabledLocales: text('enabled_locales').array().default(['de']),
     package: packageEnum('package').default('starter').notNull(),
     shopTemplate: shopTemplateEnum('shop_template').default('default'),
     settings: jsonb('settings').default({
@@ -932,6 +936,318 @@ export const supportMessages = pgTable(
     ticketIdx: index('support_messages_ticket_idx').on(table.ticketId),
   }),
 );
+
+// ==================== BOOKING SYSTEM ====================
+
+export const bookingServices = pgTable(
+  'booking_services',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    name: varchar('name', { length: 255 }).notNull(),
+    slug: varchar('slug', { length: 255 }).notNull(),
+    description: text('description'),
+    durationMinutes: integer('duration_minutes').notNull().default(30),
+    bufferMinutes: integer('buffer_minutes').notNull().default(0),
+    price: integer('price').notNull().default(0),
+    color: varchar('color', { length: 20 }).default('#3b82f6'),
+    maxBookingsPerSlot: integer('max_bookings_per_slot').default(1),
+    requiresConfirmation: boolean('requires_confirmation').default(false),
+    isActive: boolean('is_active').default(true),
+    sortOrder: integer('sort_order').default(0),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
+  },
+  (table) => ({
+    tenantIdx: index('booking_services_tenant_idx').on(table.tenantId),
+  }),
+);
+
+export const bookingAvailability = pgTable(
+  'booking_availability',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    dayOfWeek: integer('day_of_week').notNull(),
+    startTime: varchar('start_time', { length: 5 }).notNull().default('09:00'),
+    endTime: varchar('end_time', { length: 5 }).notNull().default('17:00'),
+    isActive: boolean('is_active').default(true),
+  },
+  (table) => ({
+    tenantDayIdx: uniqueIndex('booking_availability_tenant_day_idx').on(
+      table.tenantId,
+      table.dayOfWeek,
+    ),
+  }),
+);
+
+export const bookingBlockedDates = pgTable(
+  'booking_blocked_dates',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    date: varchar('date', { length: 10 }).notNull(), // 'YYYY-MM-DD'
+    reason: varchar('reason', { length: 255 }),
+    createdAt: timestamp('created_at').defaultNow(),
+  },
+  (table) => ({
+    tenantDateIdx: uniqueIndex('booking_blocked_dates_tenant_date_idx').on(
+      table.tenantId,
+      table.date,
+    ),
+  }),
+);
+
+export const bookingSettings = pgTable('booking_settings', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id')
+    .notNull()
+    .references(() => tenants.id, { onDelete: 'cascade' })
+    .unique(),
+  timezone: varchar('timezone', { length: 100 }).default('Europe/Berlin'),
+  minNoticeHours: integer('min_notice_hours').default(24),
+  maxAdvanceDays: integer('max_advance_days').default(60),
+  slotIntervalMinutes: integer('slot_interval_minutes').default(30),
+  confirmationEmailEnabled: boolean('confirmation_email_enabled').default(true),
+  reminderEmailHours: integer('reminder_email_hours').default(24),
+  cancellationPolicy: text('cancellation_policy'),
+  bookingPageTitle: varchar('booking_page_title', { length: 255 }),
+  bookingPageDescription: text('booking_page_description'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const bookingAppointments = pgTable(
+  'booking_appointments',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    serviceId: uuid('service_id')
+      .notNull()
+      .references(() => bookingServices.id, { onDelete: 'cascade' }),
+    customerName: varchar('customer_name', { length: 255 }).notNull(),
+    customerEmail: varchar('customer_email', { length: 255 }).notNull(),
+    customerPhone: varchar('customer_phone', { length: 50 }),
+    customerNotes: text('customer_notes'),
+    date: varchar('date', { length: 10 }).notNull(), // 'YYYY-MM-DD'
+    startTime: varchar('start_time', { length: 5 }).notNull(),
+    endTime: varchar('end_time', { length: 5 }).notNull(),
+    status: varchar('status', { length: 50 }).default('confirmed'),
+    confirmationToken: varchar('confirmation_token', { length: 100 }),
+    cancellationReason: text('cancellation_reason'),
+    cancelledAt: timestamp('cancelled_at'),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
+  },
+  (table) => ({
+    tenantIdx: index('booking_appointments_tenant_idx').on(table.tenantId),
+    dateIdx: index('booking_appointments_date_idx').on(table.date),
+    statusIdx: index('booking_appointments_status_idx').on(table.status),
+    tokenIdx: index('booking_appointments_token_idx').on(
+      table.confirmationToken,
+    ),
+  }),
+);
+
+// ==================== ANALYTICS ====================
+
+export const analyticsPageviews = pgTable(
+  'analytics_pageviews',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    pageSlug: varchar('page_slug', { length: 500 }),
+    pageTitle: varchar('page_title', { length: 500 }),
+    referrer: text('referrer'),
+    userAgent: text('user_agent'),
+    ipHash: varchar('ip_hash', { length: 64 }),
+    country: varchar('country', { length: 2 }),
+    device: varchar('device', { length: 20 }), // 'desktop'|'mobile'|'tablet'
+    browser: varchar('browser', { length: 50 }),
+    sessionId: varchar('session_id', { length: 64 }),
+    isNewSession: boolean('is_new_session').default(true),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    tenantIdx: index('analytics_pageviews_tenant_idx').on(table.tenantId),
+    createdAtIdx: index('analytics_pageviews_created_at_idx').on(
+      table.createdAt,
+    ),
+    sessionIdx: index('analytics_pageviews_session_idx').on(table.sessionId),
+  }),
+);
+
+export const analyticsDaily = pgTable(
+  'analytics_daily',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    date: varchar('date', { length: 10 }).notNull(), // 'YYYY-MM-DD'
+    pageviews: integer('pageviews').default(0).notNull(),
+    uniqueVisitors: integer('unique_visitors').default(0).notNull(),
+    newSessions: integer('new_sessions').default(0).notNull(),
+    bounceRate: integer('bounce_rate').default(0), // in percent * 100
+    avgSessionDuration: integer('avg_session_duration').default(0), // seconds
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    tenantDateIdx: uniqueIndex('analytics_daily_tenant_date_idx').on(
+      table.tenantId,
+      table.date,
+    ),
+  }),
+);
+
+// ==================== FORM BUILDER ====================
+
+export const forms = pgTable(
+  'forms',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    name: varchar('name', { length: 255 }).notNull(),
+    slug: varchar('slug', { length: 255 }).notNull(),
+    description: text('description'),
+    fields: jsonb('fields').default([]).notNull(),
+    settings: jsonb('settings').default({}).notNull(),
+    isActive: boolean('is_active').default(true).notNull(),
+    submitButtonText: varchar('submit_button_text', { length: 100 }).default(
+      'Absenden',
+    ),
+    successMessage: text('success_message'),
+    redirectUrl: text('redirect_url'),
+    emailNotification: boolean('email_notification').default(false),
+    notificationEmail: varchar('notification_email', { length: 255 }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    tenantIdx: index('forms_tenant_idx').on(table.tenantId),
+    tenantSlugIdx: uniqueIndex('forms_tenant_slug_idx').on(
+      table.tenantId,
+      table.slug,
+    ),
+  }),
+);
+
+export const formSubmissions = pgTable(
+  'form_submissions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    formId: uuid('form_id')
+      .notNull()
+      .references(() => forms.id, { onDelete: 'cascade' }),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    data: jsonb('data').notNull().default({}),
+    ipAddress: varchar('ip_address', { length: 45 }),
+    userAgent: text('user_agent'),
+    isRead: boolean('is_read').default(false).notNull(),
+    isStarred: boolean('is_starred').default(false).notNull(),
+    isSpam: boolean('is_spam').default(false).notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    formIdx: index('form_submissions_form_idx').on(table.formId),
+    tenantIdx: index('form_submissions_tenant_idx').on(table.tenantId),
+    createdAtIdx: index('form_submissions_created_at_idx').on(table.createdAt),
+  }),
+);
+
+// ==================== BLOG COMMENTS ====================
+
+export const blogComments = pgTable(
+  'blog_comments',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    postId: uuid('post_id')
+      .notNull()
+      .references(() => posts.id, { onDelete: 'cascade' }),
+    parentId: uuid('parent_id'), // self-ref, set after table definition
+    authorName: varchar('author_name', { length: 255 }).notNull(),
+    authorEmail: varchar('author_email', { length: 255 }).notNull(),
+    content: text('content').notNull(),
+    status: varchar('status', { length: 20 }).default('pending').notNull(), // pending|approved|rejected|spam
+    isSpam: boolean('is_spam').default(false).notNull(),
+    isPinned: boolean('is_pinned').default(false).notNull(),
+    ipAddress: varchar('ip_address', { length: 45 }),
+    depth: integer('depth').default(0).notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    tenantIdx: index('blog_comments_tenant_idx').on(table.tenantId),
+    postIdx: index('blog_comments_post_idx').on(table.postId),
+    statusIdx: index('blog_comments_status_idx').on(table.status),
+  }),
+);
+
+export const commentSettings = pgTable('comment_settings', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id')
+    .notNull()
+    .references(() => tenants.id, { onDelete: 'cascade' })
+    .unique(),
+  enabled: boolean('enabled').default(true).notNull(),
+  requireApproval: boolean('require_approval').default(true).notNull(),
+  allowAnonymous: boolean('allow_anonymous').default(false).notNull(),
+  allowReplies: boolean('allow_replies').default(true).notNull(),
+  maxDepth: integer('max_depth').default(3).notNull(),
+  spamFilter: boolean('spam_filter').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+// ==================== I18N ====================
+
+export const translations = pgTable('translations', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
+  entityType: varchar('entity_type', { length: 50 }).notNull(),
+  entityId: uuid('entity_id').notNull(),
+  locale: varchar('locale', { length: 10 }).notNull(),
+  field: varchar('field', { length: 100 }).notNull(),
+  value: text('value').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => ({
+  uniqueIdx: uniqueIndex('translations_unique_idx').on(
+    table.tenantId, table.entityType, table.entityId, table.locale, table.field
+  ),
+  tenantIdx: index('translations_tenant_idx').on(table.tenantId),
+  entityIdx: index('translations_entity_idx').on(table.entityType, table.entityId),
+}));
+
+export const uiTranslations = pgTable('ui_translations', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
+  locale: varchar('locale', { length: 10 }).notNull(),
+  key: varchar('key', { length: 100 }).notNull(),
+  value: text('value').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => ({
+  uniqueIdx: uniqueIndex('ui_translations_unique_idx').on(table.tenantId, table.locale, table.key),
+  tenantIdx: index('ui_translations_tenant_idx').on(table.tenantId),
+}));
 // ==================== RELATIONS ====================
 
 export const tenantsRelations = relations(tenants, ({ many, one }) => ({
@@ -956,6 +1272,15 @@ export const tenantsRelations = relations(tenants, ({ many, one }) => ({
   customers: many(tenantCustomers),
   paymentSettings: one(tenantPaymentSettings),
   domainEvents: many(domainEvents),
+  bookingServices: many(bookingServices),
+  bookingAppointments: many(bookingAppointments),
+  analyticsPageviews: many(analyticsPageviews),
+  analyticsDaily: many(analyticsDaily),
+  forms: many(forms),
+  formSubmissions: many(formSubmissions),
+  blogComments: many(blogComments),
+  translations: many(translations),
+uiTranslations: many(uiTranslations),
 }));
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -1246,7 +1571,78 @@ export const domainEventsRelations = relations(domainEvents, ({ one }) => ({
     references: [tenants.id],
   }),
 }));
+export const bookingServicesRelations = relations(
+  bookingServices,
+  ({ one, many }) => ({
+    tenant: one(tenants, {
+      fields: [bookingServices.tenantId],
+      references: [tenants.id],
+    }),
+    appointments: many(bookingAppointments),
+  }),
+);
 
+export const bookingAppointmentsRelations = relations(
+  bookingAppointments,
+  ({ one }) => ({
+    tenant: one(tenants, {
+      fields: [bookingAppointments.tenantId],
+      references: [tenants.id],
+    }),
+    service: one(bookingServices, {
+      fields: [bookingAppointments.serviceId],
+      references: [bookingServices.id],
+    }),
+  }),
+);
+
+export const formsRelations = relations(forms, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [forms.tenantId], references: [tenants.id] }),
+  submissions: many(formSubmissions),
+}));
+
+export const formSubmissionsRelations = relations(
+  formSubmissions,
+  ({ one }) => ({
+    form: one(forms, {
+      fields: [formSubmissions.formId],
+      references: [forms.id],
+    }),
+    tenant: one(tenants, {
+      fields: [formSubmissions.tenantId],
+      references: [tenants.id],
+    }),
+  }),
+);
+
+export const blogCommentsRelations = relations(
+  blogComments,
+  ({ one, many }) => ({
+    tenant: one(tenants, {
+      fields: [blogComments.tenantId],
+      references: [tenants.id],
+    }),
+    post: one(posts, { fields: [blogComments.postId], references: [posts.id] }),
+    replies: many(blogComments, { relationName: 'replies' }),
+  }),
+);
+
+export const analyticsPageviewsRelations = relations(
+  analyticsPageviews,
+  ({ one }) => ({
+    tenant: one(tenants, {
+      fields: [analyticsPageviews.tenantId],
+      references: [tenants.id],
+    }),
+  }),
+);
+
+export const analyticsDailyRelations = relations(analyticsDaily, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [analyticsDaily.tenantId],
+    references: [tenants.id],
+  }),
+}));
 // ==================== TENANT CUSTOMERS (Public Member Area) ====================
 
 export const tenantCustomers = pgTable(
@@ -1304,3 +1700,16 @@ export const tenantPaymentSettings = pgTable('tenant_payment_settings', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
+export const translationsRelations = relations(translations, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [translations.tenantId],
+    references: [tenants.id],
+  }),
+}));
+
+export const uiTranslationsRelations = relations(uiTranslations, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [uiTranslations.tenantId],
+    references: [tenants.id],
+  }),
+}));

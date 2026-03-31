@@ -39,6 +39,11 @@ export const sectionTypeEnum = pgEnum('wb_section_type', [
   'text',
   'html',
   'custom',
+  'newsletter',
+  'booking',
+  'map',
+  'countdown',
+  'social',
 ]);
 
 export const pageStatusEnum = pgEnum('wb_page_status', [

@@ -31,6 +31,7 @@ import { AiContentModule } from './modules/ai-content/ai-content.module';
 import { WhiteLabelModule } from './modules/white-label/white-label.module';
 import { SupportModule } from './modules/support/support.module';
 import { DomainModule } from './modules/domain/domain.module';
+import { CustomerAuthModule } from './modules/customer-auth/customer-auth.module';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { DomainModule } from './modules/domain/domain.module';
     AiContentModule,
     WhiteLabelModule,
     SupportModule,
+    CustomerAuthModule,
   ],
   providers: [
     // ✅ Rate Limiting global als Guard

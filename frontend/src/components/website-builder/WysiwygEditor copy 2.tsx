@@ -169,18 +169,7 @@ const BLOCK_CATEGORIES = [
     label: 'Medien', icon: '🎬',
     blocks: [
       { type: 'video', label: 'Video', icon: '▶️', description: 'Video-Einbettung' },
-      { type: 'blog', label: 'Blog Feed', icon: '📰', description: 'Letzte Blog-Posts' },
       { type: 'html', label: 'HTML', icon: '⌨️', description: 'Freies HTML' },
-    ],
-  },
-  {
-    label: 'Marketing', icon: '📣',
-    blocks: [
-      { type: 'newsletter', label: 'Newsletter', icon: '📬', description: 'Newsletter-Anmeldung' },
-      { type: 'booking', label: 'Buchung', icon: '📅', description: 'Terminbuchungs-Widget' },
-      { type: 'social', label: 'Social Media', icon: '🌐', description: 'Social Media Links' },
-      { type: 'map', label: 'Karte', icon: '🗺️', description: 'Google Maps Einbettung' },
-      { type: 'countdown', label: 'Countdown', icon: '⏱️', description: 'Countdown-Timer' },
     ],
   },
 ];
@@ -201,12 +190,6 @@ const DEFAULT_CONTENT: Record<string, SectionContent> = {
   faq: { title: 'Häufige Fragen', faqs: [{ question: 'Wie funktioniert das?', answer: 'Ganz einfach...' }, { question: 'Was kostet es?', answer: 'Ab €9 pro Monat.' }] },
   video: { title: '', videoUrl: '', videoPoster: '' },
   html: { html: '<div style="padding: 2rem; text-align: center;"><h2>Dein HTML hier</h2></div>' },
-  blog: { title: 'Neueste Beiträge', count: 3 },
-  newsletter: { title: 'Newsletter abonnieren', description: 'Erhalte die neuesten Updates direkt in dein Postfach.', buttonText: 'Abonnieren', placeholder: 'deine@email.de' },
-  booking: { title: 'Termin buchen', description: 'Buche jetzt deinen Wunschtermin.', buttonText: 'Termin buchen', buttonLink: '/booking' },
-  social: { title: 'Folge uns', links: [{ platform: 'Instagram', url: 'https://instagram.com/', icon: '📷' }, { platform: 'Facebook', url: 'https://facebook.com/', icon: '👍' }, { platform: 'LinkedIn', url: 'https://linkedin.com/', icon: '💼' }] },
-  map: { title: 'So findest du uns', address: 'Musterstraße 1, 12345 Musterstadt', embedUrl: '' },
-  countdown: { title: 'Nur noch bis...', targetDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], description: 'Verpasse nicht unser Angebot!' },
 };
 
 const BG_PRESETS = [
@@ -876,7 +859,6 @@ export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
   const [templateSettings, setTemplateSettings] = useState<TemplateSettings>({});
   const [expandedCat, setExpandedCat] = useState<string | null>('Grundlagen');
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const dragItemIdx = useRef<number | null>(null);
 
   const selectedSection = sections.find(s => s.id === selectedId) || null;
@@ -925,40 +907,17 @@ export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
   }, [undo]);
 
   const handleAddBlock = async (type: string) => {
-    if (!tenant?.id) {
-      setError('Kein Tenant gefunden — bitte Seite neu laden.');
-      return;
-    }
+    if (!tenant?.id) return;
     const label = BLOCK_CATEGORIES.flatMap(c => c.blocks).find(b => b.type === type)?.label || type;
-    setError(null);
     try {
-      const res = await createSectionMut({
-        variables: {
-          input: {
-            pageId,
-            name: label,
-            type,
-            order: sections.length,
-            isActive: true,
-            content: DEFAULT_CONTENT[type] ?? {},
-            // styling weglassen — nullable im Backend, verhindert GraphQL-Typfehler
-          },
-          tenantId: tenant.id,
-        },
-      });
+      const res = await createSectionMut({ variables: { input: { pageId, name: label, type, order: sections.length, isActive: true, content: DEFAULT_CONTENT[type] || {}, styling: {} }, tenantId: tenant.id } });
       if (res.data?.createSection) {
         pushUndo(sections);
         setSections(prev => [...prev, res.data.createSection]);
         setSelectedId(res.data.createSection.id);
         setRightTab('content');
-        setLeftPanel('layers'); // Ebenen zeigen damit User die neue Section sieht
-      } else if (res.errors?.length) {
-        setError(`Section konnte nicht erstellt werden: ${res.errors[0].message}`);
       }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setError(`Fehler beim Erstellen von "${label}": ${msg}`);
-    }
+    } catch (err) { console.error(err); }
   };
 
   const handleDelete = async (id: string) => {
@@ -1147,13 +1106,6 @@ export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
 
         {/* ── CANVAS ── */}
         <div style={{ flex: 1, overflowY: 'auto', background: '#010409', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px' }}>
-          {/* Error Banner */}
-          {error && (
-            <div style={{ width: '100%', maxWidth: 700, marginBottom: 16, background: '#3d1010', border: '1px solid #f85149', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-              <span style={{ fontSize: '0.8rem', color: '#f85149' }}>⚠ {error}</span>
-              <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f85149', fontSize: '1rem', flexShrink: 0 }}>✕</button>
-            </div>
-          )}
           {loading ? (
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.muted }}>
               <div style={{ textAlign: 'center' }}><div style={{ fontSize: '2rem', marginBottom: 12 }}>⟳</div><p>Lade Seite...</p></div>

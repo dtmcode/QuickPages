@@ -106,7 +106,7 @@ export default async function BlogPostPage({ params }: PostProps) {
         />
       </article>
 
-      {/* ✅ Blog Comments */}
+      {/*  Blog Comments */}
       <div className="mt-16 border-t border-gray-200 pt-12">
 <BlogComments postId={post.id} tenant={tenantSlug} />
       </div>

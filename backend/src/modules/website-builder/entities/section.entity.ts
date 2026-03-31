@@ -26,6 +26,11 @@ export enum SectionType {
   text = 'text',
   html = 'html',
   custom = 'custom',
+   newsletter   = 'newsletter',
+  booking      = 'booking',
+  map          = 'map',
+  countdown    = 'countdown',
+  social       = 'social',
 }
 
 registerEnumType(SectionType, {
