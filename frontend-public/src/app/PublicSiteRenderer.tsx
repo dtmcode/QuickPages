@@ -9,8 +9,12 @@ import Image from 'next/image';
 interface SectionStyling {
   backgroundColor?: string;
   textColor?: string;
-  padding?: string;
+  backgroundImage?: string;
+  backgroundSize?: string;
+  backgroundPosition?: string;
+  padding?: string | { top?: string; bottom?: string; left?: string; right?: string };
   fontFamily?: string;
+  bodySize?: string;
   headingSize?: string;
   headingColor?: string;
   subheadingSize?: string;
@@ -18,6 +22,8 @@ interface SectionStyling {
   buttonTextColor?: string;
   cardBackground?: string;
   cardTextColor?: string;
+  textAlign?: string;
+  containerWidth?: string;
 }
 
 interface ContentItem {
@@ -111,12 +117,29 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
     const styling: SectionStyling = section.styling || {};
 
     // Default styles
-    const containerStyle: React.CSSProperties = {
-      backgroundColor: styling.backgroundColor || 'transparent',
-      color: styling.textColor || 'inherit',
-      padding: styling.padding || '3rem 1.5rem',
-      fontFamily: styling.fontFamily || 'inherit',
-    };
+    const bg = styling.backgroundColor;
+const pad = typeof styling.padding === 'object' && styling.padding !== null
+  ? styling.padding as { top?: string; bottom?: string; left?: string; right?: string }
+  : null;
+
+const containerStyle: React.CSSProperties = {
+  backgroundColor: bg?.startsWith('linear') ? undefined : (bg || 'transparent'),
+  backgroundImage: bg?.startsWith('linear')
+    ? bg
+    : styling.backgroundImage
+      ? `url(${styling.backgroundImage})`
+      : undefined,
+  backgroundSize: styling.backgroundSize || 'cover',
+  backgroundPosition: styling.backgroundPosition || 'center',
+  color: styling.textColor || 'inherit',
+  paddingTop: pad?.top || '3rem',
+  paddingBottom: pad?.bottom || '3rem',
+  paddingLeft: pad?.left || '1.5rem',
+  paddingRight: pad?.right || '1.5rem',
+  fontFamily: styling.fontFamily || 'inherit',
+  fontSize: styling.bodySize || 'inherit',
+  textAlign: (styling.textAlign as any) || undefined,
+};
 
     const headingStyle: React.CSSProperties = {
       fontSize: styling.headingSize || '2.25rem',
