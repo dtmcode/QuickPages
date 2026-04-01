@@ -51,19 +51,20 @@ class PublicAPI {
     this.baseUrl = `${API_URL}/api/public/${tenant}`;
   }
 
-  private async fetchWithCache<T>(
-    endpoint: string,
-    revalidate: number = 60,
-  ): Promise<T> {
-    const fullUrl = `${this.baseUrl}${endpoint}`;
-    console.log('🔍 Fetching:', fullUrl);
+private async fetchWithCache<T>(
+  endpoint: string,
+  revalidate: number = 60,
+): Promise<T> {
+  const fullUrl = `${this.baseUrl}${endpoint}`;
+  console.log('🔍 Fetching:', fullUrl);
 
-    const res = await fetch(fullUrl, {
-      next: { revalidate },
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  const res = await fetch(fullUrl, {
+    cache: revalidate === 0 ? 'no-store' : 'default',
+    next: revalidate > 0 ? { revalidate } : undefined,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
     console.log('📡 Response:', res.status, res.statusText);
 
@@ -131,15 +132,15 @@ async getBranding(): Promise<TenantBranding> {
 }
   // ==================== WEBSITE BUILDER ====================
   async getWbHomepage(): Promise<WbPage> {
-    return this.fetchWithCache<WbPage>('/wb/homepage', 60);
+    return this.fetchWithCache<WbPage>('/wb/homepage', 0);
   }
 
   async getWbPage(slug: string): Promise<WbPage> {
-    return this.fetchWithCache<WbPage>(`/wb/pages/${slug}`, 60);
+    return this.fetchWithCache<WbPage>(`/wb/pages/${slug}`, 0);
   }
 
   async getWbPages(): Promise<WbPage[]> {
-    return this.fetchWithCache<WbPage[]>('/wb/pages', 60);
+    return this.fetchWithCache<WbPage[]>('/wb/pages', 0);
   }
 }
 
