@@ -6,7 +6,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-import { NavigationEditor } from './NavigationEditor';
+
 // ==================== GRAPHQL ====================
 
 const GET_PAGE_WITH_SECTIONS = gql`
@@ -962,39 +962,6 @@ function CtrlBtn({ children, onClick, disabled = false, danger = false, title }:
 
 interface WysiwygEditorProps { pageId: string; templateId?: string; }
 
-function LayerNameEditor({ section, isSelected, onRename }: {
-  section: Section; isSelected: boolean; onRename: (id: string, name: string) => void;
-}) {
-  const [editing, setEditing] = useState(false);
-  const [val, setVal] = useState(section.name);
-  const C = { accent: '#58a6ff', text: '#c9d1d9' };
-
-  useEffect(() => { setVal(section.name); }, [section.name]);
-
-  if (editing) {
-    return (
-      <input
-        autoFocus
-        value={val}
-        onChange={e => setVal(e.target.value)}
-        onBlur={() => { onRename(section.id, val || section.name); setEditing(false); }}
-        onKeyDown={e => { if (e.key === 'Enter') { onRename(section.id, val || section.name); setEditing(false); } if (e.key === 'Escape') setEditing(false); }}
-        onClick={e => e.stopPropagation()}
-        style={{ flex: 1, background: '#0d1117', border: '1px solid #58a6ff', borderRadius: 4, color: '#c9d1d9', padding: '2px 6px', fontSize: '0.75rem', outline: 'none', minWidth: 0 }}
-      />
-    );
-  }
-
-  return (
-    <span
-      onDoubleClick={e => { e.stopPropagation(); setEditing(true); }}
-      title="Doppelklick zum Umbenennen"
-      style={{ fontSize: '0.78rem', flex: 1, color: isSelected ? C.accent : C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'text' }}
-    >
-      {section.name}
-    </span>
-  );
-}
 export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
   const { tenant } = useAuth();
   const [sections, setSections] = useState<Section[]>([]);
@@ -1012,9 +979,6 @@ export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
   const [expandedCat, setExpandedCat] = useState<string | null>('Grundlagen');
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showNavEditor, setShowNavEditor] = useState(false);
-const [showShortcuts, setShowShortcuts] = useState(false);
-const [saveToast, setSaveToast] = useState<string | null>(null);
   const dragItemIdx = useRef<number | null>(null);
 
   const selectedSection = sections.find(s => s.id === selectedId) || null;
@@ -1061,15 +1025,6 @@ const [saveToast, setSaveToast] = useState<string | null>(null);
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
   }, [undo]);
-
-  useEffect(() => {
-  if (!isDirty) return;
-  const timer = setTimeout(() => {
-    handleSave().then(() => setSaveToast('Auto-gespeichert ✓'));
-    setTimeout(() => setSaveToast(null), 2500);
-  }, 30000);
-  return () => clearTimeout(timer);
-}, [isDirty, sections]);
 
   const handleAddBlock = async (type: string) => {
     if (!tenant?.id) {
@@ -1139,37 +1094,6 @@ const [saveToast, setSaveToast] = useState<string | null>(null);
     setSections(ns);
     await reorderMut({ variables: { pageId, sectionIds: ns.map(s => s.id), tenantId: tenant?.id } }).catch(console.error);
   };
-
-  const handleDuplicate = async (id: string) => {
-  if (!tenant?.id) return;
-  const section = sections.find(s => s.id === id);
-  if (!section) return;
-  pushUndo(sections);
-  try {
-    const res = await createSectionMut({
-      variables: {
-        input: {
-          pageId,
-          name: `${section.name} (Kopie)`,
-          type: section.type,
-          order: section.order + 1,
-          isActive: section.isActive,
-          content: section.content,
-        },
-        tenantId: tenant.id,
-      },
-    });
-    if (res.data?.createSection) {
-      setSections(prev => {
-        const idx = prev.findIndex(s => s.id === id);
-        const next = [...prev];
-        next.splice(idx + 1, 0, { ...res.data.createSection, styling: section.styling });
-        return next;
-      });
-      setSelectedId(res.data.createSection.id);
-    }
-  } catch (err) { console.error(err); }
-};
 
   const handleContentChange = (content: SectionContent) => {
     if (!selectedId) return;
@@ -1260,17 +1184,6 @@ const [saveToast, setSaveToast] = useState<string | null>(null);
           👁 Vorschau
         </a>
 
-        <button onClick={() => setShowNavEditor(true)}
-  style={{ background: '#21262d', border: `1px solid ${C.border}`, borderRadius: 6, color: C.dim, fontSize: '0.75rem', padding: '6px 10px', fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-  🧭 Navigation
-</button>
-
-<button onClick={() => setShowShortcuts(true)}
-  style={{ background: 'transparent', border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: '0.75rem', padding: '6px 8px', cursor: 'pointer' }}
-  title="Tastenkürzel">
-  ?
-</button>
-
         <button onClick={handleSave} disabled={isSaving} title="Ctrl+S"
           style={{ background: isDirty ? '#238636' : '#161b22', border: `1px solid ${isDirty ? '#2ea043' : C.border}`, borderRadius: 6, cursor: 'pointer', color: isDirty ? '#ffffff' : C.muted, fontSize: '0.78rem', fontWeight: 600, padding: '6px 14px', transition: 'all 0.2s', whiteSpace: 'nowrap' }}>
           {isSaving ? '⟳ Speichern...' : '💾 Speichern'}
@@ -1319,7 +1232,7 @@ const [saveToast, setSaveToast] = useState<string | null>(null);
                   )}
                 </div>
               ))
-       ) : (
+            ) : (
               <div style={{ padding: '8px' }}>
                 {sections.length === 0 && <p style={{ color: C.muted, fontSize: '0.75rem', textAlign: 'center', padding: '2rem 0' }}>Noch keine Sections</p>}
                 {sections.map((s, idx) => (
@@ -1327,19 +1240,9 @@ const [saveToast, setSaveToast] = useState<string | null>(null);
                     onClick={() => setSelectedId(s.id)}
                     style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 7px', marginBottom: 2, borderRadius: 6, cursor: 'pointer', background: selectedId === s.id ? '#1c2128' : dragOverIdx === idx ? '#1c2128' : 'transparent', border: `1px solid ${selectedId === s.id ? C.accent : 'transparent'}`, opacity: s.isActive ? 1 : 0.5 }}>
                     <span style={{ cursor: 'grab', color: '#3d444d', fontSize: '0.85rem', userSelect: 'none' }}>⠿</span>
-                    <LayerNameEditor
-                      section={s}
-                      isSelected={selectedId === s.id}
-                      onRename={(id, name) => {
-                        setSections(prev => prev.map(sec => sec.id === id ? { ...sec, name } : sec));
-                        setIsDirty(true);
-                      }}
-                    />
+                    <span style={{ fontSize: '0.78rem', flex: 1, color: selectedId === s.id ? C.accent : C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</span>
                     <span style={{ fontSize: '0.6rem', color: C.muted, background: '#0d1117', borderRadius: 3, padding: '2px 4px', flexShrink: 0 }}>{s.type}</span>
-                    <button onClick={e => { e.stopPropagation(); handleDuplicate(s.id); }} title="Duplizieren"
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3d444d', fontSize: '0.72rem', padding: '1px', flexShrink: 0 }}>⧉</button>
-                    <button onClick={e => { e.stopPropagation(); handleToggle(s.id); }}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: s.isActive ? C.accent : '#3d444d', fontSize: '0.72rem', padding: '1px', flexShrink: 0 }}>
+                    <button onClick={e => { e.stopPropagation(); handleToggle(s.id); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: s.isActive ? C.accent : '#3d444d', fontSize: '0.72rem', padding: '1px', flexShrink: 0 }}>
                       {s.isActive ? '👁' : '🙈'}
                     </button>
                   </div>
@@ -1451,40 +1354,6 @@ const [saveToast, setSaveToast] = useState<string | null>(null);
           )}
         </div>
       </div>
-    {/* Toast */}
-      {saveToast && (
-        <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', background: '#238636', color: '#fff', borderRadius: 8, padding: '8px 18px', fontSize: '0.8rem', fontWeight: 600, zIndex: 400, pointerEvents: 'none' }}>
-          {saveToast}
-        </div>
-      )}
-
-      {/* Shortcuts Modal */}
-      {showShortcuts && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          onClick={() => setShowShortcuts(false)}>
-          <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 12, padding: 24, minWidth: 320 }} onClick={e => e.stopPropagation()}>
-            <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#e6edf3', margin: '0 0 16px' }}>⌨️ Tastenkürzel</p>
-            {[
-              ['Ctrl + S', 'Speichern'],
-              ['Ctrl + Z', 'Rückgängig'],
-              ['Escape', 'Auswahl aufheben'],
-              ['Doppelklick (Ebene)', 'Section umbenennen'],
-            ].map(([key, desc]) => (
-              <div key={key} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                <code style={{ background: '#0d1117', border: '1px solid #30363d', borderRadius: 4, padding: '2px 8px', fontSize: '0.75rem', color: '#58a6ff' }}>{key}</code>
-                <span style={{ fontSize: '0.78rem', color: '#8b949e' }}>{desc}</span>
-              </div>
-            ))}
-            <button onClick={() => setShowShortcuts(false)}
-              style={{ width: '100%', marginTop: 8, background: '#21262d', border: '1px solid #30363d', borderRadius: 6, color: '#8b949e', padding: '7px', fontSize: '0.8rem', cursor: 'pointer' }}>
-              Schließen
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Navigation Overlay */}
-      {showNavEditor && <NavigationEditor onClose={() => setShowNavEditor(false)} />}
     </div>
   );
 }
