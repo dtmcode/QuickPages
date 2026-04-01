@@ -295,7 +295,7 @@ function SectionRenderer({ section }: { section: Section }) {
           <div className={`${containerWidth} px-4`}>
             {h && <h2 className="text-3xl font-bold text-center mb-8" style={headingStyle}>{h}</h2>}
             {content?.images?.length > 0
-              ? <div className="grid grid-cols-2 md:grid-cols-3 gap-4">{content.images.map((img: any, idx: number) => <div key={idx} className="aspect-square bg-gray-200 rounded-lg overflow-hidden"><img src={img.url} alt={img.alt || ''} className="w-full h-full object-cover hover:scale-105 transition" /></div>)}</div>
+              ? <div className="grid grid-cols-2 md:grid-cols-3 gap-4">{content.images.filter((img: any) => img.url).map((img: any, idx: number) => <div key={idx} className="aspect-square bg-gray-200 rounded-lg overflow-hidden"><img src={img.url} alt={img.alt || ''} className="w-full h-full object-cover hover:scale-105 transition" /></div>)}</div>
               : <div className="text-center py-16 bg-gray-50 rounded-lg text-5xl opacity-30">🖼️</div>
             }
           </div>

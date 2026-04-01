@@ -1253,7 +1253,8 @@ export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
         </div>
 
         {/* ── CANVAS ── */}
-        <div style={{ flex: 1, overflowY: 'auto', background: '#010409', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', background: '#010409', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 24px 200px' }}
+>
           {/* Error Banner */}
           {error && (
             <div style={{ width: '100%', maxWidth: 700, marginBottom: 16, background: '#3d1010', border: '1px solid #f85149', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
@@ -1266,8 +1267,21 @@ export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
               <div style={{ textAlign: 'center' }}><div style={{ fontSize: '2rem', marginBottom: 12 }}>⟳</div><p>Lade Seite...</p></div>
             </div>
           ) : (
-            <div style={{ width: DEVICE_WIDTHS[deviceMode], maxWidth: '100%', transform: `scale(${zoom / 100})`, transformOrigin: 'top center', background: templateSettings?.colors?.background || '#ffffff', color: templateSettings?.colors?.text || '#1f2937', minHeight: 500, boxShadow: '0 0 0 1px #21262d, 0 24px 64px rgba(0,0,0,0.6)', borderRadius: 8, overflow: 'hidden', fontFamily: templateSettings?.fonts?.body || 'system-ui, sans-serif' }}>
-              {sections.length === 0 ? (
+           
+             <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+  <div style={{
+    width: DEVICE_WIDTHS[deviceMode], maxWidth: '100%',
+    transform: `scale(${zoom / 100})`, transformOrigin: 'top left',
+    transformBox: 'fill-box',
+    background: templateSettings?.colors?.background || '#ffffff',
+    color: templateSettings?.colors?.text || '#1f2937',
+    minHeight: 500,
+    boxShadow: '0 0 0 1px #21262d, 0 24px 64px rgba(0,0,0,0.6)',
+    borderRadius: 8, overflow: 'visible',
+    fontFamily: templateSettings?.fonts?.body || 'system-ui, sans-serif'
+  }}>
+              
+                {sections.length === 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 520, color: '#9ca3af', padding: '3rem', textAlign: 'center' }}>
                   <div style={{ fontSize: '3.5rem', marginBottom: 16, opacity: 0.5 }}>✦</div>
                   <h3 style={{ fontSize: '1.1rem', fontWeight: 600, margin: '0 0 8px', color: '#6b7280' }}>Seite ist leer</h3>

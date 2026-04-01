@@ -351,9 +351,9 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
           <section style={containerStyle}>
             <div className="max-w-6xl mx-auto">
               {h && <h2 className="text-3xl font-bold text-center mb-8" style={headingStyle}>{h}</h2>}
-              {content?.images && content.images.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {content.images.map((img: any, idx: number) => (
+              {content?.images && content.images.filter((img: any) => img.url).length > 0 ? (
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+    {content.images.filter((img: any) => img.url).map((img: any, idx: number) => (
                     <div key={idx} className="aspect-square bg-gray-200 rounded-lg overflow-hidden relative">
                       <Image src={img.url} alt={img.alt || ''} fill className="object-cover hover:scale-105 transition" />
                     </div>
