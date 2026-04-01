@@ -37,19 +37,29 @@ interface ContentItem {
 
 interface SectionContent {
   heading?: string;
+  title?: string;
   subheading?: string;
   text?: string;
   buttonText?: string;
   buttonLink?: string;
-  items?: ContentItem[];
-  images?: Array<{ url: string; alt?: string }>;
+  placeholder?: string;
+  address?: string;
+  embedUrl?: string;
   videoUrl?: string;
   html?: string;
   email?: string;
   phone?: string;
-  address?: string;
+  count?: number;
+  targetDate?: string;
+  items?: Record<string, unknown>[];
+  plans?: Record<string, unknown>[];
+  members?: Record<string, unknown>[];
+  testimonials?: Record<string, unknown>[];
+  faqs?: Record<string, unknown>[];
+  stats?: Record<string, unknown>[];
+  images?: Array<{ url: string; alt?: string }>;
+  links?: Array<{ platform: string; url: string; icon?: string }>;
 }
-
 interface SectionData {
   id: string;
   name: string;
