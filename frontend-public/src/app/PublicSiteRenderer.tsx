@@ -157,7 +157,7 @@ const containerStyle: React.CSSProperties = {
     switch (type) {
       case 'hero':
         return (
-          <section className="relative text-white" style={{ ...containerStyle, background: styling.backgroundColor || 'linear-gradient(to right, #2563eb, #7c3aed)' }}>
+        <section className="relative text-white" style={containerStyle}>
             <div className="max-w-5xl mx-auto text-center">
               {h && <h1 className="text-5xl md:text-6xl font-bold mb-4" style={headingStyle}>{h}</h1>}
               {content?.subheading && <p className="text-xl md:text-2xl mb-8 opacity-90" style={{ fontSize: styling.subheadingSize || '1.25rem' }}>{content.subheading}</p>}
@@ -224,7 +224,8 @@ const containerStyle: React.CSSProperties = {
 
       case 'cta':
         return (
-          <section className="text-white text-center" style={{ ...containerStyle, background: styling.backgroundColor || '#2563eb' }}>
+          <section className="text-white text-center" style={containerStyle}>
+
             <div className="max-w-4xl mx-auto">
               {h && <h2 className="text-3xl md:text-4xl font-bold mb-4" style={headingStyle}>{h}</h2>}
               {content?.subheading && <p className="text-lg md:text-xl mb-8 opacity-90">{content.subheading}</p>}
@@ -532,10 +533,8 @@ function NewsletterSection({ content, styling, containerStyle, headingStyle, but
   return (
     <section 
       className="text-white text-center"
-      style={{
-        ...containerStyle,
-        background: styling.backgroundColor || 'linear-gradient(to right, #7c3aed, #2563eb)',
-      }}
+  style={containerStyle}
+
     >
       <div className="max-w-2xl mx-auto">
         {content?.heading && <h2 className="text-3xl font-bold mb-4" style={headingStyle}>{content.heading}</h2>}
