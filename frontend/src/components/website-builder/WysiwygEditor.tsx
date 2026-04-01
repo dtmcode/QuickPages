@@ -49,7 +49,32 @@ const REORDER_SECTIONS = gql`
     reorderSections(pageId: $pageId, sectionIds: $sectionIds, tenantId: $tenantId) { id order }
   }
 `;
-
+const GET_NAVIGATIONS = gql`
+  query WysiwygGetNavigations {
+    navigations {
+      id name location isActive
+      items {
+        id label type url order openInNewTab parentId
+        children { id label type url order openInNewTab }
+      }
+    }
+  }
+`;
+const CREATE_NAV_ITEM = gql`
+  mutation WysiwygCreateNavItem($navigationId: String!, $input: CreateNavigationItemInput!) {
+    createNavigationItem(navigationId: $navigationId, input: $input) { id label type url order openInNewTab }
+  }
+`;
+const UPDATE_NAV_ITEM = gql`
+  mutation WysiwygUpdateNavItem($itemId: String!, $input: UpdateNavigationItemInput!) {
+    updateNavigationItem(itemId: $itemId, input: $input) { id label type url order openInNewTab }
+  }
+`;
+const DELETE_NAV_ITEM = gql`
+  mutation WysiwygDeleteNavItem($itemId: String!) {
+    deleteNavigationItem(itemId: $itemId)
+  }
+`;
 // ==================== TYPES ====================
 
 interface SectionContent { [key: string]: any; }
@@ -100,7 +125,15 @@ interface TemplateSettings {
   colors?: { primary?: string; secondary?: string; accent?: string; background?: string; text?: string };
   fonts?: { heading?: string; body?: string };
 }
-
+interface NavItem {
+  id: string; label: string; type: string; url?: string;
+  order: number; openInNewTab: boolean; parentId?: string;
+  children?: NavItem[];
+}
+interface NavData {
+  id: string; name: string; location: string; isActive: boolean;
+  items?: NavItem[];
+}
 // ==================== FONT PRESETS ====================
 
 const FONT_PRESETS = [
@@ -1003,6 +1036,136 @@ function LayerNameEditor({ section, isSelected, onRename }: {
     </span>
   );
 }
+function NavBarPreview({ nav, isSelected, onClick, primary }: {
+  nav: NavData; isSelected: boolean; onClick: () => void; primary: string;
+}) {
+  const items = (nav.items || []).filter(i => !i.parentId).sort((a, b) => a.order - b.order);
+  const isFooter = nav.location === 'footer';
+  return (
+    <div onClick={onClick} style={{
+      background: isFooter ? '#1f2937' : '#ffffff',
+      color: isFooter ? '#f9fafb' : '#1f2937',
+      borderTop: isFooter ? '1px solid #374151' : 'none',
+      borderBottom: isFooter ? 'none' : '1px solid #e5e7eb',
+      padding: '0 1.5rem', height: 56,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      cursor: 'pointer', position: 'relative',
+      outline: isSelected ? '2px solid #58a6ff' : 'none',
+      outlineOffset: '-2px', opacity: nav.isActive ? 1 : 0.4,
+    }}>
+      {isSelected && (
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, background: '#58a6ff', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '2px 8px', zIndex: 10, textTransform: 'uppercase' }}>
+          🧭 {nav.name}
+        </div>
+      )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ width: 28, height: 28, borderRadius: 6, background: primary, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.75rem', fontWeight: 700 }}>S</div>
+        <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Site</span>
+      </div>
+      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+        {items.slice(0, 5).map(item => (
+          <span key={item.id} style={{ fontSize: '0.8rem', fontWeight: 500, opacity: 0.8 }}>{item.label}</span>
+        ))}
+        {items.length === 0 && <span style={{ fontSize: '0.75rem', opacity: 0.4, fontStyle: 'italic' }}>Keine Items — klicken zum Bearbeiten</span>}
+      </div>
+    </div>
+  );
+}
+function NavEditorPanel({ nav, onRefresh, createNavItem, updateNavItem, deleteNavItem }: {
+  nav: NavData; onRefresh: () => void;
+  createNavItem: any; updateNavItem: any; deleteNavItem: any;
+}) {
+  const [addingItem, setAddingItem] = useState(false);
+  const [editingItem, setEditingItem] = useState<NavItem | null>(null);
+  const [form, setForm] = useState({ label: '', type: 'custom', url: '', openInNewTab: false });
+
+  const inp: React.CSSProperties = { width: '100%', background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, color: '#c9d1d9', padding: '7px 10px', fontSize: '0.78rem', boxSizing: 'border-box', outline: 'none' };
+  const lbl: React.CSSProperties = { display: 'block', fontSize: '0.68rem', color: '#8b949e', marginBottom: 4, fontWeight: 600 };
+
+  const items = (nav.items || []).filter(i => !i.parentId).sort((a, b) => a.order - b.order);
+
+  const startEdit = (item: NavItem) => {
+    setEditingItem(item);
+    setForm({ label: item.label, type: item.type, url: item.url || '', openInNewTab: item.openInNewTab });
+    setAddingItem(true);
+  };
+
+  const handleSave = async () => {
+    if (!form.label.trim()) return;
+    if (editingItem) {
+      await updateNavItem({ variables: { itemId: editingItem.id, input: { label: form.label, type: form.type, url: form.url, openInNewTab: form.openInNewTab } } });
+    } else {
+      await createNavItem({ variables: { navigationId: nav.id, input: { label: form.label, type: form.type, url: form.url, openInNewTab: form.openInNewTab, order: items.length } } });
+    }
+    setAddingItem(false);
+    setEditingItem(null);
+    setForm({ label: '', type: 'custom', url: '', openInNewTab: false });
+    onRefresh();
+  };
+
+  const handleDelete = async (id: string) => {
+    await deleteNavItem({ variables: { itemId: id } });
+    onRefresh();
+  };
+
+  return (
+    <div>
+      {/* Nav Info */}
+      <div style={{ background: 'rgba(88,166,255,0.08)', border: '1px solid rgba(88,166,255,0.2)', borderRadius: 8, padding: '8px 12px', marginBottom: 14 }}>
+        <p style={{ fontSize: '0.72rem', color: '#58a6ff', fontWeight: 600, margin: 0 }}>
+          🧭 {nav.name} — {nav.location === 'header' ? 'Header' : nav.location === 'footer' ? 'Footer' : nav.location}
+        </p>
+      </div>
+
+      {/* Items Liste */}
+      <p style={{ fontSize: '0.68rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+        Menu Items ({items.length})
+      </p>
+      {items.map(item => (
+        <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 9px', marginBottom: 4, background: '#0d1117', border: '1px solid #21262d', borderRadius: 6 }}>
+          <span style={{ flex: 1, fontSize: '0.78rem', color: '#c9d1d9', fontWeight: 500 }}>{item.label}</span>
+          <span style={{ fontSize: '0.65rem', color: '#6e7681', background: '#161b22', borderRadius: 3, padding: '1px 5px' }}>{item.url || item.type}</span>
+          <button onClick={() => startEdit(item)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#58a6ff', fontSize: '0.72rem', padding: '1px 4px' }}>✎</button>
+          <button onClick={() => handleDelete(item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f85149', fontSize: '0.72rem', padding: '1px 4px' }}>✕</button>
+        </div>
+      ))}
+
+      {/* Add/Edit Form */}
+      {addingItem ? (
+        <div style={{ background: '#0d1117', border: '1px solid #30363d', borderRadius: 8, padding: 12, marginTop: 8 }}>
+          <div style={{ marginBottom: 8 }}>
+            <label style={lbl}>Label</label>
+            <input style={inp} value={form.label} onChange={e => setForm(p => ({ ...p, label: e.target.value }))} placeholder="z.B. Startseite" />
+          </div>
+          <div style={{ marginBottom: 8 }}>
+            <label style={lbl}>URL</label>
+            <input style={inp} value={form.url} onChange={e => setForm(p => ({ ...p, url: e.target.value }))} placeholder="/kontakt oder https://..." />
+          </div>
+          <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input type="checkbox" id="navNewTab" checked={form.openInNewTab} onChange={e => setForm(p => ({ ...p, openInNewTab: e.target.checked }))} />
+            <label htmlFor="navNewTab" style={{ ...lbl, marginBottom: 0, cursor: 'pointer' }}>Neuer Tab</label>
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button onClick={handleSave} style={{ flex: 1, background: '#238636', border: 'none', borderRadius: 6, color: '#fff', padding: '7px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>
+              ✓ {editingItem ? 'Aktualisieren' : 'Hinzufügen'}
+            </button>
+            <button onClick={() => { setAddingItem(false); setEditingItem(null); }} style={{ flex: 1, background: '#21262d', border: '1px solid #30363d', borderRadius: 6, color: '#8b949e', padding: '7px', fontSize: '0.78rem', cursor: 'pointer' }}>
+              Abbrechen
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button onClick={() => { setForm({ label: '', type: 'custom', url: '', openInNewTab: false }); setAddingItem(true); }}
+          style={{ width: '100%', marginTop: 8, padding: '7px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.78rem', cursor: 'pointer' }}
+          onMouseEnter={e => (e.currentTarget.style.borderColor = '#58a6ff')}
+          onMouseLeave={e => (e.currentTarget.style.borderColor = '#30363d')}>
+          + Item hinzufügen
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
   const { tenant } = useAuth();
   const [sections, setSections] = useState<Section[]>([]);
@@ -1024,6 +1187,14 @@ export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
 const [showShortcuts, setShowShortcuts] = useState(false);
   const [saveToast, setSaveToast] = useState<string | null>(null);
   const [mediaPicker, setMediaPicker] = useState<{ onSelect: (url: string) => void } | null>(null);
+  const [selectedNavId, setSelectedNavId] = useState<string | null>(null);
+const [navigations, setNavigations] = useState<NavData[]>([]);
+const { refetch: refetchNavs } = useQuery(GET_NAVIGATIONS, {
+  onCompleted: (data) => { if (data?.navigations) setNavigations(data.navigations); },
+});
+const [createNavItemMut] = useMutation(CREATE_NAV_ITEM);
+const [updateNavItemMut] = useMutation(UPDATE_NAV_ITEM);
+const [deleteNavItemMut] = useMutation(DELETE_NAV_ITEM);
 
   const dragItemIdx = useRef<number | null>(null);
 
@@ -1386,7 +1557,11 @@ const [showShortcuts, setShowShortcuts] = useState(false);
     boxShadow: '0 0 0 1px #21262d, 0 24px 64px rgba(0,0,0,0.6)',
     borderRadius: 8, overflow: 'visible',
     fontFamily: templateSettings?.fonts?.body || 'system-ui, sans-serif'
-  }}>
+  }}>{navigations.filter(n => n.location === 'header' && n.isActive).map(nav => (
+      <NavBarPreview key={nav.id} nav={nav} isSelected={selectedNavId === nav.id}
+        onClick={() => { setSelectedNavId(nav.id); setSelectedId(null); }}
+        primary={templateSettings?.colors?.primary || '#3b82f6'} />
+    ))}
               
                 {sections.length === 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 520, color: '#9ca3af', padding: '3rem', textAlign: 'center' }}>
@@ -1398,24 +1573,30 @@ const [showShortcuts, setShowShortcuts] = useState(false);
                 sections.map((section, idx) => (
                   <div key={section.id} draggable onDragStart={() => handleDragStart(idx)} onDragOver={e => handleDragOver(e, idx)} onDrop={e => handleDrop(e, idx)} onDragEnd={() => setDragOverIdx(null)}
                     style={{ position: 'relative', borderTop: dragOverIdx === idx ? '3px solid #58a6ff' : '3px solid transparent' }}>
-                    <CanvasSectionPreview section={section} isSelected={selectedId === section.id} onClick={() => { setSelectedId(section.id); setRightTab('content'); }} settings={templateSettings} deviceMode={deviceMode} />
+                    <CanvasSectionPreview section={section} isSelected={selectedId === section.id} onClick={() => { setSelectedId(section.id); setSelectedNavId(null); setRightTab('content'); }} settings={templateSettings} deviceMode={deviceMode} />
                     {selectedId === section.id && (
                       <div style={{ position: 'absolute', top: 4, right: 8, display: 'flex', gap: 2, zIndex: 20, background: 'rgba(22,27,34,0.96)', borderRadius: 8, padding: '3px 5px', border: `1px solid ${C.border}` }}>
                         <CtrlBtn onClick={() => handleMove(section.id, 'up')} disabled={idx === 0} title="Nach oben">↑</CtrlBtn>
                         <CtrlBtn onClick={() => handleMove(section.id, 'down')} disabled={idx === sections.length - 1} title="Nach unten">↓</CtrlBtn>
                         <div style={{ width: 1, background: C.border, margin: '2px 2px' }} />
                         <CtrlBtn onClick={() => handleToggle(section.id)} title={section.isActive ? 'Ausblenden' : 'Einblenden'}>{section.isActive ? '👁' : '🙈'}</CtrlBtn>
-                        <CtrlBtn onClick={() => handleDelete(section.id)} danger title="Löschen">✕</CtrlBtn>
+                     <CtrlBtn onClick={() => handleDelete(section.id)} danger title="Löschen">✕</CtrlBtn>
                       </div>
                     )}
                   </div>
                 ))
                )}
+               {navigations.filter(n => n.location === 'footer' && n.isActive).map(nav => (
+                <NavBarPreview key={nav.id} nav={nav} isSelected={selectedNavId === nav.id}
+                  onClick={() => { setSelectedNavId(nav.id); setSelectedId(null); }}
+                  primary={templateSettings?.colors?.primary || '#3b82f6'} />
+              ))}
             </div>
           </div>
           )}
         </div>
 
+        
         {/* ── RIGHT SIDEBAR ── */}
         <div style={{ width: 300, background: C.panel, borderLeft: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
           {selectedSection ? (
@@ -1450,6 +1631,27 @@ const [showShortcuts, setShowShortcuts] = useState(false);
                 {rightTab === 'style' && <StylePanel section={selectedSection} onChange={handleStylingChange} onPickMedia={(cb) => setMediaPicker({ onSelect: cb })} />}
                 {rightTab === 'layout' && <LayoutPanel section={selectedSection} onChange={handleStylingChange} deviceMode={deviceMode} />}
                 {rightTab === 'css' && <CssPanel section={selectedSection} onChange={handleStylingChange} />}
+              </div>
+            </>
+         ) : selectedNavId ? (
+            <>
+              <div style={{ padding: '10px 14px', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <p style={{ fontSize: '0.65rem', color: C.muted, textTransform: 'uppercase', margin: '0 0 2px' }}>Navigation</p>
+                  <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#e6edf3', margin: 0 }}>{navigations.find(n => n.id === selectedNavId)?.name}</p>
+                </div>
+                <button onClick={() => setSelectedNavId(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.muted, fontSize: '1.1rem' }}>✕</button>
+              </div>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '14px' }}>
+                {navigations.find(n => n.id === selectedNavId) && (
+                  <NavEditorPanel
+                    nav={navigations.find(n => n.id === selectedNavId)!}
+                    onRefresh={refetchNavs}
+                    createNavItem={createNavItemMut}
+                    updateNavItem={updateNavItemMut}
+                    deleteNavItem={deleteNavItemMut}
+                  />
+                )}
               </div>
             </>
           ) : (
