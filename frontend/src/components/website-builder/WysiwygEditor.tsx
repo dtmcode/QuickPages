@@ -1303,8 +1303,9 @@ export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
                     )}
                   </div>
                 ))
-              )}
+               )}
             </div>
+          </div>
           )}
         </div>
 
