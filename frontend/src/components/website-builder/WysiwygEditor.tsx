@@ -1696,7 +1696,7 @@ const [deleteNavItemMut] = useMutation(DELETE_NAV_ITEM);
       )}
             {/* MediaPicker */}
       {mediaPicker && <MediaPicker onSelect={mediaPicker.onSelect} onClose={() => setMediaPicker(null)} />}
-      {showNavEditor && <NavigationEditor onClose={() => setShowNavEditor(false)} />}
+  
 
       {/* Navigation Overlay */}
       {showNavEditor && <NavigationEditor onClose={() => setShowNavEditor(false)} />}
