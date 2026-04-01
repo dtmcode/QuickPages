@@ -186,27 +186,27 @@ const BLOCK_CATEGORIES = [
 ];
 
 const DEFAULT_CONTENT: Record<string, SectionContent> = {
-  hero:         { heading: 'Deine Überschrift hier', subheading: 'Eine überzeugende Unterüberschrift', buttonText: 'Jetzt starten', buttonLink: '#' },
-  cta:          { heading: 'Bereit loszulegen?', subheading: 'Starte noch heute kostenlos.', buttonText: 'Jetzt starten', buttonLink: '#' },
-  text:         { heading: 'Überschrift', text: '<p>Dein Text hier.</p>' },
-  about:        { heading: 'Über uns', text: '<p>Hier steht eine kurze Beschreibung.</p>' },
-  features:     { heading: 'Unsere Features', items: [{ icon: '⚡', title: 'Feature 1', description: 'Kurze Beschreibung' }, { icon: '🎯', title: 'Feature 2', description: 'Kurze Beschreibung' }, { icon: '🔥', title: 'Feature 3', description: 'Kurze Beschreibung' }] },
-  services:     { heading: 'Unsere Leistungen', items: [{ icon: '🛠️', title: 'Service 1', description: 'Beschreibung', price: 'ab €99' }, { icon: '💡', title: 'Service 2', description: 'Beschreibung', price: 'ab €149' }] },
-  stats:        { heading: 'In Zahlen', items: [{ value: '1.000+', title: 'Kunden', description: 'Weltweit' }, { value: '99%', title: 'Zufriedenheit', description: 'Bewertung' }, { value: '24/7', title: 'Support', description: 'Erreichbar' }, { value: '5+', title: 'Jahre', description: 'Erfahrung' }] },
-  testimonials: { heading: 'Was unsere Kunden sagen', items: [{ title: 'Max Müller', subtitle: 'CEO', description: 'Absolut empfehlenswert!' }, { title: 'Anna Schmidt', subtitle: 'Designerin', description: 'Super einfach zu bedienen.' }] },
-  team:         { heading: 'Unser Team', items: [{ title: 'Max Müller', subtitle: 'CEO', description: 'Gründer & Visionär', image: '' }, { title: 'Anna Schmidt', subtitle: 'CTO', description: 'Technik-Expertin', image: '' }] },
-  gallery:      { heading: 'Galerie', images: [{ url: '', alt: 'Bild 1' }, { url: '', alt: 'Bild 2' }, { url: '', alt: 'Bild 3' }] },
-  pricing:      { heading: 'Unsere Preise', items: [{ title: 'Starter', price: '€9', interval: 'Monat', features: ['Feature 1', 'Feature 2'], buttonText: 'Jetzt starten' }, { title: 'Pro', price: '€29', interval: 'Monat', features: ['Feature 1', 'Feature 2', 'Feature 3'], buttonText: 'Jetzt starten', highlighted: true }] },
-  contact:      { heading: 'Kontakt aufnehmen', subheading: 'Wir freuen uns auf deine Nachricht.', buttonText: 'Senden' },
-  faq:          { heading: 'Häufige Fragen', items: [{ title: 'Wie funktioniert das?', description: 'Ganz einfach...' }, { title: 'Was kostet es?', description: 'Ab €9 pro Monat.' }] },
-  video:        { heading: '', videoUrl: '', videoPoster: '' },
-  html:         { html: '<div style="padding: 2rem; text-align: center;"><h2>Dein HTML hier</h2></div>' },
-  blog:         { heading: 'Neueste Beiträge', count: 3 },
-  newsletter:   { heading: 'Newsletter abonnieren', text: 'Erhalte die neuesten Updates direkt in dein Postfach.', buttonText: 'Abonnieren', placeholder: 'deine@email.de' },
-  booking:      { heading: 'Termin buchen', text: 'Buche jetzt deinen Wunschtermin.', buttonText: 'Termin buchen', buttonLink: '/booking' },
-  social:       { heading: 'Folge uns', links: [{ platform: 'Instagram', url: 'https://instagram.com/', icon: '📷' }, { platform: 'Facebook', url: 'https://facebook.com/', icon: '👍' }, { platform: 'LinkedIn', url: 'https://linkedin.com/', icon: '💼' }] },
-  map:          { heading: 'So findest du uns', address: 'Musterstraße 1, 12345 Musterstadt', embedUrl: '' },
-  countdown:    { heading: 'Nur noch bis...', targetDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], text: 'Verpasse nicht unser Angebot!' },
+  hero: { heading: 'Deine Überschrift hier', subheading: 'Eine überzeugende Unterüberschrift', buttonText: 'Jetzt starten', buttonLink: '#' },
+  cta: { heading: 'Bereit loszulegen?', subheading: 'Starte noch heute kostenlos.', buttonText: 'Jetzt starten', buttonLink: '#' },
+  text: { title: 'Überschrift', text: '<p>Dein Text hier.</p>' },
+  about: { title: 'Über uns', description: 'Hier steht eine kurze Beschreibung.' },
+  features: { title: 'Unsere Features', items: [{ icon: '⚡', title: 'Feature 1', description: 'Kurze Beschreibung' }, { icon: '🎯', title: 'Feature 2', description: 'Kurze Beschreibung' }, { icon: '🔥', title: 'Feature 3', description: 'Kurze Beschreibung' }] },
+  services: { title: 'Unsere Leistungen', items: [{ icon: '🛠️', title: 'Service 1', description: 'Beschreibung', price: 'ab €99' }, { icon: '💡', title: 'Service 2', description: 'Beschreibung', price: 'ab €149' }] },
+  stats: { title: '', stats: [{ value: '1.000+', label: 'Kunden' }, { value: '99%', label: 'Zufriedenheit' }, { value: '24/7', label: 'Support' }, { value: '5+', label: 'Jahre' }] },
+  testimonials: { title: 'Was unsere Kunden sagen', testimonials: [{ name: 'Max Müller', role: 'CEO', text: 'Absolut empfehlenswert!' }, { name: 'Anna Schmidt', role: 'Designerin', text: 'Super einfach zu bedienen.' }] },
+  team: { title: 'Unser Team', members: [{ name: 'Max Müller', role: 'CEO', bio: 'Gründer & Visionär', image: '' }, { name: 'Anna Schmidt', role: 'CTO', bio: 'Technik-Expertin', image: '' }] },
+  gallery: { title: 'Galerie', images: [] },
+  pricing: { title: 'Unsere Preise', plans: [{ name: 'Starter', price: '€9', interval: 'Monat', features: ['Feature 1', 'Feature 2'], buttonText: 'Jetzt starten' }, { name: 'Pro', price: '€29', interval: 'Monat', features: ['Feature 1', 'Feature 2', 'Feature 3'], buttonText: 'Jetzt starten', highlighted: true }] },
+  contact: { title: 'Kontakt aufnehmen', isNewsletter: false },
+  faq: { title: 'Häufige Fragen', faqs: [{ question: 'Wie funktioniert das?', answer: 'Ganz einfach...' }, { question: 'Was kostet es?', answer: 'Ab €9 pro Monat.' }] },
+  video: { title: '', videoUrl: '', videoPoster: '' },
+  html: { html: '<div style="padding: 2rem; text-align: center;"><h2>Dein HTML hier</h2></div>' },
+  blog: { title: 'Neueste Beiträge', count: 3 },
+  newsletter: { title: 'Newsletter abonnieren', description: 'Erhalte die neuesten Updates direkt in dein Postfach.', buttonText: 'Abonnieren', placeholder: 'deine@email.de' },
+  booking: { title: 'Termin buchen', description: 'Buche jetzt deinen Wunschtermin.', buttonText: 'Termin buchen', buttonLink: '/booking' },
+  social: { title: 'Folge uns', links: [{ platform: 'Instagram', url: 'https://instagram.com/', icon: '📷' }, { platform: 'Facebook', url: 'https://facebook.com/', icon: '👍' }, { platform: 'LinkedIn', url: 'https://linkedin.com/', icon: '💼' }] },
+  map: { title: 'So findest du uns', address: 'Musterstraße 1, 12345 Musterstadt', embedUrl: '' },
+  countdown: { title: 'Nur noch bis...', targetDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], description: 'Verpasse nicht unser Angebot!' },
 };
 
 const BG_PRESETS = [
@@ -283,14 +283,11 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
     : { maxWidth: '1100px', margin: '0 auto' };
 
   const renderContent = () => {
-    const h = content.heading || content.title || '';
-    const getItems = (): any[] => content.items || content.plans || content.members || content.testimonials || content.faqs || content.stats || [];
-
     switch (type) {
       case 'hero':
         return (
           <div style={{ ...innerWidth, textAlign: 'center' }}>
-            <h1 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 800, margin: '0 0 1rem', lineHeight: 1.2 }}>{content.heading || 'Hero Überschrift'}</h1>
+            <h1 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 800, marginBottom: '1rem', margin: '0 0 1rem', lineHeight: 1.2 }}>{content.heading || 'Hero Überschrift'}</h1>
             {content.subheading && <p style={{ fontSize: styling?.bodySize || '1.2rem', marginBottom: '1.5rem', opacity: 0.85 }}>{content.subheading}</p>}
             {content.buttonText && <span style={{ display: 'inline-block', padding: '0.75rem 2rem', background: primary, color: '#fff', borderRadius: '0.5rem', fontWeight: 600 }}>{content.buttonText}</span>}
           </div>
@@ -298,7 +295,7 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
       case 'cta':
         return (
           <div style={{ ...innerWidth, textAlign: 'center' }}>
-            <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 0.75rem' }}>{h || 'Call to Action'}</h2>
+            <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 0.75rem' }}>{content.heading || 'Call to Action'}</h2>
             {content.subheading && <p style={{ marginBottom: '1.25rem', opacity: 0.85 }}>{content.subheading}</p>}
             {content.buttonText && <span style={{ display: 'inline-block', padding: '0.75rem 2rem', background: '#ffffff', color: '#0f172a', borderRadius: '0.5rem', fontWeight: 600 }}>{content.buttonText}</span>}
           </div>
@@ -306,14 +303,13 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
       case 'features': case 'services':
         return (
           <div style={innerWidth}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{h}</h2>}
+            {content.title && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{content.title}</h2>}
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
               {(content.items || []).slice(0, 3).map((item: any, i: number) => (
                 <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.06)', textAlign: 'center' }}>
                   {item.icon && <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>}
                   <h3 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: styling?.bodySize || 'inherit' }}>{item.title}</h3>
                   <p style={{ fontSize: '0.875rem', opacity: 0.7, margin: 0 }}>{item.description}</p>
-                  {item.price && <p style={{ fontWeight: 700, color: primary, margin: '0.5rem 0 0' }}>{item.price}</p>}
                 </div>
               ))}
             </div>
@@ -322,20 +318,19 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
       case 'about': case 'text':
         return (
           <div style={innerWidth}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 1rem' }}>{h}</h2>}
-            <p style={{ lineHeight: 1.75, opacity: 0.8, margin: 0 }}>{(content.text || '').replace(/<[^>]*>/g, '') || 'Text hier...'}</p>
+            {content.title && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 1rem' }}>{content.title}</h2>}
+            <p style={{ lineHeight: 1.75, opacity: 0.8, margin: 0 }}>{content.description || (content.text || '').replace(/<[^>]*>/g, '') || 'Text hier...'}</p>
           </div>
         );
       case 'stats':
         return (
           <div style={{ ...innerWidth, textAlign: 'center' }}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 2rem' }}>{h}</h2>}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${Math.min(getItems().length || 4, 4)}, 1fr)`, gap: '2rem' }}>
-              {getItems().map((s: any, i: number) => (
+            {content.title && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 2rem' }}>{content.title}</h2>}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${Math.min((content.stats || []).length || 4, 4)}, 1fr)`, gap: '2rem' }}>
+              {(content.stats || []).map((s: any, i: number) => (
                 <div key={i}>
                   <div style={{ fontSize: isMobile ? '2rem' : '2.5rem', fontWeight: 800, color: primary }}>{s.value}</div>
-                  <div style={{ fontWeight: 600, margin: '0.25rem 0 0.1rem' }}>{s.title || s.label}</div>
-                  {s.description && <div style={{ opacity: 0.6, fontSize: '0.8rem' }}>{s.description}</div>}
+                  <div style={{ opacity: 0.7, marginTop: '0.25rem' }}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -344,12 +339,12 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
       case 'testimonials':
         return (
           <div style={innerWidth}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{h}</h2>}
+            {content.title && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{content.title}</h2>}
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
-              {getItems().slice(0, 2).map((t: any, i: number) => (
+              {(content.testimonials || []).slice(0, 2).map((t: any, i: number) => (
                 <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', fontStyle: 'italic' }}>
-                  <p style={{ margin: '0 0 0.75rem' }}>„{t.description || t.text}"</p>
-                  <p style={{ fontWeight: 600, fontStyle: 'normal', opacity: 0.7, margin: 0 }}>— {t.title || t.name}{(t.subtitle || t.role) ? `, ${t.subtitle || t.role}` : ''}</p>
+                  <p style={{ margin: '0 0 0.75rem' }}>„{t.text}"</p>
+                  <p style={{ fontWeight: 600, fontStyle: 'normal', opacity: 0.7, margin: 0 }}>— {t.name}{t.role ? `, ${t.role}` : ''}</p>
                 </div>
               ))}
             </div>
@@ -358,15 +353,15 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
       case 'team':
         return (
           <div style={innerWidth}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{h}</h2>}
+            {content.title && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{content.title}</h2>}
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
-              {getItems().slice(0, isMobile ? 2 : 3).map((m: any, i: number) => (
+              {(content.members || []).slice(0, isMobile ? 2 : 3).map((m: any, i: number) => (
                 <div key={i}>
                   <div style={{ width: 72, height: 72, borderRadius: '50%', background: primary, margin: '0 auto 0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.75rem', overflow: 'hidden' }}>
-                    {m.image ? <img src={m.image} alt={m.title || m.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
+                    {m.image ? <img src={m.image} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
                   </div>
-                  <h3 style={{ fontWeight: 600, margin: '0 0 0.15rem' }}>{m.title || m.name}</h3>
-                  <p style={{ opacity: 0.6, fontSize: '0.875rem', margin: 0 }}>{m.subtitle || m.role}</p>
+                  <h3 style={{ fontWeight: 600, margin: '0 0 0.15rem' }}>{m.name}</h3>
+                  <p style={{ opacity: 0.6, fontSize: '0.875rem', margin: 0 }}>{m.role}</p>
                 </div>
               ))}
             </div>
@@ -375,11 +370,11 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
       case 'pricing':
         return (
           <div style={innerWidth}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{h}</h2>}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${Math.min(getItems().length || 2, 3)}, 1fr)`, gap: '1.5rem' }}>
-              {getItems().slice(0, 3).map((p: any, i: number) => (
+            {content.title && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{content.title}</h2>}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${Math.min((content.plans || []).length || 2, 3)}, 1fr)`, gap: '1.5rem' }}>
+              {(content.plans || []).slice(0, 3).map((p: any, i: number) => (
                 <div key={i} style={{ padding: '1.5rem', borderRadius: '0.75rem', background: p.highlighted ? primary : 'rgba(0,0,0,0.05)', color: p.highlighted ? '#fff' : 'inherit', border: `2px solid ${p.highlighted ? primary : 'transparent'}` }}>
-                  <h3 style={{ fontWeight: 700, margin: '0 0 0.5rem' }}>{p.title || p.name}</h3>
+                  <h3 style={{ fontWeight: 700, margin: '0 0 0.5rem' }}>{p.name}</h3>
                   <div style={{ fontSize: '2rem', fontWeight: 800, margin: '0 0 1rem' }}>{p.price}<span style={{ fontSize: '0.875rem', fontWeight: 400 }}>/{p.interval}</span></div>
                   <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem' }}>
                     {(p.features || []).map((f: string, fi: number) => <li key={fi} style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>✓ {f}</li>)}
@@ -392,23 +387,23 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
       case 'contact':
         return (
           <div style={{ ...innerWidth, textAlign: 'center' }}>
-            <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 1.5rem' }}>{h || 'Kontakt'}</h2>
+            <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 1.5rem' }}>{content.title || 'Kontakt'}</h2>
             <div style={{ maxWidth: 440, margin: '0 auto' }}>
               {['Name', 'E-Mail', 'Nachricht'].map((f, i) => (
                 <div key={i} style={{ background: 'rgba(0,0,0,0.06)', borderRadius: '0.5rem', padding: '0.75rem 1rem', marginBottom: '0.5rem', textAlign: 'left', color: 'rgba(0,0,0,0.4)', fontSize: '0.875rem' }}>{f}</div>
               ))}
-              <div style={{ background: primary, color: '#fff', borderRadius: '0.5rem', padding: '0.75rem', fontWeight: 600 }}>{content.buttonText || 'Absenden'}</div>
+              <div style={{ background: primary, color: '#fff', borderRadius: '0.5rem', padding: '0.75rem', fontWeight: 600 }}>Absenden</div>
             </div>
           </div>
         );
       case 'faq':
         return (
           <div style={innerWidth}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{h}</h2>}
-            {getItems().map((f: any, i: number) => (
+            {content.title && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{content.title}</h2>}
+            {(content.faqs || []).map((f: any, i: number) => (
               <div key={i} style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', padding: '1rem 0' }}>
-                <h4 style={{ fontWeight: 600, margin: '0 0 0.25rem' }}>{f.title || f.question}</h4>
-                <p style={{ fontSize: '0.875rem', opacity: 0.7, margin: 0 }}>{f.description || f.answer}</p>
+                <h4 style={{ fontWeight: 600, margin: '0 0 0.25rem' }}>{f.question}</h4>
+                <p style={{ fontSize: '0.875rem', opacity: 0.7, margin: 0 }}>{f.answer}</p>
               </div>
             ))}
           </div>
@@ -416,7 +411,7 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
       case 'gallery':
         return (
           <div style={innerWidth}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{h}</h2>}
+            {content.title && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{content.title}</h2>}
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '0.75rem' }}>
               {(content.images?.length > 0 ? content.images.slice(0, 6) : Array(3).fill(null)).map((img: any, i: number) => (
                 <div key={i} style={{ aspectRatio: '1', borderRadius: '0.5rem', overflow: 'hidden', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '2rem' }}>
@@ -429,90 +424,105 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
       case 'video':
         return (
           <div style={{ ...innerWidth, textAlign: 'center' }}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1.5rem' }}>{h}</h2>}
+            {content.title && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1.5rem' }}>{content.title}</h2>}
             <div style={{ background: 'rgba(0,0,0,0.1)', borderRadius: '0.75rem', aspectRatio: '16/9', maxWidth: 600, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.35)', gap: '0.5rem' }}>
               <span style={{ fontSize: '3rem' }}>{content.videoUrl ? '▶️' : '📹'}</span>
               {!content.videoUrl && <span style={{ fontSize: '0.85rem' }}>Video URL eingeben</span>}
             </div>
           </div>
         );
-      case 'newsletter':
-        return (
-          <div style={{ ...innerWidth, textAlign: 'center' }}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 0.75rem' }}>{h}</h2>}
-            {content.text && <p style={{ opacity: 0.8, marginBottom: '1.5rem' }}>{content.text}</p>}
-            <div style={{ display: 'flex', gap: '0.5rem', maxWidth: 400, margin: '0 auto' }}>
-              <div style={{ flex: 1, background: 'rgba(0,0,0,0.06)', borderRadius: '0.5rem', padding: '0.75rem 1rem', color: 'rgba(0,0,0,0.4)', fontSize: '0.875rem' }}>{content.placeholder || 'deine@email.de'}</div>
-              <div style={{ background: primary, color: '#fff', borderRadius: '0.5rem', padding: '0.75rem 1.25rem', fontWeight: 600, whiteSpace: 'nowrap' }}>{content.buttonText || 'Abonnieren'}</div>
-            </div>
-          </div>
-        );
-      case 'booking':
-        return (
-          <div style={{ ...innerWidth, textAlign: 'center' }}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 0.75rem' }}>{h}</h2>}
-            {content.text && <p style={{ opacity: 0.8, marginBottom: '1.5rem' }}>{content.text}</p>}
-            <span style={{ display: 'inline-block', background: primary, color: '#fff', borderRadius: '0.5rem', padding: '0.75rem 2rem', fontWeight: 600 }}>{content.buttonText || 'Jetzt buchen'}</span>
-          </div>
-        );
-      case 'map':
-        return (
-          <div style={innerWidth}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{h}</h2>}
-            <div style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', aspectRatio: '16/7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.35)', gap: '0.5rem' }}>
-              <span style={{ fontSize: '2.5rem' }}>🗺️</span>
-              <span style={{ fontSize: '0.875rem' }}>{content.address || 'Adresse eingeben'}</span>
-            </div>
-          </div>
-        );
-      case 'countdown':
-        return (
-          <div style={{ ...innerWidth, textAlign: 'center' }}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1rem' }}>{h}</h2>}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1rem' }}>
-              {['Tage', 'Std', 'Min', 'Sek'].map(u => (
-                <div key={u} style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.5rem', padding: '1rem', minWidth: 64 }}>
-                  <div style={{ fontSize: '2rem', fontWeight: 800 }}>00</div>
-                  <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>{u}</div>
-                </div>
-              ))}
-            </div>
-            {content.text && <p style={{ opacity: 0.7 }}>{content.text}</p>}
-          </div>
-        );
-      case 'social':
-        return (
-          <div style={{ ...innerWidth, textAlign: 'center' }}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1.5rem' }}>{h}</h2>}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              {(content.links || []).map((l: any, i: number) => (
-                <div key={i} style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', padding: '0.75rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>{l.icon}</span>
-                  <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>{l.platform}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      case 'blog':
-        return (
-          <div style={innerWidth}>
-            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{h}</h2>}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
-              {Array(content.count || 3).fill(null).map((_, i) => (
-                <div key={i} style={{ background: 'rgba(0,0,0,0.06)', borderRadius: '0.75rem', overflow: 'hidden' }}>
-                  <div style={{ aspectRatio: '16/9', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.2)', fontSize: '1.5rem' }}>📰</div>
-                  <div style={{ padding: '1rem' }}>
-                    <div style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.875rem' }}>Blog-Post Titel</div>
-                    <div style={{ fontSize: '0.75rem', opacity: 0.5 }}>Kurze Beschreibung...</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
       case 'html':
         return <div style={innerWidth} dangerouslySetInnerHTML={{ __html: content.html || '<p style="opacity:0.5">HTML Bereich</p>' }} />;
+      case 'newsletter':
+  return (
+    <div style={{ ...innerWidth, textAlign: 'center' }}>
+      <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 0.75rem' }}>
+        {content.title || 'Newsletter'}
+      </h2>
+      {content.description && <p style={{ opacity: 0.8, marginBottom: '1.5rem' }}>{content.description}</p>}
+      <div style={{ display: 'flex', gap: 8, maxWidth: 440, margin: '0 auto' }}>
+        <div style={{ flex: 1, background: 'rgba(0,0,0,0.08)', borderRadius: '0.5rem', padding: '0.75rem 1rem', color: 'rgba(0,0,0,0.4)', fontSize: '0.875rem' }}>
+          {content.placeholder || 'deine@email.de'}
+        </div>
+        <span style={{ background: primary, color: '#fff', borderRadius: '0.5rem', padding: '0.75rem 1.25rem', fontWeight: 600, fontSize: '0.875rem' }}>
+          {content.buttonText || 'Abonnieren'}
+        </span>
+      </div>
+    </div>
+  );
+
+case 'booking':
+  return (
+    <div style={{ ...innerWidth, textAlign: 'center' }}>
+      <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 0.75rem' }}>
+        {content.title || 'Termin buchen'}
+      </h2>
+      {content.description && <p style={{ opacity: 0.8, marginBottom: '1.5rem' }}>{content.description}</p>}
+      <span style={{ display: 'inline-block', background: primary, color: '#fff', borderRadius: '0.5rem', padding: '0.75rem 2rem', fontWeight: 600 }}>
+        {content.buttonText || 'Jetzt buchen'}
+      </span>
+    </div>
+  );
+
+case 'map':
+  return (
+    <div style={innerWidth}>
+      {content.title && <h2 style={{ fontSize: headingSize, fontWeight: 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{content.title}</h2>}
+      <div style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', aspectRatio: '16/7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.35)', gap: '0.5rem' }}>
+        <span style={{ fontSize: '2.5rem' }}>🗺️</span>
+        <span style={{ fontSize: '0.875rem' }}>{content.address || 'Adresse eingeben'}</span>
+      </div>
+    </div>
+  );
+
+case 'countdown':
+  return (
+    <div style={{ ...innerWidth, textAlign: 'center' }}>
+      <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1rem' }}>{content.title || 'Countdown'}</h2>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1rem' }}>
+        {['Tage', 'Std', 'Min', 'Sek'].map(u => (
+          <div key={u} style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.5rem', padding: '1rem', minWidth: 64 }}>
+            <div style={{ fontSize: '2rem', fontWeight: 800 }}>00</div>
+            <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>{u}</div>
+          </div>
+        ))}
+      </div>
+      {content.description && <p style={{ opacity: 0.7 }}>{content.description}</p>}
+    </div>
+  );
+
+case 'social':
+  return (
+    <div style={{ ...innerWidth, textAlign: 'center' }}>
+      {content.title && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1.5rem' }}>{content.title}</h2>}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+        {(content.links || []).map((l: any, i: number) => (
+          <div key={i} style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', padding: '0.75rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>{l.icon}</span>
+            <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>{l.platform}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+case 'blog':
+  return (
+    <div style={innerWidth}>
+      {content.title && <h2 style={{ fontSize: headingSize, fontWeight: 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{content.title}</h2>}
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
+        {Array(content.count || 3).fill(null).map((_, i) => (
+          <div key={i} style={{ background: 'rgba(0,0,0,0.06)', borderRadius: '0.75rem', overflow: 'hidden' }}>
+            <div style={{ aspectRatio: '16/9', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.2)', fontSize: '1.5rem' }}>📰</div>
+            <div style={{ padding: '1rem' }}>
+              <div style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.875rem' }}>Blog-Post Titel</div>
+              <div style={{ fontSize: '0.75rem', opacity: 0.5 }}>Kurze Beschreibung...</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
       default:
         return <div style={{ textAlign: 'center', opacity: 0.4, fontSize: '0.875rem' }}>[{type.toUpperCase()}] {section.name}</div>;
     }
@@ -584,49 +594,95 @@ function ContentEditor({ section, onChange }: { section: Section; onChange: (c: 
     );
   };
 
-switch (type) {
+  switch (type) {
     case 'hero': case 'cta':
       return (<><Field label="Überschrift" field="heading" /><Field label="Unterüberschrift" field="subheading" multi rows={3} /><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>);
     case 'text': case 'about':
-      return (<><Field label="Überschrift" field="heading" /><Field label="Text (HTML erlaubt)" field="text" multi rows={6} /></>);
+      return (<><Field label="Titel" field="title" /><Field label={type === 'text' ? 'Text (HTML erlaubt)' : 'Beschreibung'} field={type === 'text' ? 'text' : 'description'} multi rows={6} /></>);
     case 'features': case 'services':
-      return (<><Field label="Überschrift" field="heading" /><ListEditor field="items" schema={[{ key: 'icon', label: 'Icon (Emoji)' }, { key: 'title', label: 'Titel' }, { key: 'description', label: 'Beschreibung' }, ...(type === 'services' ? [{ key: 'price', label: 'Preis' }] : [])]} /></>);
+      return (<><Field label="Titel" field="title" /><ListEditor field="items" schema={[{ key: 'icon', label: 'Icon (Emoji)' }, { key: 'title', label: 'Titel' }, { key: 'description', label: 'Beschreibung' }, ...(type === 'services' ? [{ key: 'price', label: 'Preis' }] : [])]} /></>);
     case 'stats':
-      return (<><Field label="Überschrift" field="heading" /><ListEditor field="items" schema={[{ key: 'value', label: 'Wert' }, { key: 'title', label: 'Bezeichnung' }, { key: 'description', label: 'Beschreibung' }]} /></>);
+      return (<><Field label="Titel" field="title" /><ListEditor field="stats" schema={[{ key: 'value', label: 'Wert' }, { key: 'label', label: 'Bezeichnung' }]} /></>);
     case 'testimonials':
-      return (<><Field label="Überschrift" field="heading" /><ListEditor field="items" schema={[{ key: 'title', label: 'Name' }, { key: 'subtitle', label: 'Rolle' }, { key: 'description', label: 'Bewertungstext' }]} /></>);
+      return (<><Field label="Titel" field="title" /><ListEditor field="testimonials" schema={[{ key: 'name', label: 'Name' }, { key: 'role', label: 'Rolle' }, { key: 'text', label: 'Bewertungstext' }]} /></>);
     case 'team':
-      return (<><Field label="Überschrift" field="heading" /><ListEditor field="items" schema={[{ key: 'title', label: 'Name' }, { key: 'subtitle', label: 'Position' }, { key: 'description', label: 'Bio' }, { key: 'image', label: 'Bild URL' }]} /></>);
+      return (<><Field label="Titel" field="title" /><ListEditor field="members" schema={[{ key: 'name', label: 'Name' }, { key: 'role', label: 'Position' }, { key: 'bio', label: 'Bio' }, { key: 'image', label: 'Bild URL' }]} /></>);
     case 'pricing':
-      return (<><Field label="Überschrift" field="heading" /><ListEditor field="items" schema={[{ key: 'title', label: 'Paket-Name' }, { key: 'price', label: 'Preis' }, { key: 'interval', label: 'Intervall' }, { key: 'buttonText', label: 'Button Text' }]} /></>);
+      return (<><Field label="Titel" field="title" /><ListEditor field="plans" schema={[{ key: 'name', label: 'Paket-Name' }, { key: 'price', label: 'Preis' }, { key: 'interval', label: 'Intervall' }, { key: 'buttonText', label: 'Button Text' }]} /></>);
     case 'gallery':
-      return (<><Field label="Überschrift" field="heading" /><ListEditor field="images" schema={[{ key: 'url', label: 'Bild URL' }, { key: 'alt', label: 'Alt-Text' }]} /></>);
+      return (<><Field label="Titel" field="title" /><ListEditor field="images" schema={[{ key: 'url', label: 'Bild URL' }, { key: 'alt', label: 'Alt-Text' }]} /></>);
     case 'faq':
-      return (<><Field label="Überschrift" field="heading" /><ListEditor field="items" schema={[{ key: 'title', label: 'Frage' }, { key: 'description', label: 'Antwort' }]} /></>);
+      
+      return (<><Field label="Titel" field="title" /><ListEditor field="faqs" schema={[{ key: 'question', label: 'Frage' }, { key: 'answer', label: 'Antwort' }]} /></>);
     case 'video':
-      return (<><Field label="Überschrift" field="heading" /><Field label="Video URL (YouTube/Vimeo)" field="videoUrl" /><Field label="Poster Bild URL" field="videoPoster" /></>);
+      return (<><Field label="Titel" field="title" /><Field label="Video URL (YouTube/Vimeo)" field="videoUrl" /><Field label="Poster Bild URL" field="videoPoster" /></>);
     case 'newsletter':
-      return (<><Field label="Überschrift" field="heading" /><Field label="Beschreibung" field="text" multi rows={3} /><Field label="Button Text" field="buttonText" /><Field label="Placeholder (E-Mail)" field="placeholder" /></>);
-    case 'booking':
-      return (<><Field label="Überschrift" field="heading" /><Field label="Beschreibung" field="text" multi rows={3} /><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>);
-    case 'map':
-      return (<><Field label="Überschrift" field="heading" /><Field label="Adresse" field="address" /><Field label="Google Maps Embed URL" field="embedUrl" /></>);
-    case 'countdown':
-      return (<><Field label="Überschrift" field="heading" /><Field label="Zieldatum (YYYY-MM-DD)" field="targetDate" /><Field label="Beschreibung" field="text" /></>);
-    case 'social':
-      return (<><Field label="Überschrift" field="heading" /><ListEditor field="links" schema={[{ key: 'platform', label: 'Plattform' }, { key: 'url', label: 'URL' }, { key: 'icon', label: 'Icon (Emoji)' }]} /></>);
-    case 'blog':
-      return (
-        <>
-          <Field label="Überschrift" field="heading" />
-          <div style={wrapStyle}>
-            <label style={labelStyle}>Anzahl Posts</label>
-            <select value={content.count || 3} onChange={e => update('count', Number(e.target.value))} style={{ ...inputStyle, width: '100%' }}>
-              {[3, 6, 9].map(n => <option key={n} value={n}>{n} Posts</option>)}
-            </select>
-          </div>
-        </>
-      );
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <Field label="Beschreibung" field="description" multi rows={3} />
+      <Field label="Button Text" field="buttonText" />
+      <Field label="Placeholder (E-Mail)" field="placeholder" />
+    </>
+  );
+
+case 'booking':
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <Field label="Beschreibung" field="description" multi rows={3} />
+      <Field label="Button Text" field="buttonText" />
+      <Field label="Button Link" field="buttonLink" />
+    </>
+  );
+
+case 'map':
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <Field label="Adresse" field="address" />
+      <Field label="Google Maps Embed URL" field="embedUrl" />
+    </>
+  );
+
+case 'countdown':
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <Field label="Zieldatum (YYYY-MM-DD)" field="targetDate" />
+      <Field label="Beschreibung" field="description" />
+    </>
+  );
+
+case 'social':
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <ListEditor field="links" schema={[
+        { key: 'platform', label: 'Plattform (z.B. Instagram)' },
+        { key: 'url', label: 'URL' },
+        { key: 'icon', label: 'Icon (Emoji)' },
+      ]} />
+    </>
+  );
+
+case 'blog':
+  return (
+    <>
+      <Field label="Titel" field="title" />
+      <div style={wrapStyle}>
+        <label style={labelStyle}>Anzahl Posts</label>
+        <select
+          value={content.count || 3}
+          onChange={e => update('count', Number(e.target.value))}
+          style={{ ...inputStyle, width: '100%' }}
+        >
+          {[3, 6, 9].map(n => <option key={n} value={n}>{n} Posts</option>)}
+        </select>
+      </div>
+    </>
+  );
+    
     case 'html':
       return (
         <div style={wrapStyle}>

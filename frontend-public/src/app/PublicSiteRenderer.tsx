@@ -118,39 +118,18 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
       color: styling.buttonTextColor || '#ffffff',
     };
 
+  const h = content?.heading || content?.title || '';
+    const getItems = (): any[] => content?.items || content?.plans || content?.members || content?.testimonials || content?.faqs || content?.stats || [];
+
     switch (type) {
       case 'hero':
         return (
-          <section 
-            className="relative text-white"
-            style={{
-              ...containerStyle,
-              background: styling.backgroundColor || 'linear-gradient(to right, #2563eb, #7c3aed)',
-            }}
-          >
+          <section className="relative text-white" style={{ ...containerStyle, background: styling.backgroundColor || 'linear-gradient(to right, #2563eb, #7c3aed)' }}>
             <div className="max-w-5xl mx-auto text-center">
-              {content?.heading && (
-                <h1 className="text-5xl md:text-6xl font-bold mb-4" style={headingStyle}>
-                  {content.heading}
-                </h1>
-              )}
-              {content?.subheading && (
-                <p className="text-xl md:text-2xl mb-8 opacity-90" style={{ fontSize: styling.subheadingSize || '1.25rem' }}>
-                  {content.subheading}
-                </p>
-              )}
-              {content?.text && (
-                <div className="prose prose-lg prose-invert mx-auto mb-8" dangerouslySetInnerHTML={{ __html: content.text }} />
-              )}
-              {content?.buttonText && (
-                <a 
-                  href={content.buttonLink || '#'} 
-                  className="inline-block px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition"
-                  style={buttonStyle}
-                >
-                  {content.buttonText}
-                </a>
-              )}
+              {h && <h1 className="text-5xl md:text-6xl font-bold mb-4" style={headingStyle}>{h}</h1>}
+              {content?.subheading && <p className="text-xl md:text-2xl mb-8 opacity-90" style={{ fontSize: styling.subheadingSize || '1.25rem' }}>{content.subheading}</p>}
+              {content?.text && <div className="prose prose-lg prose-invert mx-auto mb-8" dangerouslySetInnerHTML={{ __html: content.text }} />}
+              {content?.buttonText && <a href={content.buttonLink || '#'} className="inline-block px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition" style={buttonStyle}>{content.buttonText}</a>}
             </div>
           </section>
         );
@@ -159,22 +138,11 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section style={containerStyle}>
             <div className="max-w-6xl mx-auto">
-              {content?.heading && (
-                <h2 className="text-4xl font-bold text-center mb-12" style={headingStyle}>
-                  {content.heading}
-                </h2>
-              )}
-              {content?.items && (
+              {h && <h2 className="text-4xl font-bold text-center mb-12" style={headingStyle}>{h}</h2>}
+              {getItems().length > 0 && (
                 <div className="grid md:grid-cols-3 gap-8">
-                  {content.items.map((item, idx) => (
-                    <div 
-                      key={idx} 
-                      className="p-6 rounded-lg shadow hover:shadow-lg transition"
-                      style={{
-                        backgroundColor: styling.cardBackground || '#ffffff',
-                        color: styling.cardTextColor || 'inherit',
-                      }}
-                    >
+                  {getItems().map((item: any, idx: number) => (
+                    <div key={idx} className="p-6 rounded-lg shadow hover:shadow-lg transition" style={{ backgroundColor: styling.cardBackground || '#ffffff', color: styling.cardTextColor || 'inherit' }}>
                       {item.icon && <div className="text-4xl mb-4">{item.icon}</div>}
                       <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
                       <p className="opacity-80">{item.description}</p>
@@ -191,20 +159,10 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section style={containerStyle}>
             <div className="max-w-4xl mx-auto">
-              {content?.heading && (
-                <h2 className="text-3xl font-bold mb-6" style={headingStyle}>{content.heading}</h2>
-              )}
+              {h && <h2 className="text-3xl font-bold mb-6" style={headingStyle}>{h}</h2>}
               {content?.subheading && <p className="text-xl mb-6 opacity-80">{content.subheading}</p>}
-              {content?.text && (
-                <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: content.text }} />
-              )}
-              {content?.buttonText && (
-                <div className="mt-8">
-                  <a href={content.buttonLink || '#'} className="inline-block px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition" style={buttonStyle}>
-                    {content.buttonText}
-                  </a>
-                </div>
-              )}
+              {content?.text && <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: content.text }} />}
+              {content?.buttonText && <div className="mt-8"><a href={content.buttonLink || '#'} className="inline-block px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition" style={buttonStyle}>{content.buttonText}</a></div>}
             </div>
           </section>
         );
@@ -213,11 +171,11 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section style={containerStyle}>
             <div className="max-w-6xl mx-auto">
-              {content?.heading && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{content.heading}</h2>}
+              {h && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{h}</h2>}
               {content?.subheading && <p className="text-xl text-center mb-12 opacity-80">{content.subheading}</p>}
-              {content?.items && (
+              {getItems().length > 0 && (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {content.items.map((item, idx) => (
+                  {getItems().map((item: any, idx: number) => (
                     <div key={idx} className="p-6 rounded-lg shadow hover:shadow-lg transition" style={{ backgroundColor: styling.cardBackground || '#ffffff', color: styling.cardTextColor || 'inherit' }}>
                       {item.icon && <div className="text-3xl mb-4">{item.icon}</div>}
                       <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
@@ -235,13 +193,10 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section className="text-white text-center" style={{ ...containerStyle, background: styling.backgroundColor || '#2563eb' }}>
             <div className="max-w-4xl mx-auto">
-              {content?.heading && <h2 className="text-3xl md:text-4xl font-bold mb-4" style={headingStyle}>{content.heading}</h2>}
+              {h && <h2 className="text-3xl md:text-4xl font-bold mb-4" style={headingStyle}>{h}</h2>}
+              {content?.subheading && <p className="text-lg md:text-xl mb-8 opacity-90">{content.subheading}</p>}
               {content?.text && <p className="text-lg md:text-xl mb-8 opacity-90">{content.text}</p>}
-              {content?.buttonText && (
-                <a href={content.buttonLink || '#'} className="inline-block px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition" style={buttonStyle}>
-                  {content.buttonText}
-                </a>
-              )}
+              {content?.buttonText && <a href={content.buttonLink || '#'} className="inline-block px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition" style={buttonStyle}>{content.buttonText}</a>}
             </div>
           </section>
         );
@@ -253,19 +208,19 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section style={containerStyle}>
             <div className="max-w-6xl mx-auto">
-              {content?.heading && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{content.heading}</h2>}
-              {content?.items && (
+              {h && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{h}</h2>}
+              {getItems().length > 0 && (
                 <div className="grid md:grid-cols-3 gap-8">
-                  {content.items.map((item, idx) => (
+                  {getItems().map((item: any, idx: number) => (
                     <div key={idx} className="text-center">
                       {item.image && (
                         <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 relative">
-                          <Image src={item.image} alt={item.title} fill className="object-cover" />
+                          <Image src={item.image} alt={item.title || item.name || ''} fill className="object-cover" />
                         </div>
                       )}
-                      <h3 className="text-xl font-semibold mb-1">{item.title}</h3>
-                      <p className="text-sm opacity-75 mb-2">{item.subtitle}</p>
-                      <p className="opacity-80">{item.description}</p>
+                      <h3 className="text-xl font-semibold mb-1">{item.title || item.name}</h3>
+                      <p className="text-sm opacity-75 mb-2">{item.subtitle || item.role}</p>
+                      <p className="opacity-80">{item.description || item.bio}</p>
                     </div>
                   ))}
                 </div>
@@ -278,21 +233,21 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section style={containerStyle}>
             <div className="max-w-6xl mx-auto">
-              {content?.heading && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{content.heading}</h2>}
-              {content?.items && (
+              {h && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{h}</h2>}
+              {getItems().length > 0 && (
                 <div className="grid md:grid-cols-2 gap-8">
-                  {content.items.map((item, idx) => (
+                  {getItems().map((item: any, idx: number) => (
                     <div key={idx} className="p-6 rounded-lg shadow" style={{ backgroundColor: styling.cardBackground || '#ffffff', color: styling.cardTextColor || 'inherit' }}>
-                      <p className="text-lg mb-4 italic">&ldquo;{item.description}&rdquo;</p>
+                      <p className="text-lg mb-4 italic">&ldquo;{item.description || item.text}&rdquo;</p>
                       <div className="flex items-center gap-4">
                         {item.image && (
                           <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 relative">
-                            <Image src={item.image} alt={item.title} fill className="object-cover" />
+                            <Image src={item.image} alt={item.title || item.name || ''} fill className="object-cover" />
                           </div>
                         )}
                         <div>
-                          <p className="font-semibold">{item.title}</p>
-                          <p className="text-sm opacity-75">{item.subtitle}</p>
+                          <p className="font-semibold">{item.title || item.name}</p>
+                          <p className="text-sm opacity-75">{item.subtitle || item.role}</p>
                         </div>
                       </div>
                     </div>
@@ -307,26 +262,16 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section style={containerStyle}>
             <div className="max-w-6xl mx-auto">
-              {content?.heading && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{content.heading}</h2>}
-              {content?.items && (
+              {h && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{h}</h2>}
+              {getItems().length > 0 && (
                 <div className="grid md:grid-cols-3 gap-8">
-                  {content.items.map((item, idx) => (
+                  {getItems().map((item: any, idx: number) => (
                     <div key={idx} className="p-8 rounded-lg shadow hover:shadow-lg transition text-center" style={{ backgroundColor: styling.cardBackground || '#ffffff', color: styling.cardTextColor || 'inherit' }}>
-                      <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
-                      <div className="text-4xl font-bold mb-6" style={{ color: styling.headingColor }}>{item.price}</div>
-                      <p className="mb-6 opacity-80">{item.description}</p>
-                      {item.features && (
-                        <ul className="space-y-2 mb-6 text-left">
-                          {item.features.map((feature, i) => (
-                            <li key={i} className="flex items-center gap-2">
-                              <span className="text-green-500">✓</span><span>{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      <button className="w-full py-3 rounded hover:opacity-90 transition" style={buttonStyle}>
-                        {item.buttonText || 'Wählen'}
-                      </button>
+                      <h3 className="text-2xl font-bold mb-4">{item.title || item.name}</h3>
+                      <div className="text-4xl font-bold mb-6" style={{ color: styling.headingColor }}>{item.price}{item.interval && <span className="text-lg font-normal">/{item.interval}</span>}</div>
+                      {item.description && <p className="mb-6 opacity-80">{item.description}</p>}
+                      {item.features && <ul className="space-y-2 mb-6 text-left">{item.features.map((f: string, i: number) => <li key={i} className="flex items-center gap-2"><span className="text-green-500">✓</span><span>{f}</span></li>)}</ul>}
+                      <button className="w-full py-3 rounded hover:opacity-90 transition" style={buttonStyle}>{item.buttonText || 'Wählen'}</button>
                     </div>
                   ))}
                 </div>
@@ -339,13 +284,13 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section style={containerStyle}>
             <div className="max-w-4xl mx-auto">
-              {content?.heading && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{content.heading}</h2>}
-              {content?.items && (
+              {h && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{h}</h2>}
+              {getItems().length > 0 && (
                 <div className="space-y-4">
-                  {content.items.map((item, idx) => (
+                  {getItems().map((item: any, idx: number) => (
                     <details key={idx} className="p-6 rounded-lg shadow" style={{ backgroundColor: styling.cardBackground || '#ffffff', color: styling.cardTextColor || 'inherit' }}>
-                      <summary className="font-semibold cursor-pointer">{item.title}</summary>
-                      <p className="mt-4 opacity-80">{item.description}</p>
+                      <summary className="font-semibold cursor-pointer">{item.title || item.question}</summary>
+                      <p className="mt-4 opacity-80">{item.description || item.answer}</p>
                     </details>
                   ))}
                 </div>
@@ -358,14 +303,14 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section style={containerStyle}>
             <div className="max-w-6xl mx-auto">
-              {content?.heading && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{content.heading}</h2>}
-              {content?.items && (
+              {h && <h2 className="text-3xl font-bold text-center mb-12" style={headingStyle}>{h}</h2>}
+              {getItems().length > 0 && (
                 <div className="grid md:grid-cols-4 gap-8 text-center">
-                  {content.items.map((item, idx) => (
+                  {getItems().map((item: any, idx: number) => (
                     <div key={idx}>
                       <div className="text-5xl font-bold mb-2" style={{ color: styling.headingColor }}>{item.value}</div>
-                      <p className="text-lg font-semibold mb-1">{item.title}</p>
-                      <p className="text-sm opacity-75">{item.description}</p>
+                      <p className="text-lg font-semibold mb-1">{item.title || item.label}</p>
+                      {item.description && <p className="text-sm opacity-75">{item.description}</p>}
                     </div>
                   ))}
                 </div>
@@ -381,12 +326,11 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section style={containerStyle}>
             <div className="max-w-4xl mx-auto">
-              {content?.heading && <h2 className="text-3xl font-bold text-center mb-8" style={headingStyle}>{content.heading}</h2>}
-              {content?.videoUrl && (
-                <div className="aspect-video bg-black rounded-lg overflow-hidden">
-                  <iframe src={content.videoUrl} className="w-full h-full" allowFullScreen title="Video" />
-                </div>
-              )}
+              {h && <h2 className="text-3xl font-bold text-center mb-8" style={headingStyle}>{h}</h2>}
+              {content?.videoUrl
+                ? <div className="aspect-video bg-black rounded-lg overflow-hidden"><iframe src={content.videoUrl} className="w-full h-full" allowFullScreen title="Video" /></div>
+                : <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center text-5xl opacity-40">▶️</div>
+              }
               {content?.text && <div className="mt-6 prose prose-lg mx-auto" dangerouslySetInnerHTML={{ __html: content.text }} />}
             </div>
           </section>
@@ -396,16 +340,77 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section style={containerStyle}>
             <div className="max-w-6xl mx-auto">
-              {content?.heading && <h2 className="text-3xl font-bold text-center mb-8" style={headingStyle}>{content.heading}</h2>}
-              {content?.images && (
+              {h && <h2 className="text-3xl font-bold text-center mb-8" style={headingStyle}>{h}</h2>}
+              {content?.images && content.images.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {content.images.map((img, idx) => (
+                  {content.images.map((img: any, idx: number) => (
                     <div key={idx} className="aspect-square bg-gray-200 rounded-lg overflow-hidden relative">
                       <Image src={img.url} alt={img.alt || ''} fill className="object-cover hover:scale-105 transition" />
                     </div>
                   ))}
                 </div>
+              ) : (
+                <div className="text-center py-16 bg-gray-50 rounded-lg text-5xl opacity-30">🖼️</div>
               )}
+            </div>
+          </section>
+        );
+
+      case 'booking':
+        return (
+          <section style={containerStyle}>
+            <div className="max-w-2xl mx-auto text-center">
+              {h && <h2 className="text-3xl font-bold mb-4" style={headingStyle}>{h}</h2>}
+              {content?.text && <p className="text-lg opacity-80 mb-8">{content.text}</p>}
+              <a href={content?.buttonLink || '/booking'} className="inline-block px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition" style={buttonStyle}>{content?.buttonText || 'Termin buchen'}</a>
+            </div>
+          </section>
+        );
+
+      case 'social':
+        return (
+          <section style={containerStyle}>
+            <div className="max-w-2xl mx-auto text-center">
+              {h && <h2 className="text-3xl font-bold mb-8" style={headingStyle}>{h}</h2>}
+              <div className="flex gap-4 justify-center flex-wrap">
+                {(content?.links || []).map((link: any, idx: number) => (
+                  <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 hover:bg-gray-200 transition font-semibold text-gray-800 no-underline">
+                    <span>{link.icon}</span><span>{link.platform}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+
+      case 'map':
+        return (
+          <section style={containerStyle}>
+            <div className="max-w-4xl mx-auto">
+              {h && <h2 className="text-3xl font-bold text-center mb-4" style={headingStyle}>{h}</h2>}
+              {content?.address && <p className="text-center opacity-70 mb-6">📍 {content.address}</p>}
+              {content?.embedUrl
+                ? <div className="rounded-xl overflow-hidden h-96 shadow"><iframe src={content.embedUrl} className="w-full h-full border-0" title="Karte" allowFullScreen /></div>
+                : <div className="bg-gray-100 rounded-xl h-64 flex items-center justify-center text-5xl opacity-40">🗺️</div>
+              }
+            </div>
+          </section>
+        );
+
+      case 'countdown':
+        return (
+          <section style={containerStyle}>
+            <div className="max-w-xl mx-auto text-center">
+              {h && <h2 className="text-3xl font-bold mb-8" style={headingStyle}>{h}</h2>}
+              <div className="flex gap-6 justify-center">
+                {['TT','STD','MIN','SEK'].map(u => (
+                  <div key={u}>
+                    <div className="text-5xl font-black" style={{ color: buttonStyle.backgroundColor }}>00</div>
+                    <div className="text-xs opacity-60 uppercase tracking-widest mt-1">{u}</div>
+                  </div>
+                ))}
+              </div>
+              {content?.text && <p className="opacity-70 mt-6">{content.text}</p>}
             </div>
           </section>
         );
@@ -424,14 +429,10 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
         return (
           <section style={containerStyle}>
             <div className="max-w-6xl mx-auto">
-              {content?.heading && <h2 className="text-3xl font-bold mb-6" style={headingStyle}>{content.heading}</h2>}
+              {h && <h2 className="text-3xl font-bold mb-6" style={headingStyle}>{h}</h2>}
               {content?.subheading && <p className="text-xl mb-6 opacity-80">{content.subheading}</p>}
               {content?.text && <div className="prose prose-lg max-w-none mb-6" dangerouslySetInnerHTML={{ __html: content.text }} />}
-              {content?.buttonText && (
-                <a href={content.buttonLink || '#'} className="inline-block px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition" style={buttonStyle}>
-                  {content.buttonText}
-                </a>
-              )}
+              {content?.buttonText && <a href={content.buttonLink || '#'} className="inline-block px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition" style={buttonStyle}>{content.buttonText}</a>}
             </div>
           </section>
         );
