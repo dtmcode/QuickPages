@@ -7,6 +7,8 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { NavigationEditor } from './NavigationEditor';
+import { MediaPicker } from './MediaPicker';
+
 // ==================== GRAPHQL ====================
 
 const GET_PAGE_WITH_SECTIONS = gql`
@@ -642,7 +644,7 @@ switch (type) {
 
 // ==================== STYLE PANEL ====================
 
-function StylePanel({ section, onChange }: { section: Section; onChange: (s: Partial<SectionStyling>) => void }) {
+function StylePanel({ section, onChange, onPickMedia }: { section: Section; onChange: (s: Partial<SectionStyling>) => void; onPickMedia: (cb: (url: string) => void) => void }) {
   const st = section.styling || {};
   const inputStyle: React.CSSProperties = { flex: 1, background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, color: '#c9d1d9', padding: '7px 10px', fontSize: '0.75rem', outline: 'none' };
   const sectionLabel: React.CSSProperties = { fontSize: '0.68rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8, marginTop: 16, display: 'block' };
@@ -678,8 +680,14 @@ function StylePanel({ section, onChange }: { section: Section; onChange: (s: Par
 
       {/* Hintergrundbild */}
       <span style={sectionLabel}>Hintergrundbild URL</span>
-      <input type="text" placeholder="https://..." value={st.backgroundImage || ''} onChange={e => onChange({ backgroundImage: e.target.value })}
-        style={{ ...inputStyle, width: '100%', marginBottom: 8, boxSizing: 'border-box' }} />
+     <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+        <input type="text" placeholder="https://..." value={st.backgroundImage || ''} onChange={e => onChange({ backgroundImage: e.target.value })}
+          style={{ ...inputStyle, flex: 1 }} />
+        <button onClick={() => onPickMedia((url) => onChange({ backgroundImage: url }))}
+          style={{ background: '#1f6feb', border: 'none', borderRadius: 6, color: '#fff', padding: '7px 10px', fontSize: '0.72rem', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+          🖼️
+        </button>
+      </div>
       <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
         {(['cover', 'contain', 'auto'] as const).map(s => (
           <button key={s} onClick={() => onChange({ backgroundSize: s })}
@@ -1014,7 +1022,9 @@ export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
   const [error, setError] = useState<string | null>(null);
   const [showNavEditor, setShowNavEditor] = useState(false);
 const [showShortcuts, setShowShortcuts] = useState(false);
-const [saveToast, setSaveToast] = useState<string | null>(null);
+  const [saveToast, setSaveToast] = useState<string | null>(null);
+  const [mediaPicker, setMediaPicker] = useState<{ onSelect: (url: string) => void } | null>(null);
+
   const dragItemIdx = useRef<number | null>(null);
 
   const selectedSection = sections.find(s => s.id === selectedId) || null;
@@ -1437,7 +1447,7 @@ const [saveToast, setSaveToast] = useState<string | null>(null);
               {/* Panel */}
               <div style={{ flex: 1, overflowY: 'auto', padding: '14px' }}>
                 {rightTab === 'content' && <ContentEditor section={selectedSection} onChange={handleContentChange} />}
-                {rightTab === 'style' && <StylePanel section={selectedSection} onChange={handleStylingChange} />}
+                {rightTab === 'style' && <StylePanel section={selectedSection} onChange={handleStylingChange} onPickMedia={(cb) => setMediaPicker({ onSelect: cb })} />}
                 {rightTab === 'layout' && <LayoutPanel section={selectedSection} onChange={handleStylingChange} deviceMode={deviceMode} />}
                 {rightTab === 'css' && <CssPanel section={selectedSection} onChange={handleStylingChange} />}
               </div>
@@ -1482,6 +1492,9 @@ const [saveToast, setSaveToast] = useState<string | null>(null);
           </div>
         </div>
       )}
+            {/* MediaPicker */}
+      {mediaPicker && <MediaPicker onSelect={mediaPicker.onSelect} onClose={() => setMediaPicker(null)} />}
+      {showNavEditor && <NavigationEditor onClose={() => setShowNavEditor(false)} />}
 
       {/* Navigation Overlay */}
       {showNavEditor && <NavigationEditor onClose={() => setShowNavEditor(false)} />}
