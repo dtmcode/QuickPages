@@ -1055,12 +1055,18 @@ function NavBarPreview({ nav, isSelected, onClick, primary }: {
 }) {
   const items = (nav.items || []).filter(i => !i.parentId).sort((a, b) => a.order - b.order);
   const isFooter = nav.location === 'footer';
+  const s = nav.settings || {};
+  const bg = s.backgroundColor || (isFooter ? '#1f2937' : '#ffffff');
+  const color = s.textColor || (isFooter ? '#f9fafb' : '#1f2937');
+  const align = s.itemsAlign || 'right';
+  const logoText = s.logoText || 'Site';
+  const fontFamily = s.fontFamily || 'inherit';
+
   return (
     <div onClick={onClick} style={{
-      background: isFooter ? '#1f2937' : '#ffffff',
-      color: isFooter ? '#f9fafb' : '#1f2937',
-      borderTop: isFooter ? '1px solid #374151' : 'none',
-      borderBottom: isFooter ? 'none' : '1px solid #e5e7eb',
+      background: bg, color, fontFamily,
+      borderTop: isFooter ? '1px solid rgba(0,0,0,0.2)' : 'none',
+      borderBottom: isFooter ? 'none' : '1px solid rgba(0,0,0,0.1)',
       padding: '0 1.5rem', height: 56,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       cursor: 'pointer', position: 'relative',
@@ -1073,10 +1079,12 @@ function NavBarPreview({ nav, isSelected, onClick, primary }: {
         </div>
       )}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ width: 28, height: 28, borderRadius: 6, background: primary, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.75rem', fontWeight: 700 }}>S</div>
-        <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Site</span>
+        <div style={{ width: 28, height: 28, borderRadius: 6, background: primary, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.75rem', fontWeight: 700 }}>
+          {logoText[0] || 'S'}
+        </div>
+        <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{logoText}</span>
       </div>
-      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flex: 1, justifyContent: align === 'center' ? 'center' : align === 'left' ? 'flex-start' : 'flex-end', margin: '0 1rem' }}>
         {items.slice(0, 5).map(item => (
           <span key={item.id} style={{ fontSize: '0.8rem', fontWeight: 500, opacity: 0.8 }}>{item.label}</span>
         ))}
@@ -1085,18 +1093,39 @@ function NavBarPreview({ nav, isSelected, onClick, primary }: {
     </div>
   );
 }
-function NavEditorPanel({ nav, onRefresh, createNavItem, updateNavItem, deleteNavItem }: {
+function NavEditorPanel({ nav, onRefresh, createNavItem, updateNavItem, deleteNavItem, updateNav }: {
   nav: NavData; onRefresh: () => void;
-  createNavItem: any; updateNavItem: any; deleteNavItem: any;
+  createNavItem: any; updateNavItem: any; deleteNavItem: any; updateNav: any;
 }) {
+  const [activeTab, setActiveTab] = useState<'items' | 'style'>('items');
   const [addingItem, setAddingItem] = useState(false);
   const [editingItem, setEditingItem] = useState<NavItem | null>(null);
   const [form, setForm] = useState({ label: '', type: 'custom', url: '', openInNewTab: false });
+  const [styleForm, setStyleForm] = useState({
+    backgroundColor: nav.settings?.backgroundColor || '',
+    textColor: nav.settings?.textColor || '',
+    fontFamily: nav.settings?.fontFamily || '',
+    itemsAlign: (nav.settings?.itemsAlign || 'right') as 'left' | 'center' | 'right',
+    logoText: nav.settings?.logoText || '',
+  });
+  const [saving, setSaving] = useState(false);
 
   const inp: React.CSSProperties = { width: '100%', background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, color: '#c9d1d9', padding: '7px 10px', fontSize: '0.78rem', boxSizing: 'border-box', outline: 'none' };
   const lbl: React.CSSProperties = { display: 'block', fontSize: '0.68rem', color: '#8b949e', marginBottom: 4, fontWeight: 600 };
+  const sLbl: React.CSSProperties = { fontSize: '0.68rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase' as any, letterSpacing: '0.07em', marginBottom: 6, marginTop: 14, display: 'block' };
 
   const items = (nav.items || []).filter(i => !i.parentId).sort((a, b) => a.order - b.order);
+
+  const NAV_BG_PRESETS = [
+    { label: 'Weiß', bg: '#ffffff', text: '#1f2937' },
+    { label: 'Schwarz', bg: '#0f172a', text: '#f8fafc' },
+    { label: 'Grau', bg: '#f9fafb', text: '#1f2937' },
+    { label: 'Dunkel', bg: '#1f2937', text: '#f9fafb' },
+    { label: 'Blau', bg: '#1e40af', text: '#ffffff' },
+    { label: 'Violett', bg: '#7c3aed', text: '#ffffff' },
+    { label: 'Grün', bg: '#15803d', text: '#ffffff' },
+    { label: 'Orange', bg: '#ea580c', text: '#ffffff' },
+  ];
 
   const startEdit = (item: NavItem) => {
     setEditingItem(item);
@@ -1104,17 +1133,25 @@ function NavEditorPanel({ nav, onRefresh, createNavItem, updateNavItem, deleteNa
     setAddingItem(true);
   };
 
-  const handleSave = async () => {
+  const handleSaveItem = async () => {
     if (!form.label.trim()) return;
     if (editingItem) {
       await updateNavItem({ variables: { itemId: editingItem.id, input: { label: form.label, type: form.type, url: form.url, openInNewTab: form.openInNewTab } } });
     } else {
       await createNavItem({ variables: { navigationId: nav.id, input: { label: form.label, type: form.type, url: form.url, openInNewTab: form.openInNewTab, order: items.length } } });
     }
-    setAddingItem(false);
-    setEditingItem(null);
+    setAddingItem(false); setEditingItem(null);
     setForm({ label: '', type: 'custom', url: '', openInNewTab: false });
     onRefresh();
+  };
+
+  const handleSaveStyle = async () => {
+    setSaving(true);
+    try {
+      await updateNav({ variables: { id: nav.id, input: { settings: styleForm } } });
+      onRefresh();
+    } catch (e) { console.error(e); }
+    finally { setSaving(false); }
   };
 
   const handleDelete = async (id: string) => {
@@ -1124,57 +1161,140 @@ function NavEditorPanel({ nav, onRefresh, createNavItem, updateNavItem, deleteNa
 
   return (
     <div>
-      {/* Nav Info */}
-      <div style={{ background: 'rgba(88,166,255,0.08)', border: '1px solid rgba(88,166,255,0.2)', borderRadius: 8, padding: '8px 12px', marginBottom: 14 }}>
+      {/* Info */}
+      <div style={{ background: 'rgba(88,166,255,0.08)', border: '1px solid rgba(88,166,255,0.2)', borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
         <p style={{ fontSize: '0.72rem', color: '#58a6ff', fontWeight: 600, margin: 0 }}>
-          🧭 {nav.name} — {nav.location === 'header' ? 'Header' : nav.location === 'footer' ? 'Footer' : nav.location}
+          🧭 {nav.name} — {nav.location === 'header' ? 'Header' : 'Footer'}
         </p>
       </div>
 
-      {/* Items Liste */}
-      <p style={{ fontSize: '0.68rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
-        Menu Items ({items.length})
-      </p>
-      {items.map(item => (
-        <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 9px', marginBottom: 4, background: '#0d1117', border: '1px solid #21262d', borderRadius: 6 }}>
-          <span style={{ flex: 1, fontSize: '0.78rem', color: '#c9d1d9', fontWeight: 500 }}>{item.label}</span>
-          <span style={{ fontSize: '0.65rem', color: '#6e7681', background: '#161b22', borderRadius: 3, padding: '1px 5px' }}>{item.url || item.type}</span>
-          <button onClick={() => startEdit(item)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#58a6ff', fontSize: '0.72rem', padding: '1px 4px' }}>✎</button>
-          <button onClick={() => handleDelete(item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f85149', fontSize: '0.72rem', padding: '1px 4px' }}>✕</button>
-        </div>
-      ))}
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: 4, marginBottom: 14, background: '#0d1117', borderRadius: 6, padding: 3, border: '1px solid #21262d' }}>
+        {[{ id: 'items', label: '☰ Items' }, { id: 'style', label: '🎨 Stil' }].map(t => (
+          <button key={t.id} onClick={() => setActiveTab(t.id as any)}
+            style={{ flex: 1, padding: '5px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer', background: activeTab === t.id ? '#1f6feb' : 'transparent', border: 'none', color: activeTab === t.id ? '#fff' : '#6e7681' }}>
+            {t.label}
+          </button>
+        ))}
+      </div>
 
-      {/* Add/Edit Form */}
-      {addingItem ? (
-        <div style={{ background: '#0d1117', border: '1px solid #30363d', borderRadius: 8, padding: 12, marginTop: 8 }}>
-          <div style={{ marginBottom: 8 }}>
-            <label style={lbl}>Label</label>
-            <input style={inp} value={form.label} onChange={e => setForm(p => ({ ...p, label: e.target.value }))} placeholder="z.B. Startseite" />
-          </div>
-          <div style={{ marginBottom: 8 }}>
-            <label style={lbl}>URL</label>
-            <input style={inp} value={form.url} onChange={e => setForm(p => ({ ...p, url: e.target.value }))} placeholder="/kontakt oder https://..." />
-          </div>
-          <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input type="checkbox" id="navNewTab" checked={form.openInNewTab} onChange={e => setForm(p => ({ ...p, openInNewTab: e.target.checked }))} />
-            <label htmlFor="navNewTab" style={{ ...lbl, marginBottom: 0, cursor: 'pointer' }}>Neuer Tab</label>
-          </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button onClick={handleSave} style={{ flex: 1, background: '#238636', border: 'none', borderRadius: 6, color: '#fff', padding: '7px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>
-              ✓ {editingItem ? 'Aktualisieren' : 'Hinzufügen'}
+      {/* ── ITEMS TAB ── */}
+      {activeTab === 'items' && (
+        <div>
+          <p style={{ fontSize: '0.68rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+            Menu Items ({items.length})
+          </p>
+          {items.map(item => (
+            <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 9px', marginBottom: 4, background: '#0d1117', border: '1px solid #21262d', borderRadius: 6 }}>
+              <span style={{ flex: 1, fontSize: '0.78rem', color: '#c9d1d9', fontWeight: 500 }}>{item.label}</span>
+              <span style={{ fontSize: '0.65rem', color: '#6e7681', background: '#161b22', borderRadius: 3, padding: '1px 5px' }}>{item.url || item.type}</span>
+              <button onClick={() => startEdit(item)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#58a6ff', fontSize: '0.72rem', padding: '1px 4px' }}>✎</button>
+              <button onClick={() => handleDelete(item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f85149', fontSize: '0.72rem', padding: '1px 4px' }}>✕</button>
+            </div>
+          ))}
+
+          {addingItem ? (
+            <div style={{ background: '#0d1117', border: '1px solid #30363d', borderRadius: 8, padding: 12, marginTop: 8 }}>
+              <div style={{ marginBottom: 8 }}>
+                <label style={lbl}>Label</label>
+                <input style={inp} value={form.label} onChange={e => setForm(p => ({ ...p, label: e.target.value }))} placeholder="z.B. Startseite" />
+              </div>
+              <div style={{ marginBottom: 8 }}>
+                <label style={lbl}>URL</label>
+                <input style={inp} value={form.url} onChange={e => setForm(p => ({ ...p, url: e.target.value }))} placeholder="/kontakt oder https://..." />
+              </div>
+              <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input type="checkbox" id="navNewTab" checked={form.openInNewTab} onChange={e => setForm(p => ({ ...p, openInNewTab: e.target.checked }))} />
+                <label htmlFor="navNewTab" style={{ ...lbl, marginBottom: 0, cursor: 'pointer' }}>Neuer Tab</label>
+              </div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <button onClick={handleSaveItem} style={{ flex: 1, background: '#238636', border: 'none', borderRadius: 6, color: '#fff', padding: '7px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>
+                  ✓ {editingItem ? 'Aktualisieren' : 'Hinzufügen'}
+                </button>
+                <button onClick={() => { setAddingItem(false); setEditingItem(null); }} style={{ flex: 1, background: '#21262d', border: '1px solid #30363d', borderRadius: 6, color: '#8b949e', padding: '7px', fontSize: '0.78rem', cursor: 'pointer' }}>
+                  Abbrechen
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button onClick={() => { setForm({ label: '', type: 'custom', url: '', openInNewTab: false }); setAddingItem(true); }}
+              style={{ width: '100%', marginTop: 8, padding: '7px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.78rem', cursor: 'pointer' }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = '#58a6ff')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = '#30363d')}>
+              + Item hinzufügen
             </button>
-            <button onClick={() => { setAddingItem(false); setEditingItem(null); }} style={{ flex: 1, background: '#21262d', border: '1px solid #30363d', borderRadius: 6, color: '#8b949e', padding: '7px', fontSize: '0.78rem', cursor: 'pointer' }}>
-              Abbrechen
-            </button>
-          </div>
+          )}
         </div>
-      ) : (
-        <button onClick={() => { setForm({ label: '', type: 'custom', url: '', openInNewTab: false }); setAddingItem(true); }}
-          style={{ width: '100%', marginTop: 8, padding: '7px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.78rem', cursor: 'pointer' }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = '#58a6ff')}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = '#30363d')}>
-          + Item hinzufügen
-        </button>
+      )}
+
+      {/* ── STYLE TAB ── */}
+      {activeTab === 'style' && (
+        <div>
+          {/* Hintergrund Presets */}
+          <span style={{ ...sLbl, marginTop: 0 }}>Hintergrund-Presets</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 5, marginBottom: 12 }}>
+            {NAV_BG_PRESETS.map(p => (
+              <button key={p.label} title={p.label}
+                onClick={() => setStyleForm(f => ({ ...f, backgroundColor: p.bg, textColor: p.text }))}
+                style={{ height: 34, borderRadius: 6, border: `2px solid ${styleForm.backgroundColor === p.bg ? '#58a6ff' : '#21262d'}`, cursor: 'pointer', background: p.bg, position: 'relative', overflow: 'hidden' }}>
+                <span style={{ position: 'absolute', bottom: 1, left: 0, right: 0, textAlign: 'center', fontSize: '0.48rem', color: p.text, fontWeight: 700 }}>{p.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Hintergrundfarbe */}
+          <span style={sLbl}>Hintergrundfarbe</span>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'center' }}>
+            <input type="color" value={styleForm.backgroundColor?.startsWith('#') ? styleForm.backgroundColor : '#ffffff'}
+              onChange={e => setStyleForm(f => ({ ...f, backgroundColor: e.target.value }))}
+              style={{ width: 34, height: 34, borderRadius: 6, border: '1px solid #30363d', cursor: 'pointer', padding: 2 }} />
+            <input type="text" placeholder="transparent oder #ffffff" value={styleForm.backgroundColor}
+              onChange={e => setStyleForm(f => ({ ...f, backgroundColor: e.target.value }))}
+              style={{ ...inp, flex: 1 }} />
+          </div>
+
+          {/* Textfarbe */}
+          <span style={sLbl}>Textfarbe</span>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'center' }}>
+            <input type="color" value={styleForm.textColor?.startsWith('#') ? styleForm.textColor : '#1f2937'}
+              onChange={e => setStyleForm(f => ({ ...f, textColor: e.target.value }))}
+              style={{ width: 34, height: 34, borderRadius: 6, border: '1px solid #30363d', cursor: 'pointer', padding: 2 }} />
+            <input type="text" placeholder="#1f2937" value={styleForm.textColor}
+              onChange={e => setStyleForm(f => ({ ...f, textColor: e.target.value }))}
+              style={{ ...inp, flex: 1 }} />
+          </div>
+
+          {/* Items Ausrichtung */}
+          <span style={sLbl}>Items-Position</span>
+          <div style={{ display: 'flex', gap: 5, marginBottom: 12 }}>
+            {([['left', '⬅ Links'], ['center', '↔ Mitte'], ['right', '➡ Rechts']] as const).map(([val, label]) => (
+              <button key={val} onClick={() => setStyleForm(f => ({ ...f, itemsAlign: val }))}
+                style={{ flex: 1, padding: '6px 4px', borderRadius: 5, fontSize: '0.68rem', fontWeight: 600, cursor: 'pointer', background: styleForm.itemsAlign === val ? '#1f6feb' : '#0d1117', border: `1px solid ${styleForm.itemsAlign === val ? '#1f6feb' : '#30363d'}`, color: styleForm.itemsAlign === val ? '#fff' : '#8b949e' }}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Schriftart */}
+          <span style={sLbl}>Schriftart</span>
+          <select value={styleForm.fontFamily} onChange={e => setStyleForm(f => ({ ...f, fontFamily: e.target.value }))}
+            style={{ width: '100%', background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, color: '#c9d1d9', padding: '7px 10px', fontSize: '0.75rem', marginBottom: 12, boxSizing: 'border-box' as any, outline: 'none' }}>
+            <option value="">— Standard —</option>
+            {FONT_PRESETS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+          </select>
+
+          {/* Logo Text */}
+          <span style={sLbl}>Logo-Text</span>
+          <input type="text" placeholder="z.B. Mein Shop" value={styleForm.logoText}
+            onChange={e => setStyleForm(f => ({ ...f, logoText: e.target.value }))}
+            style={{ ...inp, marginBottom: 16 }} />
+
+          {/* Speichern */}
+          <button onClick={handleSaveStyle} disabled={saving}
+            style={{ width: '100%', background: '#238636', border: 'none', borderRadius: 6, color: '#fff', padding: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1 }}>
+            {saving ? '⟳ Speichern...' : '💾 Stil speichern'}
+          </button>
+        </div>
       )}
     </div>
   );
