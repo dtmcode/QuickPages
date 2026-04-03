@@ -795,13 +795,15 @@ export const navigations = pgTable(
     location: varchar('location', { length: 100 }).notNull(),
     description: text('description'),
     isActive: boolean('is_active').default(true).notNull(),
-    settings: jsonb('settings').$type<{
-      backgroundColor?: string;
-      textColor?: string;
-      fontFamily?: string;
-      itemsAlign?: 'left' | 'center' | 'right';
-      logoText?: string;
-    }>().default({}),
+    settings: jsonb('settings')
+      .$type<{
+        backgroundColor?: string;
+        textColor?: string;
+        fontFamily?: string;
+        itemsAlign?: 'left' | 'center' | 'right';
+        logoText?: string;
+      }>()
+      .default({}),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
@@ -1225,36 +1227,59 @@ export const commentSettings = pgTable('comment_settings', {
 });
 // ==================== I18N ====================
 
-export const translations = pgTable('translations', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
-  entityType: varchar('entity_type', { length: 50 }).notNull(),
-  entityId: uuid('entity_id').notNull(),
-  locale: varchar('locale', { length: 10 }).notNull(),
-  field: varchar('field', { length: 100 }).notNull(),
-  value: text('value').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-}, (table) => ({
-  uniqueIdx: uniqueIndex('translations_unique_idx').on(
-    table.tenantId, table.entityType, table.entityId, table.locale, table.field
-  ),
-  tenantIdx: index('translations_tenant_idx').on(table.tenantId),
-  entityIdx: index('translations_entity_idx').on(table.entityType, table.entityId),
-}));
+export const translations = pgTable(
+  'translations',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    entityType: varchar('entity_type', { length: 50 }).notNull(),
+    entityId: uuid('entity_id').notNull(),
+    locale: varchar('locale', { length: 10 }).notNull(),
+    field: varchar('field', { length: 100 }).notNull(),
+    value: text('value').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    uniqueIdx: uniqueIndex('translations_unique_idx').on(
+      table.tenantId,
+      table.entityType,
+      table.entityId,
+      table.locale,
+      table.field,
+    ),
+    tenantIdx: index('translations_tenant_idx').on(table.tenantId),
+    entityIdx: index('translations_entity_idx').on(
+      table.entityType,
+      table.entityId,
+    ),
+  }),
+);
 
-export const uiTranslations = pgTable('ui_translations', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
-  locale: varchar('locale', { length: 10 }).notNull(),
-  key: varchar('key', { length: 100 }).notNull(),
-  value: text('value').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-}, (table) => ({
-  uniqueIdx: uniqueIndex('ui_translations_unique_idx').on(table.tenantId, table.locale, table.key),
-  tenantIdx: index('ui_translations_tenant_idx').on(table.tenantId),
-}));
+export const uiTranslations = pgTable(
+  'ui_translations',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    locale: varchar('locale', { length: 10 }).notNull(),
+    key: varchar('key', { length: 100 }).notNull(),
+    value: text('value').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    uniqueIdx: uniqueIndex('ui_translations_unique_idx').on(
+      table.tenantId,
+      table.locale,
+      table.key,
+    ),
+    tenantIdx: index('ui_translations_tenant_idx').on(table.tenantId),
+  }),
+);
 // ==================== RELATIONS ====================
 
 export const tenantsRelations = relations(tenants, ({ many, one }) => ({
@@ -1287,7 +1312,7 @@ export const tenantsRelations = relations(tenants, ({ many, one }) => ({
   formSubmissions: many(formSubmissions),
   blogComments: many(blogComments),
   translations: many(translations),
-uiTranslations: many(uiTranslations),
+  uiTranslations: many(uiTranslations),
 }));
 
 export const usersRelations = relations(users, ({ one, many }) => ({

@@ -42,24 +42,16 @@ export default function PublicSiteRenderer({ page }: PublicSiteRendererProps) {
 function SectionRenderer({ section }: { section: Section }) {
   const { type, content, styling } = section;
 
-  const bg = styling?.backgroundColor || '';
   const containerStyle = {
-    backgroundColor: bg && !bg.startsWith('linear') && !bg.startsWith('radial') ? bg : undefined,
-    backgroundImage: bg && (bg.startsWith('linear') || bg.startsWith('radial'))
-      ? bg
-      : styling?.backgroundImage ? `url(${styling.backgroundImage})` : undefined,
-    backgroundSize: styling?.backgroundSize || 'cover',
-    backgroundPosition: styling?.backgroundPosition || 'center',
-    color: styling?.textColor || 'inherit',
-    fontFamily: styling?.fontFamily || 'inherit',
-    fontSize: styling?.bodySize || 'inherit',
-    lineHeight: styling?.lineHeight || 'inherit',
-    textAlign: (styling?.textAlign as any) || undefined,
-    paddingTop: styling?.padding?.top || '3rem',
-    paddingBottom: styling?.padding?.bottom || '3rem',
-    paddingLeft: styling?.padding?.left || '1.5rem',
-    paddingRight: styling?.padding?.right || '1.5rem',
+    backgroundColor: styling?.backgroundColor,
+    color: styling?.textColor,
+    backgroundImage: styling?.backgroundImage ? `url(${styling.backgroundImage})` : undefined,
+    paddingTop: styling?.padding?.top || '4rem',
+    paddingBottom: styling?.padding?.bottom || '4rem',
+    paddingLeft: styling?.padding?.left || '1rem',
+    paddingRight: styling?.padding?.right || '1rem',
   };
+
   const headingStyle = {
     fontSize: styling?.headingSize || '2.25rem',
     color: styling?.headingColor || 'inherit',
