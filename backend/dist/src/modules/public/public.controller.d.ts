@@ -1,4 +1,41 @@
 import { PublicService } from './public.service';
+interface CreateOrderBody {
+    customerEmail: string;
+    customerName: string;
+    customerAddress?: string;
+    notes?: string;
+    items: Array<{
+        productId: string;
+        productName: string;
+        productPrice: number;
+        quantity: number;
+    }>;
+    subtotal: number;
+    shipping: number;
+    total: number;
+}
+interface CustomerRegisterBody {
+    email: string;
+    password: string;
+    firstName?: string;
+    lastName?: string;
+}
+interface CustomerLoginBody {
+    email: string;
+    password: string;
+}
+interface NewsletterSubscribeBody {
+    email: string;
+    firstName?: string;
+    lastName?: string;
+}
+interface ContactFormBody {
+    name: string;
+    email: string;
+    message: string;
+    phone?: string;
+    subject?: string;
+}
 export declare class PublicController {
     private readonly publicService;
     constructor(publicService: PublicService);
@@ -9,6 +46,7 @@ export declare class PublicController {
         shopTemplate: "default" | "minimalist" | "fashion" | "tech" | null;
         settings: unknown;
     }>;
+    getBranding(tenantSlug: string): Promise<Record<string, unknown>>;
     getPages(tenantSlug: string): Promise<{
         id: string;
         tenantId: string;
@@ -62,6 +100,13 @@ export declare class PublicController {
     getNavigation(tenantSlug: string, location: string): Promise<{
         id: string;
         name: string;
+        settings: {
+            backgroundColor?: string;
+            textColor?: string;
+            fontFamily?: string;
+            itemsAlign?: "left" | "center" | "right";
+            logoText?: string;
+        } | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -119,6 +164,10 @@ export declare class PublicController {
         isFeatured: boolean;
         createdAt: Date | null;
         updatedAt: Date | null;
+    }>;
+    createOrder(tenantSlug: string, body: CreateOrderBody): Promise<{
+        orderNumber: string;
+        id: string;
     }>;
     getPosts(tenantSlug: string): Promise<{
         id: string;
@@ -180,9 +229,120 @@ export declare class PublicController {
         updatedAt: Date | null;
     }[]>;
     getWbHomepage(tenantSlug: string): Promise<{
+        sections: {
+            id: string;
+            tenantId: string;
+            pageId: string;
+            name: string;
+            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social";
+            order: number;
+            isActive: boolean;
+            content: {
+                heading?: string;
+                subheading?: string;
+                buttonText?: string;
+                buttonLink?: string;
+                backgroundImage?: string;
+                backgroundVideo?: string;
+                title?: string;
+                subtitle?: string;
+                description?: string;
+                alignment?: "left" | "center" | "right";
+                items?: Array<{
+                    id?: string;
+                    title?: string;
+                    description?: string;
+                    icon?: string;
+                    image?: string;
+                    link?: string;
+                }>;
+                images?: Array<{
+                    url: string;
+                    alt?: string;
+                    title?: string;
+                    description?: string;
+                }>;
+                testimonials?: Array<{
+                    id?: string;
+                    name?: string;
+                    role?: string;
+                    company?: string;
+                    text?: string;
+                    avatar?: string;
+                    rating?: number;
+                }>;
+                members?: Array<{
+                    id?: string;
+                    name?: string;
+                    role?: string;
+                    bio?: string;
+                    image?: string;
+                    social?: {
+                        linkedin?: string;
+                        twitter?: string;
+                        github?: string;
+                    };
+                }>;
+                plans?: Array<{
+                    id?: string;
+                    name?: string;
+                    price?: string;
+                    currency?: string;
+                    interval?: string;
+                    features?: string[];
+                    highlighted?: boolean;
+                    buttonText?: string;
+                    buttonLink?: string;
+                }>;
+                faqs?: Array<{
+                    id?: string;
+                    question?: string;
+                    answer?: string;
+                }>;
+                stats?: Array<{
+                    id?: string;
+                    value?: string;
+                    label?: string;
+                    icon?: string;
+                }>;
+                videoUrl?: string;
+                videoPoster?: string;
+                text?: string;
+                html?: string;
+            };
+            styling: {
+                backgroundColor?: string;
+                textColor?: string;
+                padding?: {
+                    top?: string;
+                    bottom?: string;
+                    left?: string;
+                    right?: string;
+                };
+                margin?: {
+                    top?: string;
+                    bottom?: string;
+                };
+                customCss?: string;
+                containerWidth?: "full" | "contained" | "narrow";
+                backgroundImage?: string;
+                backgroundOverlay?: string;
+            } | null;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
         id: string;
+        tenantId: string;
+        templateId: string;
         name: string;
         slug: string;
+        description: string | null;
+        metaTitle: string | null;
+        metaDescription: string | null;
+        metaKeywords: string | null;
+        isActive: boolean;
+        isHomepage: boolean;
+        order: number;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -190,25 +350,124 @@ export declare class PublicController {
             customCss?: string;
             customJs?: string;
         } | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
-        description: string | null;
-        metaDescription: string | null;
-        order: number;
-        metaTitle: string | null;
-        metaKeywords: string | null;
-        templateId: string;
-        isHomepage: boolean;
-        sections: {
-            [x: string]: any;
-        }[];
     } | null>;
     getWbPages(tenantSlug: string): Promise<{
+        sections: {
+            id: string;
+            tenantId: string;
+            pageId: string;
+            name: string;
+            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social";
+            order: number;
+            isActive: boolean;
+            content: {
+                heading?: string;
+                subheading?: string;
+                buttonText?: string;
+                buttonLink?: string;
+                backgroundImage?: string;
+                backgroundVideo?: string;
+                title?: string;
+                subtitle?: string;
+                description?: string;
+                alignment?: "left" | "center" | "right";
+                items?: Array<{
+                    id?: string;
+                    title?: string;
+                    description?: string;
+                    icon?: string;
+                    image?: string;
+                    link?: string;
+                }>;
+                images?: Array<{
+                    url: string;
+                    alt?: string;
+                    title?: string;
+                    description?: string;
+                }>;
+                testimonials?: Array<{
+                    id?: string;
+                    name?: string;
+                    role?: string;
+                    company?: string;
+                    text?: string;
+                    avatar?: string;
+                    rating?: number;
+                }>;
+                members?: Array<{
+                    id?: string;
+                    name?: string;
+                    role?: string;
+                    bio?: string;
+                    image?: string;
+                    social?: {
+                        linkedin?: string;
+                        twitter?: string;
+                        github?: string;
+                    };
+                }>;
+                plans?: Array<{
+                    id?: string;
+                    name?: string;
+                    price?: string;
+                    currency?: string;
+                    interval?: string;
+                    features?: string[];
+                    highlighted?: boolean;
+                    buttonText?: string;
+                    buttonLink?: string;
+                }>;
+                faqs?: Array<{
+                    id?: string;
+                    question?: string;
+                    answer?: string;
+                }>;
+                stats?: Array<{
+                    id?: string;
+                    value?: string;
+                    label?: string;
+                    icon?: string;
+                }>;
+                videoUrl?: string;
+                videoPoster?: string;
+                text?: string;
+                html?: string;
+            };
+            styling: {
+                backgroundColor?: string;
+                textColor?: string;
+                padding?: {
+                    top?: string;
+                    bottom?: string;
+                    left?: string;
+                    right?: string;
+                };
+                margin?: {
+                    top?: string;
+                    bottom?: string;
+                };
+                customCss?: string;
+                containerWidth?: "full" | "contained" | "narrow";
+                backgroundImage?: string;
+                backgroundOverlay?: string;
+            } | null;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
         id: string;
+        tenantId: string;
+        templateId: string;
         name: string;
         slug: string;
+        description: string | null;
+        metaTitle: string | null;
+        metaDescription: string | null;
+        metaKeywords: string | null;
+        isActive: boolean;
+        isHomepage: boolean;
+        order: number;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -216,25 +475,124 @@ export declare class PublicController {
             customCss?: string;
             customJs?: string;
         } | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
-        description: string | null;
-        metaDescription: string | null;
-        order: number;
-        metaTitle: string | null;
-        metaKeywords: string | null;
-        templateId: string;
-        isHomepage: boolean;
-        sections: {
-            [x: string]: any;
-        }[];
     }[]>;
     getWbPage(tenantSlug: string, pageSlug: string): Promise<{
+        sections: {
+            id: string;
+            tenantId: string;
+            pageId: string;
+            name: string;
+            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social";
+            order: number;
+            isActive: boolean;
+            content: {
+                heading?: string;
+                subheading?: string;
+                buttonText?: string;
+                buttonLink?: string;
+                backgroundImage?: string;
+                backgroundVideo?: string;
+                title?: string;
+                subtitle?: string;
+                description?: string;
+                alignment?: "left" | "center" | "right";
+                items?: Array<{
+                    id?: string;
+                    title?: string;
+                    description?: string;
+                    icon?: string;
+                    image?: string;
+                    link?: string;
+                }>;
+                images?: Array<{
+                    url: string;
+                    alt?: string;
+                    title?: string;
+                    description?: string;
+                }>;
+                testimonials?: Array<{
+                    id?: string;
+                    name?: string;
+                    role?: string;
+                    company?: string;
+                    text?: string;
+                    avatar?: string;
+                    rating?: number;
+                }>;
+                members?: Array<{
+                    id?: string;
+                    name?: string;
+                    role?: string;
+                    bio?: string;
+                    image?: string;
+                    social?: {
+                        linkedin?: string;
+                        twitter?: string;
+                        github?: string;
+                    };
+                }>;
+                plans?: Array<{
+                    id?: string;
+                    name?: string;
+                    price?: string;
+                    currency?: string;
+                    interval?: string;
+                    features?: string[];
+                    highlighted?: boolean;
+                    buttonText?: string;
+                    buttonLink?: string;
+                }>;
+                faqs?: Array<{
+                    id?: string;
+                    question?: string;
+                    answer?: string;
+                }>;
+                stats?: Array<{
+                    id?: string;
+                    value?: string;
+                    label?: string;
+                    icon?: string;
+                }>;
+                videoUrl?: string;
+                videoPoster?: string;
+                text?: string;
+                html?: string;
+            };
+            styling: {
+                backgroundColor?: string;
+                textColor?: string;
+                padding?: {
+                    top?: string;
+                    bottom?: string;
+                    left?: string;
+                    right?: string;
+                };
+                margin?: {
+                    top?: string;
+                    bottom?: string;
+                };
+                customCss?: string;
+                containerWidth?: "full" | "contained" | "narrow";
+                backgroundImage?: string;
+                backgroundOverlay?: string;
+            } | null;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
         id: string;
+        tenantId: string;
+        templateId: string;
         name: string;
         slug: string;
+        description: string | null;
+        metaTitle: string | null;
+        metaDescription: string | null;
+        metaKeywords: string | null;
+        isActive: boolean;
+        isHomepage: boolean;
+        order: number;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -242,20 +600,51 @@ export declare class PublicController {
             customCss?: string;
             customJs?: string;
         } | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
-        description: string | null;
-        metaDescription: string | null;
-        order: number;
-        metaTitle: string | null;
-        metaKeywords: string | null;
-        templateId: string;
-        isHomepage: boolean;
-        sections: {
-            [x: string]: any;
-        }[];
     }>;
+    subscribe(tenantSlug: string, body: NewsletterSubscribeBody): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    contact(tenantSlug: string, body: ContactFormBody): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    customerRegister(tenantSlug: string, body: CustomerRegisterBody): Promise<{
+        accessToken: string;
+        customer: {
+            id: string;
+            email: string;
+            firstName: string | null;
+            lastName: string | null;
+        };
+    }>;
+    customerLogin(tenantSlug: string, body: CustomerLoginBody): Promise<{
+        accessToken: string;
+        customer: {
+            id: string;
+            email: string;
+            firstName: string | null;
+            lastName: string | null;
+        };
+    }>;
+    getCustomerOrders(tenantSlug: string, auth: string): Promise<{
+        id: string;
+        tenantId: string;
+        orderNumber: string;
+        customerEmail: string;
+        customerName: string;
+        customerAddress: string | null;
+        status: "cancelled" | "pending" | "processing" | "completed";
+        subtotal: number;
+        tax: number;
+        shipping: number;
+        total: number;
+        notes: string | null;
+        createdAt: Date | null;
+        updatedAt: Date | null;
+    }[]>;
     private getDefaultTemplateId;
 }
+export {};

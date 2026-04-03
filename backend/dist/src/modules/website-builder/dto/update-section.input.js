@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateSectionInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const graphql_type_json_1 = __importDefault(require("graphql-type-json"));
+const class_validator_1 = require("class-validator");
 const section_entity_1 = require("../entities/section.entity");
 let UpdateSectionInput = class UpdateSectionInput {
     name;
@@ -26,26 +27,36 @@ let UpdateSectionInput = class UpdateSectionInput {
 };
 exports.UpdateSectionInput = UpdateSectionInput;
 __decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
     (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], UpdateSectionInput.prototype, "name", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(section_entity_1.SectionType),
     (0, graphql_1.Field)(() => section_entity_1.SectionType, { nullable: true }),
     __metadata("design:type", String)
 ], UpdateSectionInput.prototype, "type", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
     (0, graphql_1.Field)(() => graphql_1.Int, { nullable: true }),
     __metadata("design:type", Number)
 ], UpdateSectionInput.prototype, "order", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
     (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], UpdateSectionInput.prototype, "isActive", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, graphql_1.Field)(() => graphql_type_json_1.default, { nullable: true }),
     __metadata("design:type", Object)
 ], UpdateSectionInput.prototype, "content", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, graphql_1.Field)(() => graphql_type_json_1.default, { nullable: true }),
     __metadata("design:type", Object)
 ], UpdateSectionInput.prototype, "styling", void 0);

@@ -38,7 +38,7 @@ async function bootstrap() {
     app.use((0, graphql_upload_ts_1.graphqlUploadExpress)({ maxFileSize: 10_000_000, maxFiles: 10 }));
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
-        forbidNonWhitelisted: true,
+        forbidNonWhitelisted: false,
         transform: true,
     }));
     const port = process.env.PORT ?? 3000;

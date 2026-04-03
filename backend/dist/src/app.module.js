@@ -39,6 +39,8 @@ const i18n_module_1 = require("./modules/i18n/i18n.module");
 const ai_content_module_1 = require("./modules/ai-content/ai-content.module");
 const white_label_module_1 = require("./modules/white-label/white-label.module");
 const support_module_1 = require("./modules/support/support.module");
+const domain_module_1 = require("./modules/domain/domain.module");
+const customer_auth_module_1 = require("./modules/customer-auth/customer-auth.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -54,6 +56,7 @@ exports.AppModule = AppModule = __decorate([
                 redis: {
                     host: process.env.REDIS_HOST || 'localhost',
                     port: parseInt(process.env.REDIS_PORT || '6379'),
+                    password: process.env.REDIS_PASSWORD || undefined,
                 },
             }),
             graphql_1.GraphQLModule.forRoot({
@@ -72,6 +75,7 @@ exports.AppModule = AppModule = __decorate([
             ]),
             drizzle_module_1.DrizzleModule,
             auth_module_1.AuthModule,
+            domain_module_1.DomainModule,
             cms_module_1.CmsModule,
             shop_module_1.ShopModule,
             package_module_1.PackageModule,
@@ -87,6 +91,7 @@ exports.AppModule = AppModule = __decorate([
             ai_content_module_1.AiContentModule,
             white_label_module_1.WhiteLabelModule,
             support_module_1.SupportModule,
+            customer_auth_module_1.CustomerAuthModule,
         ],
         providers: [
             {

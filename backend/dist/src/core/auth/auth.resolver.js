@@ -24,6 +24,7 @@ const tenant_id_decorator_1 = require("./decorators/tenant-id.decorator");
 const drizzle_module_1 = require("../database/drizzle.module");
 const schema_1 = require("../../drizzle/schema");
 const drizzle_orm_1 = require("drizzle-orm");
+const auth_types_2 = require("./dto/auth.types");
 let AuthResolver = class AuthResolver {
     authService;
     db;
@@ -170,6 +171,30 @@ let AuthResolver = class AuthResolver {
             },
         };
     }
+    async updateBranding(input, tenantId) {
+        const current = await this.db
+            .select({ branding: schema_1.tenants.branding })
+            .from(schema_1.tenants)
+            .where((0, drizzle_orm_1.eq)(schema_1.tenants.id, tenantId))
+            .limit(1);
+        const existingBranding = current[0]?.branding ?? {};
+        await this.db
+            .update(schema_1.tenants)
+            .set({
+            branding: {
+                ...existingBranding,
+                ...(input.primaryColor && { primaryColor: input.primaryColor }),
+                ...(input.logoUrl !== undefined && { logoUrl: input.logoUrl }),
+                ...(input.platformName && { platformName: input.platformName }),
+            },
+            updatedAt: new Date(),
+        })
+            .where((0, drizzle_orm_1.eq)(schema_1.tenants.id, tenantId));
+        return {
+            primaryColor: input.primaryColor,
+            logoUrl: input.logoUrl ?? undefined,
+        };
+    }
 };
 exports.AuthResolver = AuthResolver;
 __decorate([
@@ -254,6 +279,15 @@ __decorate([
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "updateShopTemplate", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => auth_types_2.BrandingResult),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),
+    __param(0, (0, graphql_1.Args)('input')),
+    __param(1, (0, tenant_id_decorator_1.TenantId)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [auth_types_2.UpdateBrandingInput, String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "updateBranding", null);
 exports.AuthResolver = AuthResolver = __decorate([
     (0, graphql_1.Resolver)(),
     __param(1, (0, common_1.Inject)(drizzle_module_1.DRIZZLE)),

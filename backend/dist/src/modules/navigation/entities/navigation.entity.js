@@ -8,9 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Navigation = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const graphql_type_json_1 = __importDefault(require("graphql-type-json"));
 const navigation_item_entity_1 = require("./navigation-item.entity");
 let Navigation = class Navigation {
     id;
@@ -19,6 +23,7 @@ let Navigation = class Navigation {
     location;
     description;
     isActive;
+    settings;
     items;
     createdAt;
     updatedAt;
@@ -48,6 +53,10 @@ __decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", Boolean)
 ], Navigation.prototype, "isActive", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => graphql_type_json_1.default, { nullable: true }),
+    __metadata("design:type", Object)
+], Navigation.prototype, "settings", void 0);
 __decorate([
     (0, graphql_1.Field)(() => [navigation_item_entity_1.NavigationItem], { nullable: true }),
     __metadata("design:type", Array)

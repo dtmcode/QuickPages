@@ -79,15 +79,25 @@ let AuthService = class AuthService {
             if (existingUser.length > 0) {
                 throw new common_1.ConflictException('E-Mail bereits registriert');
             }
-            const slug = input.companyName
+            const baseSlug = input.companyName
                 .toLowerCase()
                 .replace(/[^a-z0-9]/g, '-')
-                .replace(/-+/g, '-');
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+            const existingSlug = await tx
+                .select()
+                .from(schema_1.tenants)
+                .where((0, drizzle_orm_1.eq)(schema_1.tenants.slug, baseSlug))
+                .limit(1);
+            if (existingSlug.length > 0) {
+                const suggestion = `${baseSlug}-${Math.random().toString(36).substr(2, 4)}`;
+                throw new common_1.ConflictException(`Die Subdomain "${baseSlug}" ist bereits vergeben. Alternativ: "${suggestion}"`);
+            }
             const [tenant] = await tx
                 .insert(schema_1.tenants)
                 .values({
                 name: input.companyName,
-                slug: `${slug}-${Date.now()}`,
+                slug: baseSlug,
                 package: 'page',
             })
                 .returning();

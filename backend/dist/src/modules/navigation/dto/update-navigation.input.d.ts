@@ -3,4 +3,11 @@ export declare class UpdateNavigationInput {
     location?: string;
     description?: string;
     isActive?: boolean;
+    settings?: {
+        backgroundColor?: string;
+        textColor?: string;
+        fontFamily?: string;
+        itemsAlign?: string;
+        logoText?: string;
+    };
 }

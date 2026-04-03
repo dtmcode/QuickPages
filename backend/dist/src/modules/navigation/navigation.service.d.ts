@@ -9,6 +9,13 @@ export declare class NavigationService {
     createNavigation(tenantId: string, input: CreateNavigationInput): Promise<{
         id: string;
         name: string;
+        settings: {
+            backgroundColor?: string;
+            textColor?: string;
+            fontFamily?: string;
+            itemsAlign?: "left" | "center" | "right";
+            logoText?: string;
+        } | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -19,6 +26,13 @@ export declare class NavigationService {
     findAll(tenantId: string): Promise<{
         id: string;
         name: string;
+        settings: {
+            backgroundColor?: string;
+            textColor?: string;
+            fontFamily?: string;
+            itemsAlign?: "left" | "center" | "right";
+            logoText?: string;
+        } | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -32,6 +46,13 @@ export declare class NavigationService {
     findByLocation(tenantId: string, location: string): Promise<{
         id: string;
         name: string;
+        settings: {
+            backgroundColor?: string;
+            textColor?: string;
+            fontFamily?: string;
+            itemsAlign?: "left" | "center" | "right";
+            logoText?: string;
+        } | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -45,6 +66,13 @@ export declare class NavigationService {
     findOne(id: string, tenantId: string): Promise<{
         id: string;
         name: string;
+        settings: {
+            backgroundColor?: string;
+            textColor?: string;
+            fontFamily?: string;
+            itemsAlign?: "left" | "center" | "right";
+            logoText?: string;
+        } | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -62,6 +90,13 @@ export declare class NavigationService {
         location: string;
         description: string | null;
         isActive: boolean;
+        settings: {
+            backgroundColor?: string;
+            textColor?: string;
+            fontFamily?: string;
+            itemsAlign?: "left" | "center" | "right";
+            logoText?: string;
+        } | null;
         createdAt: Date;
         updatedAt: Date;
     }>;

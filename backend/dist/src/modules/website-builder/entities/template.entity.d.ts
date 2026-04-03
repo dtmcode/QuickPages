@@ -7,6 +7,7 @@ export declare class Template {
     thumbnailUrl?: string;
     isActive: boolean;
     isDefault: boolean;
+    globalTemplateId?: string;
     settings?: Record<string, any>;
     pages?: Page[];
     createdAt: Date;

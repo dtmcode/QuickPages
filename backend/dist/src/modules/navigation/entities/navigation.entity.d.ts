@@ -6,6 +6,7 @@ export declare class Navigation {
     location: string;
     description?: string;
     isActive: boolean;
+    settings?: Record<string, any>;
     items?: NavigationItem[];
     createdAt: Date;
     updatedAt: Date;

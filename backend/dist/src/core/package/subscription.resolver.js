@@ -27,92 +27,37 @@ let SubscriptionResolver = class SubscriptionResolver {
         this.subscriptionService = subscriptionService;
     }
     availablePackages() {
-        const packages = [
-            {
-                type: 'page',
-                name: 'Page',
-                description: 'Eine professionelle Landing Page',
-                price: package_helper_1.PACKAGE_PRICES[package_helper_1.PackageType.PAGE],
-                limits: {
-                    ...package_helper_1.PACKAGE_LIMITS[package_helper_1.PackageType.PAGE],
-                },
-                features: ['1 Landing Page', 'Website Builder', 'Basis-Analytics'],
+        const packages = Object.values(package_helper_1.PACKAGES).map((pkg) => ({
+            type: pkg.type,
+            name: pkg.name,
+            description: pkg.description,
+            price: pkg.priceMonthly,
+            limits: {
+                users: pkg.features.maxUsers,
+                posts: pkg.features.maxPosts,
+                pages: pkg.features.maxPages,
+                products: pkg.features.maxProducts,
+                emailsPerMonth: pkg.features.maxSubscribers,
+                subscribers: pkg.features.maxSubscribers,
+                aiCredits: pkg.features.aiCreditsPerMonth,
+                storageMb: pkg.features.storageMb,
             },
-            {
-                type: 'landing',
-                name: 'Landing',
-                description: 'Bis zu 3 Landing Pages mit Domain',
-                price: package_helper_1.PACKAGE_PRICES[package_helper_1.PackageType.LANDING],
-                limits: {
-                    ...package_helper_1.PACKAGE_LIMITS[package_helper_1.PackageType.LANDING],
-                },
-                features: ['3 Landing Pages', 'Eigene Domain', 'Kontaktformular'],
-            },
-            {
-                type: 'creator',
-                name: 'Creator',
-                description: 'Blog und mehrere Seiten',
-                price: package_helper_1.PACKAGE_PRICES[package_helper_1.PackageType.CREATOR],
-                limits: {
-                    ...package_helper_1.PACKAGE_LIMITS[package_helper_1.PackageType.CREATOR],
-                },
-                features: ['10 Seiten', 'Blog (50 Posts)', 'Eigene Domain'],
-            },
-            {
-                type: 'business',
-                name: 'Business',
-                description: 'Newsletter, Booking, Forms',
-                price: package_helper_1.PACKAGE_PRICES[package_helper_1.PackageType.BUSINESS],
-                limits: {
-                    ...package_helper_1.PACKAGE_LIMITS[package_helper_1.PackageType.BUSINESS],
-                },
-                features: ['30 Seiten', 'Newsletter', 'Booking', 'Form Builder'],
-            },
-            {
-                type: 'shop',
-                name: 'Shop',
-                description: 'Vollständiges Shop-System',
-                price: package_helper_1.PACKAGE_PRICES[package_helper_1.PackageType.SHOP],
-                limits: {
-                    ...package_helper_1.PACKAGE_LIMITS[package_helper_1.PackageType.SHOP],
-                },
-                features: ['200 Produkte', 'Stripe Payments', 'Bestellverwaltung'],
-            },
-            {
-                type: 'professional',
-                name: 'Professional',
-                description: 'AI, Mehrsprachigkeit, großer Shop',
-                price: package_helper_1.PACKAGE_PRICES[package_helper_1.PackageType.PROFESSIONAL],
-                limits: {
-                    ...package_helper_1.PACKAGE_LIMITS[package_helper_1.PackageType.PROFESSIONAL],
-                },
-                features: ['AI Content', 'Mehrsprachigkeit', '1.000 Produkte'],
-            },
-            {
-                type: 'enterprise',
-                name: 'Enterprise',
-                description: 'Unbegrenzte Ressourcen, White-Label',
-                price: package_helper_1.PACKAGE_PRICES[package_helper_1.PackageType.ENTERPRISE],
-                limits: {
-                    ...package_helper_1.PACKAGE_LIMITS[package_helper_1.PackageType.ENTERPRISE],
-                },
-                features: ['White-Label', 'Unbegrenzte Ressourcen', 'Account Manager'],
-            },
-        ];
-        const addons = Object.entries(package_helper_1.ADDON_DEFINITIONS).map(([key, def]) => ({
-            type: key,
+            features: pkg.highlightFeatures,
+        }));
+        const addons = Object.values(package_helper_1.ADDONS).map((def) => ({
+            type: def.type,
             name: def.name,
             description: def.description,
-            price: def.price,
+            price: def.priceMonthly,
             limits: {
-                users: def.limits.users ?? 0,
-                posts: def.limits.posts ?? 0,
-                pages: def.limits.pages ?? 0,
-                products: def.limits.products ?? 0,
-                emailsPerMonth: def.limits.emailsPerMonth ?? 0,
-                subscribers: def.limits.subscribers ?? 0,
-                aiCredits: def.limits.aiCredits ?? 0,
-                storageMb: def.limits.storageMb ?? 0,
+                users: def.adds.maxUsers ?? 0,
+                posts: def.adds.maxPosts ?? 0,
+                pages: def.adds.maxPages ?? 0,
+                products: def.adds.maxProducts ?? 0,
+                emailsPerMonth: def.adds.maxSubscribers ?? 0,
+                subscribers: def.adds.maxSubscribers ?? 0,
+                aiCredits: def.adds.aiCreditsPerMonth ?? 0,
+                storageMb: 0,
             },
         }));
         return { packages, addons };

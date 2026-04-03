@@ -167,8 +167,11 @@ let SupportService = class SupportService {
         };
     }
     async getTenantIdBySlug(slug) {
-        const [t] = await this.db.select({ id: schema_1.tenants.id }).from(schema_1.tenants)
-            .where((0, drizzle_orm_1.eq)(schema_1.tenants.slug, slug)).limit(1);
+        const [t] = await this.db
+            .select({ id: schema_1.tenants.id })
+            .from(schema_1.tenants)
+            .where((0, drizzle_orm_1.eq)(schema_1.tenants.slug, slug))
+            .limit(1);
         return t?.id || null;
     }
 };

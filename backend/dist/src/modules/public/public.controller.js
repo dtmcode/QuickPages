@@ -21,60 +21,80 @@ let PublicController = class PublicController {
         this.publicService = publicService;
     }
     async getTenantSettings(tenantSlug) {
-        return this.publicService.getTenantSettings(tenantSlug);
+        return await this.publicService.getTenantSettings(tenantSlug);
+    }
+    async getBranding(tenantSlug) {
+        return await this.publicService.getTenantBranding(tenantSlug);
     }
     async getPages(tenantSlug) {
-        return this.publicService.getPublishedPages(tenantSlug);
+        return await this.publicService.getPublishedPages(tenantSlug);
     }
     async getPage(tenantSlug, pageSlug) {
-        return this.publicService.getPageBySlug(tenantSlug, pageSlug);
+        return await this.publicService.getPageBySlug(tenantSlug, pageSlug);
     }
     async getNavigation(tenantSlug, location) {
-        return this.publicService.getNavigation(tenantSlug, location);
+        return await this.publicService.getNavigation(tenantSlug, location);
     }
     async getProducts(tenantSlug) {
-        return this.publicService.getProducts(tenantSlug);
+        return await this.publicService.getProducts(tenantSlug);
     }
     async getProduct(tenantSlug, productSlug) {
-        return this.publicService.getProductBySlug(tenantSlug, productSlug);
+        return await this.publicService.getProductBySlug(tenantSlug, productSlug);
+    }
+    async createOrder(tenantSlug, body) {
+        return await this.publicService.createPublicOrder(tenantSlug, body);
     }
     async getPosts(tenantSlug) {
-        return this.publicService.getPublishedPosts(tenantSlug);
+        return await this.publicService.getPublishedPosts(tenantSlug);
     }
     async getPost(tenantSlug, postSlug) {
-        return this.publicService.getPostBySlug(tenantSlug, postSlug);
+        return await this.publicService.getPostBySlug(tenantSlug, postSlug);
     }
     async getCategories(tenantSlug) {
-        return this.publicService.getCategories(tenantSlug);
+        return await this.publicService.getCategories(tenantSlug);
     }
     async getWbHomepage(tenantSlug) {
         const templateId = await this.getDefaultTemplateId(tenantSlug);
-        if (!templateId) {
+        if (!templateId)
             throw new common_1.NotFoundException('No default template found');
-        }
-        return this.publicService.getWbHomepage(tenantSlug, templateId);
+        return await this.publicService.getWbHomepage(tenantSlug, templateId);
     }
     async getWbPages(tenantSlug) {
         const templateId = await this.getDefaultTemplateId(tenantSlug);
-        if (!templateId) {
+        if (!templateId)
             return [];
-        }
-        return this.publicService.getPublishedWbPages(tenantSlug, templateId);
+        return await this.publicService.getPublishedWbPages(tenantSlug, templateId);
     }
     async getWbPage(tenantSlug, pageSlug) {
         const templateId = await this.getDefaultTemplateId(tenantSlug);
-        if (!templateId) {
+        if (!templateId)
             throw new common_1.NotFoundException('No default template found');
-        }
-        return this.publicService.getWbPageBySlug(tenantSlug, templateId, pageSlug);
+        return await this.publicService.getWbPageBySlug(tenantSlug, templateId, pageSlug);
+    }
+    async subscribe(tenantSlug, body) {
+        return await this.publicService.subscribeToNewsletter(tenantSlug, body);
+    }
+    async contact(tenantSlug, body) {
+        return await this.publicService.submitContactForm(tenantSlug, body);
+    }
+    async customerRegister(tenantSlug, body) {
+        return await this.publicService.customerRegister(tenantSlug, body);
+    }
+    async customerLogin(tenantSlug, body) {
+        return await this.publicService.customerLogin(tenantSlug, body);
+    }
+    async getCustomerOrders(tenantSlug, auth) {
+        const token = auth?.replace('Bearer ', '');
+        if (!token)
+            throw new common_1.NotFoundException('Unauthorized');
+        return await this.publicService.getCustomerOrders(tenantSlug, token);
     }
     async getDefaultTemplateId(tenantSlug) {
         try {
             const tenant = await this.publicService.getTenantSettings(tenantSlug);
             const settings = tenant.settings;
-            if (settings?.defaultTemplateId) {
+            if (settings?.defaultTemplateId)
                 return settings.defaultTemplateId;
-            }
             return await this.publicService.getDefaultTemplateId(tenantSlug);
         }
         catch {
@@ -90,6 +110,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PublicController.prototype, "getTenantSettings", null);
+__decorate([
+    (0, common_1.Get)('branding'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getBranding", null);
 __decorate([
     (0, common_1.Get)('pages'),
     __param(0, (0, common_1.Param)('tenant')),
@@ -128,6 +155,14 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], PublicController.prototype, "getProduct", null);
+__decorate([
+    (0, common_1.Post)('orders'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "createOrder", null);
 __decorate([
     (0, common_1.Get)('posts'),
     __param(0, (0, common_1.Param)('tenant')),
@@ -172,6 +207,46 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], PublicController.prototype, "getWbPage", null);
+__decorate([
+    (0, common_1.Post)('newsletter/subscribe'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "subscribe", null);
+__decorate([
+    (0, common_1.Post)('contact'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "contact", null);
+__decorate([
+    (0, common_1.Post)('auth/register'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "customerRegister", null);
+__decorate([
+    (0, common_1.Post)('auth/login'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "customerLogin", null);
+__decorate([
+    (0, common_1.Get)('account/orders'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __param(1, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getCustomerOrders", null);
 exports.PublicController = PublicController = __decorate([
     (0, common_1.Controller)('api/public/:tenant'),
     __metadata("design:paramtypes", [public_service_1.PublicService])

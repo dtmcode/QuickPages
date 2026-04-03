@@ -43,3 +43,12 @@ export declare class SuccessResponse {
     success: boolean;
     message: string;
 }
+export declare class UpdateBrandingInput {
+    primaryColor?: string;
+    logoUrl?: string;
+    platformName?: string;
+}
+export declare class BrandingResult {
+    primaryColor?: string;
+    logoUrl?: string;
+}

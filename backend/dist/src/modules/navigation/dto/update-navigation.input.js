@@ -8,15 +8,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateNavigationInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
+const graphql_type_json_1 = __importDefault(require("graphql-type-json"));
 let UpdateNavigationInput = class UpdateNavigationInput {
     name;
     location;
     description;
     isActive;
+    settings;
 };
 exports.UpdateNavigationInput = UpdateNavigationInput;
 __decorate([
@@ -43,6 +48,11 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
 ], UpdateNavigationInput.prototype, "isActive", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => graphql_type_json_1.default, { nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], UpdateNavigationInput.prototype, "settings", void 0);
 exports.UpdateNavigationInput = UpdateNavigationInput = __decorate([
     (0, graphql_1.InputType)()
 ], UpdateNavigationInput);

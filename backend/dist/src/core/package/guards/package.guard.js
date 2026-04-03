@@ -22,6 +22,7 @@ const drizzle_module_1 = require("../../database/drizzle.module");
 const common_2 = require("@nestjs/common");
 const schema_1 = require("../../../drizzle/schema");
 const drizzle_orm_1 = require("drizzle-orm");
+const SUPERADMIN_SLUGS = ['myquickpages', 'platform-admin'];
 let PackageGuard = class PackageGuard {
     reflector;
     db;
@@ -31,26 +32,28 @@ let PackageGuard = class PackageGuard {
     }
     async canActivate(context) {
         const requiredFeature = this.reflector.getAllAndOverride(require_feature_decorator_1.REQUIRE_FEATURE_KEY, [context.getHandler(), context.getClass()]);
-        if (!requiredFeature) {
+        if (!requiredFeature)
             return true;
-        }
         const ctx = graphql_1.GqlExecutionContext.create(context);
         const request = ctx.getContext().req;
         const tenantId = request.user?.tenantId;
-        if (!tenantId) {
+        if (!tenantId)
             throw new Error('Tenant ID nicht gefunden');
-        }
         const [tenant] = await this.db
             .select()
             .from(schema_1.tenants)
             .where((0, drizzle_orm_1.eq)(schema_1.tenants.id, tenantId))
             .limit(1);
-        if (!tenant) {
+        if (!tenant)
             throw new Error('Tenant nicht gefunden');
-        }
+        if (SUPERADMIN_SLUGS.includes(tenant.slug))
+            return true;
+        const settings = tenant.settings;
+        if (settings?.isSuperAdmin === true || settings?.platformAdmin === true)
+            return true;
         const hasAccess = (0, package_helper_1.hasFeature)(tenant.package, requiredFeature);
         if (!hasAccess) {
-            throw new Error(`Diese Funktion ist in deinem ${tenant.package.toUpperCase()} Package nicht verfügbar. Upgrade erforderlich.`);
+            throw new Error(`Diese Funktion ist in deinem ${tenant.package.toUpperCase()} Package nicht verfügbar.`);
         }
         return true;
     }

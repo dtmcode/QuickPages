@@ -24,6 +24,7 @@ let Template = class Template {
     thumbnailUrl;
     isActive;
     isDefault;
+    globalTemplateId;
     settings;
     pages;
     createdAt;
@@ -58,6 +59,10 @@ __decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", Boolean)
 ], Template.prototype, "isDefault", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], Template.prototype, "globalTemplateId", void 0);
 __decorate([
     (0, graphql_1.Field)(() => graphql_type_json_1.default, { nullable: true }),
     __metadata("design:type", Object)

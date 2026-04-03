@@ -16,7 +16,12 @@ export declare enum SectionType {
     video = "video",
     text = "text",
     html = "html",
-    custom = "custom"
+    custom = "custom",
+    newsletter = "newsletter",
+    booking = "booking",
+    map = "map",
+    countdown = "countdown",
+    social = "social"
 }
 export declare class Section {
     id: string;

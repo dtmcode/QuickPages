@@ -35,6 +35,11 @@ var SectionType;
     SectionType["text"] = "text";
     SectionType["html"] = "html";
     SectionType["custom"] = "custom";
+    SectionType["newsletter"] = "newsletter";
+    SectionType["booking"] = "booking";
+    SectionType["map"] = "map";
+    SectionType["countdown"] = "countdown";
+    SectionType["social"] = "social";
 })(SectionType || (exports.SectionType = SectionType = {}));
 (0, graphql_1.registerEnumType)(SectionType, {
     name: 'SectionType',

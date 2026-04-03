@@ -1,64 +1,109 @@
-export declare enum PackageType {
-    PAGE = "page",
-    LANDING = "landing",
-    CREATOR = "creator",
-    BUSINESS = "business",
-    SHOP = "shop",
-    PROFESSIONAL = "professional",
-    ENTERPRISE = "enterprise"
-}
-export declare enum AddonType {
-    SHOP_BUSINESS = "shop_business",
-    SHOP_PRO = "shop_pro",
-    EMAIL_STARTER = "email_starter",
-    EMAIL_BUSINESS = "email_business",
-    EXTRA_USERS = "extra_users",
-    SHOP_MODULE = "shop_module",
-    NEWSLETTER = "newsletter",
-    BOOKING = "booking",
-    AI_CONTENT = "ai_content",
-    FORM_BUILDER = "form_builder",
-    I18N = "i18n",
-    EXTRA_PRODUCTS = "extra_products",
-    EXTRA_AI_CREDITS = "extra_ai_credits"
-}
+export type PackageType = 'website_micro' | 'website_standard' | 'website_pro' | 'blog_personal' | 'blog_publisher' | 'blog_magazine' | 'business_starter' | 'business_professional' | 'business_agency' | 'shop_mini' | 'shop_wachstum' | 'shop_premium' | 'members_community' | 'members_kurse' | 'members_academy';
+export type AddonType = 'shop_module' | 'shop_extra' | 'booking_module' | 'blog_module' | 'newsletter_extra' | 'members_module' | 'ai_content' | 'extra_pages' | 'extra_users' | 'i18n' | 'custom_domain';
 export interface PackageFeatures {
-    cms: boolean;
+    websiteBuilder: boolean;
+    maxPages: number;
+    blog: boolean;
+    maxPosts: number;
+    maxAuthors: number;
+    comments: boolean;
     shop: boolean;
-    newsletter: boolean;
+    maxProducts: number;
+    digitalProducts: boolean;
+    productVariants: boolean;
     booking: boolean;
-    formBuilder: boolean;
-    analytics: boolean;
-    ai: boolean;
-    i18n: boolean;
+    maxBookingServices: number;
+    newsletter: boolean;
+    maxSubscribers: number;
+    forms: boolean;
+    maxForms: number;
+    members: boolean;
+    maxMembers: number;
+    courses: boolean;
+    maxCourses: number;
+    maxDownloads: number;
+    analytics: 'basic' | 'advanced' | 'full';
     customDomain: boolean;
-    whiteLabel: boolean;
-}
-export interface PackageLimits {
-    users: number;
-    posts: number;
-    pages: number;
-    products: number;
-    emailsPerMonth: number;
-    subscribers: number;
-    aiCredits: number;
+    aiContent: boolean;
+    aiCreditsPerMonth: number;
+    i18n: boolean;
+    maxUsers: number;
     storageMb: number;
+    removeBranding: boolean;
 }
-export declare const PACKAGE_ORDER: PackageType[];
-export declare const PACKAGE_FEATURES: Record<PackageType, PackageFeatures>;
-export declare const PACKAGE_LIMITS: Record<PackageType, PackageLimits>;
-export declare const PACKAGE_PRICES: Record<PackageType, number>;
+export interface PackageDefinition {
+    type: PackageType;
+    category: 'website' | 'blog' | 'business' | 'shop' | 'members';
+    tier: 1 | 2 | 3;
+    name: string;
+    tagline: string;
+    description: string;
+    priceMonthly: number;
+    features: PackageFeatures;
+    highlightFeatures: string[];
+}
+export declare const PACKAGES: Record<PackageType, PackageDefinition>;
 export interface AddonDefinition {
+    type: AddonType;
     name: string;
     description: string;
-    price: number;
-    limits: Partial<PackageLimits>;
+    priceMonthly: number;
+    icon: string;
+    adds: Partial<PackageFeatures>;
+    availableForCategories: Array<'website' | 'blog' | 'business' | 'shop' | 'members' | 'all'>;
+    requires?: AddonType[];
 }
-export declare const ADDON_DEFINITIONS: Record<AddonType, AddonDefinition>;
-export declare function hasFeature(packageType: string, feature: keyof PackageFeatures): boolean;
-export declare function getBaseLimit(packageType: string, limit: keyof PackageLimits): number;
-export declare function calculateTotalLimits(packageType: string, addons: AddonType[]): PackageLimits;
-export declare function isWithinLimit(packageType: string, limitKey: keyof PackageLimits, current: number): boolean;
-export declare function getPackageIndex(packageType: string): number;
-export declare function canChangeTo(currentPackage: string, targetPackage: string): boolean;
+export declare const ADDONS: Record<AddonType, AddonDefinition>;
+export declare const PACKAGE_CATEGORIES: ({
+    id: "website";
+    label: string;
+    icon: string;
+    tagline: string;
+    description: string;
+    color: string;
+    examples: string;
+    tiers: PackageType[];
+} | {
+    id: "blog";
+    label: string;
+    icon: string;
+    tagline: string;
+    description: string;
+    color: string;
+    examples: string;
+    tiers: PackageType[];
+} | {
+    id: "business";
+    label: string;
+    icon: string;
+    tagline: string;
+    description: string;
+    color: string;
+    examples: string;
+    tiers: PackageType[];
+} | {
+    id: "shop";
+    label: string;
+    icon: string;
+    tagline: string;
+    description: string;
+    color: string;
+    examples: string;
+    tiers: PackageType[];
+} | {
+    id: "members";
+    label: string;
+    icon: string;
+    tagline: string;
+    description: string;
+    color: string;
+    examples: string;
+    tiers: PackageType[];
+})[];
+export declare function getPackage(type: PackageType): PackageDefinition;
+export declare function hasFeature(packageType: PackageType, feature: keyof PackageFeatures): boolean;
+export declare function getLimit(packageType: PackageType, limit: keyof PackageFeatures): number;
 export declare function formatPrice(cents: number): string;
+export declare function formatLimit(val: number, singular: string, plural?: string): string;
+export declare function getCategoryPackages(category: string): PackageDefinition[];
+export declare const ALWAYS_INCLUDED: string[];

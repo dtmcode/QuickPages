@@ -1,6 +1,15 @@
 import type { DrizzleDB } from '../database/drizzle.module';
-import { AddonType, PackageLimits } from './package.helper';
 import { TenantSubscriptionInfo } from './dto/subscription.types';
+export interface PackageLimits {
+    users: number;
+    posts: number;
+    pages: number;
+    products: number;
+    emailsPerMonth: number;
+    subscribers: number;
+    aiCredits: number;
+    storageMb: number;
+}
 export declare class SubscriptionService {
     private db;
     constructor(db: DrizzleDB);
@@ -14,8 +23,8 @@ export declare class SubscriptionService {
         storageUsedMb: number;
     }>;
     getTenantSubscriptionInfo(tenantId: string): Promise<TenantSubscriptionInfo>;
-    activateAddon(tenantId: string, addonType: AddonType, quantity?: number): Promise<void>;
-    deactivateAddon(tenantId: string, addonType: AddonType): Promise<void>;
+    activateAddon(tenantId: string, addonType: string, quantity?: number): Promise<void>;
+    deactivateAddon(tenantId: string, addonType: string): Promise<void>;
     changePackage(tenantId: string, targetPackage: string): Promise<void>;
     upgradePackage(tenantId: string, targetPackage: string): Promise<void>;
     incrementUsage(tenantId: string, type: 'emails' | 'products' | 'posts' | 'api'): Promise<void>;

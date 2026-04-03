@@ -159,7 +159,9 @@ let ShopResolver = class ShopResolver {
             .select()
             .from(schema_1.products)
             .where((0, drizzle_orm_1.eq)(schema_1.products.tenantId, tenantId));
-        if (!(0, package_helper_1.isWithinLimit)(tenant.package, 'products', currentProducts.length)) {
+        const pkg = package_helper_1.PACKAGES[tenant.package];
+        const maxProducts = pkg?.features.maxProducts ?? 0;
+        if (maxProducts !== -1 && currentProducts.length >= maxProducts) {
             const limits = {
                 starter: 0,
                 business: 100,

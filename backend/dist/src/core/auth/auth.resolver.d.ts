@@ -3,6 +3,7 @@ import { AuthResponse, CurrentUserResponse, SuccessResponse } from './dto/auth.t
 import { RegisterInput, LoginInput, RefreshTokenInput, ForgotPasswordInput, ResetPasswordInput, VerifyEmailInput } from './dto/auth.input';
 import type { JwtPayload } from './strategies/jwt.strategy';
 import type { DrizzleDB } from '../database/drizzle.module';
+import { UpdateBrandingInput, BrandingResult } from './dto/auth.types';
 export declare class AuthResolver {
     private authService;
     private db;
@@ -18,4 +19,5 @@ export declare class AuthResolver {
     me(currentUser: JwtPayload): Promise<CurrentUserResponse>;
     currentTenant(currentUser: JwtPayload): Promise<CurrentUserResponse>;
     updateShopTemplate(template: string, tenantId: string, currentUser: JwtPayload): Promise<CurrentUserResponse>;
+    updateBranding(input: UpdateBrandingInput, tenantId: string): Promise<BrandingResult>;
 }

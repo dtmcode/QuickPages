@@ -220,7 +220,10 @@ let SupportResolver = class SupportResolver {
         this.supportService = supportService;
     }
     async supportTickets(tenantId, status, priority) {
-        const rows = await this.supportService.getTickets(tenantId, { status, priority });
+        const rows = await this.supportService.getTickets(tenantId, {
+            status,
+            priority,
+        });
         return rows.map((r) => ({
             id: r.id,
             ticketNumber: r.ticket_number,
@@ -258,10 +261,17 @@ let SupportResolver = class SupportResolver {
     async updateSupportTicket(id, input, tenantId) {
         const r = await this.supportService.updateTicket(tenantId, id, input);
         return {
-            id: r.id, ticketNumber: r.ticket_number, subject: r.subject,
-            status: r.status, priority: r.priority, customerName: r.customer_name,
-            customerEmail: r.customer_email, assignedTo: r.assigned_to,
-            messageCount: 0, createdAt: r.created_at, updatedAt: r.updated_at,
+            id: r.id,
+            ticketNumber: r.ticket_number,
+            subject: r.subject,
+            status: r.status,
+            priority: r.priority,
+            customerName: r.customer_name,
+            customerEmail: r.customer_email,
+            assignedTo: r.assigned_to,
+            messageCount: 0,
+            createdAt: r.created_at,
+            updatedAt: r.updated_at,
         };
     }
     async replyToTicket(ticketId, content, isInternal, tenantId, user) {
@@ -273,9 +283,14 @@ let SupportResolver = class SupportResolver {
             isInternal,
         });
         return {
-            id: r.id, ticketId: r.ticket_id, authorName: r.author_name,
-            authorEmail: r.author_email, content: r.content,
-            isStaff: r.is_staff, isInternal: r.is_internal, createdAt: r.created_at,
+            id: r.id,
+            ticketId: r.ticket_id,
+            authorName: r.author_name,
+            authorEmail: r.author_email,
+            content: r.content,
+            isStaff: r.is_staff,
+            isInternal: r.is_internal,
+            createdAt: r.created_at,
         };
     }
     async deleteSupportTicket(id, tenantId) {

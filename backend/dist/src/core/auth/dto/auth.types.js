@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SuccessResponse = exports.CurrentUserResponse = exports.AuthResponse = exports.Tenant = exports.User = exports.PackageType = exports.UserRole = void 0;
+exports.BrandingResult = exports.UpdateBrandingInput = exports.SuccessResponse = exports.CurrentUserResponse = exports.AuthResponse = exports.Tenant = exports.User = exports.PackageType = exports.UserRole = void 0;
 const graphql_1 = require("@nestjs/graphql");
 var UserRole;
 (function (UserRole) {
@@ -180,4 +180,41 @@ __decorate([
 exports.SuccessResponse = SuccessResponse = __decorate([
     (0, graphql_1.ObjectType)()
 ], SuccessResponse);
+let UpdateBrandingInput = class UpdateBrandingInput {
+    primaryColor;
+    logoUrl;
+    platformName;
+};
+exports.UpdateBrandingInput = UpdateBrandingInput;
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateBrandingInput.prototype, "primaryColor", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateBrandingInput.prototype, "logoUrl", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateBrandingInput.prototype, "platformName", void 0);
+exports.UpdateBrandingInput = UpdateBrandingInput = __decorate([
+    (0, graphql_1.InputType)()
+], UpdateBrandingInput);
+let BrandingResult = class BrandingResult {
+    primaryColor;
+    logoUrl;
+};
+exports.BrandingResult = BrandingResult;
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], BrandingResult.prototype, "primaryColor", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], BrandingResult.prototype, "logoUrl", void 0);
+exports.BrandingResult = BrandingResult = __decorate([
+    (0, graphql_1.ObjectType)()
+], BrandingResult);
 //# sourceMappingURL=auth.types.js.map

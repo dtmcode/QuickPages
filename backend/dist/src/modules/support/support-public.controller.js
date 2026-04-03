@@ -24,11 +24,18 @@ let SupportPublicController = class SupportPublicController {
         const tenantId = await this.supportService.getTenantIdBySlug(slug);
         if (!tenantId)
             throw new common_1.HttpException('Nicht gefunden', common_1.HttpStatus.NOT_FOUND);
-        if (!body.subject || !body.customerName || !body.customerEmail || !body.message) {
+        if (!body.subject ||
+            !body.customerName ||
+            !body.customerEmail ||
+            !body.message) {
             throw new common_1.HttpException('Alle Pflichtfelder ausfüllen', common_1.HttpStatus.BAD_REQUEST);
         }
         const ticket = await this.supportService.createTicket(tenantId, body);
-        return { success: true, ticketNumber: ticket.ticket_number, token: ticket.token };
+        return {
+            success: true,
+            ticketNumber: ticket.ticket_number,
+            token: ticket.token,
+        };
     }
     async getTicket(slug, token) {
         const ticket = await this.supportService.getTicketByToken(token);

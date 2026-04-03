@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateSectionInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const class_validator_1 = require("class-validator");
 const graphql_type_json_1 = __importDefault(require("graphql-type-json"));
 const section_entity_1 = require("../entities/section.entity");
 let CreateSectionInput = class CreateSectionInput {
@@ -28,30 +29,39 @@ let CreateSectionInput = class CreateSectionInput {
 exports.CreateSectionInput = CreateSectionInput;
 __decorate([
     (0, graphql_1.Field)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateSectionInput.prototype, "pageId", void 0);
 __decorate([
     (0, graphql_1.Field)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateSectionInput.prototype, "name", void 0);
 __decorate([
     (0, graphql_1.Field)(() => section_entity_1.SectionType),
+    (0, class_validator_1.IsEnum)(section_entity_1.SectionType),
     __metadata("design:type", String)
 ], CreateSectionInput.prototype, "type", void 0);
 __decorate([
     (0, graphql_1.Field)(() => graphql_1.Int, { nullable: true }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], CreateSectionInput.prototype, "order", void 0);
 __decorate([
     (0, graphql_1.Field)({ nullable: true }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
 ], CreateSectionInput.prototype, "isActive", void 0);
 __decorate([
     (0, graphql_1.Field)(() => graphql_type_json_1.default, { nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Object)
 ], CreateSectionInput.prototype, "content", void 0);
 __decorate([
     (0, graphql_1.Field)(() => graphql_type_json_1.default, { nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Object)
 ], CreateSectionInput.prototype, "styling", void 0);
 exports.CreateSectionInput = CreateSectionInput = __decorate([

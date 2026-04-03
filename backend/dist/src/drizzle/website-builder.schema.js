@@ -22,6 +22,11 @@ exports.sectionTypeEnum = (0, pg_core_1.pgEnum)('wb_section_type', [
     'text',
     'html',
     'custom',
+    'newsletter',
+    'booking',
+    'map',
+    'countdown',
+    'social',
 ]);
 exports.pageStatusEnum = (0, pg_core_1.pgEnum)('wb_page_status', [
     'draft',

@@ -36,8 +36,57 @@ let SubscriptionService = class SubscriptionService {
             .select()
             .from(schema_1.tenantAddons)
             .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.tenantAddons.tenantId, tenantId), (0, drizzle_orm_1.eq)(schema_1.tenantAddons.isActive, true)));
-        const addonTypes = activeAddons.map((a) => a.addonType);
-        return (0, package_helper_1.calculateTotalLimits)(tenant.package, addonTypes);
+        const pkg = package_helper_1.PACKAGES[tenant.package];
+        const base = pkg
+            ? {
+                users: pkg.features.maxUsers,
+                posts: pkg.features.maxPosts,
+                pages: pkg.features.maxPages,
+                products: pkg.features.maxProducts,
+                emailsPerMonth: pkg.features.maxSubscribers,
+                subscribers: pkg.features.maxSubscribers,
+                aiCredits: pkg.features.aiCreditsPerMonth,
+                storageMb: pkg.features.storageMb,
+            }
+            : {
+                users: 1,
+                posts: 0,
+                pages: 3,
+                products: 0,
+                emailsPerMonth: 0,
+                subscribers: 0,
+                aiCredits: 0,
+                storageMb: 0,
+            };
+        return activeAddons.reduce((limits, addon) => {
+            const def = Object.values(package_helper_1.ADDONS).find((a) => a.type === addon.addonType);
+            if (!def)
+                return limits;
+            return {
+                users: def.adds.maxUsers
+                    ? limits.users + def.adds.maxUsers
+                    : limits.users,
+                posts: def.adds.maxPosts
+                    ? limits.posts + def.adds.maxPosts
+                    : limits.posts,
+                pages: def.adds.maxPages
+                    ? limits.pages + def.adds.maxPages
+                    : limits.pages,
+                products: def.adds.maxProducts
+                    ? limits.products + def.adds.maxProducts
+                    : limits.products,
+                emailsPerMonth: def.adds.maxSubscribers
+                    ? limits.emailsPerMonth + def.adds.maxSubscribers
+                    : limits.emailsPerMonth,
+                subscribers: def.adds.maxSubscribers
+                    ? limits.subscribers + def.adds.maxSubscribers
+                    : limits.subscribers,
+                aiCredits: def.adds.aiCreditsPerMonth
+                    ? limits.aiCredits + def.adds.aiCreditsPerMonth
+                    : limits.aiCredits,
+                storageMb: limits.storageMb,
+            };
+        }, base);
     }
     async getCurrentUsage(tenantId) {
         const currentMonth = new Date().toISOString().slice(0, 7);
@@ -117,7 +166,7 @@ let SubscriptionService = class SubscriptionService {
         else {
             await this.db.insert(schema_1.tenantAddons).values({
                 tenantId,
-                addonType,
+                addonType: addonType,
                 quantity,
                 isActive: true,
             });
