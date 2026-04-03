@@ -1,5 +1,6 @@
 import { InputType, Field } from '@nestjs/graphql';
 import { IsString, IsBoolean, IsOptional } from 'class-validator';
+import GraphQLJSON from 'graphql-type-json';
 
 @InputType()
 export class UpdateNavigationInput {
@@ -22,4 +23,14 @@ export class UpdateNavigationInput {
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
+
+  @Field(() => GraphQLJSON, { nullable: true })
+  @IsOptional()
+  settings?: {
+    backgroundColor?: string;
+    textColor?: string;
+    fontFamily?: string;
+    itemsAlign?: string;
+    logoText?: string;
+  };
 }

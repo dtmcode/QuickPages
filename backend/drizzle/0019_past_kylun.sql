@@ -1,0 +1,1 @@
+ALTER TABLE "navigations" ADD COLUMN "settings" jsonb DEFAULT '{}'::jsonb;

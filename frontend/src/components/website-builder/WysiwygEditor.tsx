@@ -53,6 +53,7 @@ const GET_NAVIGATIONS = gql`
   query WysiwygGetNavigations {
     navigations {
       id name location isActive
+      settings
       items {
         id label type url order openInNewTab parentId
         children { id label type url order openInNewTab }
@@ -75,6 +76,12 @@ const DELETE_NAV_ITEM = gql`
     deleteNavigationItem(itemId: $itemId)
   }
 `;
+const UPDATE_NAVIGATION = gql`
+  mutation WysiwygUpdateNavigation($id: String!, $input: UpdateNavigationInput!) {
+    updateNavigation(id: $id, input: $input) { id settings }
+  }
+`;
+
 // ==================== TYPES ====================
 
 interface SectionContent { [key: string]: any; }
@@ -133,6 +140,13 @@ interface NavItem {
 interface NavData {
   id: string; name: string; location: string; isActive: boolean;
   items?: NavItem[];
+  settings?: {
+    backgroundColor?: string;
+    textColor?: string;
+    fontFamily?: string;
+    itemsAlign?: 'left' | 'center' | 'right';
+    logoText?: string;
+  };
 }
 // ==================== FONT PRESETS ====================
 
@@ -1194,7 +1208,9 @@ const { refetch: refetchNavs } = useQuery(GET_NAVIGATIONS, {
 });
 const [createNavItemMut] = useMutation(CREATE_NAV_ITEM);
 const [updateNavItemMut] = useMutation(UPDATE_NAV_ITEM);
-const [deleteNavItemMut] = useMutation(DELETE_NAV_ITEM);
+  const [deleteNavItemMut] = useMutation(DELETE_NAV_ITEM);
+  const [updateNavigationMut] = useMutation(UPDATE_NAVIGATION);
+
 
   const dragItemIdx = useRef<number | null>(null);
 
@@ -1645,12 +1661,13 @@ const [deleteNavItemMut] = useMutation(DELETE_NAV_ITEM);
               <div style={{ flex: 1, overflowY: 'auto', padding: '14px' }}>
                 {navigations.find(n => n.id === selectedNavId) && (
                   <NavEditorPanel
-                    nav={navigations.find(n => n.id === selectedNavId)!}
-                    onRefresh={refetchNavs}
-                    createNavItem={createNavItemMut}
-                    updateNavItem={updateNavItemMut}
-                    deleteNavItem={deleteNavItemMut}
-                  />
+  nav={navigations.find(n => n.id === selectedNavId)!}
+  onRefresh={refetchNavs}
+  createNavItem={createNavItemMut}
+  updateNavItem={updateNavItemMut}
+  deleteNavItem={deleteNavItemMut}
+  updateNav={updateNavigationMut}
+/>
                 )}
               </div>
             </>

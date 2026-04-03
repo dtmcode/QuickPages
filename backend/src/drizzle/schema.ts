@@ -795,6 +795,13 @@ export const navigations = pgTable(
     location: varchar('location', { length: 100 }).notNull(),
     description: text('description'),
     isActive: boolean('is_active').default(true).notNull(),
+    settings: jsonb('settings').$type<{
+      backgroundColor?: string;
+      textColor?: string;
+      fontFamily?: string;
+      itemsAlign?: 'left' | 'center' | 'right';
+      logoText?: string;
+    }>().default({}),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
