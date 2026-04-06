@@ -10,6 +10,23 @@ interface FooterProps {
 export function Footer({ navigation, tenantName, hidePoweredBy }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
+  // Navigation Settings auslesen
+ const s = (navigation as Navigation & { settings?: { backgroundColor?: string; textColor?: string; fontFamily?: string; itemsAlign?: string; logoText?: string } })?.settings || {};
+  const navBg = s.backgroundColor || '#111827';
+  const navColor = s.textColor || '#ffffff';
+  const navFont = s.fontFamily || 'inherit';
+  const isGradient = navBg.startsWith('linear') || navBg.startsWith('radial');
+
+  const footerStyle: React.CSSProperties = {
+    backgroundColor: isGradient ? undefined : navBg,
+    backgroundImage: isGradient ? navBg : undefined,
+    color: navColor,
+    fontFamily: navFont,
+  };
+
+  // Muted color — etwas transparenter als navColor
+  const mutedColor = `${navColor}99`;
+
   const footerItems = navigation?.items
     ? [...navigation.items]
         .filter((item) => !item.parentId)
@@ -17,20 +34,21 @@ export function Footer({ navigation, tenantName, hidePoweredBy }: FooterProps) {
     : [];
 
   return (
-    <footer className="bg-gray-900 text-white mt-auto">
+    <footer className="mt-auto" style={footerStyle}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div>
-            <h3 className="text-lg font-semibold mb-3">{tenantName}</h3>
+            <h3 className="text-lg font-semibold mb-3" style={{ color: navColor }}>{tenantName}</h3>
             {!hidePoweredBy && (
-              <p className="text-gray-400 text-xs mt-4">
+              <p className="text-xs mt-4" style={{ color: mutedColor }}>
                 Powered by{' '}
                 <a
                   href="https://myquickpage.de"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
+                  className="hover:opacity-100 transition-opacity"
+                  style={{ color: mutedColor }}
                 >
                   QuickPages
                 </a>
@@ -41,13 +59,13 @@ export function Footer({ navigation, tenantName, hidePoweredBy }: FooterProps) {
           {/* Footer Navigation */}
           {footerItems.length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">
+              <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: mutedColor }}>
                 Navigation
               </h3>
               <ul className="space-y-2">
                 {footerItems.map((item) => (
                   <li key={item.id}>
-                    <FooterNavItem item={item} />
+                    <FooterNavItem item={item} color={mutedColor} hoverColor={navColor} />
                   </li>
                 ))}
               </ul>
@@ -57,60 +75,48 @@ export function Footer({ navigation, tenantName, hidePoweredBy }: FooterProps) {
           {/* Fallback Links wenn keine Footer-Nav */}
           {footerItems.length === 0 && (
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">
+              <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: mutedColor }}>
                 Links
               </h3>
               <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="/" className="text-gray-400 hover:text-white transition-colors">
-                    Startseite
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog" className="text-gray-400 hover:text-white transition-colors">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/shop" className="text-gray-400 hover:text-white transition-colors">
-                    Shop
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
-                    Kontakt
-                  </Link>
-                </li>
+                {[
+                  { href: '/', label: 'Startseite' },
+                  { href: '/blog', label: 'Blog' },
+                  { href: '/shop', label: 'Shop' },
+                  { href: '/contact', label: 'Kontakt' },
+                ].map(link => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="transition-opacity hover:opacity-100" style={{ color: mutedColor }}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           )}
 
           {/* Legal */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: mutedColor }}>
               Rechtliches
             </h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/impressum" className="text-gray-400 hover:text-white transition-colors">
-                  Impressum
-                </Link>
-              </li>
-              <li>
-                <Link href="/datenschutz" className="text-gray-400 hover:text-white transition-colors">
-                  Datenschutz
-                </Link>
-              </li>
-              <li>
-                <Link href="/agb" className="text-gray-400 hover:text-white transition-colors">
-                  AGB
-                </Link>
-              </li>
+              {[
+                { href: '/impressum', label: 'Impressum' },
+                { href: '/datenschutz', label: 'Datenschutz' },
+                { href: '/agb', label: 'AGB' },
+              ].map(link => (
+                <li key={link.href}>
+                  <Link href={link.href} className="transition-opacity hover:opacity-100" style={{ color: mutedColor }}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+        <div className="border-t mt-8 pt-8 text-center text-sm" style={{ borderColor: `${navColor}22`, color: mutedColor }}>
           <p>© {currentYear} {tenantName}. Alle Rechte vorbehalten.</p>
         </div>
       </div>
@@ -118,14 +124,15 @@ export function Footer({ navigation, tenantName, hidePoweredBy }: FooterProps) {
   );
 }
 
-function FooterNavItem({ item }: { item: NavigationItem }) {
+function FooterNavItem({ item, color, hoverColor }: { item: NavigationItem; color: string; hoverColor: string }) {
   const href = getItemHref(item);
   return (
     <Link
       href={href}
       target={item.openInNewTab ? '_blank' : undefined}
       rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
-      className="text-gray-400 hover:text-white text-sm transition-colors"
+      className="text-sm transition-opacity hover:opacity-100"
+      style={{ color }}
     >
       {item.label}
     </Link>
