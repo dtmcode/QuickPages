@@ -253,7 +253,7 @@ export default function TemplateDetailPage() {
       {/* Pages List */}
       {pages.length > 0 ? (
         <div className="grid gap-4">
-          {pages.sort((a: any, b: any) => a.order - b.order).map((page: any) => (
+          {[...pages].sort((a: any, b: any) => a.order - b.order).map((page: any) => (
             <div key={page.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition p-6">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
