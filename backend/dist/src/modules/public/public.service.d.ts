@@ -23,7 +23,7 @@ export declare class PublicService {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "landing" | "default" | "contact" | "about" | "blank";
+        template: "about" | "contact" | "default" | "landing" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -56,7 +56,7 @@ export declare class PublicService {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "landing" | "default" | "contact" | "about" | "blank";
+        template: "about" | "contact" | "default" | "landing" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -69,7 +69,7 @@ export declare class PublicService {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social";
+            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
             order: number;
             isActive: boolean;
             content: {
@@ -194,7 +194,7 @@ export declare class PublicService {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social";
+            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
             order: number;
             isActive: boolean;
             content: {
@@ -319,7 +319,7 @@ export declare class PublicService {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social";
+            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
             order: number;
             isActive: boolean;
             content: {
@@ -567,6 +567,8 @@ export declare class PublicService {
     getNavigation(tenantSlug: string, location: string): Promise<{
         id: string;
         name: string;
+        description: string | null;
+        isActive: boolean;
         settings: {
             backgroundColor?: string;
             textColor?: string;
@@ -574,14 +576,12 @@ export declare class PublicService {
             itemsAlign?: "left" | "center" | "right";
             logoText?: string;
         } | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        description: string | null;
         location: string;
         items: {
-            [x: string]: any;
+            id: string;
         }[];
     } | null>;
     subscribeToNewsletter(tenantSlug: string, data: {

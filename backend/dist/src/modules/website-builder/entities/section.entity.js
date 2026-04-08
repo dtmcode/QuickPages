@@ -40,6 +40,9 @@ var SectionType;
     SectionType["map"] = "map";
     SectionType["countdown"] = "countdown";
     SectionType["social"] = "social";
+    SectionType["spacer"] = "spacer";
+    SectionType["before_after"] = "before_after";
+    SectionType["whatsapp"] = "whatsapp";
 })(SectionType || (exports.SectionType = SectionType = {}));
 (0, graphql_1.registerEnumType)(SectionType, {
     name: 'SectionType',

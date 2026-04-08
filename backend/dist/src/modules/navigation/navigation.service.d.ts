@@ -9,6 +9,8 @@ export declare class NavigationService {
     createNavigation(tenantId: string, input: CreateNavigationInput): Promise<{
         id: string;
         name: string;
+        description: string | null;
+        isActive: boolean;
         settings: {
             backgroundColor?: string;
             textColor?: string;
@@ -16,16 +18,16 @@ export declare class NavigationService {
             itemsAlign?: "left" | "center" | "right";
             logoText?: string;
         } | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        description: string | null;
         location: string;
     }>;
     findAll(tenantId: string): Promise<{
         id: string;
         name: string;
+        description: string | null;
+        isActive: boolean;
         settings: {
             backgroundColor?: string;
             textColor?: string;
@@ -33,19 +35,19 @@ export declare class NavigationService {
             itemsAlign?: "left" | "center" | "right";
             logoText?: string;
         } | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        description: string | null;
         location: string;
         items: {
-            [x: string]: any;
+            id: string;
         }[];
     }[]>;
     findByLocation(tenantId: string, location: string): Promise<{
         id: string;
         name: string;
+        description: string | null;
+        isActive: boolean;
         settings: {
             backgroundColor?: string;
             textColor?: string;
@@ -53,19 +55,19 @@ export declare class NavigationService {
             itemsAlign?: "left" | "center" | "right";
             logoText?: string;
         } | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        description: string | null;
         location: string;
         items: {
-            [x: string]: any;
+            id: string;
         }[];
     } | null>;
     findOne(id: string, tenantId: string): Promise<{
         id: string;
         name: string;
+        description: string | null;
+        isActive: boolean;
         settings: {
             backgroundColor?: string;
             textColor?: string;
@@ -73,14 +75,12 @@ export declare class NavigationService {
             itemsAlign?: "left" | "center" | "right";
             logoText?: string;
         } | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        description: string | null;
         location: string;
         items: {
-            [x: string]: any;
+            id: string;
         }[];
     }>;
     updateNavigation(id: string, tenantId: string, input: UpdateNavigationInput): Promise<{
@@ -103,7 +103,22 @@ export declare class NavigationService {
     deleteNavigation(id: string, tenantId: string): Promise<boolean>;
     createNavigationItem(navigationId: string, tenantId: string, input: CreateNavigationItemInput): Promise<any>;
     findNavigationItems(navigationId: string, tenantId: string): Promise<{
-        [x: string]: any;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number;
+        pageId: string | null;
+        type: string;
+        categoryId: string | null;
+        url: string | null;
+        navigationId: string;
+        label: string;
+        postId: string | null;
+        icon: string | null;
+        cssClass: string | null;
+        openInNewTab: boolean;
+        parentId: string | null;
+        children: never;
     }[]>;
     updateNavigationItem(itemId: string, tenantId: string, input: UpdateNavigationItemInput): Promise<{
         [x: string]: any;

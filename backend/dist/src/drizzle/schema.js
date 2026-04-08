@@ -1,20 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.analyticsDaily = exports.analyticsPageviews = exports.bookingAppointments = exports.bookingSettings = exports.bookingBlockedDates = exports.bookingAvailability = exports.bookingServices = exports.supportMessages = exports.supportTickets = exports.emailVerificationTokens = exports.seoMeta = exports.navigationItems = exports.navigations = exports.mediaFiles = exports.campaignQueue = exports.campaignEvents = exports.newsletterCampaigns = exports.newsletterSubscribers = exports.tenantEmailTemplates = exports.tenantEmailSettings = exports.emailEvents = exports.emailLogs = exports.passwordResetTokens = exports.orderItems = exports.orders = exports.products = exports.categories = exports.pages = exports.posts = exports.auditLogs = exports.refreshTokens = exports.users = exports.usageTracking = exports.tenantAddons = exports.subscriptions = exports.domainEvents = exports.tenants = exports.campaignEventTypeEnum = exports.campaignStatusEnum = exports.subscriberStatusEnum = exports.emailProviderEnum = exports.mediaTypeEnum = exports.orderStatusEnum = exports.pageTemplateEnum = exports.postStatusEnum = exports.subscriptionStatusEnum = exports.addonTypeEnum = exports.shopTemplateEnum = exports.packageEnum = exports.userRoleEnum = void 0;
-exports.uiTranslationsRelations = exports.translationsRelations = exports.tenantPaymentSettings = exports.tenantCustomers = exports.analyticsDailyRelations = exports.analyticsPageviewsRelations = exports.blogCommentsRelations = exports.formSubmissionsRelations = exports.formsRelations = exports.bookingAppointmentsRelations = exports.bookingServicesRelations = exports.domainEventsRelations = exports.supportMessagesRelations = exports.supportTicketsRelations = exports.navigationItemsRelations = exports.navigationsRelations = exports.mediaFilesRelations = exports.campaignQueueRelations = exports.campaignEventsRelations = exports.newsletterCampaignsRelations = exports.newsletterSubscribersRelations = exports.tenantEmailTemplatesRelations = exports.tenantEmailSettingsRelations = exports.emailEventsRelations = exports.emailLogsRelations = exports.orderItemsRelations = exports.ordersRelations = exports.productsRelations = exports.categoriesRelations = exports.pagesRelations = exports.postsRelations = exports.auditLogsRelations = exports.passwordResetTokensRelations = exports.refreshTokensRelations = exports.usageTrackingRelations = exports.tenantAddonsRelations = exports.subscriptionsRelations = exports.usersRelations = exports.tenantsRelations = exports.uiTranslations = exports.translations = exports.commentSettings = exports.blogComments = exports.formSubmissions = exports.forms = void 0;
+exports.forms = exports.analyticsDaily = exports.analyticsPageviews = exports.bookingAppointments = exports.bookingSettings = exports.bookingBlockedDates = exports.bookingAvailability = exports.bookingServices = exports.supportMessages = exports.supportTickets = exports.emailVerificationTokens = exports.seoMeta = exports.navigationItems = exports.navigations = exports.mediaFiles = exports.campaignQueue = exports.campaignEvents = exports.newsletterCampaigns = exports.newsletterSubscribers = exports.tenantEmailTemplates = exports.tenantEmailSettings = exports.emailEvents = exports.emailLogs = exports.passwordResetTokens = exports.orderItems = exports.orders = exports.products = exports.categories = exports.pages = exports.posts = exports.auditLogs = exports.refreshTokens = exports.users = exports.usageTracking = exports.tenantAddons = exports.subscriptions = exports.domainEvents = exports.tenants = exports.campaignEventTypeEnum = exports.campaignStatusEnum = exports.subscriberStatusEnum = exports.emailProviderEnum = exports.mediaTypeEnum = exports.orderStatusEnum = exports.pageTemplateEnum = exports.postStatusEnum = exports.subscriptionStatusEnum = exports.addonTypeEnum = exports.shopTemplateEnum = exports.userRoleEnum = void 0;
+exports.uiTranslationsRelations = exports.translationsRelations = exports.tenantPaymentSettings = exports.tenantCustomers = exports.analyticsDailyRelations = exports.analyticsPageviewsRelations = exports.blogCommentsRelations = exports.formSubmissionsRelations = exports.formsRelations = exports.bookingAppointmentsRelations = exports.bookingServicesRelations = exports.domainEventsRelations = exports.supportMessagesRelations = exports.supportTicketsRelations = exports.navigationItemsRelations = exports.navigationsRelations = exports.mediaFilesRelations = exports.campaignQueueRelations = exports.campaignEventsRelations = exports.newsletterCampaignsRelations = exports.newsletterSubscribersRelations = exports.tenantEmailTemplatesRelations = exports.tenantEmailSettingsRelations = exports.emailEventsRelations = exports.emailLogsRelations = exports.orderItemsRelations = exports.ordersRelations = exports.productsRelations = exports.categoriesRelations = exports.pagesRelations = exports.postsRelations = exports.auditLogsRelations = exports.passwordResetTokensRelations = exports.refreshTokensRelations = exports.usageTrackingRelations = exports.tenantAddonsRelations = exports.subscriptionsRelations = exports.usersRelations = exports.tenantsRelations = exports.uiTranslations = exports.translations = exports.commentSettings = exports.blogComments = exports.formSubmissions = void 0;
 const pg_core_1 = require("drizzle-orm/pg-core");
 const drizzle_orm_1 = require("drizzle-orm");
 exports.userRoleEnum = (0, pg_core_1.pgEnum)('user_role', ['owner', 'admin', 'user']);
-exports.packageEnum = (0, pg_core_1.pgEnum)('package', [
-    'starter',
-    'business',
-    'enterprise',
-    'page',
-    'creator',
-    'shop',
-    'professional',
-    'landing',
-]);
 exports.shopTemplateEnum = (0, pg_core_1.pgEnum)('shop_template', [
     'default',
     'minimalist',
@@ -28,13 +18,20 @@ exports.addonTypeEnum = (0, pg_core_1.pgEnum)('addon_type', [
     'email_business',
     'extra_users',
     'shop_module',
+    'shop_extra',
+    'booking_module',
+    'blog_module',
     'newsletter',
+    'newsletter_extra',
     'booking',
     'ai_content',
     'form_builder',
     'i18n',
     'extra_products',
     'extra_ai_credits',
+    'extra_pages',
+    'members_module',
+    'custom_domain',
 ]);
 exports.subscriptionStatusEnum = (0, pg_core_1.pgEnum)('subscription_status', [
     'active',
@@ -119,7 +116,7 @@ exports.tenants = (0, pg_core_1.pgTable)('tenants', {
     lastDnsCheck: (0, pg_core_1.timestamp)('last_dns_check'),
     defaultLocale: (0, pg_core_1.varchar)('default_locale', { length: 10 }).default('de'),
     enabledLocales: (0, pg_core_1.text)('enabled_locales').array().default(['de']),
-    package: (0, exports.packageEnum)('package').default('starter').notNull(),
+    package: (0, pg_core_1.varchar)('package', { length: 50 }).default('website_micro').notNull(),
     shopTemplate: (0, exports.shopTemplateEnum)('shop_template').default('default'),
     settings: (0, pg_core_1.jsonb)('settings').default({
         modules: {
@@ -159,7 +156,7 @@ exports.subscriptions = (0, pg_core_1.pgTable)('subscriptions', {
     tenantId: (0, pg_core_1.uuid)('tenant_id')
         .references(() => exports.tenants.id, { onDelete: 'cascade' })
         .notNull(),
-    package: (0, exports.packageEnum)('package').notNull(),
+    package: (0, pg_core_1.varchar)('package', { length: 50 }).notNull(),
     status: (0, exports.subscriptionStatusEnum)('status').default('active').notNull(),
     currentPeriodStart: (0, pg_core_1.timestamp)('current_period_start').notNull(),
     currentPeriodEnd: (0, pg_core_1.timestamp)('current_period_end').notNull(),

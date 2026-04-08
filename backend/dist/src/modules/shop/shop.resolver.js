@@ -159,15 +159,15 @@ let ShopResolver = class ShopResolver {
             .select()
             .from(schema_1.products)
             .where((0, drizzle_orm_1.eq)(schema_1.products.tenantId, tenantId));
-        const pkg = package_helper_1.PACKAGES[tenant.package];
-        const maxProducts = pkg?.features.maxProducts ?? 0;
-        if (maxProducts !== -1 && currentProducts.length >= maxProducts) {
-            const limits = {
-                starter: 0,
-                business: 100,
-                enterprise: -1,
-            };
-            throw new Error(`Produkt-Limit erreicht! Dein ${tenant.package.toUpperCase()} Package erlaubt ${limits[tenant.package] === -1 ? 'unbegrenzt' : limits[tenant.package]} Produkte. Upgrade auf BUSINESS für mehr!`);
+        const SUPERADMIN_SLUGS = ['myquickpages', 'platform-admin'];
+        const isSuperAdmin = SUPERADMIN_SLUGS.includes(tenant.slug) ||
+            tenant.settings?.isSuperAdmin === true;
+        if (!isSuperAdmin) {
+            const pkg = package_helper_1.PACKAGES[tenant.package];
+            const maxProducts = pkg?.features.maxProducts ?? 0;
+            if (maxProducts !== -1 && currentProducts.length >= maxProducts) {
+                throw new Error('Produkt-Limit erreicht! Upgrade dein Paket für mehr Produkte.');
+            }
         }
         const slug = input.name
             .toLowerCase()

@@ -7,7 +7,7 @@ export declare class UpdateNavigationInput {
         backgroundColor?: string;
         textColor?: string;
         fontFamily?: string;
-        itemsAlign?: string;
+        itemsAlign?: 'left' | 'center' | 'right';
         logoText?: string;
     };
 }

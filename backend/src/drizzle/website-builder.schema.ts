@@ -44,6 +44,9 @@ export const sectionTypeEnum = pgEnum('wb_section_type', [
   'map',
   'countdown',
   'social',
+  'spacer',
+  'before_after',
+  'whatsapp',
 ]);
 
 export const pageStatusEnum = pgEnum('wb_page_status', [

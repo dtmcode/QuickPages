@@ -21,7 +21,10 @@ export declare enum SectionType {
     booking = "booking",
     map = "map",
     countdown = "countdown",
-    social = "social"
+    social = "social",
+    spacer = "spacer",
+    before_after = "before_after",
+    whatsapp = "whatsapp"
 }
 export declare class Section {
     id: string;

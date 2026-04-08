@@ -84,7 +84,7 @@ export declare const tenants: import("drizzle-orm/pg-core").PgTableWithColumns<{
             tableName: "tenants";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "starter" | "business" | "enterprise";
+            data: "business" | "enterprise" | "starter";
             driverParam: string;
             notNull: true;
             hasDefault: true;
@@ -1043,7 +1043,7 @@ export declare const pages: import("drizzle-orm/pg-core").PgTableWithColumns<{
             tableName: "pages";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "landing" | "default" | "contact" | "about" | "blank";
+            data: "default" | "landing" | "contact" | "about" | "blank";
             driverParam: string;
             notNull: true;
             hasDefault: true;

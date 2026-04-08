@@ -1,7 +1,6 @@
 export declare const userRoleEnum: import("drizzle-orm/pg-core").PgEnum<["owner", "admin", "user"]>;
-export declare const packageEnum: import("drizzle-orm/pg-core").PgEnum<["starter", "business", "enterprise", "page", "creator", "shop", "professional", "landing"]>;
 export declare const shopTemplateEnum: import("drizzle-orm/pg-core").PgEnum<["default", "minimalist", "fashion", "tech"]>;
-export declare const addonTypeEnum: import("drizzle-orm/pg-core").PgEnum<["shop_business", "shop_pro", "email_starter", "email_business", "extra_users", "shop_module", "newsletter", "booking", "ai_content", "form_builder", "i18n", "extra_products", "extra_ai_credits"]>;
+export declare const addonTypeEnum: import("drizzle-orm/pg-core").PgEnum<["shop_business", "shop_pro", "email_starter", "email_business", "extra_users", "shop_module", "shop_extra", "booking_module", "blog_module", "newsletter", "newsletter_extra", "booking", "ai_content", "form_builder", "i18n", "extra_products", "extra_ai_credits", "extra_pages", "members_module", "custom_domain"]>;
 export declare const subscriptionStatusEnum: import("drizzle-orm/pg-core").PgEnum<["active", "cancelled", "past_due", "trialing"]>;
 export declare const postStatusEnum: import("drizzle-orm/pg-core").PgEnum<["draft", "published", "archived"]>;
 export declare const pageTemplateEnum: import("drizzle-orm/pg-core").PgEnum<["default", "landing", "contact", "about", "blank"]>;
@@ -297,19 +296,21 @@ export declare const tenants: import("drizzle-orm/pg-core").PgTableWithColumns<{
             name: "package";
             tableName: "tenants";
             dataType: "string";
-            columnType: "PgEnumColumn";
-            data: "starter" | "business" | "enterprise" | "page" | "creator" | "shop" | "professional" | "landing";
+            columnType: "PgVarchar";
+            data: string;
             driverParam: string;
             notNull: true;
             hasDefault: true;
             isPrimaryKey: false;
             isAutoincrement: false;
             hasRuntimeDefault: false;
-            enumValues: ["starter", "business", "enterprise", "page", "creator", "shop", "professional", "landing"];
+            enumValues: [string, ...string[]];
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 50;
+        }>;
         shopTemplate: import("drizzle-orm/pg-core").PgColumn<{
             name: "shop_template";
             tableName: "tenants";
@@ -604,19 +605,21 @@ export declare const subscriptions: import("drizzle-orm/pg-core").PgTableWithCol
             name: "package";
             tableName: "subscriptions";
             dataType: "string";
-            columnType: "PgEnumColumn";
-            data: "starter" | "business" | "enterprise" | "page" | "creator" | "shop" | "professional" | "landing";
+            columnType: "PgVarchar";
+            data: string;
             driverParam: string;
             notNull: true;
             hasDefault: false;
             isPrimaryKey: false;
             isAutoincrement: false;
             hasRuntimeDefault: false;
-            enumValues: ["starter", "business", "enterprise", "page", "creator", "shop", "professional", "landing"];
+            enumValues: [string, ...string[]];
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            length: 50;
+        }>;
         status: import("drizzle-orm/pg-core").PgColumn<{
             name: "status";
             tableName: "subscriptions";
@@ -784,14 +787,14 @@ export declare const tenantAddons: import("drizzle-orm/pg-core").PgTableWithColu
             tableName: "tenant_addons";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "shop_business" | "shop_pro" | "email_starter" | "email_business" | "extra_users" | "shop_module" | "newsletter" | "booking" | "ai_content" | "form_builder" | "i18n" | "extra_products" | "extra_ai_credits";
+            data: "shop_business" | "shop_pro" | "email_starter" | "email_business" | "extra_users" | "shop_module" | "shop_extra" | "booking_module" | "blog_module" | "newsletter" | "newsletter_extra" | "booking" | "ai_content" | "form_builder" | "i18n" | "extra_products" | "extra_ai_credits" | "extra_pages" | "members_module" | "custom_domain";
             driverParam: string;
             notNull: true;
             hasDefault: false;
             isPrimaryKey: false;
             isAutoincrement: false;
             hasRuntimeDefault: false;
-            enumValues: ["shop_business", "shop_pro", "email_starter", "email_business", "extra_users", "shop_module", "newsletter", "booking", "ai_content", "form_builder", "i18n", "extra_products", "extra_ai_credits"];
+            enumValues: ["shop_business", "shop_pro", "email_starter", "email_business", "extra_users", "shop_module", "shop_extra", "booking_module", "blog_module", "newsletter", "newsletter_extra", "booking", "ai_content", "form_builder", "i18n", "extra_products", "extra_ai_credits", "extra_pages", "members_module", "custom_domain"];
             baseColumn: never;
             identity: undefined;
             generated: undefined;
@@ -2011,7 +2014,7 @@ export declare const pages: import("drizzle-orm/pg-core").PgTableWithColumns<{
             tableName: "pages";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "landing" | "default" | "contact" | "about" | "blank";
+            data: "default" | "landing" | "contact" | "about" | "blank";
             driverParam: string;
             notNull: true;
             hasDefault: true;
