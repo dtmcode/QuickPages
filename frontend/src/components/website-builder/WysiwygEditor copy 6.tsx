@@ -25,11 +25,6 @@ const GET_TEMPLATE_SETTINGS = gql`
     wbTemplate(id: $id, tenantId: $tenantId) { id name settings }
   }
 `;
-const { data: pagesData } = useQuery(GET_TEMPLATE_PAGES, {
-    variables: { templateId: resolvedTemplateId, tenantId: tenant?.id },
-    skip: !resolvedTemplateId || !tenant?.id,
-  });
-  const allPages = pagesData?.wbPages || [];
 
 const UPDATE_SECTION = gql`
   mutation WysiwygUpdateSection($id: String!, $input: UpdateSectionInput!, $tenantId: String!) {
@@ -1731,9 +1726,8 @@ function NavEditorPanel({ nav, onRefresh, createNavItem, updateNavItem, deleteNa
   );
 }
 
-export function WysiwygEditor({ pageId: initialPageId, templateId }: WysiwygEditorProps) {
+export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
   const { tenant } = useAuth();
-  const [currentPageId, setCurrentPageId] = useState(initialPageId);
   const [sections, setSections] = useState<Section[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [deviceMode, setDeviceMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
@@ -1779,9 +1773,9 @@ const [updateTemplateMut] = useMutation(UPDATE_TEMPLATE_SETTINGS);
 
   const selectedSection = sections.find(s => s.id === selectedId) || null;
 
- const { loading } = useQuery(GET_PAGE_WITH_SECTIONS, {
-    variables: { id: currentPageId, tenantId: tenant?.id },
-    skip: !tenant?.id || !currentPageId,
+  const { loading } = useQuery(GET_PAGE_WITH_SECTIONS, {
+    variables: { id: pageId, tenantId: tenant?.id },
+    skip: !tenant?.id || !pageId,
     onCompleted: (data) => {
       if (data?.wbPage) {
         setSections([...(data.wbPage.sections || [])].sort((a: any, b: any) => a.order - b.order));
@@ -1842,7 +1836,7 @@ const [updateTemplateMut] = useMutation(UPDATE_TEMPLATE_SETTINGS);
       const res = await createSectionMut({
         variables: {
           input: {
-            pageId: currentPageId,
+            pageId,
             name: label,
             type,
             order: sections.length,
@@ -1898,7 +1892,7 @@ const [updateTemplateMut] = useMutation(UPDATE_TEMPLATE_SETTINGS);
     const ns = [...sections];
     [ns[idx], ns[swapIdx]] = [ns[swapIdx], ns[idx]];
     setSections(ns);
-    await reorderMut({ variables: { pageId: currentPageId, sectionIds: ns.map(s => s.id), tenantId: tenant?.id } }).catch(console.error);
+    await reorderMut({ variables: { pageId, sectionIds: ns.map(s => s.id), tenantId: tenant?.id } }).catch(console.error);
   };
 
   const handleDuplicate = async (id: string) => {
@@ -1910,13 +1904,12 @@ const [updateTemplateMut] = useMutation(UPDATE_TEMPLATE_SETTINGS);
     const res = await createSectionMut({
       variables: {
         input: {
-         pageId: currentPageId,
+          pageId,
           name: `${section.name} (Kopie)`,
           type: section.type,
           order: section.order + 1,
           isActive: section.isActive,
           content: section.content,
-           styling: section.styling || {},
         },
         tenantId: tenant.id,
       },
@@ -1938,18 +1931,7 @@ const handleLock = (id: string) => {
     setSections(prev => prev.map(s => s.id === id ? { ...s, styling: { ...s.styling, isLocked: !s.styling?.isLocked } } : s));
     setIsDirty(true);
   };
-
-const handleSwitchPage = (newPageId: string) => {
-    if (newPageId === currentPageId) return;
-    if (isDirty) {
-      handleSave();
-    }
-    setCurrentPageId(newPageId);
-    setSelectedId(null);
-    setSelectedNavId(null);
-    setSections([]);
-  };
-const handleContentChange = (content: SectionContent) => {
+  const handleContentChange = (content: SectionContent) => {
     if (!selectedId) return;
     pushUndo(sections);
     setSections(prev => prev.map(s => s.id === selectedId ? { ...s, content } : s));
@@ -1986,7 +1968,7 @@ const handleContentChange = (content: SectionContent) => {
     setSections(ns);
     setDragOverIdx(null);
     dragItemIdx.current = null;
-    await reorderMut({ variables: { pageId: currentPageId, sectionIds: ns.map(s => s.id), tenantId: tenant?.id } }).catch(console.error);
+    await reorderMut({ variables: { pageId, sectionIds: ns.map(s => s.id), tenantId: tenant?.id } }).catch(console.error);
   };
 
   const DEVICE_WIDTHS = { desktop: '100%', tablet: '768px', mobile: '390px' };
@@ -2022,28 +2004,6 @@ const handleContentChange = (content: SectionContent) => {
           <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#e6edf3', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{pageName || 'WYSIWYG Editor'}</span>
           {isDirty && <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#f0883e', flexShrink: 0 }} title="Ungespeicherte Änderungen" />}
         </div>
-
-        {/* ── PAGE TABS ── */}
-      {allPages.length > 1 && (
-        <div style={{ background: '#0d1117', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', padding: '0 12px', gap: 4, flexShrink: 0, overflowX: 'auto' }}>
-          {allPages.map((p: any) => (
-            <button
-              key={p.id}
-              onClick={() => handleSwitchPage(p.id)}
-              style={{
-                padding: '6px 14px', borderRadius: '6px 6px 0 0', fontSize: '0.75rem', fontWeight: 600,
-                cursor: 'pointer', whiteSpace: 'nowrap', border: 'none',
-                background: currentPageId === p.id ? C.panel : 'transparent',
-                color: currentPageId === p.id ? C.accent : C.muted,
-                borderBottom: `2px solid ${currentPageId === p.id ? C.accent : 'transparent'}`,
-              }}
-            >
-              {p.slug === '/' || p.slug === '' ? '🏠 ' : '📄 '}
-              {p.name}
-            </button>
-          ))}
-        </div>
-      )}
 
         {/* Device Switcher */}
         <div style={{ display: 'flex', background: '#0d1117', borderRadius: 8, padding: 3, border: `1px solid ${C.border}`, gap: 2 }}>
@@ -2430,7 +2390,7 @@ const handleContentChange = (content: SectionContent) => {
             section={sec}
             templateId={resolvedTemplateId}
             tenantId={tenant?.id || ''}
-            currentPageId={currentPageId}
+            currentPageId={pageId}
             onClose={() => setCopyToPageSectionId(null)}
             createSectionMut={createSectionMut}
           />

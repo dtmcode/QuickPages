@@ -31,6 +31,9 @@ export enum SectionType {
   map = 'map',
   countdown = 'countdown',
   social = 'social',
+  spacer = 'spacer',
+  before_after = 'before_after',
+  whatsapp = 'whatsapp',
 }
 
 registerEnumType(SectionType, {
