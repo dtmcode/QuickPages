@@ -18,18 +18,10 @@ import {
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-// ========== ENUMS ==========
 export const userRoleEnum = pgEnum('user_role', ['owner', 'admin', 'user']);
-export const packageEnum = pgEnum('package', [
-  'starter',
-  'business',
-  'enterprise',
-  'page',
-  'creator',
-  'shop',
-  'professional',
-  'landing',
-]);
+
+// ========== ENUMS ==========
+
 export const shopTemplateEnum = pgEnum('shop_template', [
   'default',
   'minimalist',
@@ -44,13 +36,20 @@ export const addonTypeEnum = pgEnum('addon_type', [
   'email_business',
   'extra_users',
   'shop_module',
+  'shop_extra',
+  'booking_module',
+  'blog_module',
   'newsletter',
+  'newsletter_extra',
   'booking',
   'ai_content',
   'form_builder',
   'i18n',
   'extra_products',
   'extra_ai_credits',
+  'extra_pages',
+  'members_module',
+  'custom_domain',
 ]);
 
 export const subscriptionStatusEnum = pgEnum('subscription_status', [
@@ -146,7 +145,7 @@ export const tenants = pgTable(
     lastDnsCheck: timestamp('last_dns_check'),
     defaultLocale: varchar('default_locale', { length: 10 }).default('de'),
     enabledLocales: text('enabled_locales').array().default(['de']),
-    package: packageEnum('package').default('starter').notNull(),
+    package: varchar('package', { length: 50 }).default('website_micro').notNull(),
     shopTemplate: shopTemplateEnum('shop_template').default('default'),
     settings: jsonb('settings').default({
       modules: {
@@ -191,7 +190,7 @@ export const subscriptions = pgTable(
     tenantId: uuid('tenant_id')
       .references(() => tenants.id, { onDelete: 'cascade' })
       .notNull(),
-    package: packageEnum('package').notNull(),
+   package: varchar('package', { length: 50 }).notNull(),
     status: subscriptionStatusEnum('status').default('active').notNull(),
     currentPeriodStart: timestamp('current_period_start').notNull(),
     currentPeriodEnd: timestamp('current_period_end').notNull(),

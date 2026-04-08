@@ -141,6 +141,13 @@
       "when": 1775245126984,
       "tag": "0019_past_kylun",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1775589887502,
+      "tag": "0020_same_proteus",
+      "breakpoints": true
     }
   ]
 }

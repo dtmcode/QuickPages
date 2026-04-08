@@ -212,18 +212,20 @@ export class ShopResolver {
       .from(products)
       .where(eq(products.tenantId, tenantId));
 
-    const pkg = PACKAGES[tenant.package as PackageType];
-    const maxProducts = pkg?.features.maxProducts ?? 0;
-    if (maxProducts !== -1 && currentProducts.length >= maxProducts) {
-      const limits = {
-        starter: 0,
-        business: 100,
-        enterprise: -1,
-      };
-      throw new Error(
-        `Produkt-Limit erreicht! Dein ${tenant.package.toUpperCase()} Package erlaubt ${limits[tenant.package as keyof typeof limits] === -1 ? 'unbegrenzt' : limits[tenant.package as keyof typeof limits]} Produkte. Upgrade auf BUSINESS für mehr!`,
-      );
-    }
+    // ✅ NEU — SuperAdmin bypassed, dann normaler Check:
+const SUPERADMIN_SLUGS = ['myquickpages', 'platform-admin'];
+
+const isSuperAdmin =
+  SUPERADMIN_SLUGS.includes(tenant.slug) ||
+  (tenant.settings as any)?.isSuperAdmin === true;
+
+if (!isSuperAdmin) {
+  const pkg = PACKAGES[tenant.package as PackageType];
+  const maxProducts = pkg?.features.maxProducts ?? 0;
+  if (maxProducts !== -1 && currentProducts.length >= maxProducts) {
+    throw new Error('Produkt-Limit erreicht! Upgrade dein Paket für mehr Produkte.');
+  }
+}
 
     const slug =
       input.name
