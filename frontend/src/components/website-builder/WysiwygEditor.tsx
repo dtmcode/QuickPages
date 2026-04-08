@@ -20,12 +20,12 @@ const GET_PAGE_WITH_SECTIONS = gql`
   }
 `;
 
+const GET_TEMPLATE_SETTINGS = gql`
+  query WysiwygGetTemplate($id: String!, $tenantId: String!) {
+    wbTemplate(id: $id, tenantId: $tenantId) { id name settings }
+  }
+`;
 
-const { data: pagesData } = useQuery(GET_TEMPLATE_PAGES, {
-    variables: { templateId: resolvedTemplateId, tenantId: tenant?.id },
-    skip: !resolvedTemplateId || !tenant?.id,
-  });
-  const allPages = pagesData?.wbPages || [];
 
 const UPDATE_SECTION = gql`
   mutation WysiwygUpdateSection($id: String!, $input: UpdateSectionInput!, $tenantId: String!) {
