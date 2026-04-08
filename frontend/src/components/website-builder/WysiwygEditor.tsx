@@ -20,11 +20,7 @@ const GET_PAGE_WITH_SECTIONS = gql`
   }
 `;
 
-const GET_TEMPLATE_SETTINGS = gql`
-  query WysiwygGetTemplate($id: String!, $tenantId: String!) {
-    wbTemplate(id: $id, tenantId: $tenantId) { id name settings }
-  }
-`;
+
 const { data: pagesData } = useQuery(GET_TEMPLATE_PAGES, {
     variables: { templateId: resolvedTemplateId, tenantId: tenant?.id },
     skip: !resolvedTemplateId || !tenant?.id,
@@ -1797,6 +1793,11 @@ const [updateTemplateMut] = useMutation(UPDATE_TEMPLATE_SETTINGS);
     onCompleted: (data) => { if (data?.wbTemplate?.settings) setTemplateSettings(data.wbTemplate.settings); },
   });
 
+const { data: pagesData } = useQuery(GET_TEMPLATE_PAGES, {
+    variables: { templateId: resolvedTemplateId, tenantId: tenant?.id },
+    skip: !resolvedTemplateId || !tenant?.id,
+  });
+  const allPages = pagesData?.wbPages || [];
   const [updateSectionMut] = useMutation(UPDATE_SECTION);
   const [createSectionMut] = useMutation(CREATE_SECTION);
   const [deleteSectionMut] = useMutation(DELETE_SECTION);
