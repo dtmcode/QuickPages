@@ -81,17 +81,7 @@ const UPDATE_NAVIGATION = gql`
     updateNavigation(id: $id, input: $input) { id settings }
   }
 `;
-const GET_TEMPLATE_PAGES = gql`
-  query WysiwygGetTemplatePages($templateId: String!, $tenantId: String!) {
-    wbPages(templateId: $templateId, tenantId: $tenantId) { id name slug }
-  }
-`;
 
-const UPDATE_TEMPLATE_SETTINGS = gql`
-  mutation WysiwygUpdateTemplate($id: String!, $input: UpdateTemplateInput!, $tenantId: String!) {
-    updateTemplate(id: $id, input: $input, tenantId: $tenantId) { id settings }
-  }
-`;
 // ==================== TYPES ====================
 
 interface SectionContent { [key: string]: any; }
@@ -122,12 +112,9 @@ interface SectionStyling {
   fontWeight?: string;
   lineHeight?: string;
   letterSpacing?: string;
-customCss?: string;
-  backgroundVideo?: string;
-  overlayColor?: string;
-  overlayOpacity?: number;
-  animation?: { type?: string; duration?: string; delay?: string; };
-  isLocked?: boolean;
+  // Custom CSS
+  customCss?: string;
+  // Mobile-spezifisch
   mobile?: MobileOverrides;
 }
 
@@ -159,7 +146,6 @@ interface NavData {
     fontFamily?: string;
     itemsAlign?: 'left' | 'center' | 'right';
     logoText?: string;
-    sticky?: boolean;
   };
 }
 // ==================== FONT PRESETS ====================
@@ -201,7 +187,6 @@ const BLOCK_CATEGORIES = [
       { type: 'hero', label: 'Hero', icon: '🌟', description: 'Großer Einstiegsbereich' },
       { type: 'cta', label: 'Call to Action', icon: '📢', description: 'Conversion-Bereich' },
       { type: 'text', label: 'Text', icon: '📝', description: 'Freier Textbereich' },
-      { type: 'spacer', label: 'Spacer / Divider', icon: '↕️', description: 'Abstand oder Trennlinie' },
     ],
   },
   {
@@ -233,7 +218,6 @@ const BLOCK_CATEGORIES = [
     label: 'Medien', icon: '🎬',
     blocks: [
       { type: 'video', label: 'Video', icon: '▶️', description: 'Video-Einbettung' },
-      { type: 'before_after', label: 'Before / After', icon: '↔️', description: 'Bildvergleich mit Slider' },
       { type: 'blog', label: 'Blog Feed', icon: '📰', description: 'Letzte Blog-Posts' },
       { type: 'html', label: 'HTML', icon: '⌨️', description: 'Freies HTML' },
     ],
@@ -246,7 +230,6 @@ const BLOCK_CATEGORIES = [
       { type: 'social', label: 'Social Media', icon: '🌐', description: 'Social Media Links' },
       { type: 'map', label: 'Karte', icon: '🗺️', description: 'Google Maps Einbettung' },
       { type: 'countdown', label: 'Countdown', icon: '⏱️', description: 'Countdown-Timer' },
-      { type: 'whatsapp', label: 'WhatsApp Button', icon: '💬', description: 'Floating WhatsApp Button' },
     ],
   },
 ];
@@ -254,8 +237,7 @@ const BLOCK_CATEGORIES = [
 const DEFAULT_CONTENT: Record<string, SectionContent> = {
   hero:         { heading: 'Deine Überschrift hier', subheading: 'Eine überzeugende Unterüberschrift', buttonText: 'Jetzt starten', buttonLink: '#' },
   cta:          { heading: 'Bereit loszulegen?', subheading: 'Starte noch heute kostenlos.', buttonText: 'Jetzt starten', buttonLink: '#' },
-  text: { heading: 'Überschrift', text: '<p>Dein Text hier.</p>' },
-  spacer: { height: '80px', showLine: false, lineColor: '#e5e7eb', lineStyle: 'solid', lineThickness: '1px' },
+  text:         { heading: 'Überschrift', text: '<p>Dein Text hier.</p>' },
   about:        { heading: 'Über uns', text: '<p>Hier steht eine kurze Beschreibung.</p>' },
   features:     { heading: 'Unsere Features', items: [{ icon: '⚡', title: 'Feature 1', description: 'Kurze Beschreibung' }, { icon: '🎯', title: 'Feature 2', description: 'Kurze Beschreibung' }, { icon: '🔥', title: 'Feature 3', description: 'Kurze Beschreibung' }] },
   services:     { heading: 'Unsere Leistungen', items: [{ icon: '🛠️', title: 'Service 1', description: 'Beschreibung', price: 'ab €99' }, { icon: '💡', title: 'Service 2', description: 'Beschreibung', price: 'ab €149' }] },
@@ -269,9 +251,7 @@ const DEFAULT_CONTENT: Record<string, SectionContent> = {
   video:        { heading: '', videoUrl: '', videoPoster: '' },
   html:         { html: '<div style="padding: 2rem; text-align: center;"><h2>Dein HTML hier</h2></div>' },
   blog:         { heading: 'Neueste Beiträge', count: 3 },
-  newsletter: { heading: 'Newsletter abonnieren', text: 'Erhalte die neuesten Updates direkt in dein Postfach.', buttonText: 'Abonnieren', placeholder: 'deine@email.de' },
-  whatsapp: { phone: '+49 151 12345678', message: 'Hallo, ich hätte eine Frage...', position: 'right', label: 'WhatsApp schreiben' },
-before_after: { heading: '', beforeImage: '', afterImage: '', beforeLabel: 'Vorher', afterLabel: 'Nachher' },
+  newsletter:   { heading: 'Newsletter abonnieren', text: 'Erhalte die neuesten Updates direkt in dein Postfach.', buttonText: 'Abonnieren', placeholder: 'deine@email.de' },
   booking:      { heading: 'Termin buchen', text: 'Buche jetzt deinen Wunschtermin.', buttonText: 'Termin buchen', buttonLink: '/booking' },
   social:       { heading: 'Folge uns', links: [{ platform: 'Instagram', url: 'https://instagram.com/', icon: '📷' }, { platform: 'Facebook', url: 'https://facebook.com/', icon: '👍' }, { platform: 'LinkedIn', url: 'https://linkedin.com/', icon: '💼' }] },
   map:          { heading: 'So findest du uns', address: 'Musterstraße 1, 12345 Musterstadt', embedUrl: '' },
@@ -335,14 +315,12 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
   const primary = settings?.colors?.primary || '#3b82f6';
   const isMobile = deviceMode !== 'desktop';
   const mob = styling?.mobile || {};
-  const isLocked = !!styling?.isLocked;
 
   const headingSize = (isMobile && mob.headingSize) ? mob.headingSize : (styling?.headingSize || 'clamp(1.75rem, 4vw, 3rem)');
   const wrapStyle: React.CSSProperties = {
     ...getSectionStyle(styling, deviceMode),
     position: 'relative',
-    overflow: 'hidden',
-    cursor: isLocked ? 'not-allowed' : 'pointer',
+    cursor: 'pointer',
     outline: isSelected ? '2px solid #58a6ff' : 'none',
     outlineOffset: '-2px',
     opacity: section.isActive ? 1 : 0.4,
@@ -584,107 +562,23 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
         );
       case 'html':
         return <div style={innerWidth} dangerouslySetInnerHTML={{ __html: content.html || '<p style="opacity:0.5">HTML Bereich</p>' }} />;
-      case 'spacer':
-  return (
-    <div style={{ height: content.height || '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-      {content.showLine
-        ? <div style={{ width: '80%', height: 0, borderTop: `${content.lineThickness || '1px'} ${content.lineStyle || 'solid'} ${content.lineColor || '#e5e7eb'}` }} />
-        : <span style={{ fontSize: '0.68rem', color: 'rgba(0,0,0,0.2)', border: '1px dashed rgba(0,0,0,0.12)', padding: '2px 10px', borderRadius: 4 }}>
-            Spacer — {content.height || '80px'}
-          </span>
-      }
-    </div>
-        );
-      case 'whatsapp':
-  return (
-    <div style={{ padding: '1.5rem', textAlign: 'center' }}>
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', padding: '0.875rem 1.5rem', background: '#25D366', color: '#fff', borderRadius: '3rem', fontWeight: 600, fontSize: '1rem' }}>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style={{ flexShrink: 0 }}>
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>
-        {content.label || 'WhatsApp schreiben'}
-      </div>
-      <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.45)', marginTop: '0.5rem' }}>{content.phone}</p>
-      <p style={{ fontSize: '0.65rem', color: 'rgba(0,0,0,0.3)', marginTop: '0.2rem' }}>
-        Floating-Button erscheint {content.position === 'left' ? 'unten links' : 'unten rechts'} auf der Website
-      </p>
-    </div>
-        );
-      case 'before_after':
-  return (
-    <div style={innerWidth}>
-      {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 1rem', textAlign: 'center' }}>{h}</h2>}
-      <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', borderRadius: '0.75rem', overflow: 'hidden', background: 'rgba(0,0,0,0.08)' }}>
-        {/* Vorher — linke Hälfte */}
-        <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '50%', overflow: 'hidden' }}>
-          {content.beforeImage
-            ? <img src={content.beforeImage} alt="Vorher" style={{ position: 'absolute', top: 0, left: 0, width: '200%', height: '100%', objectFit: 'cover' }} />
-            : <div style={{ width: '100%', height: '100%', background: '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.875rem' }}>Vorher-Bild</div>
-          }
-          {content.beforeLabel && <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '3px 8px', borderRadius: 4, fontSize: '0.7rem', fontWeight: 600 }}>{content.beforeLabel}</div>}
-        </div>
-        {/* Nachher — rechte Hälfte */}
-        <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: '50%', overflow: 'hidden' }}>
-          {content.afterImage
-            ? <img src={content.afterImage} alt="Nachher" style={{ position: 'absolute', top: 0, right: 0, width: '200%', height: '100%', objectFit: 'cover' }} />
-            : <div style={{ width: '100%', height: '100%', background: '#bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#60a5fa', fontSize: '0.875rem' }}>Nachher-Bild</div>
-          }
-          {content.afterLabel && <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '3px 8px', borderRadius: 4, fontSize: '0.7rem', fontWeight: 600 }}>{content.afterLabel}</div>}
-        </div>
-        {/* Divider */}
-        <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 3, background: '#fff', transform: 'translateX(-50%)', zIndex: 10 }}>
-          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 28, height: 28, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#374151', boxShadow: '0 1px 6px rgba(0,0,0,0.2)' }}>↔</div>
-        </div>
-      </div>
-    </div>
-  );
       default:
         return <div style={{ textAlign: 'center', opacity: 0.4, fontSize: '0.875rem' }}>[{type.toUpperCase()}] {section.name}</div>;
     }
   };
 
-return (
-    <div style={wrapStyle} onClick={isLocked ? undefined : onClick}>
+  return (
+    <div style={wrapStyle} onClick={onClick}>
+      {/* Injiziere Custom CSS der Section */}
       {styling?.customCss && (
         <style dangerouslySetInnerHTML={{ __html: `/* Section ${section.id} */ ${styling.customCss}` }} />
       )}
-
-      {/* Hintergrundvideo */}
-      {styling?.backgroundVideo && (
-        <video autoPlay muted loop playsInline src={styling.backgroundVideo}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
-      )}
-
-      {/* Farb-Overlay */}
-      {styling?.overlayColor && (styling?.overlayOpacity ?? 0) > 0 && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: styling.overlayColor, opacity: (styling.overlayOpacity ?? 50) / 100, pointerEvents: 'none' }} />
-      )}
-
-      {/* Selection Label */}
       {isSelected && (
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, background: '#58a6ff', color: '#fff', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em', padding: '2px 8px', zIndex: 20, textTransform: 'uppercase' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, background: '#58a6ff', color: '#fff', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em', padding: '2px 8px', zIndex: 10, textTransform: 'uppercase' }}>
           ● {section.name}
         </div>
       )}
-
-      {/* Lock Badge */}
-      {isLocked && (
-        <div style={{ position: 'absolute', top: 4, right: 4, background: '#f0883e', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '2px 7px', borderRadius: 4, zIndex: 20 }}>
-          🔒 Gesperrt
-        </div>
-      )}
-
-      {/* Animation Badge */}
-      {styling?.animation?.type && styling.animation.type !== 'none' && (
-        <div style={{ position: 'absolute', bottom: 4, left: 4, background: 'rgba(88,166,255,0.12)', color: '#58a6ff', fontSize: '0.55rem', fontWeight: 700, padding: '2px 6px', borderRadius: 4, zIndex: 15, border: '1px solid rgba(88,166,255,0.25)' }}>
-          ✨ {styling.animation.type}
-        </div>
-      )}
-
-      {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2 }}>
-        {renderContent()}
-      </div>
+      {renderContent()}
     </div>
   );
 }
@@ -789,111 +683,7 @@ switch (type) {
           <textarea value={content.html || ''} onChange={e => update('html', e.target.value)} rows={14} spellCheck={false}
             style={{ ...taStyle, fontFamily: '"SF Mono", monospace', fontSize: '0.73rem', color: '#79c0ff' }} />
         </div>
-    );
-  case 'spacer':
-  return (
-    <div>
-      <div style={wrapStyle}>
-        <label style={labelStyle}>Höhe</label>
-        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 6 }}>
-          {['40px','60px','80px','100px','120px','160px'].map(h => (
-            <button key={h} onClick={() => update('height', h)}
-              style={{ padding: '4px 8px', borderRadius: 4, fontSize: '0.68rem', fontWeight: 600, cursor: 'pointer',
-                background: content.height === h ? '#1f6feb' : '#0d1117',
-                border: `1px solid ${content.height === h ? '#1f6feb' : '#30363d'}`,
-                color: content.height === h ? '#fff' : '#8b949e' }}>
-              {h}
-            </button>
-          ))}
-        </div>
-        <input type="text" value={content.height || ''} onChange={e => update('height', e.target.value)}
-          placeholder="z.B. 80px" style={inputStyle} />
-      </div>
-      <div style={wrapStyle}>
-        <label style={labelStyle}>Trennlinie anzeigen</label>
-        <div style={{ display: 'flex', gap: 6 }}>
-          {[{ v: true, l: '✓ Ja' }, { v: false, l: 'Nein' }].map(o => (
-            <button key={String(o.v)} onClick={() => update('showLine', o.v)}
-              style={{ flex: 1, padding: '6px', borderRadius: 5, fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer',
-                background: !!content.showLine === o.v ? '#1f6feb' : '#0d1117',
-                border: `1px solid ${!!content.showLine === o.v ? '#1f6feb' : '#30363d'}`,
-                color: !!content.showLine === o.v ? '#fff' : '#8b949e' }}>
-              {o.l}
-            </button>
-          ))}
-        </div>
-      </div>
-      {content.showLine && (
-        <>
-          <div style={wrapStyle}>
-            <label style={labelStyle}>Linienfarbe</label>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <input type="color" value={content.lineColor || '#e5e7eb'} onChange={e => update('lineColor', e.target.value)}
-                style={{ width: 36, height: 36, borderRadius: 6, border: '1px solid #30363d', cursor: 'pointer', padding: 2 }} />
-              <input type="text" value={content.lineColor || ''} onChange={e => update('lineColor', e.target.value)} style={inputStyle} />
-            </div>
-          </div>
-          <div style={wrapStyle}>
-            <label style={labelStyle}>Linienstil</label>
-            <div style={{ display: 'flex', gap: 5 }}>
-              {['solid','dashed','dotted'].map(s => (
-                <button key={s} onClick={() => update('lineStyle', s)}
-                  style={{ flex: 1, padding: '5px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer',
-                    background: (content.lineStyle || 'solid') === s ? '#1f6feb' : '#0d1117',
-                    border: `1px solid ${(content.lineStyle || 'solid') === s ? '#1f6feb' : '#30363d'}`,
-                    color: (content.lineStyle || 'solid') === s ? '#fff' : '#8b949e' }}>
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div style={wrapStyle}>
-            <label style={labelStyle}>Linienstärke</label>
-            <input type="text" value={content.lineThickness || '1px'} onChange={e => update('lineThickness', e.target.value)}
-              placeholder="1px" style={inputStyle} />
-          </div>
-        </>
-      )}
-    </div>
-  );  
-  case 'whatsapp':
-  return (
-    <>
-      <Field label="Telefonnummer (mit Ländercode)" field="phone" />
-      <Field label="Vorausgefüllte Nachricht" field="message" multi rows={3} />
-      <Field label="Button-Text" field="label" />
-      <div style={wrapStyle}>
-        <label style={labelStyle}>Position auf der Website</label>
-        <div style={{ display: 'flex', gap: 6 }}>
-          {[{ v: 'right', l: '➡ Rechts' }, { v: 'left', l: '⬅ Links' }].map(o => (
-            <button key={o.v} onClick={() => update('position', o.v)}
-              style={{ flex: 1, padding: '6px', borderRadius: 5, fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer',
-                background: (content.position || 'right') === o.v ? '#1f6feb' : '#0d1117',
-                border: `1px solid ${(content.position || 'right') === o.v ? '#1f6feb' : '#30363d'}`,
-                color: (content.position || 'right') === o.v ? '#fff' : '#8b949e' }}>
-              {o.l}
-            </button>
-          ))}
-        </div>
-      </div>
-    </>
-    );
-  case 'before_after':
-  return (
-    <>
-      <Field label="Überschrift (optional)" field="heading" />
-      <div style={wrapStyle}>
-        <label style={labelStyle}>Vorher-Bild URL</label>
-        <input type="text" value={content.beforeImage || ''} onChange={e => update('beforeImage', e.target.value)} placeholder="https://..." style={inputStyle} />
-      </div>
-      <div style={wrapStyle}>
-        <label style={labelStyle}>Nachher-Bild URL</label>
-        <input type="text" value={content.afterImage || ''} onChange={e => update('afterImage', e.target.value)} placeholder="https://..." style={inputStyle} />
-      </div>
-      <Field label="Vorher-Label" field="beforeLabel" />
-      <Field label="Nachher-Label" field="afterLabel" />
-    </>
-  );
+      );
     default:
       return <p style={{ color: '#6e7681', fontSize: '0.8rem' }}>Kein Editor für: {type}</p>;
   }
@@ -952,29 +742,6 @@ function StylePanel({ section, onChange, onPickMedia }: { section: Section; onCh
             {s}
           </button>
         ))}
-      </div>
-      {/* ── HINTERGRUNDVIDEO ── */}
-      <span style={sectionLabel}>Hintergrundvideo URL</span>
-      <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
-        <input type="text" placeholder="https://...mp4" value={st.backgroundVideo || ''} onChange={e => onChange({ backgroundVideo: e.target.value })}
-          style={{ ...inputStyle, flex: 1 }} />
-        {st.backgroundVideo && (
-          <button onClick={() => onChange({ backgroundVideo: '' })}
-            style={{ background: '#3d1010', border: '1px solid #f85149', borderRadius: 6, color: '#f85149', padding: '7px 10px', fontSize: '0.72rem', cursor: 'pointer' }}>✕</button>
-        )}
-      </div>
-
-      {/* ── FARB-OVERLAY ── */}
-      <span style={sectionLabel}>Farb-Overlay (über Bild/Video)</span>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
-        <input type="color" value={st.overlayColor?.startsWith('#') ? st.overlayColor : '#000000'} onChange={e => onChange({ overlayColor: e.target.value })}
-          style={{ width: 36, height: 36, borderRadius: 6, border: '1px solid #30363d', cursor: 'pointer', padding: 2 }} />
-        <input type="text" placeholder="#000000" value={st.overlayColor || ''} onChange={e => onChange({ overlayColor: e.target.value })} style={inputStyle} />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-        <input type="range" min={0} max={100} value={st.overlayOpacity ?? 0} onChange={e => onChange({ overlayOpacity: Number(e.target.value) })}
-          style={{ flex: 1 }} />
-        <span style={{ fontSize: '0.72rem', color: '#8b949e', minWidth: 32, textAlign: 'right' }}>{st.overlayOpacity ?? 0}%</span>
       </div>
 
       {/* ── TYPOGRAFIE ── */}
@@ -1230,185 +997,7 @@ function CssPanel({ section, onChange }: { section: Section; onChange: (s: Parti
     </div>
   );
 }
-// ==================== AnimationPanel ====================
-function AnimationPanel({ section, onChange }: { section: Section; onChange: (s: Partial<SectionStyling>) => void }) {
-  const anim = section.styling?.animation || {};
-  const sLbl: React.CSSProperties = { fontSize: '0.68rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8, marginTop: 14, display: 'block' };
-  const btn = (active: boolean): React.CSSProperties => ({
-    padding: '5px 10px', borderRadius: 5, fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer',
-    background: active ? '#1f6feb' : '#0d1117',
-    border: `1px solid ${active ? '#1f6feb' : '#30363d'}`,
-    color: active ? '#fff' : '#8b949e',
-  });
-  const set = (key: string, val: string) => onChange({ animation: { ...anim, [key]: val } });
-  const cur = { type: anim.type || 'none', dur: anim.duration || '0.5s', delay: anim.delay || '0s' };
 
-  return (
-    <div>
-      <div style={{ background: 'rgba(88,166,255,0.08)', border: '1px solid rgba(88,166,255,0.2)', borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
-        <p style={{ fontSize: '0.72rem', color: '#58a6ff', fontWeight: 600, margin: '0 0 2px' }}>✨ Scroll-Animationen</p>
-        <p style={{ fontSize: '0.7rem', color: '#8b949e', margin: 0 }}>
-          Wird beim Einscrollen der Section auf der Website ausgelöst.
-        </p>
-      </div>
-
-      <span style={{ ...sLbl, marginTop: 0 }}>Animations-Typ</span>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 12 }}>
-        {[
-          { v: 'none', l: 'Keine' }, { v: 'fade-in', l: 'Einblenden' },
-          { v: 'slide-up', l: '↑ Slide hoch' }, { v: 'slide-left', l: '← Slide links' }, { v: 'zoom-in', l: '⊕ Zoom' },
-        ].map(t => (
-          <button key={t.v} onClick={() => set('type', t.v)} style={btn(cur.type === t.v)}>{t.l}</button>
-        ))}
-      </div>
-
-      {cur.type !== 'none' && (
-        <>
-          <span style={sLbl}>Dauer</span>
-          <div style={{ display: 'flex', gap: 5, marginBottom: 12, flexWrap: 'wrap' }}>
-            {['0.3s','0.5s','0.7s','1s','1.5s'].map(d => (
-              <button key={d} onClick={() => set('duration', d)} style={btn(cur.dur === d)}>{d}</button>
-            ))}
-          </div>
-
-          <span style={sLbl}>Verzögerung</span>
-          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 12 }}>
-            {[{ v: '0s', l: 'Kein' }, { v: '0.1s', l: '0.1s' }, { v: '0.2s', l: '0.2s' }, { v: '0.3s', l: '0.3s' }, { v: '0.5s', l: '0.5s' }, { v: '0.8s', l: '0.8s' }].map(d => (
-              <button key={d.v} onClick={() => set('delay', d.v)} style={btn(cur.delay === d.v)}>{d.l}</button>
-            ))}
-          </div>
-
-          <div style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 8, padding: '10px 12px' }}>
-            <p style={{ fontSize: '0.68rem', color: '#6e7681', margin: '0 0 4px', fontWeight: 600 }}>Gesetztes Attribut im HTML:</p>
-            <code style={{ fontSize: '0.68rem', color: '#79c0ff' }}>
-              data-animation="{cur.type}" data-duration="{cur.dur}" data-delay="{cur.delay}"
-            </code>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-// ==================== CONTROL BUTTON ====================
-function CopyToPageModal({ section, templateId, tenantId, currentPageId, onClose, createSectionMut }: {
-  section: Section; templateId: string | null; tenantId: string;
-  currentPageId: string; onClose: () => void; createSectionMut: any;
-}) {
-  const { data, loading } = useQuery(GET_TEMPLATE_PAGES, {
-    variables: { templateId, tenantId },
-    skip: !templateId || !tenantId,
-  });
-  const [copying, setCopying] = useState(false);
-  const [done, setDone] = useState(false);
-  const pages = (data?.wbPages || []).filter((p: any) => p.id !== currentPageId);
-  const C = { panel: '#161b22', border: '#30363d', text: '#c9d1d9', muted: '#8b949e' };
-
-  const handleCopy = async (targetPageId: string) => {
-    setCopying(true);
-    try {
-      await createSectionMut({
-        variables: {
-          input: { pageId: targetPageId, name: section.name, type: section.type, order: 999, isActive: section.isActive, content: section.content },
-          tenantId,
-        },
-      });
-      setDone(true);
-      setTimeout(onClose, 1200);
-    } catch (e) { console.error(e); }
-    finally { setCopying(false); }
-  };
-
-  return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      onClick={onClose}>
-      <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, minWidth: 280, maxWidth: 360 }}
-        onClick={e => e.stopPropagation()}>
-        <p style={{ fontSize: '0.875rem', fontWeight: 700, color: '#e6edf3', margin: '0 0 4px' }}>Section kopieren nach...</p>
-        <p style={{ fontSize: '0.75rem', color: C.muted, margin: '0 0 14px' }}>„{section.name}"</p>
-        {done ? (
-          <p style={{ color: '#2ea043', fontSize: '0.85rem', textAlign: 'center', padding: '1rem 0' }}>✓ Kopiert!</p>
-        ) : loading ? (
-          <p style={{ color: C.muted, fontSize: '0.8rem' }}>Lade Pages...</p>
-        ) : pages.length === 0 ? (
-          <p style={{ color: C.muted, fontSize: '0.8rem' }}>Keine anderen Pages vorhanden.</p>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            {pages.map((p: any) => (
-              <button key={p.id} onClick={() => handleCopy(p.id)} disabled={copying}
-                style={{ background: '#0d1117', border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, padding: '8px 12px', fontSize: '0.8rem', cursor: 'pointer', textAlign: 'left', opacity: copying ? 0.6 : 1 }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = '#58a6ff')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}>
-                📄 {p.name}
-              </button>
-            ))}
-          </div>
-        )}
-        <button onClick={onClose} style={{ width: '100%', marginTop: 12, background: '#21262d', border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, padding: '7px', fontSize: '0.8rem', cursor: 'pointer' }}>
-          Abbrechen
-        </button>
-      </div>
-    </div>
-  );
-}
-// ==================== GlobalColorsPanel ====================
-function GlobalColorsPanel({ templateSettings, templateId, tenantId, onUpdate, onClose, updateTemplateMut }: {
-  templateSettings: TemplateSettings; templateId: string | null; tenantId: string;
-  onUpdate: (s: TemplateSettings) => void; onClose: () => void; updateTemplateMut: any;
-}) {
-  const [colors, setColors] = useState({
-    primary: templateSettings?.colors?.primary || '#3b82f6',
-    secondary: templateSettings?.colors?.secondary || '#6366f1',
-    accent: templateSettings?.colors?.accent || '#f59e0b',
-    background: templateSettings?.colors?.background || '#ffffff',
-    text: templateSettings?.colors?.text || '#1f2937',
-  });
-  const [saving, setSaving] = useState(false);
-  const C = { panel: '#161b22', border: '#30363d', text: '#c9d1d9', muted: '#8b949e' };
-  const sLbl: React.CSSProperties = { fontSize: '0.68rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6, display: 'block' };
-  const LABELS: Record<string, string> = { primary: 'Primärfarbe', secondary: 'Sekundärfarbe', accent: 'Akzentfarbe', background: 'Hintergrund', text: 'Textfarbe' };
-
-  const handleSave = async () => {
-    if (!templateId) return;
-    setSaving(true);
-    try {
-      await updateTemplateMut({ variables: { id: templateId, input: { settings: { ...templateSettings, colors } }, tenantId } });
-      onUpdate({ ...templateSettings, colors });
-      onClose();
-    } catch (e) { console.error(e); }
-    finally { setSaving(false); }
-  };
-
-  return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      onClick={onClose}>
-      <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, minWidth: 300, maxWidth: 380 }}
-        onClick={e => e.stopPropagation()}>
-        <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#e6edf3', margin: '0 0 16px' }}>🎨 Globale Template-Farben</p>
-        {Object.entries(colors).map(([key, val]) => (
-          <div key={key} style={{ marginBottom: 10 }}>
-            <span style={sLbl}>{LABELS[key]}</span>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <input type="color" value={val} onChange={e => setColors(p => ({ ...p, [key]: e.target.value }))}
-                style={{ width: 36, height: 36, borderRadius: 6, border: `1px solid ${C.border}`, cursor: 'pointer', padding: 2 }} />
-              <input type="text" value={val} onChange={e => setColors(p => ({ ...p, [key]: e.target.value }))}
-                style={{ flex: 1, background: '#0d1117', border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, padding: '7px 10px', fontSize: '0.78rem', outline: 'none' }} />
-            </div>
-          </div>
-        ))}
-        <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-          <button onClick={handleSave} disabled={saving}
-            style={{ flex: 1, background: '#238636', border: 'none', borderRadius: 6, color: '#fff', padding: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', opacity: saving ? 0.7 : 1 }}>
-            {saving ? '⟳ Speichern...' : '💾 Speichern'}
-          </button>
-          <button onClick={onClose}
-            style={{ flex: 1, background: '#21262d', border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, padding: '8px', fontSize: '0.8rem', cursor: 'pointer' }}>
-            Abbrechen
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 // ==================== CONTROL BUTTON ====================
 
 function CtrlBtn({ children, onClick, disabled = false, danger = false, title }: {
@@ -1482,13 +1071,8 @@ function NavBarPreview({ nav, isSelected, onClick, primary }: {
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       cursor: 'pointer', position: 'relative',
       outline: isSelected ? '2px solid #58a6ff' : 'none',
-           outlineOffset: '-2px', opacity: nav.isActive ? 1 : 0.4,
+      outlineOffset: '-2px', opacity: nav.isActive ? 1 : 0.4,
     }}>
-      {nav.settings?.sticky && (
-        <div style={{ position: 'absolute', top: 0, left: 0, background: '#1f6feb', color: '#fff', fontSize: '0.5rem', fontWeight: 700, padding: '1px 6px', letterSpacing: '0.06em' }}>
-          STICKY
-        </div>
-      )}
       {isSelected && (
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, background: '#58a6ff', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '2px 8px', zIndex: 10, textTransform: 'uppercase' }}>
           🧭 {nav.name}
@@ -1523,7 +1107,6 @@ function NavEditorPanel({ nav, onRefresh, createNavItem, updateNavItem, deleteNa
     fontFamily: nav.settings?.fontFamily || '',
     itemsAlign: (nav.settings?.itemsAlign || 'right') as 'left' | 'center' | 'right',
     logoText: nav.settings?.logoText || '',
-     sticky: nav.settings?.sticky || false,
   });
   const [saving, setSaving] = useState(false);
 
@@ -1705,15 +1288,6 @@ function NavEditorPanel({ nav, onRefresh, createNavItem, updateNavItem, deleteNa
           <input type="text" placeholder="z.B. Mein Shop" value={styleForm.logoText}
             onChange={e => setStyleForm(f => ({ ...f, logoText: e.target.value }))}
             style={{ ...inp, marginBottom: 16 }} />
-          {/* Sticky */}
-          <span style={sLbl}>Sticky Navigation</span>
-          <button onClick={() => setStyleForm(f => ({ ...f, sticky: !f.sticky }))}
-            style={{ width: '100%', marginBottom: 12, padding: '8px', borderRadius: 6, fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer',
-              background: styleForm.sticky ? '#1f6feb' : '#0d1117',
-              border: `1px solid ${styleForm.sticky ? '#1f6feb' : '#30363d'}`,
-              color: styleForm.sticky ? '#fff' : '#8b949e' }}>
-            {styleForm.sticky ? '📌 Sticky aktiv — bleibt beim Scrollen oben' : '📌 Sticky deaktiviert'}
-          </button>
 
           {/* Speichern */}
           <button onClick={handleSaveStyle} disabled={saving}
@@ -1733,7 +1307,7 @@ export function WysiwygEditor({ pageId, templateId }: WysiwygEditorProps) {
   const [deviceMode, setDeviceMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [zoom, setZoom] = useState(100);
   const [leftPanel, setLeftPanel] = useState<'blocks' | 'layers'>('blocks');
- const [rightTab, setRightTab] = useState<'content' | 'style' | 'layout' | 'css' | 'animation'>('content');
+  const [rightTab, setRightTab] = useState<'content' | 'style' | 'layout' | 'css'>('content');
   const [undoStack, setUndoStack] = useState<Section[][]>([]);
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -1750,24 +1324,15 @@ const [showShortcuts, setShowShortcuts] = useState(false);
 const [leftCollapsed, setLeftCollapsed] = useState(false);
 const [rightCollapsed, setRightCollapsed] = useState(false);
   const [selectedNavId, setSelectedNavId] = useState<string | null>(null);
-  const [navigations, setNavigations] = useState<NavData[]>([]);
-  const [blockSearch, setBlockSearch] = useState('');
-  const [recentBlocks, setRecentBlocks] = useState<string[]>([]);
-  const [darkPreview, setDarkPreview] = useState(false);
-  const [copyToPageSectionId, setCopyToPageSectionId] = useState<string | null>(null);
-  const [showGlobalColors, setShowGlobalColors] = useState(false);
-const { refetch: refetchNavsQuery } = useQuery(GET_NAVIGATIONS, {
+const [navigations, setNavigations] = useState<NavData[]>([]);
+const { refetch: refetchNavs } = useQuery(GET_NAVIGATIONS, {
   onCompleted: (data) => { if (data?.navigations) setNavigations(data.navigations); },
 });
-const refetchNavs = async () => {
-  const result = await refetchNavsQuery();
-  if (result.data?.navigations) setNavigations(result.data.navigations);
-};
 const [createNavItemMut] = useMutation(CREATE_NAV_ITEM);
 const [updateNavItemMut] = useMutation(UPDATE_NAV_ITEM);
   const [deleteNavItemMut] = useMutation(DELETE_NAV_ITEM);
   const [updateNavigationMut] = useMutation(UPDATE_NAVIGATION);
-const [updateTemplateMut] = useMutation(UPDATE_TEMPLATE_SETTINGS);
+
 
   const dragItemIdx = useRef<number | null>(null);
 
@@ -1851,7 +1416,6 @@ const [updateTemplateMut] = useMutation(UPDATE_TEMPLATE_SETTINGS);
         pushUndo(sections);
         setSections(prev => [...prev, res.data.createSection]);
         setSelectedId(res.data.createSection.id);
-        setRecentBlocks(prev => [type, ...prev.filter(t => t !== type)].slice(0, 3));
         setRightTab('content');
         setLeftPanel('layers'); // Ebenen zeigen damit User die neue Section sieht
       } else if (res.errors?.length) {
@@ -1925,12 +1489,7 @@ const [updateTemplateMut] = useMutation(UPDATE_TEMPLATE_SETTINGS);
     }
   } catch (err) { console.error(err); }
 };
-const handleLock = (id: string) => {
-    const section = sections.find(s => s.id === id);
-    if (!section) return;
-    setSections(prev => prev.map(s => s.id === id ? { ...s, styling: { ...s.styling, isLocked: !s.styling?.isLocked } } : s));
-    setIsDirty(true);
-  };
+
   const handleContentChange = (content: SectionContent) => {
     if (!selectedId) return;
     pushUndo(sections);
@@ -1983,14 +1542,6 @@ const handleLock = (id: string) => {
           style={{ color: C.muted, textDecoration: 'none', fontSize: '0.78rem', padding: '5px 8px', borderRadius: 6, border: `1px solid ${C.border}`, whiteSpace: 'nowrap', fontWeight: 500 }}>
           ← Zurück
         </Link>
-        <button onClick={() => setDarkPreview(v => !v)} title="Dark Preview"
-          style={{ background: darkPreview ? '#1f6feb' : 'transparent', border: `1px solid ${C.border}`, borderRadius: 6, cursor: 'pointer', color: darkPreview ? '#fff' : C.muted, padding: '5px 10px', fontSize: '0.8rem' }}>
-          {darkPreview ? '☀️' : '🌙'}
-        </button>
-        <button onClick={() => setShowGlobalColors(true)} title="Template-Farben"
-          style={{ background: 'transparent', border: `1px solid ${C.border}`, borderRadius: 6, cursor: 'pointer', color: C.muted, padding: '5px 10px', fontSize: '0.8rem' }}>
-          🎨
-        </button>
         <button onClick={() => setLeftCollapsed(v => !v)} title="Linke Sidebar"
           style={{ background: leftCollapsed ? '#1f6feb' : 'transparent', border: `1px solid ${C.border}`, borderRadius: 6, cursor: 'pointer', color: leftCollapsed ? '#fff' : C.muted, padding: '5px 10px', fontSize: '0.8rem' }}>
           {leftCollapsed ? '▶' : '◀'}
@@ -2068,64 +1619,8 @@ const handleLock = (id: string) => {
           </div>
 
           <div style={{ flex: 1, overflowY: 'auto' }}>
-          {leftPanel === 'blocks' ? (
-              <>
-                {/* Block-Suche */}
-                <div style={{ padding: '8px 8px 4px' }}>
-                  <input
-                    type="text"
-                    placeholder="🔍 Block suchen..."
-                    value={blockSearch}
-                    onChange={e => setBlockSearch(e.target.value)}
-                    style={{ width: '100%', background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, color: '#c9d1d9', padding: '6px 10px', fontSize: '0.75rem', outline: 'none', boxSizing: 'border-box' }}
-                  />
-                </div>
-
-                {/* Zuletzt verwendet */}
-                {!blockSearch && recentBlocks.length > 0 && (
-                  <div>
-                    <p style={{ padding: '6px 14px 4px', fontSize: '0.65rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0 }}>
-                      Zuletzt verwendet
-                    </p>
-                    <div style={{ padding: '2px 8px 6px' }}>
-                      {recentBlocks.map(rType => {
-                        const block = BLOCK_CATEGORIES.flatMap(c => c.blocks).find(b => b.type === rType);
-                        if (!block) return null;
-                        return (
-                          <button key={rType} onClick={() => handleAddBlock(rType)}
-                            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '6px 9px', marginBottom: 2, background: '#0d1117', border: `1px solid ${C.border}`, borderRadius: 7, cursor: 'pointer', textAlign: 'left' }}
-                            onMouseEnter={e => (e.currentTarget.style.borderColor = C.accent)}
-                            onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}>
-                            <span style={{ fontSize: '1rem', flexShrink: 0 }}>{block.icon}</span>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: C.text }}>{block.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Gefilterte oder normale Ansicht */}
-                {blockSearch ? (
-                  <div style={{ padding: '4px 8px 8px' }}>
-                    {BLOCK_CATEGORIES.flatMap(c => c.blocks).filter(b => b.label.toLowerCase().includes(blockSearch.toLowerCase()) || b.description.toLowerCase().includes(blockSearch.toLowerCase())).map(block => (
-                      <button key={block.type} onClick={() => { handleAddBlock(block.type); setBlockSearch(''); }}
-                        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '7px 9px', marginBottom: 3, background: '#0d1117', border: `1px solid ${C.border}`, borderRadius: 7, cursor: 'pointer', textAlign: 'left' }}
-                        onMouseEnter={e => (e.currentTarget.style.borderColor = C.accent)}
-                        onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}>
-                        <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{block.icon}</span>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '0.78rem', fontWeight: 600, color: C.text }}>{block.label}</div>
-                          <div style={{ fontSize: '0.67rem', color: C.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{block.description}</div>
-                        </div>
-                      </button>
-                    ))}
-                    {BLOCK_CATEGORIES.flatMap(c => c.blocks).filter(b => b.label.toLowerCase().includes(blockSearch.toLowerCase()) || b.description.toLowerCase().includes(blockSearch.toLowerCase())).length === 0 && (
-                      <p style={{ color: C.muted, fontSize: '0.75rem', textAlign: 'center', padding: '1rem 0' }}>Nichts gefunden</p>
-                    )}
-                  </div>
-                ) : (
-                  BLOCK_CATEGORIES.map(cat => (
+            {leftPanel === 'blocks' ? (
+              BLOCK_CATEGORIES.map(cat => (
                 <div key={cat.label}>
                   <button onClick={() => setExpandedCat(expandedCat === cat.label ? null : cat.label)}
                     style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 14px', background: 'transparent', border: 'none', cursor: 'pointer', color: C.muted, fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase' }}>
@@ -2150,8 +1645,7 @@ const handleLock = (id: string) => {
                     </div>
                   )}
                 </div>
-                  ))     )}
-                     </>
+              ))
        ) : (
               <div style={{ padding: '8px' }}>
                 {sections.length === 0 && <p style={{ color: C.muted, fontSize: '0.75rem', textAlign: 'center', padding: '2rem 0' }}>Noch keine Sections</p>}
@@ -2174,11 +1668,6 @@ const handleLock = (id: string) => {
                     <button onClick={e => { e.stopPropagation(); handleToggle(s.id); }}
                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: s.isActive ? C.accent : '#3d444d', fontSize: '0.72rem', padding: '1px', flexShrink: 0 }}>
                       {s.isActive ? '👁' : '🙈'}
-                    </button>
-                    <button onClick={e => { e.stopPropagation(); handleLock(s.id); }}
-                      title={s.styling?.isLocked ? 'Entsperren' : 'Sperren'}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: s.styling?.isLocked ? '#f0883e' : '#3d444d', fontSize: '0.72rem', padding: '1px', flexShrink: 0 }}>
-                      {s.styling?.isLocked ? '🔒' : '🔓'}
                     </button>
                   </div>
                 ))}
@@ -2203,12 +1692,8 @@ const handleLock = (id: string) => {
             </div>
           ) : (
            
-              <>
-          {darkPreview && (
-            <style dangerouslySetInnerHTML={{ __html: `.wysiwyg-dark-preview { filter: invert(1) hue-rotate(180deg); } .wysiwyg-dark-preview img { filter: invert(1) hue-rotate(180deg); }` }} />
-          )}
              <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-   <div className={darkPreview ? 'wysiwyg-dark-preview' : ''} style={{
+  <div style={{
     width: DEVICE_WIDTHS[deviceMode], maxWidth: '100%',
     transform: `scale(${zoom / 100})`, transformOrigin: 'top left',
     transformBox: 'fill-box',
@@ -2241,9 +1726,7 @@ const handleLock = (id: string) => {
                         <CtrlBtn onClick={() => handleMove(section.id, 'down')} disabled={idx === sections.length - 1} title="Nach unten">↓</CtrlBtn>
                         <div style={{ width: 1, background: C.border, margin: '2px 2px' }} />
                         <CtrlBtn onClick={() => handleToggle(section.id)} title={section.isActive ? 'Ausblenden' : 'Einblenden'}>{section.isActive ? '👁' : '🙈'}</CtrlBtn>
-                        <CtrlBtn onClick={() => handleLock(section.id)} title={section.styling?.isLocked ? 'Entsperren' : 'Sperren'}>{section.styling?.isLocked ? '🔒' : '🔓'}</CtrlBtn>
-                        <CtrlBtn onClick={() => setCopyToPageSectionId(section.id)} title="Zu anderer Page kopieren">⧉</CtrlBtn>
-                        <CtrlBtn onClick={() => handleDelete(section.id)} danger title="Löschen">✕</CtrlBtn>
+                     <CtrlBtn onClick={() => handleDelete(section.id)} danger title="Löschen">✕</CtrlBtn>
                       </div>
                     )}
                   </div>
@@ -2255,8 +1738,7 @@ const handleLock = (id: string) => {
                   primary={templateSettings?.colors?.primary || '#3b82f6'} />
               ))}
             </div>
-        </div>
-          </>
+          </div>
           )}
         </div>
 
@@ -2277,11 +1759,10 @@ const handleLock = (id: string) => {
               {/* 4 Tabs */}
               <div style={{ display: 'flex', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
                 {[
-               { id: 'content', label: '✎', title: 'Inhalt' },
+                  { id: 'content', label: '✎', title: 'Inhalt' },
                   { id: 'style', label: '🎨', title: 'Stil & Typo' },
                   { id: 'layout', label: '⊡', title: 'Layout & Mobile' },
                   { id: 'css', label: '</>', title: 'Custom CSS' },
-                  { id: 'animation', label: '✨', title: 'Animation' },
                 ].map(tab => (
                   <button key={tab.id} onClick={() => setRightTab(tab.id as any)} title={tab.title}
                     style={{ flex: 1, padding: '9px 4px', background: rightTab === tab.id ? '#0d1117' : 'transparent', border: 'none', borderBottom: `2px solid ${rightTab === tab.id ? C.accent : 'transparent'}`, cursor: 'pointer', color: rightTab === tab.id ? C.accent : C.muted, fontSize: rightTab === tab.id ? '0.75rem' : '0.85rem', fontWeight: 600 }}>
@@ -2291,26 +1772,11 @@ const handleLock = (id: string) => {
               </div>
 
               {/* Panel */}
-             <div style={{ flex: 1, overflowY: 'auto', padding: '14px' }}>
-                {selectedSection.styling?.isLocked ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '2rem', textAlign: 'center' }}>
-                    <span style={{ fontSize: '2rem' }}>🔒</span>
-                    <p style={{ color: '#e6edf3', fontSize: '0.875rem', fontWeight: 600, margin: 0 }}>Section gesperrt</p>
-                    <p style={{ color: '#6e7681', fontSize: '0.75rem', margin: 0 }}>Entsperren um zu bearbeiten</p>
-                    <button onClick={() => handleLock(selectedSection.id)}
-                      style={{ background: '#f0883e', border: 'none', borderRadius: 6, color: '#fff', padding: '7px 16px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
-                      🔓 Entsperren
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    {rightTab === 'content' && <ContentEditor section={selectedSection} onChange={handleContentChange} />}
-                    {rightTab === 'style' && <StylePanel section={selectedSection} onChange={handleStylingChange} onPickMedia={(cb) => setMediaPicker({ onSelect: cb })} />}
-                    {rightTab === 'layout' && <LayoutPanel section={selectedSection} onChange={handleStylingChange} deviceMode={deviceMode} />}
-                    {rightTab === 'css' && <CssPanel section={selectedSection} onChange={handleStylingChange} />}
-                    {rightTab === 'animation' && <AnimationPanel section={selectedSection} onChange={handleStylingChange} />}
-                  </>
-                )}
+              <div style={{ flex: 1, overflowY: 'auto', padding: '14px' }}>
+                {rightTab === 'content' && <ContentEditor section={selectedSection} onChange={handleContentChange} />}
+                {rightTab === 'style' && <StylePanel section={selectedSection} onChange={handleStylingChange} onPickMedia={(cb) => setMediaPicker({ onSelect: cb })} />}
+                {rightTab === 'layout' && <LayoutPanel section={selectedSection} onChange={handleStylingChange} deviceMode={deviceMode} />}
+                {rightTab === 'css' && <CssPanel section={selectedSection} onChange={handleStylingChange} />}
               </div>
             </>
          ) : selectedNavId ? (
@@ -2379,35 +1845,8 @@ const handleLock = (id: string) => {
       {mediaPicker && <MediaPicker onSelect={mediaPicker.onSelect} onClose={() => setMediaPicker(null)} />}
   
 
-{/* Navigation Overlay */}
-      {showNavEditor && <NavigationEditor onClose={async () => { setShowNavEditor(false); await refetchNavs(); }} />}
-
-      {/* Copy to Page Modal */}
-      {copyToPageSectionId && (() => {
-        const sec = sections.find(s => s.id === copyToPageSectionId);
-        return sec ? (
-          <CopyToPageModal
-            section={sec}
-            templateId={resolvedTemplateId}
-            tenantId={tenant?.id || ''}
-            currentPageId={pageId}
-            onClose={() => setCopyToPageSectionId(null)}
-            createSectionMut={createSectionMut}
-          />
-        ) : null;
-      })()}
-
-      {/* Global Colors Panel */}
-      {showGlobalColors && (
-        <GlobalColorsPanel
-          templateSettings={templateSettings}
-          templateId={resolvedTemplateId}
-          tenantId={tenant?.id || ''}
-          onUpdate={setTemplateSettings}
-          onClose={() => setShowGlobalColors(false)}
-          updateTemplateMut={updateTemplateMut}
-        />
-      )}
+      {/* Navigation Overlay */}
+      {showNavEditor && <NavigationEditor onClose={() => setShowNavEditor(false)} />}
     </div>
   );
 }

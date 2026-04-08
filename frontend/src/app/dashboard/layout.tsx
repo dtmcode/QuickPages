@@ -14,7 +14,8 @@ interface DashboardLayoutProps {
 }
 
 // Navigation Component (innerhalb PackageProvider) {currentTenant?.slug}
-function DashboardNav() {
+function DashboardNav({ onClose }: { onClose?: () => void }) {
+
   const pathname = usePathname();
   const { user, logout, tenant } = useAuth(); // ← tenant hinzugefügt
   const { hasFeature } = usePackage();
@@ -200,6 +201,7 @@ const allNavigation = [
               <Link
                 key={item.name}
                 href={item.href}
+                onClick={onClose}
                 className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 group ${
                   isActive
                     ? 'bg-primary/10 text-primary border-l-4 border-primary shadow-sm'
@@ -267,7 +269,7 @@ const allNavigation = [
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -293,10 +295,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return null;
   }
 
-  return (
+return (
     <PackageProvider>
       <div className="min-h-screen bg-background transition-colors duration-300">
-        <DashboardNav />
+
+        {/* Mobile Overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar mit Slide-Animation */}
+        <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border transition-transform duration-300 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}>
+          <DashboardNav onClose={() => setSidebarOpen(false)} />
+        </div>
         <div className="lg:pl-64">
           <header className="bg-card border-b border-border sticky top-0 z-40 transition-colors duration-300 backdrop-blur-sm bg-card/95">
             <div className="px-4 sm:px-6 lg:px-8">
