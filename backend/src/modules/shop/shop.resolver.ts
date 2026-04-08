@@ -213,19 +213,21 @@ export class ShopResolver {
       .where(eq(products.tenantId, tenantId));
 
     // ✅ NEU — SuperAdmin bypassed, dann normaler Check:
-const SUPERADMIN_SLUGS = ['myquickpages', 'platform-admin'];
+    const SUPERADMIN_SLUGS = ['myquickpages', 'platform-admin'];
 
-const isSuperAdmin =
-  SUPERADMIN_SLUGS.includes(tenant.slug) ||
-  (tenant.settings as any)?.isSuperAdmin === true;
+    const isSuperAdmin =
+      SUPERADMIN_SLUGS.includes(tenant.slug) ||
+      (tenant.settings as any)?.isSuperAdmin === true;
 
-if (!isSuperAdmin) {
-  const pkg = PACKAGES[tenant.package as PackageType];
-  const maxProducts = pkg?.features.maxProducts ?? 0;
-  if (maxProducts !== -1 && currentProducts.length >= maxProducts) {
-    throw new Error('Produkt-Limit erreicht! Upgrade dein Paket für mehr Produkte.');
-  }
-}
+    if (!isSuperAdmin) {
+      const pkg = PACKAGES[tenant.package as PackageType];
+      const maxProducts = pkg?.features.maxProducts ?? 0;
+      if (maxProducts !== -1 && currentProducts.length >= maxProducts) {
+        throw new Error(
+          'Produkt-Limit erreicht! Upgrade dein Paket für mehr Produkte.',
+        );
+      }
+    }
 
     const slug =
       input.name
