@@ -521,6 +521,93 @@ function SectionRenderer({ section }: { section: Section }) {
           </div>
         </WrapSection>
       );
+    case 'freestyle': {
+  const blocks: any[] = (content?.blocks || []).sort((a: any, b: any) => a.order - b.order);
+
+  const renderFreeBlock = (block: any) => {
+    const align = block.align || 'center';
+    const wrapStyle: React.CSSProperties = { textAlign: align as any, marginBottom: '0.75rem' };
+
+    switch (block.type) {
+      case 'heading': {
+        const sizes: Record<string, string> = { h1: '2.5rem', h2: '1.875rem', h3: '1.375rem', h4: '1.125rem' };
+        const Tag = (block.level || 'h2') as any;
+        return <div style={wrapStyle}><Tag style={{ fontSize: sizes[block.level || 'h2'], fontWeight: 700, margin: 0 }}>{block.text}</Tag></div>;
+      }
+      case 'text':
+        return <div style={wrapStyle} dangerouslySetInnerHTML={{ __html: block.html || '' }} />;
+      case 'button':
+        return (
+          <div style={wrapStyle}>
+            <a href={block.link || '#'} style={{
+              display: 'inline-block', padding: '0.75rem 2rem', borderRadius: buttonStyle.backgroundColor ? '0.5rem' : '0.5rem',
+              fontWeight: 600, textDecoration: 'none', cursor: 'pointer',
+              background: block.style === 'primary' ? buttonStyle.backgroundColor : block.style === 'outline' ? 'transparent' : 'rgba(0,0,0,0.06)',
+              color: block.style === 'primary' ? buttonStyle.color : buttonStyle.backgroundColor,
+              border: block.style === 'outline' ? `2px solid ${buttonStyle.backgroundColor}` : 'none',
+            }}>{block.text || 'Button'}</a>
+          </div>
+        );
+      case 'image':
+        return (
+          <div style={wrapStyle}>
+            {block.url && <img src={block.url} alt={block.alt || ''} style={{ width: block.width || '100%', maxWidth: '100%', borderRadius: '0.5rem' }} />}
+          </div>
+        );
+      case 'badge':
+        return (
+          <div style={wrapStyle}>
+            <span style={{ display: 'inline-block', padding: '4px 14px', background: 'rgba(88,166,255,0.12)', color: buttonStyle.backgroundColor, borderRadius: '2rem', fontSize: '0.875rem', fontWeight: 600 }}>
+              {block.text}
+            </span>
+          </div>
+        );
+      case 'icon':
+        return <div style={wrapStyle}><span style={{ fontSize: block.size || '3rem' }}>{block.emoji}</span></div>;
+      case 'spacer':
+        return <div style={{ height: block.height || '2rem' }} />;
+      case 'divider':
+        return <hr style={{ border: 'none', borderTop: `${block.thickness || '1px'} ${block.style || 'solid'} ${block.color || '#e5e7eb'}`, margin: '0.5rem 0' }} />;
+      case 'list': {
+        const icons: Record<string, string> = { check: '✓', bullet: '•', arrow: '→', number: '' };
+        return (
+          <div style={wrapStyle}>
+            {(block.items || []).map((item: string, i: number) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', justifyContent: align === 'center' ? 'center' : align === 'right' ? 'flex-end' : 'flex-start' }}>
+                <span style={{ color: buttonStyle.backgroundColor, fontWeight: 700, flexShrink: 0 }}>
+                  {block.style === 'number' ? `${i + 1}.` : icons[block.style || 'check']}
+                </span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        );
+      }
+      case 'video':
+        return (
+          <div style={wrapStyle}>
+            {block.url && <div className="aspect-video max-w-2xl inline-block w-full rounded-xl overflow-hidden"><iframe src={block.url} className="w-full h-full" allowFullScreen /></div>}
+          </div>
+        );
+      case 'columns':
+        return (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '0.75rem' }}>
+            <div>{(block.leftBlocks || []).map((b: any) => renderFreeBlock(b))}</div>
+            <div>{(block.rightBlocks || []).map((b: any) => renderFreeBlock(b))}</div>
+          </div>
+        );
+      default: return null;
+    }
+  };
+
+  return (
+    <WrapSection className="py-16">
+      <div className={`${containerWidth} px-4`}>
+        {blocks.map(block => renderFreeBlock(block))}
+      </div>
+    </WrapSection>
+  );
+}
 
     default:
       return (

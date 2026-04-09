@@ -33,6 +33,7 @@ const SECTION_ICONS: Record<string, string> = {
   [SectionType.TEXT]: '📝',
   [SectionType.HTML]: '🧩',
   [SectionType.CUSTOM]: '⚙️',
+ [SectionType.FREESTYLE]: '✦',
 };
 
 const SECTION_COLORS: Record<string, string> = {

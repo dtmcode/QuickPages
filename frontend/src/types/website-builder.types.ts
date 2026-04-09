@@ -25,6 +25,7 @@ export enum SectionType {
   TEXT = 'text',
   HTML = 'html',
   CUSTOM = 'custom',
+   FREESTYLE = 'freestyle',
 }
 
 export enum PageStatus {

@@ -247,7 +247,20 @@ const SECTION_TEMPLATES: SectionTemplate[] = [
       ],
     },
   },
-
+{
+  type: 'freestyle',
+  name: 'Freestyle Block',
+  icon: '✦',
+  description: 'Freie Element-Komposition — alles selbst anordnen',
+  category: 'advanced',
+  defaultContent: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Deine Überschrift', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'text', html: '<p>Dein Text hier.</p>', align: 'center', order: 1 },
+      { id: 'b3', type: 'button', text: 'Jetzt starten', link: '#', style: 'primary', align: 'center', order: 2 },
+    ],
+  },
+},
   // Advanced
   {
     type: 'html',

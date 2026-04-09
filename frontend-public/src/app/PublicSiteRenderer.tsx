@@ -488,7 +488,100 @@ case 'whatsapp':
         {(content as any)?.label || 'WhatsApp'}
       </a>
     </>
+        );
+      case 'freestyle': {
+  const blocks: any[] = ((content as any)?.blocks || []).sort((a: any, b: any) => a.order - b.order);
+  const cw = styling?.containerWidth;
+  const maxW = cw === 'full' ? '100%' : cw === 'narrow' ? '768px' : '1200px';
+
+  const renderFreeBlock = (block: any): React.ReactNode => {
+    const align = block.align || 'center';
+    const ws: React.CSSProperties = { textAlign: align as any, marginBottom: '0.75rem' };
+
+    switch (block.type) {
+      case 'heading': {
+        const sizes: Record<string, string> = { h1: '2.5rem', h2: '1.875rem', h3: '1.375rem', h4: '1.125rem' };
+        const Tag = (block.level || 'h2') as any;
+        return <div style={ws}><Tag style={{ fontSize: sizes[block.level || 'h2'], fontWeight: 700, margin: 0 }}>{block.text}</Tag></div>;
+      }
+      case 'text':
+        return <div style={ws} dangerouslySetInnerHTML={{ __html: block.html || '' }} />;
+      case 'button':
+        return (
+          <div style={ws}>
+            <a href={block.link || '#'} style={{
+              display: 'inline-block', padding: '0.75rem 2rem', borderRadius: '0.5rem',
+              fontWeight: 600, textDecoration: 'none',
+              background: block.style === 'primary' ? (buttonStyle.backgroundColor || '#3b82f6') : block.style === 'outline' ? 'transparent' : 'rgba(0,0,0,0.06)',
+              color: block.style === 'primary' ? (buttonStyle.color || '#fff') : (buttonStyle.backgroundColor || '#3b82f6'),
+              border: block.style === 'outline' ? `2px solid ${buttonStyle.backgroundColor || '#3b82f6'}` : 'none',
+            }}>{block.text || 'Button'}</a>
+          </div>
+        );
+      case 'image':
+        return (
+          <div style={ws}>
+            {block.url && <img src={block.url} alt={block.alt || ''} style={{ width: block.width || '100%', maxWidth: '100%', borderRadius: '0.5rem' }} />}
+          </div>
+        );
+      case 'badge':
+        return (
+          <div style={ws}>
+            <span style={{ display: 'inline-block', padding: '4px 14px', background: 'rgba(88,166,255,0.12)', color: buttonStyle.backgroundColor || '#3b82f6', borderRadius: '2rem', fontSize: '0.875rem', fontWeight: 600 }}>
+              {block.text}
+            </span>
+          </div>
+        );
+      case 'icon':
+        return <div style={ws}><span style={{ fontSize: block.size || '3rem' }}>{block.emoji}</span></div>;
+      case 'spacer':
+        return <div style={{ height: block.height || '2rem' }} />;
+      case 'divider':
+        return <hr style={{ border: 'none', borderTop: `${block.thickness || '1px'} ${block.style || 'solid'} ${block.color || '#e5e7eb'}`, margin: '0.5rem 0' }} />;
+      case 'list': {
+        const icons: Record<string, string> = { check: '✓', bullet: '•', arrow: '→', number: '' };
+        return (
+          <div style={ws}>
+            {(block.items || []).map((item: string, i: number) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', justifyContent: align === 'center' ? 'center' : align === 'right' ? 'flex-end' : 'flex-start' }}>
+                <span style={{ color: buttonStyle.backgroundColor || '#3b82f6', fontWeight: 700, flexShrink: 0 }}>
+                  {block.style === 'number' ? `${i + 1}.` : icons[block.style || 'check']}
+                </span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        );
+      }
+      case 'video':
+        return (
+          <div style={ws}>
+            {block.url && (
+              <div style={{ aspectRatio: '16/9', maxWidth: '42rem', display: 'inline-block', width: '100%', borderRadius: '0.75rem', overflow: 'hidden' }}>
+                <iframe src={block.url} style={{ width: '100%', height: '100%' }} allowFullScreen />
+              </div>
+            )}
+          </div>
+        );
+      case 'columns':
+        return (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '0.75rem' }}>
+            <div>{(block.leftBlocks || []).map((b: any, i: number) => <div key={i}>{renderFreeBlock(b)}</div>)}</div>
+            <div>{(block.rightBlocks || []).map((b: any, i: number) => <div key={i}>{renderFreeBlock(b)}</div>)}</div>
+          </div>
+        );
+      default: return null;
+    }
+  };
+
+  return (
+    <section style={containerStyle}>
+      <div style={{ maxWidth: maxW, margin: '0 auto', padding: '0 1.5rem' }}>
+        {blocks.map((block, i) => <div key={block.id || i}>{renderFreeBlock(block)}</div>)}
+      </div>
+    </section>
   );
+}
 
       default:
         return (
