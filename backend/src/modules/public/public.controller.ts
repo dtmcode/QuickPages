@@ -131,6 +131,21 @@ export class PublicController {
   async getCategories(@Param('tenant') tenantSlug: string) {
     return await this.publicService.getCategories(tenantSlug);
   }
+  @Get('forms')
+  async getPublicForms(
+    @Param('tenant') tenantSlug: string,
+  ): Promise<unknown[]> {
+    return (await this.publicService.getPublicForms(tenantSlug)) as unknown[];
+  }
+
+  @Get('booking/services')
+  async getPublicBookingServices(
+    @Param('tenant') tenantSlug: string,
+  ): Promise<unknown[]> {
+    return (await this.publicService.getPublicBookingServices(
+      tenantSlug,
+    )) as unknown[];
+  }
 
   @Get('wb/homepage')
   async getWbHomepage(@Param('tenant') tenantSlug: string) {

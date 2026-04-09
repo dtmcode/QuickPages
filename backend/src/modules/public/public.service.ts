@@ -710,4 +710,29 @@ export class PublicService {
       )
       .orderBy(desc(orders.createdAt));
   }
+  // ==================== PUBLIC FORMS ====================
+
+  async getPublicForms(tenantSlug: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
+    const result = await this.db.execute(
+      sql`SELECT id, name, slug, description, fields, success_message 
+        FROM forms 
+        WHERE tenant_id = ${tenantId} AND is_active = true 
+        ORDER BY created_at DESC`,
+    );
+    return (result as any).rows || [];
+  }
+
+  // ==================== PUBLIC BOOKING SERVICES ====================
+
+  async getPublicBookingServices(tenantSlug: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
+    const result = await this.db.execute(
+      sql`SELECT id, name, description, duration, price, currency, color
+        FROM booking_services 
+        WHERE tenant_id = ${tenantId} AND is_active = true 
+        ORDER BY name ASC`,
+    );
+    return (result as any).rows || [];
+  }
 }

@@ -560,7 +560,8 @@ function FreestyleEditor({ content, onChange }: {
             Noch keine Elemente. Füge deinen ersten Block hinzu.
           </div>
         )}
-        {blocks.sort((a, b) => a.order - b.order).map((block, idx) => (
+        {[...blocks].sort((a, b) => a.order - b.order).map((block, idx) => (
+
           <div key={block.id}
             onClick={() => setSelectedBlockId(block.id === selectedBlockId ? null : block.id)}
             style={{
@@ -1268,7 +1269,8 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
           </div>
         );
       case 'freestyle': {
-  const blocks: any[] = (content.blocks || []).sort((a: any, b: any) => a.order - b.order);
+ const blocks: any[] = [...(content.blocks || [])].sort((a: any, b: any) => a.order - b.order);
+
 
   const renderBlock = (block: any) => {
     const alignStyle: React.CSSProperties = {
@@ -1481,7 +1483,12 @@ function ElementToggleBar({
 }
 // ==================== CONTENT EDITOR ====================
 
-function ContentEditor({ section, onChange }: { section: Section; onChange: (c: SectionContent) => void }) {
+function ContentEditor({ section, onChange, availableForms, availableBookingServices }: {
+  section: Section;
+  onChange: (c: SectionContent) => void;
+  availableForms: { id: string; name: string; slug: string }[];
+  availableBookingServices: { id: string; name: string; duration: number; price: number }[];
+}) {
   const { type, content } = section;
   const update = (key: string, val: any) => onChange({ ...content, [key]: val });
 
@@ -1663,6 +1670,26 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'hours', label: 'Öffnungszeiten', icon: '🕐', defaultOn: false },
           { key: 'gdpr', label: 'DSGVO Checkbox', icon: '🔒', defaultOn: true },
         ]} />
+        {availableForms.length > 0 && (
+  <div style={wrapStyle}>
+    <label style={labelStyle}>Formular aus Form Builder wählen</label>
+    <select
+      value={content.formSlug || ''}
+      onChange={e => update('formSlug', e.target.value)}
+      style={{ ...inputStyle, width: '100%' }}
+    >
+      <option value="">— Standard Kontaktformular —</option>
+      {availableForms.map(f => (
+        <option key={f.id} value={f.slug}>{f.name}</option>
+      ))}
+    </select>
+    {content.formSlug && (
+      <p style={{ fontSize: '0.68rem', color: '#2ea043', marginTop: 4 }}>
+        ✓ Formular „{availableForms.find(f => f.slug === content.formSlug)?.name}" wird verwendet
+      </p>
+    )}
+  </div>
+)}
         <Field label="Überschrift" field="heading" />
         <Field label="Unterüberschrift" field="subheading" multi rows={2} />
         <Field label="Button Text" field="buttonText" />
@@ -1801,6 +1828,21 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'duration', label: 'Dauer anzeigen', icon: '⏱️', defaultOn: false },
           { key: 'price', label: 'Preis anzeigen', icon: '💶', defaultOn: false },
         ]} />
+        {availableBookingServices.length > 0 && (
+  <div style={wrapStyle}>
+    <label style={labelStyle}>Services aus Booking importieren</label>
+    <button
+      onClick={() => update('serviceList', availableBookingServices.map(s => ({
+        name: s.name,
+        duration: `${s.duration} Min`,
+        price: s.price ? `€${s.price}` : '',
+      })))}
+      style={{ width: '100%', padding: '7px', background: '#1f6feb', border: 'none', borderRadius: 6, color: '#fff', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+    >
+      ↓ {availableBookingServices.length} Services importieren
+    </button>
+  </div>
+)}
         <Field label="Überschrift" field="heading" />
         {(content._optional?.description ?? true) && <Field label="Beschreibung" field="text" multi rows={3} />}
         <Field label="Button Text" field="buttonText" />
@@ -3026,6 +3068,17 @@ const [rightCollapsed, setRightCollapsed] = useState(false);
   const [darkPreview, setDarkPreview] = useState(false);
   const [copyToPageSectionId, setCopyToPageSectionId] = useState<string | null>(null);
   const [showGlobalColors, setShowGlobalColors] = useState(false);
+  const [availableForms, setAvailableForms] = useState<{ id: string; name: string; slug: string }[]>([]);
+const [availableBookingServices, setAvailableBookingServices] = useState<{ id: string; name: string; duration: number; price: number }[]>([]);
+
+useEffect(() => {
+  if (!tenant?.slug) return;
+  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  fetch(`${base}/api/public/${tenant.slug}/forms`)
+    .then(r => r.json()).then(setAvailableForms).catch(() => {});
+  fetch(`${base}/api/public/${tenant.slug}/booking/services`)
+    .then(r => r.json()).then(setAvailableBookingServices).catch(() => {});
+}, [tenant?.slug]);
 const { refetch: refetchNavsQuery } = useQuery(GET_NAVIGATIONS, {
   onCompleted: (data) => { if (data?.navigations) setNavigations(data.navigations); },
 });
@@ -3613,7 +3666,7 @@ const handleContentChange = (content: SectionContent) => {
                   </div>
                 ) : (
                   <>
-                    {rightTab === 'content' && <ContentEditor section={selectedSection} onChange={handleContentChange} />}
+                    {rightTab === 'content' && <ContentEditor section={selectedSection} onChange={handleContentChange} availableForms={availableForms}availableBookingServices={availableBookingServices} />}
                     {rightTab === 'style' && <StylePanel section={selectedSection} onChange={handleStylingChange} onPickMedia={(cb) => setMediaPicker({ onSelect: cb })} />}
                     {rightTab === 'layout' && <LayoutPanel section={selectedSection} onChange={handleStylingChange} deviceMode={deviceMode} />}
                     {rightTab === 'css' && <CssPanel section={selectedSection} onChange={handleStylingChange} />}
