@@ -1,0 +1,1 @@
+ALTER TYPE "public"."wb_section_type" ADD VALUE 'freestyle';

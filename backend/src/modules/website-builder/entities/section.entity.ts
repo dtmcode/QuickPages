@@ -34,6 +34,7 @@ export enum SectionType {
   spacer = 'spacer',
   before_after = 'before_after',
   whatsapp = 'whatsapp',
+  freestyle = 'freestyle',
 }
 
 registerEnumType(SectionType, {
