@@ -529,13 +529,34 @@ function SectionRenderer({ section }: { section: Section }) {
     const wrapStyle: React.CSSProperties = { textAlign: align as any, marginBottom: '0.75rem' };
 
     switch (block.type) {
-      case 'heading': {
-        const sizes: Record<string, string> = { h1: '2.5rem', h2: '1.875rem', h3: '1.375rem', h4: '1.125rem' };
-        const Tag = (block.level || 'h2') as any;
-        return <div style={wrapStyle}><Tag style={{ fontSize: sizes[block.level || 'h2'], fontWeight: 700, margin: 0 }}>{block.text}</Tag></div>;
-      }
-      case 'text':
-        return <div style={wrapStyle} dangerouslySetInnerHTML={{ __html: block.html || '' }} />;
+     case 'heading': {
+  const Tag = (block.level || 'h2') as any;
+  const sizes: Record<string, string> = { h1: headingSize, h2: '1.75rem', h3: '1.25rem', h4: '1rem' };
+  return (
+    <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+      <Tag style={{ 
+        fontSize: block.fontSize || sizes[block.level || 'h2'],  // ← block.fontSize hat Vorrang
+        fontWeight: 700, 
+        margin: 0,
+        color: block.color || 'inherit',  // ← block.color
+      }}>
+        {block.text || 'Überschrift'}
+      </Tag>
+    </div>
+  );
+}
+
+case 'text':
+  return (
+    <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+      <div dangerouslySetInnerHTML={{ __html: block.html || '<p>Text...</p>' }} 
+        style={{ 
+          lineHeight: 1.6,
+          fontSize: block.fontSize || 'inherit',  // ← block.fontSize
+          color: block.color || 'inherit',         // ← block.color
+        }} />
+    </div>
+  );
       case 'button':
         return (
           <div style={wrapStyle}>

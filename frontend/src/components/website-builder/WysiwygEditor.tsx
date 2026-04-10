@@ -658,11 +658,14 @@ function generateBlockId() {
 
 
 // ==================== FREESTYLE EDITOR ====================
+function FreestyleEditor({ content, onChange, externalSelectedBlockId, onPickMedia, availableForms, availableBookingServices }: {
 
-function FreestyleEditor({ content, onChange, externalSelectedBlockId }: {
   content: SectionContent;
   onChange: (c: SectionContent) => void;
   externalSelectedBlockId?: string | null;
+  onPickMedia?: (cb: (url: string) => void) => void;
+   availableForms?: { id: string; name: string; slug: string }[];
+  availableBookingServices?: { id: string; name: string; duration: number; price: number }[];
 }) {
   const blocks: any[] = content.blocks || [];
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
@@ -865,29 +868,67 @@ useEffect(() => {
                 <input type="text" value={selectedBlock.text || ''} onChange={e => updateBlock(selectedBlock.id, { text: e.target.value })} style={inputStyle} />
               </div>
               <div style={{ marginBottom: 8 }}>
-                <label style={labelStyle}>Ebene</label>
-                <div style={{ display: 'flex', gap: 5 }}>
-                  {['h1', 'h2', 'h3', 'h4'].map(l => (
-                    <button key={l} onClick={() => updateBlock(selectedBlock.id, { level: l })}
-                      style={{ flex: 1, padding: '5px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
-                        background: (selectedBlock.level || 'h2') === l ? '#1f6feb' : '#161b22',
-                        border: `1px solid ${(selectedBlock.level || 'h2') === l ? '#1f6feb' : '#30363d'}`,
-                        color: (selectedBlock.level || 'h2') === l ? '#fff' : '#8b949e' }}>
-                      {l.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
+      <label style={labelStyle}>Schriftgröße</label>
+      <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+        {[{ v: '0.75rem', l: 'XS' }, { v: '1rem', l: 'S' }, { v: '1.25rem', l: 'M' }, { v: '1.5rem', l: 'L' }, { v: '2rem', l: 'XL' }].map(s => (
+          <button key={s.v} onClick={() => updateBlock(selectedBlock.id, { fontSize: s.v })}
+            style={{ padding: '4px 8px', borderRadius: 4, fontSize: '0.68rem', fontWeight: 600, cursor: 'pointer',
+              background: (selectedBlock.fontSize || '') === s.v ? '#1f6feb' : '#161b22',
+              border: `1px solid ${(selectedBlock.fontSize || '') === s.v ? '#1f6feb' : '#30363d'}`,
+              color: (selectedBlock.fontSize || '') === s.v ? '#fff' : '#8b949e' }}>
+            {s.l}
+          </button>
+        ))}
+      </div>
+    </div>
+    <div style={{ marginBottom: 8 }}>
+      <label style={labelStyle}>Textfarbe</label>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <input type="color" value={selectedBlock.color || '#000000'}
+          onChange={e => updateBlock(selectedBlock.id, { color: e.target.value })}
+          style={{ width: 34, height: 34, borderRadius: 6, border: '1px solid #30363d', cursor: 'pointer', padding: 2 }} />
+        <input type="text" value={selectedBlock.color || ''}
+          onChange={e => updateBlock(selectedBlock.id, { color: e.target.value })}
+          style={{ ...inputStyle, flex: 1 }} placeholder="#000000" />
+      </div>
+    </div>
+  </>
+)}
 
-          {selectedBlock.type === 'text' && (
-            <div style={{ marginBottom: 8 }}>
-              <label style={labelStyle}>Text (HTML erlaubt)</label>
-              <textarea value={selectedBlock.html || ''} onChange={e => updateBlock(selectedBlock.id, { html: e.target.value })}
-                rows={5} style={{ ...inputStyle, resize: 'vertical' }} />
-            </div>
-          )}
+        {selectedBlock.type === 'text' && (
+  <>
+    <div style={{ marginBottom: 8 }}>
+      <label style={labelStyle}>Text (HTML erlaubt)</label>
+      <textarea value={selectedBlock.html || ''} onChange={e => updateBlock(selectedBlock.id, { html: e.target.value })}
+        rows={5} style={{ ...inputStyle, resize: 'vertical' }} />
+    </div>
+    <div style={{ marginBottom: 8 }}>
+      <label style={labelStyle}>Schriftgröße</label>
+      <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+        {[{ v: '0.75rem', l: 'XS' }, { v: '1rem', l: 'S' }, { v: '1.125rem', l: 'M' }, { v: '1.25rem', l: 'L' }, { v: '1.5rem', l: 'XL' }].map(s => (
+          <button key={s.v} onClick={() => updateBlock(selectedBlock.id, { fontSize: s.v })}
+            style={{ padding: '4px 8px', borderRadius: 4, fontSize: '0.68rem', fontWeight: 600, cursor: 'pointer',
+              background: (selectedBlock.fontSize || '') === s.v ? '#1f6feb' : '#161b22',
+              border: `1px solid ${(selectedBlock.fontSize || '') === s.v ? '#1f6feb' : '#30363d'}`,
+              color: (selectedBlock.fontSize || '') === s.v ? '#fff' : '#8b949e' }}>
+            {s.l}
+          </button>
+        ))}
+      </div>
+    </div>
+    <div style={{ marginBottom: 8 }}>
+      <label style={labelStyle}>Textfarbe</label>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <input type="color" value={selectedBlock.color || '#000000'}
+          onChange={e => updateBlock(selectedBlock.id, { color: e.target.value })}
+          style={{ width: 34, height: 34, borderRadius: 6, border: '1px solid #30363d', cursor: 'pointer', padding: 2 }} />
+        <input type="text" value={selectedBlock.color || ''}
+          onChange={e => updateBlock(selectedBlock.id, { color: e.target.value })}
+          style={{ ...inputStyle, flex: 1 }} placeholder="#000000" />
+      </div>
+    </div>
+  </>
+)}
 
           {selectedBlock.type === 'button' && (
             <>
@@ -913,35 +954,55 @@ useEffect(() => {
                   ))}
                 </div>
               </div>
-            </>
-          )}
+            {selectedBlock.link?.startsWith('/booking') && (
+      <div style={{ marginBottom: 8 }}>
+        <label style={labelStyle}>Buchungs-Service</label>
+        <select value={selectedBlock.serviceId || ''} onChange={e => updateBlock(selectedBlock.id, { serviceId: e.target.value })}
+          style={inputStyle}>
+          <option value="">— Kein Service verknüpft —</option>
+          {(availableBookingServices || []).map(s => (
+            <option key={s.id} value={s.id}>{s.name} — {s.duration}min — €{s.price}</option>
+          ))}
+        </select>
+      </div>
+    )}
+  </>
+)}
 
-          {selectedBlock.type === 'image' && (
-            <>
-              <div style={{ marginBottom: 8 }}>
-                <label style={labelStyle}>Bild URL</label>
-                <input type="text" value={selectedBlock.url || ''} onChange={e => updateBlock(selectedBlock.id, { url: e.target.value })} style={inputStyle} placeholder="https://..." />
-              </div>
-              <div style={{ marginBottom: 8 }}>
-                <label style={labelStyle}>Alt-Text</label>
-                <input type="text" value={selectedBlock.alt || ''} onChange={e => updateBlock(selectedBlock.id, { alt: e.target.value })} style={inputStyle} />
-              </div>
-              <div style={{ marginBottom: 8 }}>
-                <label style={labelStyle}>Breite</label>
-                <div style={{ display: 'flex', gap: 5 }}>
-                  {['25%', '50%', '75%', '100%'].map(w => (
-                    <button key={w} onClick={() => updateBlock(selectedBlock.id, { width: w })}
-                      style={{ flex: 1, padding: '4px', borderRadius: 4, fontSize: '0.68rem', fontWeight: 600, cursor: 'pointer',
-                        background: (selectedBlock.width || '100%') === w ? '#1f6feb' : '#161b22',
-                        border: `1px solid ${(selectedBlock.width || '100%') === w ? '#1f6feb' : '#30363d'}`,
-                        color: (selectedBlock.width || '100%') === w ? '#fff' : '#8b949e' }}>
-                      {w}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
+     {selectedBlock.type === 'image' && (
+  <>
+    <div style={{ marginBottom: 8 }}>
+      <label style={labelStyle}>Bild URL</label>
+      <div style={{ display: 'flex', gap: 6 }}>
+        <input type="text" value={selectedBlock.url || ''} onChange={e => updateBlock(selectedBlock.id, { url: e.target.value })} style={{ ...inputStyle, flex: 1 }} placeholder="https://..." />
+        {onPickMedia && (
+          <button onClick={() => onPickMedia(url => updateBlock(selectedBlock.id, { url }))}
+            style={{ background: '#1f6feb', border: 'none', borderRadius: 6, color: '#fff', padding: '7px 10px', fontSize: '0.72rem', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            🖼️
+          </button>
+        )}
+      </div>
+    </div>
+    <div style={{ marginBottom: 8 }}>
+      <label style={labelStyle}>Alt-Text</label>
+      <input type="text" value={selectedBlock.alt || ''} onChange={e => updateBlock(selectedBlock.id, { alt: e.target.value })} style={inputStyle} />
+    </div>
+    <div style={{ marginBottom: 8 }}>
+      <label style={labelStyle}>Breite</label>
+      <div style={{ display: 'flex', gap: 5 }}>
+        {['25%', '50%', '75%', '100%'].map(w => (
+          <button key={w} onClick={() => updateBlock(selectedBlock.id, { width: w })}
+            style={{ flex: 1, padding: '4px', borderRadius: 4, fontSize: '0.68rem', fontWeight: 600, cursor: 'pointer',
+              background: (selectedBlock.width || '100%') === w ? '#1f6feb' : '#161b22',
+              border: `1px solid ${(selectedBlock.width || '100%') === w ? '#1f6feb' : '#30363d'}`,
+              color: (selectedBlock.width || '100%') === w ? '#fff' : '#8b949e' }}>
+            {w}
+          </button>
+        ))}
+      </div>
+    </div>
+  </>
+)}
 
           {selectedBlock.type === 'badge' && (
             <div style={{ marginBottom: 8 }}>
@@ -1324,17 +1385,20 @@ useEffect(() => {
     </button>
   </div>
 )}
-
 {selectedBlock.type === 'contact-form' && (
   <div>
+    <label style={labelStyle}>Formular verknüpfen</label>
+    <select value={selectedBlock.formSlug || ''} onChange={e => updateBlock(selectedBlock.id, { formSlug: e.target.value })}
+      style={{ ...inputStyle, marginBottom: 8 }}>
+      <option value="">— Standard Kontaktformular —</option>
+      {(availableForms || []).map(f => (
+        <option key={f.id} value={f.slug}>{f.name}</option>
+      ))}
+    </select>
     <label style={labelStyle}>Button Text</label>
     <input type="text" value={selectedBlock.buttonText || 'Senden'}
       onChange={e => updateBlock(selectedBlock.id, { buttonText: e.target.value })}
       style={{ ...inputStyle, marginBottom: 8 }} />
-    <label style={labelStyle}>DSGVO Text</label>
-    <input type="text" value={selectedBlock.gdprText || ''}
-      onChange={e => updateBlock(selectedBlock.id, { gdprText: e.target.value })}
-      placeholder="Deine Daten sind sicher." style={inputStyle} />
   </div>
 )}
 
@@ -1724,20 +1788,33 @@ const btnText = styling?.buttonTextColor || '#ffffff';
 
   switch (block.type) {
     case 'heading': {
-      const Tag = (block.level || 'h2') as any;
-      const sizes: Record<string, string> = { h1: headingSize, h2: '1.75rem', h3: '1.25rem', h4: '1rem' };
-      return (
-        <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
-          <Tag style={{ fontSize: sizes[block.level || 'h2'], fontWeight: 700, margin: 0 }}>{block.text || 'Überschrift'}</Tag>
-        </div>
-      );
-    }
-    case 'text':
-      return (
-        <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
-          <div dangerouslySetInnerHTML={{ __html: block.html || '<p>Text...</p>' }} style={{ lineHeight: 1.6 }} />
-        </div>
-      );
+  const Tag = (block.level || 'h2') as any;
+  const sizes: Record<string, string> = { h1: headingSize, h2: '1.75rem', h3: '1.25rem', h4: '1rem' };
+  return (
+    <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+      <Tag style={{ 
+        fontSize: block.fontSize || sizes[block.level || 'h2'],  // ← block.fontSize hat Vorrang
+        fontWeight: 700, 
+        margin: 0,
+        color: block.color || 'inherit',  // ← block.color
+      }}>
+        {block.text || 'Überschrift'}
+      </Tag>
+    </div>
+  );
+}
+
+case 'text':
+  return (
+    <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+      <div dangerouslySetInnerHTML={{ __html: block.html || '<p>Text...</p>' }} 
+        style={{ 
+          lineHeight: 1.6,
+          fontSize: block.fontSize || 'inherit',  // ← block.fontSize
+          color: block.color || 'inherit',         // ← block.color
+        }} />
+    </div>
+  );
     case 'button':
       return (
         <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
@@ -2269,12 +2346,13 @@ function ListEditor({ field, schema, content, update, inputStyle, labelStyle, wr
   );
 }
 // ==================== CONTENT EDITOR ====================
-function ContentEditor({ section, onChange, availableForms, availableBookingServices, externalSelectedBlockId }: {
+function ContentEditor({ section, onChange, availableForms, availableBookingServices, externalSelectedBlockId, onPickMedia }: {
   section: Section;
   onChange: (c: SectionContent) => void;
   availableForms: { id: string; name: string; slug: string }[];
   availableBookingServices: { id: string; name: string; duration: number; price: number }[];
   externalSelectedBlockId?: string | null;
+  onPickMedia?: (cb: (url: string) => void) => void;
 }) {
   const hasBlocks = Array.isArray(section.content.blocks) && section.content.blocks.length > 0;
   const hasOldContent = !hasBlocks && (
@@ -2351,8 +2429,14 @@ function ContentEditor({ section, onChange, availableForms, availableBookingServ
     );
   }
 
-  return <FreestyleEditor content={section.content} onChange={onChange} externalSelectedBlockId={externalSelectedBlockId} />;
-
+return <FreestyleEditor 
+  content={section.content} 
+  onChange={onChange} 
+  externalSelectedBlockId={externalSelectedBlockId} 
+  onPickMedia={onPickMedia}
+  availableForms={availableForms}
+  availableBookingServices={availableBookingServices}
+/>;
 }
 // ==================== STYLE PANEL ====================
 
@@ -2944,6 +3028,18 @@ const BUTTON_PRESETS = [
                 </button>
               ))}
             </div>
+            {/* Im Buttons TAB nach "Stil Presets": */}
+<span style={sLbl}>Quick-Presets</span>
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 5, marginBottom: 14 }}>
+  {BUTTON_PRESETS.map(p => (
+    <button key={p.label}
+      onClick={() => setButtonConfig({ style: p.style as any, radius: p.radius, size: p.size as any })}
+      style={{ padding: '6px 4px', borderRadius: 5, fontSize: '0.68rem', fontWeight: 600, cursor: 'pointer',
+        background: '#0d1117', border: '1px solid #30363d', color: '#8b949e' }}>
+      {p.label}
+    </button>
+  ))}
+</div>
 
             {/* Ecken-Radius */}
             <span style={sLbl}>Ecken-Radius</span>
@@ -4040,7 +4136,16 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
                   </div>
                 ) : (
                   <>
-                    {rightTab === 'content' && <ContentEditor section={selectedSection} onChange={handleContentChange} availableForms={availableForms}availableBookingServices={availableBookingServices} externalSelectedBlockId={selectedBlockId} />}
+                   {rightTab === 'content' && (
+  <ContentEditor
+    section={selectedSection}
+    onChange={handleContentChange}
+    availableForms={availableForms}
+    availableBookingServices={availableBookingServices}
+    externalSelectedBlockId={selectedBlockId}
+    onPickMedia={(cb) => setMediaPicker({ onSelect: cb })}
+  />
+)}
                     {rightTab === 'style' && <StylePanel section={selectedSection} onChange={handleStylingChange} onPickMedia={(cb) => setMediaPicker({ onSelect: cb })} />}
                     {rightTab === 'layout' && <LayoutPanel section={selectedSection} onChange={handleStylingChange} deviceMode={deviceMode} />}
                     {rightTab === 'css' && <CssPanel section={selectedSection} onChange={handleStylingChange} />}

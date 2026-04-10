@@ -499,25 +499,33 @@ case 'whatsapp':
     const ws: React.CSSProperties = { textAlign: align as any, marginBottom: '0.75rem' };
 
     switch (block.type) {
-      case 'heading': {
-        const sizes: Record<string, string> = { h1: '2.5rem', h2: '1.875rem', h3: '1.375rem', h4: '1.125rem' };
-        const Tag = (block.level || 'h2') as any;
-        return <div style={ws}><Tag style={{ fontSize: sizes[block.level || 'h2'], fontWeight: 700, margin: 0 }}>{block.text}</Tag></div>;
-      }
-      case 'text':
-        return <div style={ws} dangerouslySetInnerHTML={{ __html: block.html || '' }} />;
-      case 'button':
-        return (
-          <div style={ws}>
-            <a href={block.link || '#'} style={{
-              display: 'inline-block', padding: '0.75rem 2rem', borderRadius: '0.5rem',
-              fontWeight: 600, textDecoration: 'none',
-              background: block.style === 'primary' ? (buttonStyle.backgroundColor || '#3b82f6') : block.style === 'outline' ? 'transparent' : 'rgba(0,0,0,0.06)',
-              color: block.style === 'primary' ? (buttonStyle.color || '#fff') : (buttonStyle.backgroundColor || '#3b82f6'),
-              border: block.style === 'outline' ? `2px solid ${buttonStyle.backgroundColor || '#3b82f6'}` : 'none',
-            }}>{block.text || 'Button'}</a>
-          </div>
-        );
+     case 'heading': {
+  const Tag = block.level || 'h2';
+  return (
+    <Tag style={{ 
+      fontSize: block.fontSize || undefined,
+      color: block.color || undefined,
+      fontWeight: 700, 
+      margin: 0,
+      textAlign: block.align || 'left',
+    }}>
+      {block.text}
+    </Tag>
+  );
+}
+
+case 'text':
+  return (
+    <div 
+      dangerouslySetInnerHTML={{ __html: block.html || '' }}
+      style={{ 
+        fontSize: block.fontSize || undefined,
+        color: block.color || undefined,
+        lineHeight: 1.6,
+        textAlign: block.align || 'left',
+      }} 
+    />
+  );
       case 'image':
         return (
           <div style={ws}>
