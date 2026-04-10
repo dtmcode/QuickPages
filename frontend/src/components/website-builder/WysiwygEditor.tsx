@@ -1111,23 +1111,87 @@ useEffect(() => {
             </div>
           )}
 
-          {selectedBlock.type === 'columns' && (
-            <div style={{ marginBottom: 8 }}>
-              <label style={labelStyle}>Aufteilung</label>
-              <div style={{ display: 'flex', gap: 5 }}>
-                {[{ v: '50/50', l: '50/50' }, { v: '60/40', l: '60/40' }, { v: '40/60', l: '40/60' }, { v: '70/30', l: '70/30' }].map(o => (
-                  <button key={o.v} onClick={() => updateBlock(selectedBlock.id, { split: o.v })}
-                    style={{ flex: 1, padding: '4px', borderRadius: 4, fontSize: '0.65rem', fontWeight: 600, cursor: 'pointer',
-                      background: (selectedBlock.split || '50/50') === o.v ? '#1f6feb' : '#161b22',
-                      border: `1px solid ${(selectedBlock.split || '50/50') === o.v ? '#1f6feb' : '#30363d'}`,
-                      color: (selectedBlock.split || '50/50') === o.v ? '#fff' : '#8b949e' }}>
-                    {o.l}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          {selectedBlock.type === 'feature-grid' && (
+{selectedBlock.type === 'columns' && (
+  <div>
+    <div style={{ marginBottom: 8 }}>
+      <label style={labelStyle}>Aufteilung</label>
+      <div style={{ display: 'flex', gap: 5, marginBottom: 12 }}>
+        {[{ v: '50/50', l: '50/50' }, { v: '60/40', l: '60/40' }, { v: '40/60', l: '40/60' }, { v: '70/30', l: '70/30' }].map(o => (
+          <button key={o.v} onClick={() => updateBlock(selectedBlock.id, { split: o.v })}
+            style={{ flex: 1, padding: '4px', borderRadius: 4, fontSize: '0.65rem', fontWeight: 600, cursor: 'pointer',
+              background: (selectedBlock.split || '50/50') === o.v ? '#1f6feb' : '#161b22',
+              border: `1px solid ${(selectedBlock.split || '50/50') === o.v ? '#1f6feb' : '#30363d'}`,
+              color: (selectedBlock.split || '50/50') === o.v ? '#fff' : '#8b949e' }}>
+            {o.l}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Linke Spalte */}
+    <div style={{ marginBottom: 12 }}>
+      <label style={{ ...labelStyle, color: '#58a6ff' }}>⬛ Linke Spalte</label>
+      {(selectedBlock.leftBlocks || []).map((lb: any, i: number) => (
+        <div key={lb.id || i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px', marginBottom: 3, background: '#0d1117', border: '1px solid #21262d', borderRadius: 5 }}>
+          <span style={{ fontSize: '0.75rem', flex: 1, color: '#c9d1d9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {lb.text || lb.html?.replace(/<[^>]*>/g, '') || lb.type}
+          </span>
+          <span style={{ fontSize: '0.6rem', color: '#6e7681' }}>{lb.type}</span>
+          <button onClick={() => updateBlock(selectedBlock.id, { leftBlocks: (selectedBlock.leftBlocks || []).filter((_: any, j: number) => j !== i) })}
+            style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer', fontSize: '0.7rem' }}>✕</button>
+        </div>
+      ))}
+      {/* Inline Text/Heading hinzufügen */}
+      <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+        <input type="text" placeholder="Text eingeben..."
+          style={{ ...inputStyle, flex: 1, fontSize: '0.72rem' }}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && (e.target as HTMLInputElement).value) {
+              const val = (e.target as HTMLInputElement).value;
+              updateBlock(selectedBlock.id, { leftBlocks: [...(selectedBlock.leftBlocks || []), { id: generateBlockId(), type: 'text', html: `<p>${val}</p>`, align: 'left', order: (selectedBlock.leftBlocks || []).length }] });
+              (e.target as HTMLInputElement).value = '';
+            }
+          }} />
+        <button onClick={() => updateBlock(selectedBlock.id, { leftBlocks: [...(selectedBlock.leftBlocks || []), { id: generateBlockId(), type: 'image', url: '', alt: '', width: '100%', align: 'center', order: (selectedBlock.leftBlocks || []).length }] })}
+          style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 4, color: '#8b949e', padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer' }}>🖼️</button>
+        <button onClick={() => updateBlock(selectedBlock.id, { leftBlocks: [...(selectedBlock.leftBlocks || []), { id: generateBlockId(), type: 'heading', text: 'Überschrift', level: 'h3', align: 'left', order: (selectedBlock.leftBlocks || []).length }] })}
+          style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 4, color: '#8b949e', padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer' }}>H</button>
+      </div>
+    </div>
+
+    {/* Rechte Spalte */}
+    <div>
+      <label style={{ ...labelStyle, color: '#58a6ff' }}>⬛ Rechte Spalte</label>
+      {(selectedBlock.rightBlocks || []).map((rb: any, i: number) => (
+        <div key={rb.id || i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px', marginBottom: 3, background: '#0d1117', border: '1px solid #21262d', borderRadius: 5 }}>
+          <span style={{ fontSize: '0.75rem', flex: 1, color: '#c9d1d9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {rb.text || rb.html?.replace(/<[^>]*>/g, '') || rb.type}
+          </span>
+          <span style={{ fontSize: '0.6rem', color: '#6e7681' }}>{rb.type}</span>
+          <button onClick={() => updateBlock(selectedBlock.id, { rightBlocks: (selectedBlock.rightBlocks || []).filter((_: any, j: number) => j !== i) })}
+            style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer', fontSize: '0.7rem' }}>✕</button>
+        </div>
+      ))}
+      <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+        <input type="text" placeholder="Text eingeben..."
+          style={{ ...inputStyle, flex: 1, fontSize: '0.72rem' }}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && (e.target as HTMLInputElement).value) {
+              const val = (e.target as HTMLInputElement).value;
+              updateBlock(selectedBlock.id, { rightBlocks: [...(selectedBlock.rightBlocks || []), { id: generateBlockId(), type: 'text', html: `<p>${val}</p>`, align: 'left', order: (selectedBlock.rightBlocks || []).length }] });
+              (e.target as HTMLInputElement).value = '';
+            }
+          }} />
+        <button onClick={() => updateBlock(selectedBlock.id, { rightBlocks: [...(selectedBlock.rightBlocks || []), { id: generateBlockId(), type: 'image', url: '', alt: '', width: '100%', align: 'center', order: (selectedBlock.rightBlocks || []).length }] })}
+          style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 4, color: '#8b949e', padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer' }}>🖼️</button>
+        <button onClick={() => updateBlock(selectedBlock.id, { rightBlocks: [...(selectedBlock.rightBlocks || []), { id: generateBlockId(), type: 'heading', text: 'Überschrift', level: 'h3', align: 'left', order: (selectedBlock.rightBlocks || []).length }] })}
+          style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 4, color: '#8b949e', padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer' }}>H</button>
+      </div>
+    </div>
+  </div>
+   )}
+          
+ {selectedBlock.type === 'feature-grid' && (
   <div>
     <div style={{ marginBottom: 8 }}>
       <label style={labelStyle}>Spalten</label>
@@ -1673,14 +1737,13 @@ function FloatingBlockToolbar({ block, onUpdate, onDelete, onDuplicate }: {
 function InlineAddBlock({ sectionId, onAdd }: { sectionId: string; onAdd: (sectionId: string, type: string) => void }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-
   const filtered = FREESTYLE_BLOCK_TYPES.filter(b =>
     !search || b.label.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div style={{ position: 'relative', textAlign: 'center', marginTop: '0.75rem' }}>
-      {!open ? (
+    <>
+      <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
         <button
           onClick={e => { e.stopPropagation(); setOpen(true); }}
           style={{
@@ -1693,55 +1756,152 @@ function InlineAddBlock({ sectionId, onAdd }: { sectionId: string; onAdd: (secti
         >
           + Element hinzufügen
         </button>
-      ) : (
+      </div>
+
+      {open && (
         <div
-          onClick={e => e.stopPropagation()}
           style={{
-            background: '#1c2128', border: '1px solid #30363d', borderRadius: 10,
-            padding: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-            maxHeight: 280, overflowY: 'auto',
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)',
+            zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
+          onClick={e => { if (e.target === e.currentTarget) { setOpen(false); setSearch(''); } }}
         >
-          <input
-            autoFocus
-            type="text"
-            placeholder="🔍 Suchen..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            onClick={e => e.stopPropagation()}
-            style={{
-              width: '100%', background: '#0d1117', border: '1px solid #30363d',
-              borderRadius: 6, color: '#c9d1d9', padding: '5px 8px', fontSize: '0.75rem',
-              outline: 'none', marginBottom: 8, boxSizing: 'border-box',
-            }}
-          />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 5 }}>
-            {filtered.map(bt => (
-              <button
-                key={bt.type}
-                onClick={e => { e.stopPropagation(); onAdd(sectionId, bt.type); setOpen(false); setSearch(''); }}
-                style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-                  padding: '6px 3px', borderRadius: 6, cursor: 'pointer',
-                  background: bt.category === 'komplex' ? 'rgba(88,166,255,0.06)' : '#0d1117',
-                  border: `1px solid ${bt.category === 'komplex' ? 'rgba(88,166,255,0.2)' : '#21262d'}`,
-                  color: '#c9d1d9', fontSize: '0.62rem', fontWeight: 600,
-                }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = '#58a6ff'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = bt.category === 'komplex' ? 'rgba(88,166,255,0.2)' : '#21262d'}
-              >
-                <span style={{ fontSize: '0.9rem' }}>{bt.icon}</span>
-                <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{bt.label}</span>
-              </button>
-            ))}
+          <div style={{
+            background: '#1c2128', border: '1px solid #30363d', borderRadius: 12,
+            padding: 16, width: 480, maxWidth: '95vw', maxHeight: '80vh',
+            display: 'flex', flexDirection: 'column', boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#e6edf3', margin: 0 }}>Element hinzufügen</p>
+              <button onClick={() => { setOpen(false); setSearch(''); }}
+                style={{ background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: '1.2rem', lineHeight: 1 }}>✕</button>
+            </div>
+            <input
+              autoFocus
+              type="text"
+              placeholder="🔍 Suchen..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{
+                width: '100%', background: '#0d1117', border: '1px solid #30363d',
+                borderRadius: 6, color: '#c9d1d9', padding: '8px 12px', fontSize: '0.8rem',
+                outline: 'none', marginBottom: 12, boxSizing: 'border-box',
+              }}
+            />
+            {!search && (
+              <>
+                <p style={{ fontSize: '0.65rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Basis</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 12 }}>
+                  {FREESTYLE_BLOCK_TYPES.filter(bt => bt.category === 'basis').map(bt => (
+                    <button key={bt.type}
+                      onClick={() => { onAdd(sectionId, bt.type); setOpen(false); setSearch(''); }}
+                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, cursor: 'pointer', background: '#0d1117', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.7rem', fontWeight: 600 }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#58a6ff'; e.currentTarget.style.background = '#161b22'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#21262d'; e.currentTarget.style.background = '#0d1117'; }}>
+                      <span style={{ fontSize: '1.25rem' }}>{bt.icon}</span>
+                      <span>{bt.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <p style={{ fontSize: '0.65rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Komplex</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, overflowY: 'auto' }}>
+                  {FREESTYLE_BLOCK_TYPES.filter(bt => bt.category === 'komplex').map(bt => (
+                    <button key={bt.type}
+                      onClick={() => { onAdd(sectionId, bt.type); setOpen(false); setSearch(''); }}
+                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, cursor: 'pointer', background: 'rgba(88,166,255,0.04)', border: '1px solid rgba(88,166,255,0.15)', color: '#c9d1d9', fontSize: '0.7rem', fontWeight: 600 }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#58a6ff'; e.currentTarget.style.background = 'rgba(88,166,255,0.12)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(88,166,255,0.15)'; e.currentTarget.style.background = 'rgba(88,166,255,0.04)'; }}>
+                      <span style={{ fontSize: '1.25rem' }}>{bt.icon}</span>
+                      <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{bt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+            {search && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, overflowY: 'auto' }}>
+                {filtered.map(bt => (
+                  <button key={bt.type}
+                    onClick={() => { onAdd(sectionId, bt.type); setOpen(false); setSearch(''); }}
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, cursor: 'pointer', background: '#0d1117', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.7rem', fontWeight: 600 }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#58a6ff'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#21262d'; }}>
+                    <span style={{ fontSize: '1.25rem' }}>{bt.icon}</span>
+                    <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{bt.label}</span>
+                  </button>
+                ))}
+                {filtered.length === 0 && <p style={{ color: '#6e7681', fontSize: '0.75rem', gridColumn: 'span 4', textAlign: 'center', padding: '1rem 0' }}>Nichts gefunden</p>}
+              </div>
+            )}
           </div>
-          <button
-            onClick={e => { e.stopPropagation(); setOpen(false); setSearch(''); }}
-            style={{ width: '100%', marginTop: 8, background: 'transparent', border: '1px solid #30363d', borderRadius: 6, color: '#6e7681', padding: '5px', fontSize: '0.72rem', cursor: 'pointer' }}
-          >
-            Abbrechen
-          </button>
         </div>
+      )}
+    </>
+  );
+}
+// ==================== FLOATING ITEM EDITOR ====================
+function FloatingItemEditor({ block, itemIndex, onUpdate, onClose }: {
+  block: any;
+  itemIndex: number;
+  onUpdate: (updates: any) => void;
+  onClose: () => void;
+}) {
+  const item = (block.items || [])[itemIndex];
+  if (!item) return null;
+
+  const inp: React.CSSProperties = {
+    width: '100%', background: '#0d1117', border: '1px solid #30363d',
+    borderRadius: 5, color: '#c9d1d9', padding: '5px 8px', fontSize: '0.72rem',
+    outline: 'none', boxSizing: 'border-box', marginBottom: 4,
+  };
+
+  const updateItem = (field: string, val: any) => {
+    const items = [...(block.items || [])];
+    items[itemIndex] = { ...items[itemIndex], [field]: val };
+    onUpdate({ items });
+  };
+
+  const fields: Record<string, string[]> = {
+    'feature-grid': ['icon', 'title', 'description', 'price'],
+    'stat-grid': ['value', 'label', 'description'],
+    'testimonial-grid': ['name', 'role', 'text', 'image'],
+    'team-grid': ['name', 'role', 'bio', 'image'],
+    'pricing-grid': ['title', 'price', 'interval', 'buttonText'],
+    'faq-list': ['question', 'answer'],
+  };
+  const fieldList = fields[block.type] || [];
+
+  return (
+    <div
+      onClick={e => e.stopPropagation()}
+      style={{
+        position: 'absolute', top: -8, left: '50%', transform: 'translateX(-50%)',
+        zIndex: 200, background: '#1c2128', border: '1px solid #58a6ff',
+        borderRadius: 10, padding: 10, minWidth: 220, maxWidth: 280,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <span style={{ fontSize: '0.68rem', color: '#58a6ff', fontWeight: 700 }}>✎ Item #{itemIndex + 1}</span>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: '0.9rem', lineHeight: 1 }}>✕</button>
+      </div>
+      {fieldList.map(f => (
+        f === 'answer' || f === 'bio' || f === 'text' ? (
+          <textarea key={f} placeholder={f} value={item[f] || ''}
+            onChange={e => updateItem(f, e.target.value)}
+            rows={2} style={{ ...inp, resize: 'vertical' }} />
+        ) : (
+          <input key={f} type="text" placeholder={f} value={item[f] || ''}
+            onChange={e => updateItem(f, e.target.value)}
+            style={inp} />
+        )
+      ))}
+      {block.type === 'pricing-grid' && (
+        <button
+          onClick={() => { const items = [...(block.items || [])]; items[itemIndex] = { ...items[itemIndex], highlighted: !items[itemIndex].highlighted }; onUpdate({ items }); }}
+          style={{ width: '100%', padding: '4px', borderRadius: 4, fontSize: '0.65rem', fontWeight: 600, cursor: 'pointer', background: item.highlighted ? '#1f6feb' : '#161b22', border: `1px solid ${item.highlighted ? '#1f6feb' : '#30363d'}`, color: item.highlighted ? '#fff' : '#8b949e' }}>
+          {item.highlighted ? '⭐ Highlighted' : 'Als Highlighted markieren'}
+        </button>
       )}
     </div>
   );
@@ -1757,6 +1917,7 @@ function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMo
   onAddBlock?: (sectionId: string, blockType: string) => void;
 }) {
   const { type, content, styling } = section;
+
   const primary = settings?.colors?.primary || '#3b82f6';
   const btnBg = styling?.buttonColor || primary;
 const btnText = styling?.buttonTextColor || '#ffffff';
@@ -1779,7 +1940,8 @@ const btnText = styling?.buttonTextColor || '#ffffff';
   const innerWidth = styling?.containerWidth === 'narrow' ? { maxWidth: '768px', margin: '0 auto' }
     : styling?.containerWidth === 'full' ? {}
       : { maxWidth: '1100px', margin: '0 auto' };
-  
+  const [selectedItemKey, setSelectedItemKey] = useState<string | null>(null);
+
   const renderBlock = (block: any): React.ReactNode => {
   const alignStyle: React.CSSProperties = {
     textAlign: (block.align || 'center') as any,
@@ -1880,30 +2042,60 @@ case 'text':
           </div>
         </div>
       );
-    case 'columns':
-      return (
-        <div key={block.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.75rem' }}>
-          <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: '0.5rem', padding: '1rem', minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '0.75rem', border: '1px dashed rgba(0,0,0,0.15)' }}>Linke Spalte</div>
-          <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: '0.5rem', padding: '1rem', minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '0.75rem', border: '1px dashed rgba(0,0,0,0.15)' }}>Rechte Spalte</div>
-        </div>
-      );
+case 'columns': {
+  const splitMap: Record<string, string> = { '50/50': '1fr 1fr', '60/40': '3fr 2fr', '40/60': '2fr 3fr', '70/30': '7fr 3fr' };
+  const cols = splitMap[block.split || '50/50'] || '1fr 1fr';
+  return (
+    <div key={block.id} style={{ display: 'grid', gridTemplateColumns: cols, gap: '1rem', marginBottom: '0.75rem' }}>
+      <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: '0.5rem', padding: '0.75rem', minHeight: 60, border: '1px dashed rgba(0,0,0,0.12)' }}>
+        {(block.leftBlocks || []).length > 0
+          ? (block.leftBlocks || []).map((b: any) => renderBlock(b))
+          : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'rgba(0,0,0,0.25)', fontSize: '0.72rem' }}>Linke Spalte</div>
+        }
+      </div>
+      <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: '0.5rem', padding: '0.75rem', minHeight: 60, border: '1px dashed rgba(0,0,0,0.12)' }}>
+        {(block.rightBlocks || []).length > 0
+          ? (block.rightBlocks || []).map((b: any) => renderBlock(b))
+          : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'rgba(0,0,0,0.25)', fontSize: '0.72rem' }}>Rechte Spalte</div>
+        }
+      </div>
+    </div>
+  );
+}
 
     // ── KOMPLEX ──
-    case 'feature-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 3}, 1fr)`, gap: '1rem' }}>
-            {(block.items || []).map((item: any, i: number) => (
-              <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', textAlign: 'center' }}>
+case 'feature-grid':
+  return (
+    <div key={block.id} style={{ marginBottom: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 3}, 1fr)`, gap: '1rem' }}>
+        {(block.items || []).map((item: any, i: number) => {
+          const itemKey = `${block.id}:${i}`;
+          const isItemSelected = selectedItemKey === itemKey;
+          return (
+            <div key={i} style={{ position: 'relative' }}
+              onClick={e => { e.stopPropagation(); setSelectedItemKey(isItemSelected ? null : itemKey); }}>
+              {isItemSelected && onBlockUpdate && (
+                <FloatingItemEditor
+                  block={block}
+                  itemIndex={i}
+                  onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+                  onClose={() => setSelectedItemKey(null)}
+                />
+              )}
+              <div style={{ padding: '1.25rem', borderRadius: '0.75rem', background: isItemSelected ? 'rgba(88,166,255,0.1)' : 'rgba(0,0,0,0.05)', textAlign: 'center', outline: isItemSelected ? '2px solid #58a6ff' : '2px solid transparent', cursor: 'pointer', transition: 'all 0.1s' }}
+                onMouseEnter={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px dashed rgba(88,166,255,0.3)'; }}
+                onMouseLeave={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px solid transparent'; }}>
                 {item.icon && <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>}
                 <h3 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.95rem' }}>{item.title}</h3>
                 <p style={{ fontSize: '0.8rem', opacity: 0.7, margin: 0 }}>{item.description}</p>
                 {item.price && <p style={{ fontWeight: 700, color: primary, marginTop: '0.5rem', fontSize: '0.9rem' }}>{item.price}</p>}
               </div>
-            ))}
-          </div>
-        </div>
-      );
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 
     case 'stat-grid':
       return (
@@ -1920,12 +2112,24 @@ case 'text':
         </div>
       );
 
-    case 'testimonial-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 2}, 1fr)`, gap: '1rem' }}>
-            {(block.items || []).map((item: any, i: number) => (
-              <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', fontStyle: 'italic' }}>
+case 'testimonial-grid':
+  return (
+    <div key={block.id} style={{ marginBottom: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 2}, 1fr)`, gap: '1rem' }}>
+        {(block.items || []).map((item: any, i: number) => {
+          const itemKey = `${block.id}:${i}`;
+          const isItemSelected = selectedItemKey === itemKey;
+          return (
+            <div key={i} style={{ position: 'relative' }}
+              onClick={e => { e.stopPropagation(); setSelectedItemKey(isItemSelected ? null : itemKey); }}>
+              {isItemSelected && onBlockUpdate && (
+                <FloatingItemEditor block={block} itemIndex={i}
+                  onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+                  onClose={() => setSelectedItemKey(null)} />
+              )}
+              <div style={{ padding: '1.25rem', borderRadius: '0.75rem', background: isItemSelected ? 'rgba(88,166,255,0.1)' : 'rgba(0,0,0,0.05)', fontStyle: 'italic', outline: isItemSelected ? '2px solid #58a6ff' : '2px solid transparent', cursor: 'pointer' }}
+                onMouseEnter={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px dashed rgba(88,166,255,0.3)'; }}
+                onMouseLeave={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px solid transparent'; }}>
                 <p style={{ margin: '0 0 0.75rem', fontSize: '0.875rem' }}>„{item.text}"</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   {item.image && <div style={{ width: 36, height: 36, borderRadius: '50%', background: primary, overflow: 'hidden', flexShrink: 0 }}><img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
@@ -1935,11 +2139,12 @@ case 'text':
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      );
-
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
     case 'team-grid':
       return (
         <div key={block.id} style={{ marginBottom: '1rem' }}>
