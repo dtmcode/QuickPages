@@ -53,6 +53,12 @@ let PublicController = class PublicController {
     async getCategories(tenantSlug) {
         return await this.publicService.getCategories(tenantSlug);
     }
+    async getPublicForms(tenantSlug) {
+        return (await this.publicService.getPublicForms(tenantSlug));
+    }
+    async getPublicBookingServices(tenantSlug) {
+        return (await this.publicService.getPublicBookingServices(tenantSlug));
+    }
     async getWbHomepage(tenantSlug) {
         const templateId = await this.getDefaultTemplateId(tenantSlug);
         if (!templateId)
@@ -185,6 +191,20 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PublicController.prototype, "getCategories", null);
+__decorate([
+    (0, common_1.Get)('forms'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getPublicForms", null);
+__decorate([
+    (0, common_1.Get)('booking/services'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getPublicBookingServices", null);
 __decorate([
     (0, common_1.Get)('wb/homepage'),
     __param(0, (0, common_1.Param)('tenant')),

@@ -1481,44 +1481,6 @@ function ElementToggleBar({
     </div>
   );
 }
-// ==================== LIST EDITOR (außerhalb ContentEditor!) ====================
-
-function ListEditor({ field, schema, content, update, inputStyle, labelStyle, wrapStyle }: {
-  field: string;
-  schema: { key: string; label: string }[];
-  content: SectionContent;
-  update: (key: string, val: any) => void;
-  inputStyle: React.CSSProperties;
-  labelStyle: React.CSSProperties;
-  wrapStyle: React.CSSProperties;
-}) {
-  const items: any[] = content[field] || [];
-  return (
-    <div style={wrapStyle}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <label style={labelStyle}>Items ({items.length})</label>
-        <button onClick={() => update(field, [...items, Object.fromEntries(schema.map(f => [f.key, '']))])}
-          style={{ fontSize: '0.72rem', color: '#58a6ff', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
-          + Hinzufügen
-        </button>
-      </div>
-      {items.map((item: any, i: number) => (
-        <div key={i} style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 6, padding: '10px', marginBottom: 6 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-            <span style={{ fontSize: '0.68rem', color: '#6e7681', fontWeight: 600 }}># {i + 1}</span>
-            <button onClick={() => update(field, items.filter((_: any, j: number) => j !== i))}
-              style={{ fontSize: '0.68rem', color: '#f85149', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
-          </div>
-          {schema.map(f => (
-            <input key={f.key} type="text" placeholder={f.label} value={item[f.key] || ''}
-              onChange={e => { const u = [...items]; u[i] = { ...u[i], [f.key]: e.target.value }; update(field, u); }}
-              style={{ ...inputStyle, marginBottom: 4, fontSize: '0.75rem' }} />
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-}
 // ==================== CONTENT EDITOR ====================
 
 function ContentEditor({ section, onChange, availableForms, availableBookingServices }: {
@@ -1588,13 +1550,13 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'image', label: 'Bild', icon: '🖼️', defaultOn: false },
           { key: 'trustbar', label: 'Trust Bar', icon: '⭐', defaultOn: false },
         ]} />
-      {Field("Überschrift", "heading")}
-{(content._optional?.subheading ?? true) && Field("Unterüberschrift", "subheading", true, 3)}
-{(content._optional?.badge ?? false) && Field("Badge Text (z.B. 🔥 Neu)", "badge")}
-{(content._optional?.button ?? true) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
-{(content._optional?.secondButton ?? false) && <>{Field("2. Button Text", "button2Text")}{Field("2. Button Link", "button2Link")}</>}
-{(content._optional?.image ?? false) && Field("Bild URL", "heroImage")}
-{(content._optional?.trustbar ?? false) && Field("Trust Text", "trustText")}
+        <Field label="Überschrift" field="heading" />
+        {(content._optional?.subheading ?? true) && <Field label="Unterüberschrift" field="subheading" multi rows={3} />}
+        {(content._optional?.badge ?? false) && <Field label="Badge Text (z.B. 🔥 Neu)" field="badge" />}
+        {(content._optional?.button ?? true) && <><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
+        {(content._optional?.secondButton ?? false) && <><Field label="2. Button Text" field="button2Text" /><Field label="2. Button Link" field="button2Link" /></>}
+        {(content._optional?.image ?? false) && <Field label="Bild URL" field="heroImage" />}
+        {(content._optional?.trustbar ?? false) && <Field label="Trust Text" field="trustText" />}
       </>
     );
 
@@ -1607,12 +1569,11 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'secondButton', label: '2. Button', icon: '🔘', defaultOn: false },
           { key: 'guarantee', label: 'Garantie-Text', icon: '🛡️', defaultOn: false },
         ]} />
-       {Field("Überschrift", "heading")}
-{(content._optional?.subheading ?? true) && Field("Unterüberschrift", "subheading", true, 2)}
-{(content._optional?.button ?? true) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
-{(content._optional?.secondButton ?? false) && <>{Field("2. Button Text", "button2Text")}{Field("2. Button Link", "button2Link")}</>}
-{(content._optional?.guarantee ?? false) && Field("Garantie Text", "guaranteeText")}
-
+        <Field label="Überschrift" field="heading" />
+        {(content._optional?.subheading ?? true) && <Field label="Unterüberschrift" field="subheading" multi rows={2} />}
+        {(content._optional?.button ?? true) && <><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
+        {(content._optional?.secondButton ?? false) && <><Field label="2. Button Text" field="button2Text" /><Field label="2. Button Link" field="button2Link" /></>}
+        {(content._optional?.guarantee ?? false) && <Field label="Garantie Text" field="guaranteeText" />}
       </>
     );
 
@@ -1626,11 +1587,12 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'checklist', label: 'Checkliste', icon: '✅', defaultOn: false },
           { key: 'signature', label: 'Unterschrift', icon: '✍️', defaultOn: false },
         ]} />
-        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
-{Field("Text (HTML erlaubt)", "text", true, 8)}
-{(content._optional?.image ?? false) && Field("Bild URL", "sideImage")}
-{(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
-{(content._optional?.signature ?? false) && <>{Field("Name / Unterschrift", "signatureName")}{Field("Titel", "signatureRole")}</>}
+        {(content._optional?.heading ?? true) && <Field label="Überschrift" field="heading" />}
+        <Field label="Text (HTML erlaubt)" field="text" multi rows={8} />
+        {(content._optional?.image ?? false) && <Field label="Bild URL" field="sideImage" />}
+        {(content._optional?.button ?? false) && <><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
+        {(content._optional?.checklist ?? false) && <ListEditor field="checklistItems" schema={[{ key: 'text', label: 'Punkt' }]} />}
+        {(content._optional?.signature ?? false) && <><Field label="Name / Unterschrift" field="signatureName" /><Field label="Titel" field="signatureRole" /></>}
       </>
     );
 
@@ -1642,9 +1604,8 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
           { key: 'link', label: 'Link pro Item', icon: '🔗', defaultOn: false },
         ]} />
-       {Field("Überschrift", "heading")}
-{(content._optional?.subheading ?? false) && Field("Unterüberschrift", "subheading", true, 2)}
-{(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+        <Field label="Überschrift" field="heading" />
+        {(content._optional?.subheading ?? false) && <Field label="Unterüberschrift" field="subheading" multi rows={2} />}
         <ListEditor field="items" schema={[
           { key: 'icon', label: 'Icon (Emoji)' },
           { key: 'title', label: 'Titel' },
@@ -1652,7 +1613,7 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           ...(type === 'services' ? [{ key: 'price', label: 'Preis' }] : []),
           ...((content._optional?.link ?? false) ? [{ key: 'linkUrl', label: 'Link URL' }, { key: 'linkText', label: 'Link Text' }] : []),
         ]} />
-        {(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+        {(content._optional?.button ?? false) && <><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
       </>
     );
 
@@ -1664,11 +1625,11 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'platform', label: 'Plattform', icon: '🌐', defaultOn: false },
           { key: 'totalRating', label: 'Gesamt-Bewertung', icon: '📊', defaultOn: false },
         ]} />
-      {Field("Überschrift", "heading")}
-{(content._optional?.totalRating ?? false) && <>
-  {Field("Gesamt-Bewertung (z.B. 4.9)", "ratingValue")}
-  {Field("Anzahl Bewertungen", "ratingCount")}
-</>}
+        <Field label="Überschrift" field="heading" />
+        {(content._optional?.totalRating ?? false) && <>
+          <Field label="Gesamt-Bewertung (z.B. 4.9)" field="ratingValue" />
+          <Field label="Anzahl Bewertungen" field="ratingCount" />
+        </>}
         <ListEditor field="items" schema={[
           { key: 'title', label: 'Name' },
           { key: 'subtitle', label: 'Rolle / Firma' },
@@ -1687,8 +1648,7 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'badge', label: 'Badges', icon: '🏷️', defaultOn: false },
           { key: 'guarantee', label: 'Garantie', icon: '🛡️', defaultOn: false },
         ]} />
-       {Field("Überschrift", "heading")}
-{(content._optional?.guarantee ?? false) && Field("Garantie Text", "guaranteeText")}
+        <Field label="Überschrift" field="heading" />
         <ListEditor field="items" schema={[
           { key: 'title', label: 'Paket-Name' },
           { key: 'price', label: 'Preis' },
@@ -1730,14 +1690,14 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
     )}
   </div>
 )}
-      {Field("Überschrift", "heading")}
-{Field("Unterüberschrift", "subheading", true, 2)}
-{Field("Button Text", "buttonText")}
-{(content._optional?.phone ?? false) && Field("Telefonnummer", "contactPhone")}
-{(content._optional?.email ?? false) && Field("E-Mail Adresse", "contactEmail")}
-{(content._optional?.address ?? false) && Field("Adresse", "contactAddress")}
-{(content._optional?.hours ?? false) && Field("Öffnungszeiten", "openingHours", true, 3)}
-{(content._optional?.gdpr ?? true) && Field("DSGVO Text", "gdprText")}
+        <Field label="Überschrift" field="heading" />
+        <Field label="Unterüberschrift" field="subheading" multi rows={2} />
+        <Field label="Button Text" field="buttonText" />
+        {(content._optional?.phone ?? false) && <Field label="Telefonnummer" field="contactPhone" />}
+        {(content._optional?.email ?? false) && <Field label="E-Mail Adresse" field="contactEmail" />}
+        {(content._optional?.address ?? false) && <Field label="Adresse" field="contactAddress" />}
+        {(content._optional?.hours ?? false) && <Field label="Öffnungszeiten" field="openingHours" multi rows={3} />}
+        {(content._optional?.gdpr ?? true) && <Field label="DSGVO Text" field="gdprText" />}
       </>
     );
  case 'stats':
@@ -1749,16 +1709,14 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'icon', label: 'Icon pro Item', icon: '🎨', defaultOn: false },
           { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
         ]} />
-       {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
-
+        {(content._optional?.heading ?? true) && <Field label="Überschrift" field="heading" />}
         <ListEditor field="items" schema={[
           { key: 'value', label: 'Wert (z.B. 1.000+)' },
           { key: 'title', label: 'Bezeichnung' },
           ...((content._optional?.description ?? true) ? [{ key: 'description', label: 'Beschreibung' }] : []),
           ...((content._optional?.icon ?? false) ? [{ key: 'icon', label: 'Icon (Emoji)' }] : []),
         ]} />
-       {(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
-
+        {(content._optional?.button ?? false) && <><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
       </>
     );
 
@@ -1772,8 +1730,7 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'social', label: 'Social Links', icon: '🌐', defaultOn: false },
           { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
         ]} />
-        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
-
+        {(content._optional?.heading ?? true) && <Field label="Überschrift" field="heading" />}
         <ListEditor field="items" schema={[
           { key: 'title', label: 'Name' },
           { key: 'subtitle', label: 'Position / Rolle' },
@@ -1781,8 +1738,7 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           ...((content._optional?.image ?? true) ? [{ key: 'image', label: 'Foto URL' }] : []),
           ...((content._optional?.social ?? false) ? [{ key: 'linkedin', label: 'LinkedIn URL' }, { key: 'twitter', label: 'Twitter URL' }] : []),
         ]} />
-       {(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
-
+        {(content._optional?.button ?? false) && <><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
       </>
     );
 
@@ -1795,14 +1751,13 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'lightbox', label: 'Lightbox', icon: '🔍', defaultOn: false },
           { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
         ]} />
-        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
-
+        {(content._optional?.heading ?? true) && <Field label="Überschrift" field="heading" />}
         <ListEditor field="images" schema={[
           { key: 'url', label: 'Bild URL' },
           { key: 'alt', label: 'Alt-Text' },
           ...((content._optional?.caption ?? false) ? [{ key: 'caption', label: 'Bildunterschrift' }] : []),
         ]} />
-        {(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+        {(content._optional?.button ?? false) && <><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
       </>
     );
 
@@ -1815,14 +1770,14 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
           { key: 'categories', label: 'Kategorien', icon: '🗂️', defaultOn: false },
         ]} />
-        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+        {(content._optional?.heading ?? true) && <Field label="Überschrift" field="heading" />}
         {(content._optional?.subheading ?? false) && <Field label="Unterüberschrift" field="subheading" multi rows={2} />}
         <ListEditor field="items" schema={[
           { key: 'title', label: 'Frage' },
           { key: 'description', label: 'Antwort' },
           ...((content._optional?.categories ?? false) ? [{ key: 'category', label: 'Kategorie' }] : []),
         ]} />
-        {(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+        {(content._optional?.button ?? false) && <><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
       </>
     );
 
@@ -1835,11 +1790,11 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
           { key: 'autoplay', label: 'Autoplay', icon: '▶️', defaultOn: false },
         ]} />
-        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+        {(content._optional?.heading ?? true) && <Field label="Überschrift" field="heading" />}
         <Field label="Video URL (YouTube/Vimeo/MP4)" field="videoUrl" />
         <Field label="Poster Bild URL" field="videoPoster" />
         {(content._optional?.description ?? false) && <Field label="Beschreibung" field="text" multi rows={3} />}
-        {(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+        {(content._optional?.button ?? false) && <><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
       </>
     );
 
@@ -1898,7 +1853,7 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
             { key: 'name', label: 'Service Name' },
             ...((content._optional?.duration ?? false) ? [{ key: 'duration', label: 'Dauer (z.B. 60 Min)' }] : []),
             ...((content._optional?.price ?? false) ? [{ key: 'price', label: 'Preis' }] : []),
-          ]} content={content} update={update} inputStyle={inputStyle} labelStyle={labelStyle} wrapStyle={wrapStyle} />
+          ]} />
         )}
       </>
     );
@@ -1913,7 +1868,7 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'phone', label: 'Telefon', icon: '📞', defaultOn: false },
           { key: 'directions', label: 'Routenplaner Button', icon: '🧭', defaultOn: false },
         ]} />
-        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+        {(content._optional?.heading ?? true) && <Field label="Überschrift" field="heading" />}
         {(content._optional?.address ?? true) && <Field label="Adresse (Text)" field="address" />}
         <Field label="Google Maps Embed URL" field="embedUrl" />
         {(content._optional?.hours ?? false) && <Field label="Öffnungszeiten" field="openingHours" multi rows={4} />}
@@ -1931,11 +1886,11 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'button', label: 'Button', icon: '🔘', defaultOn: false },
           { key: 'expiredText', label: 'Abgelaufen-Text', icon: '⏰', defaultOn: false },
         ]} />
-       {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
-{Field("Zieldatum (YYYY-MM-DD)", "targetDate")}
-{(content._optional?.subtext ?? true) && Field("Beschreibung", "text")}
-{(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
-{(content._optional?.expiredText ?? false) && Field("Text wenn abgelaufen", "expiredText")}
+        {(content._optional?.heading ?? true) && <Field label="Überschrift" field="heading" />}
+        <Field label="Zieldatum (YYYY-MM-DD)" field="targetDate" />
+        {(content._optional?.subtext ?? true) && <Field label="Beschreibung" field="text" />}
+        {(content._optional?.button ?? false) && <><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
+        {(content._optional?.expiredText ?? false) && <Field label="Text wenn abgelaufen" field="expiredText" />}
       </>
     );
 
@@ -1947,8 +1902,8 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'followerCount', label: 'Follower-Anzahl', icon: '👥', defaultOn: false },
           { key: 'description', label: 'Beschreibung', icon: '📝', defaultOn: false },
         ]} />
-       {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
-{(content._optional?.description ?? false) && Field("Beschreibung", "text", true, 2)}
+        {(content._optional?.heading ?? true) && <Field label="Überschrift" field="heading" />}
+        {(content._optional?.description ?? false) && <Field label="Beschreibung" field="text" multi rows={2} />}
         <ListEditor field="links" schema={[
           { key: 'platform', label: 'Plattform' },
           { key: 'url', label: 'URL' },
@@ -1967,15 +1922,14 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'category', label: 'Kategorie-Filter', icon: '🗂️', defaultOn: false },
           { key: 'author', label: 'Autor anzeigen', icon: '👤', defaultOn: false },
         ]} />
-        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+        {(content._optional?.heading ?? true) && <Field label="Überschrift" field="heading" />}
         <div style={wrapStyle}>
           <label style={labelStyle}>Anzahl Posts</label>
           <select value={content.count || 3} onChange={e => update('count', Number(e.target.value))} style={{ ...inputStyle, width: '100%' }}>
             {[3, 6, 9, 12].map(n => <option key={n} value={n}>{n} Posts</option>)}
           </select>
         </div>
-       {(content._optional?.button ?? false) && <>{Field("Button Text (z.B. Alle Beiträge)", "buttonText")}{Field("Button Link", "buttonLink")}</>}
-
+        {(content._optional?.button ?? false) && <><Field label="Button Text (z.B. Alle Beiträge)" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
       </>
     );
 
@@ -1986,8 +1940,8 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: false },
           { key: 'description', label: 'Beschreibung', icon: '📝', defaultOn: false },
         ]} />
-       {(content._optional?.heading ?? false) && Field("Überschrift", "heading")}
-{(content._optional?.description ?? false) && Field("Beschreibung", "text", true, 2)}
+        {(content._optional?.heading ?? false) && <Field label="Überschrift" field="heading" />}
+        {(content._optional?.description ?? false) && <Field label="Beschreibung" field="text" multi rows={2} />}
         <div style={wrapStyle}>
           <label style={labelStyle}>HTML Code</label>
           <textarea value={content.html || ''} onChange={e => update('html', e.target.value)} rows={14} spellCheck={false}
@@ -2005,8 +1959,7 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'description', label: 'Beschreibung unten', icon: '📝', defaultOn: false },
           { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
         ]} />
-       {(content._optional?.heading ?? false) && Field("Überschrift", "heading")}
-
+        {(content._optional?.heading ?? false) && <Field label="Überschrift" field="heading" />}
         <div style={wrapStyle}>
           <label style={labelStyle}>Vorher-Bild URL</label>
           <input type="text" value={content.beforeImage || ''} onChange={e => update('beforeImage', e.target.value)} placeholder="https://..." style={inputStyle} />
@@ -2015,12 +1968,12 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           <label style={labelStyle}>Nachher-Bild URL</label>
           <input type="text" value={content.afterImage || ''} onChange={e => update('afterImage', e.target.value)} placeholder="https://..." style={inputStyle} />
         </div>
-       {(content._optional?.labels ?? true) && <>
-  {Field("Vorher-Label", "beforeLabel")}
-  {Field("Nachher-Label", "afterLabel")}
-</>}
-{(content._optional?.description ?? false) && Field("Beschreibung", "text", true, 2)}
-{(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+        {(content._optional?.labels ?? true) && <>
+          <Field label="Vorher-Label" field="beforeLabel" />
+          <Field label="Nachher-Label" field="afterLabel" />
+        </>}
+        {(content._optional?.description ?? false) && <Field label="Beschreibung" field="text" multi rows={2} />}
+        {(content._optional?.button ?? false) && <><Field label="Button Text" field="buttonText" /><Field label="Button Link" field="buttonLink" /></>}
       </>
     );
 
@@ -2033,10 +1986,10 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
           { key: 'pulseAnimation', label: 'Puls-Animation', icon: '✨', defaultOn: false },
           { key: 'tooltip', label: 'Tooltip Text', icon: '💡', defaultOn: false },
         ]} />
-        {Field("Telefonnummer (mit Ländercode)", "phone")}
-{(content._optional?.message ?? true) && Field("Vorausgefüllte Nachricht", "message", true, 3)}
-{(content._optional?.label ?? true) && Field("Button-Text", "label")}
-{(content._optional?.tooltip ?? false) && Field("Tooltip Text", "tooltip")}
+        <Field label="Telefonnummer (mit Ländercode)" field="phone" />
+        {(content._optional?.message ?? true) && <Field label="Vorausgefüllte Nachricht" field="message" multi rows={3} />}
+        {(content._optional?.label ?? true) && <Field label="Button-Text" field="label" />}
+        {(content._optional?.tooltip ?? false) && <Field label="Tooltip Text" field="tooltip" />}
         <div style={wrapStyle}>
           <label style={labelStyle}>Position auf der Website</label>
           <div style={{ display: 'flex', gap: 6 }}>
@@ -2100,7 +2053,7 @@ const layoutTypes = ['hero', 'cta', 'text', 'about', 'features', 'services', 'te
                 ))}
               </div>
             </div>
-          {Field("Linienstärke", "lineThickness")}
+            <Field label="Linienstärke" field="lineThickness" />
           </>
           
         )}

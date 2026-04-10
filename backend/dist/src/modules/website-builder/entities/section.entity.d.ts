@@ -24,7 +24,8 @@ export declare enum SectionType {
     social = "social",
     spacer = "spacer",
     before_after = "before_after",
-    whatsapp = "whatsapp"
+    whatsapp = "whatsapp",
+    freestyle = "freestyle"
 }
 export declare class Section {
     id: string;

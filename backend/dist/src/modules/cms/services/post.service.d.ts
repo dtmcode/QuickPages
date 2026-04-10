@@ -28,14 +28,14 @@ export declare class PostService {
     constructor(db: DrizzleDB);
     createPost(tenantId: string, input: CreatePostInput): Promise<{
         id: string;
+        slug: string;
         createdAt: Date | null;
         updatedAt: Date | null;
-        slug: string;
-        content: string | null;
         tenantId: string;
         status: "draft" | "published" | "archived";
         authorId: string | null;
         title: string;
+        content: string | null;
         excerpt: string | null;
         featuredImage: string | null;
         isPublished: boolean;

@@ -30,6 +30,7 @@ exports.sectionTypeEnum = (0, pg_core_1.pgEnum)('wb_section_type', [
     'spacer',
     'before_after',
     'whatsapp',
+    'freestyle',
 ]);
 exports.pageStatusEnum = (0, pg_core_1.pgEnum)('wb_page_status', [
     'draft',

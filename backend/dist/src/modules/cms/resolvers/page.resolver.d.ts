@@ -13,7 +13,7 @@ export declare class PageResolver {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -30,7 +30,7 @@ export declare class PageResolver {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -47,7 +47,7 @@ export declare class PageResolver {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -56,20 +56,20 @@ export declare class PageResolver {
     }>;
     createPage(tenantId: string, input: CreatePageInput): Promise<{
         id: string;
+        slug: string;
         createdAt: Date | null;
         updatedAt: Date | null;
-        slug: string;
-        content: string | null;
         tenantId: string;
-        metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
         status: "draft" | "published" | "archived";
         authorId: string | null;
         title: string;
+        content: string | null;
         excerpt: string | null;
         featuredImage: string | null;
         isPublished: boolean;
         publishedAt: Date | null;
+        metaDescription: string | null;
+        template: "default" | "landing" | "contact" | "about" | "blank";
     }>;
     updatePage(tenantId: string, id: string, input: UpdatePageInput): Promise<{
         id: string;
@@ -81,7 +81,7 @@ export declare class PageResolver {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -91,19 +91,19 @@ export declare class PageResolver {
     deletePage(tenantId: string, id: string): Promise<boolean>;
     duplicatePage(tenantId: string, id: string): Promise<{
         id: string;
+        slug: string;
         createdAt: Date | null;
         updatedAt: Date | null;
-        slug: string;
-        content: string | null;
         tenantId: string;
-        metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
         status: "draft" | "published" | "archived";
         authorId: string | null;
         title: string;
+        content: string | null;
         excerpt: string | null;
         featuredImage: string | null;
         isPublished: boolean;
         publishedAt: Date | null;
+        metaDescription: string | null;
+        template: "default" | "landing" | "contact" | "about" | "blank";
     }>;
 }

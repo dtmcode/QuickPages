@@ -1,4 +1,4 @@
-export declare const sectionTypeEnum: import("drizzle-orm/pg-core").PgEnum<["hero", "features", "about", "services", "gallery", "testimonials", "team", "pricing", "cta", "contact", "faq", "blog", "stats", "video", "text", "html", "custom", "newsletter", "booking", "map", "countdown", "social", "spacer", "before_after", "whatsapp"]>;
+export declare const sectionTypeEnum: import("drizzle-orm/pg-core").PgEnum<["hero", "features", "about", "services", "gallery", "testimonials", "team", "pricing", "cta", "contact", "faq", "blog", "stats", "video", "text", "html", "custom", "newsletter", "booking", "map", "countdown", "social", "spacer", "before_after", "whatsapp", "freestyle"]>;
 export declare const pageStatusEnum: import("drizzle-orm/pg-core").PgEnum<["draft", "published", "archived"]>;
 export declare const wbGlobalTemplates: import("drizzle-orm/pg-core").PgTableWithColumns<{
     name: "wb_global_templates";
@@ -467,14 +467,14 @@ export declare const wbGlobalTemplateSections: import("drizzle-orm/pg-core").PgT
             tableName: "wb_global_template_sections";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+            data: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
             driverParam: string;
             notNull: true;
             hasDefault: false;
             isPrimaryKey: false;
             isAutoincrement: false;
             hasRuntimeDefault: false;
-            enumValues: ["hero", "features", "about", "services", "gallery", "testimonials", "team", "pricing", "cta", "contact", "faq", "blog", "stats", "video", "text", "html", "custom", "newsletter", "booking", "map", "countdown", "social", "spacer", "before_after", "whatsapp"];
+            enumValues: ["hero", "features", "about", "services", "gallery", "testimonials", "team", "pricing", "cta", "contact", "faq", "blog", "stats", "video", "text", "html", "custom", "newsletter", "booking", "map", "countdown", "social", "spacer", "before_after", "whatsapp", "freestyle"];
             baseColumn: never;
             identity: undefined;
             generated: undefined;
@@ -1156,14 +1156,14 @@ export declare const wbSections: import("drizzle-orm/pg-core").PgTableWithColumn
             tableName: "wb_sections";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+            data: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
             driverParam: string;
             notNull: true;
             hasDefault: false;
             isPrimaryKey: false;
             isAutoincrement: false;
             hasRuntimeDefault: false;
-            enumValues: ["hero", "features", "about", "services", "gallery", "testimonials", "team", "pricing", "cta", "contact", "faq", "blog", "stats", "video", "text", "html", "custom", "newsletter", "booking", "map", "countdown", "social", "spacer", "before_after", "whatsapp"];
+            enumValues: ["hero", "features", "about", "services", "gallery", "testimonials", "team", "pricing", "cta", "contact", "faq", "blog", "stats", "video", "text", "html", "custom", "newsletter", "booking", "map", "countdown", "social", "spacer", "before_after", "whatsapp", "freestyle"];
             baseColumn: never;
             identity: undefined;
             generated: undefined;

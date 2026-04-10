@@ -43,6 +43,7 @@ var SectionType;
     SectionType["spacer"] = "spacer";
     SectionType["before_after"] = "before_after";
     SectionType["whatsapp"] = "whatsapp";
+    SectionType["freestyle"] = "freestyle";
 })(SectionType || (exports.SectionType = SectionType = {}));
 (0, graphql_1.registerEnumType)(SectionType, {
     name: 'SectionType',

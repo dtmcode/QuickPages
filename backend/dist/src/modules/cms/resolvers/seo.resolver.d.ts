@@ -23,11 +23,11 @@ export declare class SeoResolver {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        metaTitle: string | null;
         metaDescription: string | null;
-        metaKeywords: string | null;
         entityType: string;
         entityId: string;
+        metaTitle: string | null;
+        metaKeywords: string | null;
         ogTitle: string | null;
         ogDescription: string | null;
         ogImage: string | null;

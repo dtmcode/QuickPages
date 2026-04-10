@@ -16,22 +16,22 @@ export declare class MediaService {
     constructor(db: DrizzleDB);
     private getMediaType;
     uploadFile(tenantId: string, input: UploadFileInput): Promise<{
+        url: string;
         duration: number | null;
         id: string;
-        description: string | null;
-        thumbnailUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
-        type: "video" | "image" | "audio" | "document" | "other";
         tenantId: string;
         title: string | null;
+        description: string | null;
         lastUsedAt: Date | null;
         tags: string[] | null;
         filename: string;
         originalFilename: string;
         mimeType: string;
         fileSize: number;
-        url: string;
+        type: "image" | "video" | "audio" | "document" | "other";
+        thumbnailUrl: string | null;
         path: string;
         width: number | null;
         height: number | null;
@@ -53,7 +53,7 @@ export declare class MediaService {
         originalFilename: string;
         mimeType: string;
         fileSize: number;
-        type: "video" | "image" | "audio" | "document" | "other";
+        type: "image" | "video" | "audio" | "document" | "other";
         url: string;
         thumbnailUrl: string | null;
         path: string;
@@ -78,7 +78,7 @@ export declare class MediaService {
         originalFilename: string;
         mimeType: string;
         fileSize: number;
-        type: "video" | "image" | "audio" | "document" | "other";
+        type: "image" | "video" | "audio" | "document" | "other";
         url: string;
         thumbnailUrl: string | null;
         path: string;
@@ -109,7 +109,7 @@ export declare class MediaService {
         originalFilename: string;
         mimeType: string;
         fileSize: number;
-        type: "video" | "image" | "audio" | "document" | "other";
+        type: "image" | "video" | "audio" | "document" | "other";
         url: string;
         thumbnailUrl: string | null;
         path: string;

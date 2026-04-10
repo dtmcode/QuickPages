@@ -25,20 +25,20 @@ export declare class PageService {
     constructor(db: DrizzleDB);
     createPage(tenantId: string, input: CreatePageInput): Promise<{
         id: string;
+        slug: string;
         createdAt: Date | null;
         updatedAt: Date | null;
-        slug: string;
-        content: string | null;
         tenantId: string;
-        metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
         status: "draft" | "published" | "archived";
         authorId: string | null;
         title: string;
+        content: string | null;
         excerpt: string | null;
         featuredImage: string | null;
         isPublished: boolean;
         publishedAt: Date | null;
+        metaDescription: string | null;
+        template: "default" | "landing" | "contact" | "about" | "blank";
     }>;
     getPages(tenantId: string, options?: {
         status?: string;
@@ -55,7 +55,7 @@ export declare class PageService {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -72,7 +72,7 @@ export declare class PageService {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -89,7 +89,7 @@ export declare class PageService {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -106,7 +106,7 @@ export declare class PageService {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -116,19 +116,19 @@ export declare class PageService {
     deletePage(tenantId: string, pageId: string): Promise<boolean>;
     duplicatePage(tenantId: string, pageId: string): Promise<{
         id: string;
+        slug: string;
         createdAt: Date | null;
         updatedAt: Date | null;
-        slug: string;
-        content: string | null;
         tenantId: string;
-        metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
         status: "draft" | "published" | "archived";
         authorId: string | null;
         title: string;
+        content: string | null;
         excerpt: string | null;
         featuredImage: string | null;
         isPublished: boolean;
         publishedAt: Date | null;
+        metaDescription: string | null;
+        template: "default" | "landing" | "contact" | "about" | "blank";
     }>;
 }

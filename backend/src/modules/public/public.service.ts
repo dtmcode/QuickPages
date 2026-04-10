@@ -28,7 +28,7 @@ import {
   wbSections,
   wbTemplates,
 } from '../../drizzle/website-builder.schema';
-import { eq, and, desc, asc } from 'drizzle-orm';
+import { eq, and, desc, asc, sql } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcryptjs';
 

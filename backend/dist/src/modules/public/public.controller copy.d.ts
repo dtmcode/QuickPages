@@ -19,7 +19,7 @@ export declare class PublicController {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -52,7 +52,7 @@ export declare class PublicController {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -62,8 +62,6 @@ export declare class PublicController {
     getNavigation(tenantSlug: string, location: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        isActive: boolean;
         settings: {
             backgroundColor?: string;
             textColor?: string;
@@ -71,12 +69,14 @@ export declare class PublicController {
             itemsAlign?: "left" | "center" | "right";
             logoText?: string;
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
+        description: string | null;
         location: string;
         items: {
-            id: string;
+            [x: string]: any;
         }[];
     } | null>;
     getProducts(tenantSlug: string): Promise<{
@@ -192,7 +192,7 @@ export declare class PublicController {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
             order: number;
             isActive: boolean;
             content: {
@@ -317,7 +317,7 @@ export declare class PublicController {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
             order: number;
             isActive: boolean;
             content: {
@@ -442,7 +442,7 @@ export declare class PublicController {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
             order: number;
             isActive: boolean;
             content: {

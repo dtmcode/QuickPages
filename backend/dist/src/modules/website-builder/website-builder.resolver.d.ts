@@ -63,9 +63,6 @@ export declare class WebsiteBuilderResolver {
     cloneGlobalTemplate(globalTemplateId: string, tenantId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        thumbnailUrl: string | null;
-        isActive: boolean;
         settings: {
             colors?: {
                 primary?: string;
@@ -82,143 +79,21 @@ export declare class WebsiteBuilderResolver {
                 default?: string;
             };
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        globalTemplateId: string | null;
+        description: string | null;
         isDefault: boolean;
+        thumbnailUrl: string | null;
+        globalTemplateId: string | null;
         pages: {
-            id: string;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            settings: {
-                layout?: string;
-                headerVisible?: boolean;
-                footerVisible?: boolean;
-                customCss?: string;
-                customJs?: string;
-            } | null;
-            createdAt: Date;
-            updatedAt: Date;
-            templateId: string;
-            slug: string;
-            isHomepage: boolean;
-            order: number;
-            tenantId: string;
-            metaTitle: string | null;
-            metaDescription: string | null;
-            metaKeywords: string | null;
-            sections: {
-                id: string;
-                name: string;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                order: number;
-                pageId: string;
-                type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-                content: {
-                    heading?: string;
-                    subheading?: string;
-                    buttonText?: string;
-                    buttonLink?: string;
-                    backgroundImage?: string;
-                    backgroundVideo?: string;
-                    title?: string;
-                    subtitle?: string;
-                    description?: string;
-                    alignment?: "left" | "center" | "right";
-                    items?: Array<{
-                        id?: string;
-                        title?: string;
-                        description?: string;
-                        icon?: string;
-                        image?: string;
-                        link?: string;
-                    }>;
-                    images?: Array<{
-                        url: string;
-                        alt?: string;
-                        title?: string;
-                        description?: string;
-                    }>;
-                    testimonials?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        company?: string;
-                        text?: string;
-                        avatar?: string;
-                        rating?: number;
-                    }>;
-                    members?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        bio?: string;
-                        image?: string;
-                        social?: {
-                            linkedin?: string;
-                            twitter?: string;
-                            github?: string;
-                        };
-                    }>;
-                    plans?: Array<{
-                        id?: string;
-                        name?: string;
-                        price?: string;
-                        currency?: string;
-                        interval?: string;
-                        features?: string[];
-                        highlighted?: boolean;
-                        buttonText?: string;
-                        buttonLink?: string;
-                    }>;
-                    faqs?: Array<{
-                        id?: string;
-                        question?: string;
-                        answer?: string;
-                    }>;
-                    stats?: Array<{
-                        id?: string;
-                        value?: string;
-                        label?: string;
-                        icon?: string;
-                    }>;
-                    videoUrl?: string;
-                    videoPoster?: string;
-                    text?: string;
-                    html?: string;
-                };
-                styling: {
-                    backgroundColor?: string;
-                    textColor?: string;
-                    padding?: {
-                        top?: string;
-                        bottom?: string;
-                        left?: string;
-                        right?: string;
-                    };
-                    margin?: {
-                        top?: string;
-                        bottom?: string;
-                    };
-                    customCss?: string;
-                    containerWidth?: "full" | "contained" | "narrow";
-                    backgroundImage?: string;
-                    backgroundOverlay?: string;
-                } | null;
-                tenantId: string;
-            }[];
+            [x: string]: any;
         }[];
     }>;
     getTemplates(tenantId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        thumbnailUrl: string | null;
-        isActive: boolean;
         settings: {
             colors?: {
                 primary?: string;
@@ -235,143 +110,21 @@ export declare class WebsiteBuilderResolver {
                 default?: string;
             };
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        globalTemplateId: string | null;
+        description: string | null;
         isDefault: boolean;
+        thumbnailUrl: string | null;
+        globalTemplateId: string | null;
         pages: {
-            id: string;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            settings: {
-                layout?: string;
-                headerVisible?: boolean;
-                footerVisible?: boolean;
-                customCss?: string;
-                customJs?: string;
-            } | null;
-            createdAt: Date;
-            updatedAt: Date;
-            templateId: string;
-            slug: string;
-            isHomepage: boolean;
-            order: number;
-            tenantId: string;
-            metaTitle: string | null;
-            metaDescription: string | null;
-            metaKeywords: string | null;
-            sections: {
-                id: string;
-                name: string;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                order: number;
-                pageId: string;
-                type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-                content: {
-                    heading?: string;
-                    subheading?: string;
-                    buttonText?: string;
-                    buttonLink?: string;
-                    backgroundImage?: string;
-                    backgroundVideo?: string;
-                    title?: string;
-                    subtitle?: string;
-                    description?: string;
-                    alignment?: "left" | "center" | "right";
-                    items?: Array<{
-                        id?: string;
-                        title?: string;
-                        description?: string;
-                        icon?: string;
-                        image?: string;
-                        link?: string;
-                    }>;
-                    images?: Array<{
-                        url: string;
-                        alt?: string;
-                        title?: string;
-                        description?: string;
-                    }>;
-                    testimonials?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        company?: string;
-                        text?: string;
-                        avatar?: string;
-                        rating?: number;
-                    }>;
-                    members?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        bio?: string;
-                        image?: string;
-                        social?: {
-                            linkedin?: string;
-                            twitter?: string;
-                            github?: string;
-                        };
-                    }>;
-                    plans?: Array<{
-                        id?: string;
-                        name?: string;
-                        price?: string;
-                        currency?: string;
-                        interval?: string;
-                        features?: string[];
-                        highlighted?: boolean;
-                        buttonText?: string;
-                        buttonLink?: string;
-                    }>;
-                    faqs?: Array<{
-                        id?: string;
-                        question?: string;
-                        answer?: string;
-                    }>;
-                    stats?: Array<{
-                        id?: string;
-                        value?: string;
-                        label?: string;
-                        icon?: string;
-                    }>;
-                    videoUrl?: string;
-                    videoPoster?: string;
-                    text?: string;
-                    html?: string;
-                };
-                styling: {
-                    backgroundColor?: string;
-                    textColor?: string;
-                    padding?: {
-                        top?: string;
-                        bottom?: string;
-                        left?: string;
-                        right?: string;
-                    };
-                    margin?: {
-                        top?: string;
-                        bottom?: string;
-                    };
-                    customCss?: string;
-                    containerWidth?: "full" | "contained" | "narrow";
-                    backgroundImage?: string;
-                    backgroundOverlay?: string;
-                } | null;
-                tenantId: string;
-            }[];
+            [x: string]: any;
         }[];
     }[]>;
     getTemplate(id: string, tenantId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        thumbnailUrl: string | null;
-        isActive: boolean;
         settings: {
             colors?: {
                 primary?: string;
@@ -388,143 +141,21 @@ export declare class WebsiteBuilderResolver {
                 default?: string;
             };
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        globalTemplateId: string | null;
+        description: string | null;
         isDefault: boolean;
+        thumbnailUrl: string | null;
+        globalTemplateId: string | null;
         pages: {
-            id: string;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            settings: {
-                layout?: string;
-                headerVisible?: boolean;
-                footerVisible?: boolean;
-                customCss?: string;
-                customJs?: string;
-            } | null;
-            createdAt: Date;
-            updatedAt: Date;
-            templateId: string;
-            slug: string;
-            isHomepage: boolean;
-            order: number;
-            tenantId: string;
-            metaTitle: string | null;
-            metaDescription: string | null;
-            metaKeywords: string | null;
-            sections: {
-                id: string;
-                name: string;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                order: number;
-                pageId: string;
-                type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-                content: {
-                    heading?: string;
-                    subheading?: string;
-                    buttonText?: string;
-                    buttonLink?: string;
-                    backgroundImage?: string;
-                    backgroundVideo?: string;
-                    title?: string;
-                    subtitle?: string;
-                    description?: string;
-                    alignment?: "left" | "center" | "right";
-                    items?: Array<{
-                        id?: string;
-                        title?: string;
-                        description?: string;
-                        icon?: string;
-                        image?: string;
-                        link?: string;
-                    }>;
-                    images?: Array<{
-                        url: string;
-                        alt?: string;
-                        title?: string;
-                        description?: string;
-                    }>;
-                    testimonials?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        company?: string;
-                        text?: string;
-                        avatar?: string;
-                        rating?: number;
-                    }>;
-                    members?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        bio?: string;
-                        image?: string;
-                        social?: {
-                            linkedin?: string;
-                            twitter?: string;
-                            github?: string;
-                        };
-                    }>;
-                    plans?: Array<{
-                        id?: string;
-                        name?: string;
-                        price?: string;
-                        currency?: string;
-                        interval?: string;
-                        features?: string[];
-                        highlighted?: boolean;
-                        buttonText?: string;
-                        buttonLink?: string;
-                    }>;
-                    faqs?: Array<{
-                        id?: string;
-                        question?: string;
-                        answer?: string;
-                    }>;
-                    stats?: Array<{
-                        id?: string;
-                        value?: string;
-                        label?: string;
-                        icon?: string;
-                    }>;
-                    videoUrl?: string;
-                    videoPoster?: string;
-                    text?: string;
-                    html?: string;
-                };
-                styling: {
-                    backgroundColor?: string;
-                    textColor?: string;
-                    padding?: {
-                        top?: string;
-                        bottom?: string;
-                        left?: string;
-                        right?: string;
-                    };
-                    margin?: {
-                        top?: string;
-                        bottom?: string;
-                    };
-                    customCss?: string;
-                    containerWidth?: "full" | "contained" | "narrow";
-                    backgroundImage?: string;
-                    backgroundOverlay?: string;
-                } | null;
-                tenantId: string;
-            }[];
+            [x: string]: any;
         }[];
     }>;
     getDefaultTemplate(tenantId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        thumbnailUrl: string | null;
-        isActive: boolean;
         settings: {
             colors?: {
                 primary?: string;
@@ -541,143 +172,21 @@ export declare class WebsiteBuilderResolver {
                 default?: string;
             };
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        globalTemplateId: string | null;
+        description: string | null;
         isDefault: boolean;
+        thumbnailUrl: string | null;
+        globalTemplateId: string | null;
         pages: {
-            id: string;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            settings: {
-                layout?: string;
-                headerVisible?: boolean;
-                footerVisible?: boolean;
-                customCss?: string;
-                customJs?: string;
-            } | null;
-            createdAt: Date;
-            updatedAt: Date;
-            templateId: string;
-            slug: string;
-            isHomepage: boolean;
-            order: number;
-            tenantId: string;
-            metaTitle: string | null;
-            metaDescription: string | null;
-            metaKeywords: string | null;
-            sections: {
-                id: string;
-                name: string;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                order: number;
-                pageId: string;
-                type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-                content: {
-                    heading?: string;
-                    subheading?: string;
-                    buttonText?: string;
-                    buttonLink?: string;
-                    backgroundImage?: string;
-                    backgroundVideo?: string;
-                    title?: string;
-                    subtitle?: string;
-                    description?: string;
-                    alignment?: "left" | "center" | "right";
-                    items?: Array<{
-                        id?: string;
-                        title?: string;
-                        description?: string;
-                        icon?: string;
-                        image?: string;
-                        link?: string;
-                    }>;
-                    images?: Array<{
-                        url: string;
-                        alt?: string;
-                        title?: string;
-                        description?: string;
-                    }>;
-                    testimonials?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        company?: string;
-                        text?: string;
-                        avatar?: string;
-                        rating?: number;
-                    }>;
-                    members?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        bio?: string;
-                        image?: string;
-                        social?: {
-                            linkedin?: string;
-                            twitter?: string;
-                            github?: string;
-                        };
-                    }>;
-                    plans?: Array<{
-                        id?: string;
-                        name?: string;
-                        price?: string;
-                        currency?: string;
-                        interval?: string;
-                        features?: string[];
-                        highlighted?: boolean;
-                        buttonText?: string;
-                        buttonLink?: string;
-                    }>;
-                    faqs?: Array<{
-                        id?: string;
-                        question?: string;
-                        answer?: string;
-                    }>;
-                    stats?: Array<{
-                        id?: string;
-                        value?: string;
-                        label?: string;
-                        icon?: string;
-                    }>;
-                    videoUrl?: string;
-                    videoPoster?: string;
-                    text?: string;
-                    html?: string;
-                };
-                styling: {
-                    backgroundColor?: string;
-                    textColor?: string;
-                    padding?: {
-                        top?: string;
-                        bottom?: string;
-                        left?: string;
-                        right?: string;
-                    };
-                    margin?: {
-                        top?: string;
-                        bottom?: string;
-                    };
-                    customCss?: string;
-                    containerWidth?: "full" | "contained" | "narrow";
-                    backgroundImage?: string;
-                    backgroundOverlay?: string;
-                } | null;
-                tenantId: string;
-            }[];
+            [x: string]: any;
         }[];
     } | null>;
     createTemplate(input: CreateTemplateInput, tenantId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        thumbnailUrl: string | null;
-        isActive: boolean;
         settings: {
             colors?: {
                 primary?: string;
@@ -694,11 +203,14 @@ export declare class WebsiteBuilderResolver {
                 default?: string;
             };
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        globalTemplateId: string | null;
+        description: string | null;
         isDefault: boolean;
+        thumbnailUrl: string | null;
+        globalTemplateId: string | null;
     }>;
     updateTemplate(id: string, input: UpdateTemplateInput, tenantId: string): Promise<{
         id: string;
@@ -732,9 +244,6 @@ export declare class WebsiteBuilderResolver {
     cloneTemplate(id: string, tenantId: string, newName?: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        thumbnailUrl: string | null;
-        isActive: boolean;
         settings: {
             colors?: {
                 primary?: string;
@@ -751,135 +260,16 @@ export declare class WebsiteBuilderResolver {
                 default?: string;
             };
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        globalTemplateId: string | null;
+        description: string | null;
         isDefault: boolean;
+        thumbnailUrl: string | null;
+        globalTemplateId: string | null;
         pages: {
-            id: string;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            settings: {
-                layout?: string;
-                headerVisible?: boolean;
-                footerVisible?: boolean;
-                customCss?: string;
-                customJs?: string;
-            } | null;
-            createdAt: Date;
-            updatedAt: Date;
-            templateId: string;
-            slug: string;
-            isHomepage: boolean;
-            order: number;
-            tenantId: string;
-            metaTitle: string | null;
-            metaDescription: string | null;
-            metaKeywords: string | null;
-            sections: {
-                id: string;
-                name: string;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                order: number;
-                pageId: string;
-                type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-                content: {
-                    heading?: string;
-                    subheading?: string;
-                    buttonText?: string;
-                    buttonLink?: string;
-                    backgroundImage?: string;
-                    backgroundVideo?: string;
-                    title?: string;
-                    subtitle?: string;
-                    description?: string;
-                    alignment?: "left" | "center" | "right";
-                    items?: Array<{
-                        id?: string;
-                        title?: string;
-                        description?: string;
-                        icon?: string;
-                        image?: string;
-                        link?: string;
-                    }>;
-                    images?: Array<{
-                        url: string;
-                        alt?: string;
-                        title?: string;
-                        description?: string;
-                    }>;
-                    testimonials?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        company?: string;
-                        text?: string;
-                        avatar?: string;
-                        rating?: number;
-                    }>;
-                    members?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        bio?: string;
-                        image?: string;
-                        social?: {
-                            linkedin?: string;
-                            twitter?: string;
-                            github?: string;
-                        };
-                    }>;
-                    plans?: Array<{
-                        id?: string;
-                        name?: string;
-                        price?: string;
-                        currency?: string;
-                        interval?: string;
-                        features?: string[];
-                        highlighted?: boolean;
-                        buttonText?: string;
-                        buttonLink?: string;
-                    }>;
-                    faqs?: Array<{
-                        id?: string;
-                        question?: string;
-                        answer?: string;
-                    }>;
-                    stats?: Array<{
-                        id?: string;
-                        value?: string;
-                        label?: string;
-                        icon?: string;
-                    }>;
-                    videoUrl?: string;
-                    videoPoster?: string;
-                    text?: string;
-                    html?: string;
-                };
-                styling: {
-                    backgroundColor?: string;
-                    textColor?: string;
-                    padding?: {
-                        top?: string;
-                        bottom?: string;
-                        left?: string;
-                        right?: string;
-                    };
-                    margin?: {
-                        top?: string;
-                        bottom?: string;
-                    };
-                    customCss?: string;
-                    containerWidth?: "full" | "contained" | "narrow";
-                    backgroundImage?: string;
-                    backgroundOverlay?: string;
-                } | null;
-                tenantId: string;
-            }[];
+            [x: string]: any;
         }[];
     }>;
     setDefaultTemplate(id: string, tenantId: string): Promise<{
@@ -913,8 +303,7 @@ export declare class WebsiteBuilderResolver {
     getPages(tenantId: string, templateId?: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        isActive: boolean;
+        slug: string;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -922,124 +311,25 @@ export declare class WebsiteBuilderResolver {
             customCss?: string;
             customJs?: string;
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        templateId: string;
-        slug: string;
-        isHomepage: boolean;
-        order: number;
         tenantId: string;
-        metaTitle: string | null;
+        description: string | null;
         metaDescription: string | null;
+        order: number;
+        metaTitle: string | null;
         metaKeywords: string | null;
+        templateId: string;
+        isHomepage: boolean;
         sections: {
-            id: string;
-            name: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            order: number;
-            pageId: string;
-            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-            content: {
-                heading?: string;
-                subheading?: string;
-                buttonText?: string;
-                buttonLink?: string;
-                backgroundImage?: string;
-                backgroundVideo?: string;
-                title?: string;
-                subtitle?: string;
-                description?: string;
-                alignment?: "left" | "center" | "right";
-                items?: Array<{
-                    id?: string;
-                    title?: string;
-                    description?: string;
-                    icon?: string;
-                    image?: string;
-                    link?: string;
-                }>;
-                images?: Array<{
-                    url: string;
-                    alt?: string;
-                    title?: string;
-                    description?: string;
-                }>;
-                testimonials?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    company?: string;
-                    text?: string;
-                    avatar?: string;
-                    rating?: number;
-                }>;
-                members?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    bio?: string;
-                    image?: string;
-                    social?: {
-                        linkedin?: string;
-                        twitter?: string;
-                        github?: string;
-                    };
-                }>;
-                plans?: Array<{
-                    id?: string;
-                    name?: string;
-                    price?: string;
-                    currency?: string;
-                    interval?: string;
-                    features?: string[];
-                    highlighted?: boolean;
-                    buttonText?: string;
-                    buttonLink?: string;
-                }>;
-                faqs?: Array<{
-                    id?: string;
-                    question?: string;
-                    answer?: string;
-                }>;
-                stats?: Array<{
-                    id?: string;
-                    value?: string;
-                    label?: string;
-                    icon?: string;
-                }>;
-                videoUrl?: string;
-                videoPoster?: string;
-                text?: string;
-                html?: string;
-            };
-            styling: {
-                backgroundColor?: string;
-                textColor?: string;
-                padding?: {
-                    top?: string;
-                    bottom?: string;
-                    left?: string;
-                    right?: string;
-                };
-                margin?: {
-                    top?: string;
-                    bottom?: string;
-                };
-                customCss?: string;
-                containerWidth?: "full" | "contained" | "narrow";
-                backgroundImage?: string;
-                backgroundOverlay?: string;
-            } | null;
-            tenantId: string;
+            [x: string]: any;
         }[];
     }[]>;
     getPage(id: string, tenantId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        isActive: boolean;
+        slug: string;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -1047,152 +337,30 @@ export declare class WebsiteBuilderResolver {
             customCss?: string;
             customJs?: string;
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        templateId: string;
-        slug: string;
-        isHomepage: boolean;
-        order: number;
         tenantId: string;
-        metaTitle: string | null;
+        description: string | null;
         metaDescription: string | null;
+        order: number;
+        metaTitle: string | null;
         metaKeywords: string | null;
+        templateId: string;
+        isHomepage: boolean;
         template: {
-            id: string;
-            name: string;
-            description: string | null;
-            thumbnailUrl: string | null;
-            isActive: boolean;
-            settings: {
-                colors?: {
-                    primary?: string;
-                    secondary?: string;
-                    accent?: string;
-                    background?: string;
-                    text?: string;
-                };
-                fonts?: {
-                    heading?: string;
-                    body?: string;
-                };
-                spacing?: {
-                    default?: string;
-                };
-            } | null;
-            createdAt: Date;
-            updatedAt: Date;
-            tenantId: string;
-            globalTemplateId: string | null;
-            isDefault: boolean;
-        };
+            [x: string]: any;
+        } | {
+            [x: string]: any;
+        }[];
         sections: {
-            id: string;
-            name: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            order: number;
-            pageId: string;
-            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-            content: {
-                heading?: string;
-                subheading?: string;
-                buttonText?: string;
-                buttonLink?: string;
-                backgroundImage?: string;
-                backgroundVideo?: string;
-                title?: string;
-                subtitle?: string;
-                description?: string;
-                alignment?: "left" | "center" | "right";
-                items?: Array<{
-                    id?: string;
-                    title?: string;
-                    description?: string;
-                    icon?: string;
-                    image?: string;
-                    link?: string;
-                }>;
-                images?: Array<{
-                    url: string;
-                    alt?: string;
-                    title?: string;
-                    description?: string;
-                }>;
-                testimonials?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    company?: string;
-                    text?: string;
-                    avatar?: string;
-                    rating?: number;
-                }>;
-                members?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    bio?: string;
-                    image?: string;
-                    social?: {
-                        linkedin?: string;
-                        twitter?: string;
-                        github?: string;
-                    };
-                }>;
-                plans?: Array<{
-                    id?: string;
-                    name?: string;
-                    price?: string;
-                    currency?: string;
-                    interval?: string;
-                    features?: string[];
-                    highlighted?: boolean;
-                    buttonText?: string;
-                    buttonLink?: string;
-                }>;
-                faqs?: Array<{
-                    id?: string;
-                    question?: string;
-                    answer?: string;
-                }>;
-                stats?: Array<{
-                    id?: string;
-                    value?: string;
-                    label?: string;
-                    icon?: string;
-                }>;
-                videoUrl?: string;
-                videoPoster?: string;
-                text?: string;
-                html?: string;
-            };
-            styling: {
-                backgroundColor?: string;
-                textColor?: string;
-                padding?: {
-                    top?: string;
-                    bottom?: string;
-                    left?: string;
-                    right?: string;
-                };
-                margin?: {
-                    top?: string;
-                    bottom?: string;
-                };
-                customCss?: string;
-                containerWidth?: "full" | "contained" | "narrow";
-                backgroundImage?: string;
-                backgroundOverlay?: string;
-            } | null;
-            tenantId: string;
+            [x: string]: any;
         }[];
     }>;
     getPageBySlug(slug: string, tenantId: string, templateId?: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        isActive: boolean;
+        slug: string;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -1200,124 +368,25 @@ export declare class WebsiteBuilderResolver {
             customCss?: string;
             customJs?: string;
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        templateId: string;
-        slug: string;
-        isHomepage: boolean;
-        order: number;
         tenantId: string;
-        metaTitle: string | null;
+        description: string | null;
         metaDescription: string | null;
+        order: number;
+        metaTitle: string | null;
         metaKeywords: string | null;
+        templateId: string;
+        isHomepage: boolean;
         sections: {
-            id: string;
-            name: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            order: number;
-            pageId: string;
-            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-            content: {
-                heading?: string;
-                subheading?: string;
-                buttonText?: string;
-                buttonLink?: string;
-                backgroundImage?: string;
-                backgroundVideo?: string;
-                title?: string;
-                subtitle?: string;
-                description?: string;
-                alignment?: "left" | "center" | "right";
-                items?: Array<{
-                    id?: string;
-                    title?: string;
-                    description?: string;
-                    icon?: string;
-                    image?: string;
-                    link?: string;
-                }>;
-                images?: Array<{
-                    url: string;
-                    alt?: string;
-                    title?: string;
-                    description?: string;
-                }>;
-                testimonials?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    company?: string;
-                    text?: string;
-                    avatar?: string;
-                    rating?: number;
-                }>;
-                members?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    bio?: string;
-                    image?: string;
-                    social?: {
-                        linkedin?: string;
-                        twitter?: string;
-                        github?: string;
-                    };
-                }>;
-                plans?: Array<{
-                    id?: string;
-                    name?: string;
-                    price?: string;
-                    currency?: string;
-                    interval?: string;
-                    features?: string[];
-                    highlighted?: boolean;
-                    buttonText?: string;
-                    buttonLink?: string;
-                }>;
-                faqs?: Array<{
-                    id?: string;
-                    question?: string;
-                    answer?: string;
-                }>;
-                stats?: Array<{
-                    id?: string;
-                    value?: string;
-                    label?: string;
-                    icon?: string;
-                }>;
-                videoUrl?: string;
-                videoPoster?: string;
-                text?: string;
-                html?: string;
-            };
-            styling: {
-                backgroundColor?: string;
-                textColor?: string;
-                padding?: {
-                    top?: string;
-                    bottom?: string;
-                    left?: string;
-                    right?: string;
-                };
-                margin?: {
-                    top?: string;
-                    bottom?: string;
-                };
-                customCss?: string;
-                containerWidth?: "full" | "contained" | "narrow";
-                backgroundImage?: string;
-                backgroundOverlay?: string;
-            } | null;
-            tenantId: string;
+            [x: string]: any;
         }[];
     } | null>;
     getHomepage(tenantId: string, templateId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        isActive: boolean;
+        slug: string;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -1325,124 +394,25 @@ export declare class WebsiteBuilderResolver {
             customCss?: string;
             customJs?: string;
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        templateId: string;
-        slug: string;
-        isHomepage: boolean;
-        order: number;
         tenantId: string;
-        metaTitle: string | null;
+        description: string | null;
         metaDescription: string | null;
+        order: number;
+        metaTitle: string | null;
         metaKeywords: string | null;
+        templateId: string;
+        isHomepage: boolean;
         sections: {
-            id: string;
-            name: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            order: number;
-            pageId: string;
-            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-            content: {
-                heading?: string;
-                subheading?: string;
-                buttonText?: string;
-                buttonLink?: string;
-                backgroundImage?: string;
-                backgroundVideo?: string;
-                title?: string;
-                subtitle?: string;
-                description?: string;
-                alignment?: "left" | "center" | "right";
-                items?: Array<{
-                    id?: string;
-                    title?: string;
-                    description?: string;
-                    icon?: string;
-                    image?: string;
-                    link?: string;
-                }>;
-                images?: Array<{
-                    url: string;
-                    alt?: string;
-                    title?: string;
-                    description?: string;
-                }>;
-                testimonials?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    company?: string;
-                    text?: string;
-                    avatar?: string;
-                    rating?: number;
-                }>;
-                members?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    bio?: string;
-                    image?: string;
-                    social?: {
-                        linkedin?: string;
-                        twitter?: string;
-                        github?: string;
-                    };
-                }>;
-                plans?: Array<{
-                    id?: string;
-                    name?: string;
-                    price?: string;
-                    currency?: string;
-                    interval?: string;
-                    features?: string[];
-                    highlighted?: boolean;
-                    buttonText?: string;
-                    buttonLink?: string;
-                }>;
-                faqs?: Array<{
-                    id?: string;
-                    question?: string;
-                    answer?: string;
-                }>;
-                stats?: Array<{
-                    id?: string;
-                    value?: string;
-                    label?: string;
-                    icon?: string;
-                }>;
-                videoUrl?: string;
-                videoPoster?: string;
-                text?: string;
-                html?: string;
-            };
-            styling: {
-                backgroundColor?: string;
-                textColor?: string;
-                padding?: {
-                    top?: string;
-                    bottom?: string;
-                    left?: string;
-                    right?: string;
-                };
-                margin?: {
-                    top?: string;
-                    bottom?: string;
-                };
-                customCss?: string;
-                containerWidth?: "full" | "contained" | "narrow";
-                backgroundImage?: string;
-                backgroundOverlay?: string;
-            } | null;
-            tenantId: string;
+            [x: string]: any;
         }[];
     } | null>;
     createPage(input: CreatePageInput, tenantId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        isActive: boolean;
+        slug: string;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -1450,16 +420,17 @@ export declare class WebsiteBuilderResolver {
             customCss?: string;
             customJs?: string;
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        templateId: string;
-        slug: string;
-        isHomepage: boolean;
-        order: number;
         tenantId: string;
-        metaTitle: string | null;
+        description: string | null;
         metaDescription: string | null;
+        order: number;
+        metaTitle: string | null;
         metaKeywords: string | null;
+        templateId: string;
+        isHomepage: boolean;
     }>;
     updatePage(id: string, input: UpdatePageInput, tenantId: string): Promise<{
         id: string;
@@ -1488,8 +459,7 @@ export declare class WebsiteBuilderResolver {
     reorderSections(pageId: string, sectionIds: string[], tenantId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        isActive: boolean;
+        slug: string;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -1497,145 +467,24 @@ export declare class WebsiteBuilderResolver {
             customCss?: string;
             customJs?: string;
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        templateId: string;
-        slug: string;
-        isHomepage: boolean;
-        order: number;
         tenantId: string;
-        metaTitle: string | null;
+        description: string | null;
         metaDescription: string | null;
+        order: number;
+        metaTitle: string | null;
         metaKeywords: string | null;
+        templateId: string;
+        isHomepage: boolean;
         template: {
-            id: string;
-            name: string;
-            description: string | null;
-            thumbnailUrl: string | null;
-            isActive: boolean;
-            settings: {
-                colors?: {
-                    primary?: string;
-                    secondary?: string;
-                    accent?: string;
-                    background?: string;
-                    text?: string;
-                };
-                fonts?: {
-                    heading?: string;
-                    body?: string;
-                };
-                spacing?: {
-                    default?: string;
-                };
-            } | null;
-            createdAt: Date;
-            updatedAt: Date;
-            tenantId: string;
-            globalTemplateId: string | null;
-            isDefault: boolean;
-        };
+            [x: string]: any;
+        } | {
+            [x: string]: any;
+        }[];
         sections: {
-            id: string;
-            name: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            order: number;
-            pageId: string;
-            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-            content: {
-                heading?: string;
-                subheading?: string;
-                buttonText?: string;
-                buttonLink?: string;
-                backgroundImage?: string;
-                backgroundVideo?: string;
-                title?: string;
-                subtitle?: string;
-                description?: string;
-                alignment?: "left" | "center" | "right";
-                items?: Array<{
-                    id?: string;
-                    title?: string;
-                    description?: string;
-                    icon?: string;
-                    image?: string;
-                    link?: string;
-                }>;
-                images?: Array<{
-                    url: string;
-                    alt?: string;
-                    title?: string;
-                    description?: string;
-                }>;
-                testimonials?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    company?: string;
-                    text?: string;
-                    avatar?: string;
-                    rating?: number;
-                }>;
-                members?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    bio?: string;
-                    image?: string;
-                    social?: {
-                        linkedin?: string;
-                        twitter?: string;
-                        github?: string;
-                    };
-                }>;
-                plans?: Array<{
-                    id?: string;
-                    name?: string;
-                    price?: string;
-                    currency?: string;
-                    interval?: string;
-                    features?: string[];
-                    highlighted?: boolean;
-                    buttonText?: string;
-                    buttonLink?: string;
-                }>;
-                faqs?: Array<{
-                    id?: string;
-                    question?: string;
-                    answer?: string;
-                }>;
-                stats?: Array<{
-                    id?: string;
-                    value?: string;
-                    label?: string;
-                    icon?: string;
-                }>;
-                videoUrl?: string;
-                videoPoster?: string;
-                text?: string;
-                html?: string;
-            };
-            styling: {
-                backgroundColor?: string;
-                textColor?: string;
-                padding?: {
-                    top?: string;
-                    bottom?: string;
-                    left?: string;
-                    right?: string;
-                };
-                margin?: {
-                    top?: string;
-                    bottom?: string;
-                };
-                customCss?: string;
-                containerWidth?: "full" | "contained" | "narrow";
-                backgroundImage?: string;
-                backgroundOverlay?: string;
-            } | null;
-            tenantId: string;
+            [x: string]: any;
         }[];
     }>;
     getSections(tenantId: string, pageId?: string): Promise<{
@@ -1644,9 +493,7 @@ export declare class WebsiteBuilderResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        order: number;
-        pageId: string;
-        type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+        tenantId: string;
         content: {
             heading?: string;
             subheading?: string;
@@ -1720,6 +567,9 @@ export declare class WebsiteBuilderResolver {
             text?: string;
             html?: string;
         };
+        type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+        pageId: string;
+        order: number;
         styling: {
             backgroundColor?: string;
             textColor?: string;
@@ -1738,7 +588,6 @@ export declare class WebsiteBuilderResolver {
             backgroundImage?: string;
             backgroundOverlay?: string;
         } | null;
-        tenantId: string;
     }[]>;
     getSection(id: string, tenantId: string): Promise<{
         id: string;
@@ -1746,9 +595,7 @@ export declare class WebsiteBuilderResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        order: number;
-        pageId: string;
-        type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+        tenantId: string;
         content: {
             heading?: string;
             subheading?: string;
@@ -1822,6 +669,9 @@ export declare class WebsiteBuilderResolver {
             text?: string;
             html?: string;
         };
+        type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+        pageId: string;
+        order: number;
         styling: {
             backgroundColor?: string;
             textColor?: string;
@@ -1840,30 +690,11 @@ export declare class WebsiteBuilderResolver {
             backgroundImage?: string;
             backgroundOverlay?: string;
         } | null;
-        tenantId: string;
         page: {
-            id: string;
-            name: string;
-            description: string | null;
-            isActive: boolean;
-            settings: {
-                layout?: string;
-                headerVisible?: boolean;
-                footerVisible?: boolean;
-                customCss?: string;
-                customJs?: string;
-            } | null;
-            createdAt: Date;
-            updatedAt: Date;
-            templateId: string;
-            slug: string;
-            isHomepage: boolean;
-            order: number;
-            tenantId: string;
-            metaTitle: string | null;
-            metaDescription: string | null;
-            metaKeywords: string | null;
-        };
+            [x: string]: any;
+        } | {
+            [x: string]: any;
+        }[];
     }>;
     createSection(input: CreateSectionInput, tenantId: string): Promise<{
         id: string;
@@ -1871,9 +702,7 @@ export declare class WebsiteBuilderResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        order: number;
-        pageId: string;
-        type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+        tenantId: string;
         content: {
             heading?: string;
             subheading?: string;
@@ -1947,6 +776,9 @@ export declare class WebsiteBuilderResolver {
             text?: string;
             html?: string;
         };
+        type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+        pageId: string;
+        order: number;
         styling: {
             backgroundColor?: string;
             textColor?: string;
@@ -1965,14 +797,13 @@ export declare class WebsiteBuilderResolver {
             backgroundImage?: string;
             backgroundOverlay?: string;
         } | null;
-        tenantId: string;
     }>;
     updateSection(id: string, input: UpdateSectionInput, tenantId: string): Promise<{
         id: string;
         tenantId: string;
         pageId: string;
         name: string;
-        type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+        type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
         order: number;
         isActive: boolean;
         content: {
@@ -2076,9 +907,7 @@ export declare class WebsiteBuilderResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        order: number;
-        pageId: string;
-        type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+        tenantId: string;
         content: {
             heading?: string;
             subheading?: string;
@@ -2152,6 +981,9 @@ export declare class WebsiteBuilderResolver {
             text?: string;
             html?: string;
         };
+        type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+        pageId: string;
+        order: number;
         styling: {
             backgroundColor?: string;
             textColor?: string;
@@ -2170,14 +1002,13 @@ export declare class WebsiteBuilderResolver {
             backgroundImage?: string;
             backgroundOverlay?: string;
         } | null;
-        tenantId: string;
     }>;
     toggleSectionVisibility(id: string, tenantId: string): Promise<{
         id: string;
         tenantId: string;
         pageId: string;
         name: string;
-        type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+        type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
         order: number;
         isActive: boolean;
         content: {
@@ -2279,7 +1110,7 @@ export declare class WebsiteBuilderResolver {
         tenantId: string;
         pageId: string;
         name: string;
-        type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+        type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
         order: number;
         isActive: boolean;
         content: {
@@ -2380,7 +1211,7 @@ export declare class WebsiteBuilderResolver {
         id: string;
         pageId: string;
         name: string;
-        type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+        type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
         order: number;
         content: unknown;
         styling: unknown;
@@ -2391,7 +1222,7 @@ export declare class WebsiteBuilderResolver {
         id: string;
         pageId: string;
         name: string;
-        type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+        type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
         order: number;
         content: unknown;
         styling: unknown;
@@ -2404,9 +1235,7 @@ export declare class WebsiteBuilderResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        order: number;
-        pageId: string;
-        type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
+        tenantId: string;
         content: {
             heading?: string;
             subheading?: string;
@@ -2480,6 +1309,9 @@ export declare class WebsiteBuilderResolver {
             text?: string;
             html?: string;
         };
+        type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+        pageId: string;
+        order: number;
         styling: {
             backgroundColor?: string;
             textColor?: string;
@@ -2498,6 +1330,5 @@ export declare class WebsiteBuilderResolver {
             backgroundImage?: string;
             backgroundOverlay?: string;
         } | null;
-        tenantId: string;
     }>;
 }

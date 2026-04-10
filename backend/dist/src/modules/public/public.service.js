@@ -450,6 +450,22 @@ let PublicService = class PublicService {
             .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.orders.tenantId, tenantId), (0, drizzle_orm_1.eq)(schema_1.orders.customerEmail, customer.email)))
             .orderBy((0, drizzle_orm_1.desc)(schema_1.orders.createdAt));
     }
+    async getPublicForms(tenantSlug) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        const result = await this.db.execute((0, drizzle_orm_1.sql) `SELECT id, name, slug, description, fields, success_message 
+        FROM forms 
+        WHERE tenant_id = ${tenantId} AND is_active = true 
+        ORDER BY created_at DESC`);
+        return result.rows || [];
+    }
+    async getPublicBookingServices(tenantSlug) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        const result = await this.db.execute((0, drizzle_orm_1.sql) `SELECT id, name, description, duration, price, currency, color
+        FROM booking_services 
+        WHERE tenant_id = ${tenantId} AND is_active = true 
+        ORDER BY name ASC`);
+        return result.rows || [];
+    }
 };
 exports.PublicService = PublicService;
 exports.PublicService = PublicService = __decorate([

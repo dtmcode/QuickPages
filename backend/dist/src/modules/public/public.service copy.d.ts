@@ -20,7 +20,7 @@ export declare class PublicService {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -53,7 +53,7 @@ export declare class PublicService {
         excerpt: string | null;
         featuredImage: string | null;
         metaDescription: string | null;
-        template: "about" | "contact" | "default" | "landing" | "blank";
+        template: "default" | "landing" | "contact" | "about" | "blank";
         status: "draft" | "published" | "archived";
         isPublished: boolean;
         publishedAt: Date | null;
@@ -63,8 +63,7 @@ export declare class PublicService {
     getPublishedWbPages(tenantSlug: string, templateId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        isActive: boolean;
+        slug: string;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -72,124 +71,25 @@ export declare class PublicService {
             customCss?: string;
             customJs?: string;
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        templateId: string;
-        slug: string;
-        isHomepage: boolean;
-        order: number;
         tenantId: string;
-        metaTitle: string | null;
+        description: string | null;
         metaDescription: string | null;
+        order: number;
+        metaTitle: string | null;
         metaKeywords: string | null;
+        templateId: string;
+        isHomepage: boolean;
         sections: {
-            id: string;
-            name: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            order: number;
-            pageId: string;
-            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-            content: {
-                heading?: string;
-                subheading?: string;
-                buttonText?: string;
-                buttonLink?: string;
-                backgroundImage?: string;
-                backgroundVideo?: string;
-                title?: string;
-                subtitle?: string;
-                description?: string;
-                alignment?: "left" | "center" | "right";
-                items?: Array<{
-                    id?: string;
-                    title?: string;
-                    description?: string;
-                    icon?: string;
-                    image?: string;
-                    link?: string;
-                }>;
-                images?: Array<{
-                    url: string;
-                    alt?: string;
-                    title?: string;
-                    description?: string;
-                }>;
-                testimonials?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    company?: string;
-                    text?: string;
-                    avatar?: string;
-                    rating?: number;
-                }>;
-                members?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    bio?: string;
-                    image?: string;
-                    social?: {
-                        linkedin?: string;
-                        twitter?: string;
-                        github?: string;
-                    };
-                }>;
-                plans?: Array<{
-                    id?: string;
-                    name?: string;
-                    price?: string;
-                    currency?: string;
-                    interval?: string;
-                    features?: string[];
-                    highlighted?: boolean;
-                    buttonText?: string;
-                    buttonLink?: string;
-                }>;
-                faqs?: Array<{
-                    id?: string;
-                    question?: string;
-                    answer?: string;
-                }>;
-                stats?: Array<{
-                    id?: string;
-                    value?: string;
-                    label?: string;
-                    icon?: string;
-                }>;
-                videoUrl?: string;
-                videoPoster?: string;
-                text?: string;
-                html?: string;
-            };
-            styling: {
-                backgroundColor?: string;
-                textColor?: string;
-                padding?: {
-                    top?: string;
-                    bottom?: string;
-                    left?: string;
-                    right?: string;
-                };
-                margin?: {
-                    top?: string;
-                    bottom?: string;
-                };
-                customCss?: string;
-                containerWidth?: "full" | "contained" | "narrow";
-                backgroundImage?: string;
-                backgroundOverlay?: string;
-            } | null;
-            tenantId: string;
+            [x: string]: any;
         }[];
     }[]>;
     getWbPageBySlug(tenantSlug: string, templateId: string, pageSlug: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        isActive: boolean;
+        slug: string;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -197,124 +97,25 @@ export declare class PublicService {
             customCss?: string;
             customJs?: string;
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        templateId: string;
-        slug: string;
-        isHomepage: boolean;
-        order: number;
         tenantId: string;
-        metaTitle: string | null;
+        description: string | null;
         metaDescription: string | null;
+        order: number;
+        metaTitle: string | null;
         metaKeywords: string | null;
+        templateId: string;
+        isHomepage: boolean;
         sections: {
-            id: string;
-            name: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            order: number;
-            pageId: string;
-            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-            content: {
-                heading?: string;
-                subheading?: string;
-                buttonText?: string;
-                buttonLink?: string;
-                backgroundImage?: string;
-                backgroundVideo?: string;
-                title?: string;
-                subtitle?: string;
-                description?: string;
-                alignment?: "left" | "center" | "right";
-                items?: Array<{
-                    id?: string;
-                    title?: string;
-                    description?: string;
-                    icon?: string;
-                    image?: string;
-                    link?: string;
-                }>;
-                images?: Array<{
-                    url: string;
-                    alt?: string;
-                    title?: string;
-                    description?: string;
-                }>;
-                testimonials?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    company?: string;
-                    text?: string;
-                    avatar?: string;
-                    rating?: number;
-                }>;
-                members?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    bio?: string;
-                    image?: string;
-                    social?: {
-                        linkedin?: string;
-                        twitter?: string;
-                        github?: string;
-                    };
-                }>;
-                plans?: Array<{
-                    id?: string;
-                    name?: string;
-                    price?: string;
-                    currency?: string;
-                    interval?: string;
-                    features?: string[];
-                    highlighted?: boolean;
-                    buttonText?: string;
-                    buttonLink?: string;
-                }>;
-                faqs?: Array<{
-                    id?: string;
-                    question?: string;
-                    answer?: string;
-                }>;
-                stats?: Array<{
-                    id?: string;
-                    value?: string;
-                    label?: string;
-                    icon?: string;
-                }>;
-                videoUrl?: string;
-                videoPoster?: string;
-                text?: string;
-                html?: string;
-            };
-            styling: {
-                backgroundColor?: string;
-                textColor?: string;
-                padding?: {
-                    top?: string;
-                    bottom?: string;
-                    left?: string;
-                    right?: string;
-                };
-                margin?: {
-                    top?: string;
-                    bottom?: string;
-                };
-                customCss?: string;
-                containerWidth?: "full" | "contained" | "narrow";
-                backgroundImage?: string;
-                backgroundOverlay?: string;
-            } | null;
-            tenantId: string;
+            [x: string]: any;
         }[];
     }>;
     getWbHomepage(tenantSlug: string, templateId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        isActive: boolean;
+        slug: string;
         settings: {
             layout?: string;
             headerVisible?: boolean;
@@ -322,117 +123,19 @@ export declare class PublicService {
             customCss?: string;
             customJs?: string;
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        templateId: string;
-        slug: string;
-        isHomepage: boolean;
-        order: number;
         tenantId: string;
-        metaTitle: string | null;
+        description: string | null;
         metaDescription: string | null;
+        order: number;
+        metaTitle: string | null;
         metaKeywords: string | null;
+        templateId: string;
+        isHomepage: boolean;
         sections: {
-            id: string;
-            name: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            order: number;
-            pageId: string;
-            type: "hero" | "features" | "about" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "contact" | "faq" | "blog" | "stats" | "video" | "text" | "html" | "custom" | "newsletter" | "booking" | "map" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp";
-            content: {
-                heading?: string;
-                subheading?: string;
-                buttonText?: string;
-                buttonLink?: string;
-                backgroundImage?: string;
-                backgroundVideo?: string;
-                title?: string;
-                subtitle?: string;
-                description?: string;
-                alignment?: "left" | "center" | "right";
-                items?: Array<{
-                    id?: string;
-                    title?: string;
-                    description?: string;
-                    icon?: string;
-                    image?: string;
-                    link?: string;
-                }>;
-                images?: Array<{
-                    url: string;
-                    alt?: string;
-                    title?: string;
-                    description?: string;
-                }>;
-                testimonials?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    company?: string;
-                    text?: string;
-                    avatar?: string;
-                    rating?: number;
-                }>;
-                members?: Array<{
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    bio?: string;
-                    image?: string;
-                    social?: {
-                        linkedin?: string;
-                        twitter?: string;
-                        github?: string;
-                    };
-                }>;
-                plans?: Array<{
-                    id?: string;
-                    name?: string;
-                    price?: string;
-                    currency?: string;
-                    interval?: string;
-                    features?: string[];
-                    highlighted?: boolean;
-                    buttonText?: string;
-                    buttonLink?: string;
-                }>;
-                faqs?: Array<{
-                    id?: string;
-                    question?: string;
-                    answer?: string;
-                }>;
-                stats?: Array<{
-                    id?: string;
-                    value?: string;
-                    label?: string;
-                    icon?: string;
-                }>;
-                videoUrl?: string;
-                videoPoster?: string;
-                text?: string;
-                html?: string;
-            };
-            styling: {
-                backgroundColor?: string;
-                textColor?: string;
-                padding?: {
-                    top?: string;
-                    bottom?: string;
-                    left?: string;
-                    right?: string;
-                };
-                margin?: {
-                    top?: string;
-                    bottom?: string;
-                };
-                customCss?: string;
-                containerWidth?: "full" | "contained" | "narrow";
-                backgroundImage?: string;
-                backgroundOverlay?: string;
-            } | null;
-            tenantId: string;
+            [x: string]: any;
         }[];
     } | null>;
     getDefaultTemplateId(tenantSlug: string): Promise<string | null>;
@@ -546,8 +249,6 @@ export declare class PublicService {
     getNavigation(tenantSlug: string, location: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-        isActive: boolean;
         settings: {
             backgroundColor?: string;
             textColor?: string;
@@ -555,12 +256,14 @@ export declare class PublicService {
             itemsAlign?: "left" | "center" | "right";
             logoText?: string;
         } | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
+        description: string | null;
         location: string;
         items: {
-            id: string;
+            [x: string]: any;
         }[];
     } | null>;
     subscribeToNewsletter(tenantSlug: string, data: {
