@@ -596,6 +596,221 @@ function SectionRenderer({ section }: { section: Section }) {
             <div>{(block.rightBlocks || []).map((b: any) => renderFreeBlock(b))}</div>
           </div>
         );
+      case 'feature-grid':
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(220px, 1fr))`, gap: '1.5rem' }}>
+        {(block.items || []).map((item: any, i: number) => (
+          <div key={i} style={{ padding: '1.5rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.03)', textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }}>
+            {item.icon && <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>{item.icon}</div>}
+            <h3 style={{ fontWeight: 700, marginBottom: '0.5rem', fontSize: '1.1rem' }}>{item.title}</h3>
+            <p style={{ opacity: 0.75, margin: 0 }}>{item.description}</p>
+            {item.price && <p style={{ fontWeight: 700, color: buttonStyle.backgroundColor, marginTop: '0.5rem' }}>{item.price}</p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+case 'stat-grid':
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(160px, 1fr))`, gap: '2rem', textAlign: 'center' }}>
+        {(block.items || []).map((item: any, i: number) => (
+          <div key={i}>
+            <div style={{ fontSize: '3rem', fontWeight: 800, color: buttonStyle.backgroundColor, lineHeight: 1 }}>{item.value}</div>
+            <div style={{ fontWeight: 600, margin: '0.4rem 0 0.2rem', fontSize: '1.1rem' }}>{item.label}</div>
+            {item.description && <div style={{ opacity: 0.6 }}>{item.description}</div>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+case 'testimonial-grid':
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(260px, 1fr))`, gap: '1.5rem' }}>
+        {(block.items || []).map((item: any, i: number) => (
+          <div key={i} style={{ padding: '1.5rem', borderRadius: '0.75rem', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', fontStyle: 'italic' }}>
+            <p style={{ margin: '0 0 1rem', lineHeight: 1.6 }}>„{item.text}"</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontStyle: 'normal' }}>
+              {item.image && <img src={item.image} alt={item.name} style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover' }} />}
+              <div>
+                <p style={{ fontWeight: 600, margin: 0 }}>{item.name}</p>
+                {item.role && <p style={{ opacity: 0.6, margin: 0, fontSize: '0.875rem' }}>{item.role}</p>}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+case 'team-grid':
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(180px, 1fr))`, gap: '2rem', textAlign: 'center' }}>
+        {(block.items || []).map((item: any, i: number) => (
+          <div key={i}>
+            <div style={{ width: 96, height: 96, borderRadius: '50%', background: buttonStyle.backgroundColor, margin: '0 auto 1rem', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '2rem' }}>
+              {item.image ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
+            </div>
+            <h3 style={{ fontWeight: 700, margin: '0 0 0.25rem' }}>{item.name}</h3>
+            <p style={{ opacity: 0.6, margin: '0 0 0.5rem', fontSize: '0.875rem' }}>{item.role}</p>
+            {item.bio && <p style={{ opacity: 0.75, fontSize: '0.875rem', margin: 0 }}>{item.bio}</p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+case 'pricing-grid':
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(260px, 1fr))`, gap: '1.5rem' }}>
+        {(block.items || []).map((item: any, i: number) => (
+          <div key={i} style={{ padding: '2rem', borderRadius: '0.75rem', background: item.highlighted ? buttonStyle.backgroundColor : '#fff', color: item.highlighted ? buttonStyle.color : 'inherit', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', textAlign: 'center' }}>
+            <h3 style={{ fontWeight: 700, margin: '0 0 0.5rem', fontSize: '1.25rem' }}>{item.title}</h3>
+            <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '0.5rem 0 1rem' }}>{item.price}<span style={{ fontSize: '1rem', fontWeight: 400 }}>/{item.interval}</span></div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem', textAlign: 'left' }}>
+              {(item.features || []).map((f: string, fi: number) => <li key={fi} style={{ padding: '0.25rem 0', fontSize: '0.875rem' }}>✓ {f}</li>)}
+            </ul>
+            <a href="#" style={{ display: 'block', padding: '0.75rem', borderRadius: '0.5rem', fontWeight: 600, textDecoration: 'none', background: item.highlighted ? 'rgba(255,255,255,0.2)' : buttonStyle.backgroundColor, color: item.highlighted ? '#fff' : buttonStyle.color }}>
+              {item.buttonText || 'Jetzt starten'}
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+case 'faq-list':
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      {(block.items || []).map((item: any, i: number) => (
+        <details key={i} style={{ marginBottom: '0.75rem', padding: '1rem 1.25rem', background: '#fff', borderRadius: '0.75rem', boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }}>
+          <summary style={{ fontWeight: 600, cursor: 'pointer', fontSize: '1rem' }}>{item.question}</summary>
+          <p style={{ margin: '0.75rem 0 0', opacity: 0.8 }}>{item.answer}</p>
+        </details>
+      ))}
+    </div>
+  );
+
+case 'image-grid':
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${block.columns || 3}, 1fr)`, gap: '0.75rem' }}>
+        {(block.images || []).map((img: any, i: number) => (
+          <div key={i} style={{ aspectRatio: '1', borderRadius: '0.5rem', overflow: 'hidden', background: '#f3f4f6' }}>
+            {img.url && <img src={img.url} alt={img.alt || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+case 'contact-form':
+  return (
+    <div style={{ maxWidth: 520, margin: '0 auto 1.5rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {['Name', 'E-Mail'].map(f => (
+          <input key={f} type={f === 'E-Mail' ? 'email' : 'text'} placeholder={f} style={{ padding: '0.75rem 1rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem', fontSize: '1rem' }} />
+        ))}
+        <textarea placeholder="Nachricht" rows={4} style={{ padding: '0.75rem 1rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem', fontSize: '1rem', resize: 'vertical' }} />
+        {block.gdprText && <p style={{ fontSize: '0.75rem', opacity: 0.6 }}>🔒 {block.gdprText}</p>}
+        <button style={{ padding: '0.75rem', borderRadius: '0.5rem', background: buttonStyle.backgroundColor, color: buttonStyle.color, fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: '1rem' }}>{block.buttonText || 'Senden'}</button>
+      </div>
+    </div>
+  );
+
+case 'newsletter-form':
+  return (
+    <div style={{ maxWidth: 480, margin: '0 auto 1.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <input type="email" placeholder={block.placeholder || 'deine@email.de'} style={{ flex: 1, padding: '0.75rem 1rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem', fontSize: '1rem' }} />
+        <button style={{ padding: '0.75rem 1.5rem', borderRadius: '0.5rem', background: buttonStyle.backgroundColor, color: buttonStyle.color, fontWeight: 600, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>{block.buttonText || 'Abonnieren'}</button>
+      </div>
+    </div>
+  );
+
+case 'blog-feed':
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+        {Array(block.count || 3).fill(null).map((_, i) => (
+          <div key={i} style={{ borderRadius: '0.75rem', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', background: '#fff' }}>
+            <div style={{ aspectRatio: '16/9', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', opacity: 0.3 }}>📰</div>
+            <div style={{ padding: '1rem' }}>
+              <h4 style={{ fontWeight: 600, margin: '0 0 0.5rem' }}>Blog-Post Titel</h4>
+              <p style={{ opacity: 0.6, margin: 0, fontSize: '0.875rem' }}>Kurze Beschreibung...</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+case 'social-links':
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+      {(block.links || []).map((l: any, i: number) => (
+        <a key={i} href={l.url || '#'} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1.25rem', background: 'rgba(0,0,0,0.06)', borderRadius: '0.75rem', textDecoration: 'none', color: 'inherit', fontWeight: 600 }}>
+          <span>{l.icon}</span><span>{l.platform}</span>
+        </a>
+      ))}
+    </div>
+  );
+
+case 'map-embed':
+  return block.embedUrl ? (
+    <div style={{ marginBottom: '1.5rem', borderRadius: '0.75rem', overflow: 'hidden', aspectRatio: '16/7' }}>
+      <iframe src={block.embedUrl} width="100%" height="100%" style={{ border: 'none' }} title="Karte" allowFullScreen />
+    </div>
+  ) : (
+    <div style={{ marginBottom: '1.5rem', background: '#f3f4f6', borderRadius: '0.75rem', aspectRatio: '16/7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0.5, gap: '0.5rem' }}>
+      <span style={{ fontSize: '2rem' }}>🗺️</span>
+      <span>{block.address || 'Adresse eingeben'}</span>
+    </div>
+  );
+
+case 'countdown-timer':
+  return (
+    <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+        {['Tage', 'Std', 'Min', 'Sek'].map(u => (
+          <div key={u} style={{ background: 'rgba(0,0,0,0.06)', borderRadius: '0.75rem', padding: '1rem 1.5rem', minWidth: 72 }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: buttonStyle.backgroundColor }}>00</div>
+            <div style={{ opacity: 0.6, fontSize: '0.75rem' }}>{u}</div>
+          </div>
+        ))}
+      </div>
+      {block.text && <p style={{ marginTop: '1rem', opacity: 0.75 }}>{block.text}</p>}
+    </div>
+  );
+
+case 'before-after':
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <BeforeAfterSlider
+        beforeImage={block.beforeImage || ''}
+        afterImage={block.afterImage || ''}
+        beforeLabel={block.beforeLabel || 'Vorher'}
+        afterLabel={block.afterLabel || 'Nachher'}
+      />
+    </div>
+  );
+
+case 'whatsapp-btn':
+  return (
+    <div style={{ textAlign: (block.position === 'left' ? 'left' : 'right'), marginBottom: '1rem' }}>
+      <a href={`https://wa.me/${(block.phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(block.message || '')}`}
+        target="_blank" rel="noopener noreferrer"
+        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', padding: '0.875rem 1.5rem', background: '#25D366', color: '#fff', borderRadius: '3rem', fontWeight: 600, textDecoration: 'none' }}>
+        💬 {block.label || 'WhatsApp schreiben'}
+      </a>
+    </div>
+  );
       default: return null;
     }
   };

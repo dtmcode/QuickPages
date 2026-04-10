@@ -267,145 +267,39 @@ const BLOCK_CATEGORIES = [
 ];
 
 const DEFAULT_CONTENT: Record<string, SectionContent> = {
-  hero: { blocks: [
-    { id: 'b1', type: 'badge', text: '🔥 Neu', align: 'center', order: 0 },
-    { id: 'b2', type: 'heading', text: 'Deine Überschrift hier', level: 'h1', align: 'center', order: 1 },
-    { id: 'b3', type: 'text', html: '<p>Eine überzeugende Unterüberschrift die deine Besucher begeistert.</p>', align: 'center', order: 2 },
-    { id: 'b4', type: 'button', text: 'Jetzt starten', link: '#', style: 'primary', align: 'center', order: 3 },
-  ]},
-  cta: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Bereit loszulegen?', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Starte noch heute kostenlos — kein Risiko.</p>', align: 'center', order: 1 },
-    { id: 'b3', type: 'button', text: 'Jetzt starten', link: '#', style: 'primary', align: 'center', order: 2 },
-  ]},
-  text: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Überschrift', level: 'h2', align: 'left', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Dein Text hier.</p>', align: 'left', order: 1 },
-  ]},
-  spacer: { blocks: [
-    { id: 'b1', type: 'spacer', height: '80px', order: 0 },
-  ]},
-  about: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Über uns', level: 'h2', align: 'left', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Hier steht eine kurze Beschreibung über euch.</p>', align: 'left', order: 1 },
-    { id: 'b3', type: 'button', text: 'Mehr erfahren', link: '#', style: 'outline', align: 'left', order: 2 },
-  ]},
-  features: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Unsere Features', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Was uns besonders macht.</p>', align: 'center', order: 1 },
-    { id: 'b3', type: 'feature-grid', columns: 3, items: [
-      { icon: '⚡', title: 'Feature 1', description: 'Kurze Beschreibung.' },
-      { icon: '🎯', title: 'Feature 2', description: 'Kurze Beschreibung.' },
-      { icon: '🔥', title: 'Feature 3', description: 'Kurze Beschreibung.' },
-    ], order: 2 },
-  ]},
-  services: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Unsere Leistungen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'feature-grid', columns: 3, items: [
-      { icon: '🛠️', title: 'Service 1', description: 'Beschreibung', price: 'ab €99' },
-      { icon: '💡', title: 'Service 2', description: 'Beschreibung', price: 'ab €149' },
-      { icon: '🚀', title: 'Service 3', description: 'Beschreibung', price: 'ab €199' },
-    ], order: 1 },
-  ]},
-  stats: { blocks: [
-    { id: 'b1', type: 'heading', text: 'In Zahlen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'stat-grid', columns: 4, items: [
-      { value: '1.000+', label: 'Kunden', description: 'Weltweit' },
-      { value: '99%', label: 'Zufriedenheit', description: 'Bewertung' },
-      { value: '24/7', label: 'Support', description: 'Erreichbar' },
-      { value: '5+', label: 'Jahre', description: 'Erfahrung' },
-    ], order: 1 },
-  ]},
-  testimonials: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Was unsere Kunden sagen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'testimonial-grid', columns: 2, items: [
-      { name: 'Max Müller', role: 'CEO', text: 'Absolut empfehlenswert!', image: '' },
-      { name: 'Anna Schmidt', role: 'Designerin', text: 'Super einfach zu bedienen.', image: '' },
-    ], order: 1 },
-  ]},
-  team: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Unser Team', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'team-grid', columns: 3, items: [
-      { name: 'Max Müller', role: 'CEO', bio: 'Gründer & Visionär', image: '' },
-      { name: 'Anna Schmidt', role: 'CTO', bio: 'Technik-Expertin', image: '' },
-    ], order: 1 },
-  ]},
-  gallery: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Galerie', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'image-grid', columns: 3, images: [
-      { url: '', alt: 'Bild 1' },
-      { url: '', alt: 'Bild 2' },
-      { url: '', alt: 'Bild 3' },
-    ], order: 1 },
-  ]},
-  pricing: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Unsere Preise', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'pricing-grid', columns: 2, items: [
-      { title: 'Starter', price: '€9', interval: 'Monat', features: ['Feature 1', 'Feature 2'], buttonText: 'Jetzt starten', highlighted: false },
-      { title: 'Pro', price: '€29', interval: 'Monat', features: ['Feature 1', 'Feature 2', 'Feature 3'], buttonText: 'Jetzt starten', highlighted: true },
-    ], order: 1 },
-  ]},
-  contact: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Kontakt aufnehmen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Wir freuen uns auf deine Nachricht.</p>', align: 'center', order: 1 },
-    { id: 'b3', type: 'contact-form', buttonText: 'Senden', order: 2 },
-  ]},
-  faq: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Häufige Fragen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'faq-list', items: [
-      { question: 'Wie funktioniert das?', answer: 'Ganz einfach...' },
-      { question: 'Was kostet es?', answer: 'Ab €9 pro Monat.' },
-    ], order: 1 },
-  ]},
-  video: { blocks: [
-    { id: 'b1', type: 'heading', text: '', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'video', url: '', align: 'center', order: 1 },
-  ]},
-  html: { blocks: [
-    { id: 'b1', type: 'text', html: '<div style="padding:2rem;text-align:center"><h2>Dein HTML hier</h2></div>', align: 'left', order: 0 },
-  ]},
-  blog: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Neueste Beiträge', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'blog-feed', count: 3, order: 1 },
-  ]},
-  newsletter: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Newsletter abonnieren', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Erhalte die neuesten Updates direkt in dein Postfach.</p>', align: 'center', order: 1 },
-    { id: 'b3', type: 'newsletter-form', buttonText: 'Abonnieren', placeholder: 'deine@email.de', order: 2 },
-  ]},
-  whatsapp: { blocks: [
-    { id: 'b1', type: 'whatsapp-btn', phone: '+49 151 12345678', message: 'Hallo, ich hätte eine Frage...', position: 'right', label: 'WhatsApp schreiben', order: 0 },
-  ]},
-  before_after: { blocks: [
-    { id: 'b1', type: 'before-after', beforeImage: '', afterImage: '', beforeLabel: 'Vorher', afterLabel: 'Nachher', order: 0 },
-  ]},
-  booking: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Termin buchen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Buche jetzt deinen Wunschtermin.</p>', align: 'center', order: 1 },
-    { id: 'b3', type: 'button', text: 'Termin buchen', link: '/booking', style: 'primary', align: 'center', order: 2 },
-  ]},
-  social: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Folge uns', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'social-links', links: [
-      { platform: 'Instagram', url: 'https://instagram.com/', icon: '📷' },
-      { platform: 'Facebook', url: 'https://facebook.com/', icon: '👍' },
-      { platform: 'LinkedIn', url: 'https://linkedin.com/', icon: '💼' },
-    ], order: 1 },
-  ]},
-  map: { blocks: [
-    { id: 'b1', type: 'heading', text: 'So findest du uns', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'map-embed', address: 'Musterstraße 1, 12345 Musterstadt', embedUrl: '', order: 1 },
-  ]},
-  countdown: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Nur noch bis...', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'countdown-timer', targetDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], text: 'Verpasse nicht unser Angebot!', order: 1 },
-  ]},
-  freestyle: { blocks: [
+  hero:         { heading: 'Deine Überschrift hier', subheading: 'Eine überzeugende Unterüberschrift', buttonText: 'Jetzt starten', buttonLink: '#' },
+  cta:          { heading: 'Bereit loszulegen?', subheading: 'Starte noch heute kostenlos.', buttonText: 'Jetzt starten', buttonLink: '#' },
+  text: { heading: 'Überschrift', text: '<p>Dein Text hier.</p>' },
+  spacer: { height: '80px', showLine: false, lineColor: '#e5e7eb', lineStyle: 'solid', lineThickness: '1px' },
+  about:        { heading: 'Über uns', text: '<p>Hier steht eine kurze Beschreibung.</p>' },
+  features:     { heading: 'Unsere Features', items: [{ icon: '⚡', title: 'Feature 1', description: 'Kurze Beschreibung' }, { icon: '🎯', title: 'Feature 2', description: 'Kurze Beschreibung' }, { icon: '🔥', title: 'Feature 3', description: 'Kurze Beschreibung' }] },
+  services:     { heading: 'Unsere Leistungen', items: [{ icon: '🛠️', title: 'Service 1', description: 'Beschreibung', price: 'ab €99' }, { icon: '💡', title: 'Service 2', description: 'Beschreibung', price: 'ab €149' }] },
+  stats:        { heading: 'In Zahlen', items: [{ value: '1.000+', title: 'Kunden', description: 'Weltweit' }, { value: '99%', title: 'Zufriedenheit', description: 'Bewertung' }, { value: '24/7', title: 'Support', description: 'Erreichbar' }, { value: '5+', title: 'Jahre', description: 'Erfahrung' }] },
+  testimonials: { heading: 'Was unsere Kunden sagen', items: [{ title: 'Max Müller', subtitle: 'CEO', description: 'Absolut empfehlenswert!' }, { title: 'Anna Schmidt', subtitle: 'Designerin', description: 'Super einfach zu bedienen.' }] },
+  team:         { heading: 'Unser Team', items: [{ title: 'Max Müller', subtitle: 'CEO', description: 'Gründer & Visionär', image: '' }, { title: 'Anna Schmidt', subtitle: 'CTO', description: 'Technik-Expertin', image: '' }] },
+  gallery:      { heading: 'Galerie', images: [{ url: '', alt: 'Bild 1' }, { url: '', alt: 'Bild 2' }, { url: '', alt: 'Bild 3' }] },
+  pricing:      { heading: 'Unsere Preise', items: [{ title: 'Starter', price: '€9', interval: 'Monat', features: ['Feature 1', 'Feature 2'], buttonText: 'Jetzt starten' }, { title: 'Pro', price: '€29', interval: 'Monat', features: ['Feature 1', 'Feature 2', 'Feature 3'], buttonText: 'Jetzt starten', highlighted: true }] },
+  contact:      { heading: 'Kontakt aufnehmen', subheading: 'Wir freuen uns auf deine Nachricht.', buttonText: 'Senden' },
+  faq:          { heading: 'Häufige Fragen', items: [{ title: 'Wie funktioniert das?', description: 'Ganz einfach...' }, { title: 'Was kostet es?', description: 'Ab €9 pro Monat.' }] },
+  video:        { heading: '', videoUrl: '', videoPoster: '' },
+  html:         { html: '<div style="padding: 2rem; text-align: center;"><h2>Dein HTML hier</h2></div>' },
+  blog:         { heading: 'Neueste Beiträge', count: 3 },
+  newsletter: { heading: 'Newsletter abonnieren', text: 'Erhalte die neuesten Updates direkt in dein Postfach.', buttonText: 'Abonnieren', placeholder: 'deine@email.de' },
+  whatsapp: { phone: '+49 151 12345678', message: 'Hallo, ich hätte eine Frage...', position: 'right', label: 'WhatsApp schreiben' },
+before_after: { heading: '', beforeImage: '', afterImage: '', beforeLabel: 'Vorher', afterLabel: 'Nachher' },
+  booking:      { heading: 'Termin buchen', text: 'Buche jetzt deinen Wunschtermin.', buttonText: 'Termin buchen', buttonLink: '/booking' },
+  social:       { heading: 'Folge uns', links: [{ platform: 'Instagram', url: 'https://instagram.com/', icon: '📷' }, { platform: 'Facebook', url: 'https://facebook.com/', icon: '👍' }, { platform: 'LinkedIn', url: 'https://linkedin.com/', icon: '💼' }] },
+  map:          { heading: 'So findest du uns', address: 'Musterstraße 1, 12345 Musterstadt', embedUrl: '' },
+  countdown: { heading: 'Nur noch bis...', targetDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], text: 'Verpasse nicht unser Angebot!' },
+  freestyle: {
+  blocks: [
     { id: 'b1', type: 'heading', text: 'Deine Überschrift', level: 'h2', align: 'center', order: 0 },
     { id: 'b2', type: 'text', html: '<p>Dein Text hier.</p>', align: 'center', order: 1 },
     { id: 'b3', type: 'button', text: 'Jetzt starten', link: '#', style: 'primary', align: 'center', order: 2 },
-  ]},
+  ]
+},
 };
+
 const BG_PRESETS = [
   { label: 'Weiß', bg: '#ffffff', text: '#1f2937' },
   { label: 'Grau', bg: '#f9fafb', text: '#1f2937' },
@@ -564,38 +458,24 @@ function LayoutToggle({ type, content, update }: {
 // ==================== FREESTYLE BLOCK TYPES ====================
 
 const FREESTYLE_BLOCK_TYPES = [
-  // Basis
-  { type: 'heading', label: 'Überschrift', icon: 'H', category: 'basis' },
-  { type: 'text', label: 'Text', icon: '¶', category: 'basis' },
-  { type: 'button', label: 'Button', icon: '🔘', category: 'basis' },
-  { type: 'image', label: 'Bild', icon: '🖼️', category: 'basis' },
-  { type: 'badge', label: 'Badge', icon: '🏷️', category: 'basis' },
-  { type: 'divider', label: 'Trennlinie', icon: '—', category: 'basis' },
-  { type: 'spacer', label: 'Abstand', icon: '↕', category: 'basis' },
-  { type: 'icon', label: 'Icon/Emoji', icon: '⭐', category: 'basis' },
-  { type: 'list', label: 'Liste', icon: '☰', category: 'basis' },
-  { type: 'video', label: 'Video', icon: '▶️', category: 'basis' },
-  { type: 'columns', label: '2 Spalten', icon: '⬛⬛', category: 'basis' },
-  // Komplex
-  { type: 'feature-grid', label: 'Feature Grid', icon: '✨', category: 'komplex' },
-  { type: 'pricing-grid', label: 'Preis Grid', icon: '💰', category: 'komplex' },
-  { type: 'testimonial-grid', label: 'Bewertungen', icon: '💬', category: 'komplex' },
-  { type: 'team-grid', label: 'Team Grid', icon: '👥', category: 'komplex' },
-  { type: 'stat-grid', label: 'Statistiken', icon: '📊', category: 'komplex' },
-  { type: 'faq-list', label: 'FAQ Liste', icon: '❓', category: 'komplex' },
-  { type: 'image-grid', label: 'Bild Grid', icon: '🖼️', category: 'komplex' },
-  { type: 'contact-form', label: 'Kontaktformular', icon: '📬', category: 'komplex' },
-  { type: 'newsletter-form', label: 'Newsletter Form', icon: '📧', category: 'komplex' },
-  { type: 'blog-feed', label: 'Blog Feed', icon: '📰', category: 'komplex' },
-  { type: 'social-links', label: 'Social Links', icon: '🌐', category: 'komplex' },
-  { type: 'map-embed', label: 'Karte', icon: '🗺️', category: 'komplex' },
-  { type: 'countdown-timer', label: 'Countdown', icon: '⏱️', category: 'komplex' },
-  { type: 'before-after', label: 'Before/After', icon: '↔️', category: 'komplex' },
-  { type: 'whatsapp-btn', label: 'WhatsApp', icon: '💬', category: 'komplex' },
+  { type: 'heading', label: 'Überschrift', icon: 'H' },
+  { type: 'text', label: 'Text', icon: '¶' },
+  { type: 'button', label: 'Button', icon: '🔘' },
+  { type: 'image', label: 'Bild', icon: '🖼️' },
+  { type: 'badge', label: 'Badge', icon: '🏷️' },
+  { type: 'divider', label: 'Trennlinie', icon: '—' },
+  { type: 'spacer', label: 'Abstand', icon: '↕' },
+  { type: 'icon', label: 'Icon/Emoji', icon: '⭐' },
+  { type: 'list', label: 'Liste', icon: '☰' },
+  { type: 'video', label: 'Video', icon: '▶️' },
+  { type: 'columns', label: '2 Spalten', icon: '⬛⬛' },
 ];
 
+function generateBlockId() {
+  return 'b' + Math.random().toString(36).substr(2, 9);
+}
+
 const DEFAULT_BLOCK: Record<string, any> = {
-  // Basis
   heading: { text: 'Neue Überschrift', level: 'h2', align: 'center' },
   text: { html: '<p>Dein Text hier.</p>', align: 'left' },
   button: { text: 'Button Text', link: '#', style: 'primary', align: 'center' },
@@ -607,55 +487,7 @@ const DEFAULT_BLOCK: Record<string, any> = {
   list: { items: ['Punkt 1', 'Punkt 2', 'Punkt 3'], style: 'check', align: 'left' },
   video: { url: '', align: 'center' },
   columns: { left: [], right: [], split: '50/50' },
-  // Komplex
-  'feature-grid': { columns: 3, items: [
-    { icon: '⚡', title: 'Feature 1', description: 'Beschreibung' },
-    { icon: '🎯', title: 'Feature 2', description: 'Beschreibung' },
-    { icon: '🔥', title: 'Feature 3', description: 'Beschreibung' },
-  ]},
-  'pricing-grid': { columns: 2, items: [
-    { title: 'Starter', price: '€9', interval: 'Monat', features: ['Feature 1', 'Feature 2'], buttonText: 'Jetzt starten', highlighted: false },
-    { title: 'Pro', price: '€29', interval: 'Monat', features: ['Feature 1', 'Feature 2', 'Feature 3'], buttonText: 'Jetzt starten', highlighted: true },
-  ]},
-  'testimonial-grid': { columns: 2, items: [
-    { name: 'Max Müller', role: 'CEO', text: 'Absolut empfehlenswert!', image: '' },
-    { name: 'Anna Schmidt', role: 'Designerin', text: 'Super einfach zu bedienen.', image: '' },
-  ]},
-  'team-grid': { columns: 3, items: [
-    { name: 'Max Müller', role: 'CEO', bio: 'Gründer & Visionär', image: '' },
-    { name: 'Anna Schmidt', role: 'CTO', bio: 'Technik-Expertin', image: '' },
-  ]},
-  'stat-grid': { columns: 4, items: [
-    { value: '1.000+', label: 'Kunden', description: 'Weltweit' },
-    { value: '99%', label: 'Zufriedenheit', description: 'Bewertung' },
-    { value: '24/7', label: 'Support', description: 'Erreichbar' },
-    { value: '5+', label: 'Jahre', description: 'Erfahrung' },
-  ]},
-  'faq-list': { items: [
-    { question: 'Wie funktioniert das?', answer: 'Ganz einfach...' },
-    { question: 'Was kostet es?', answer: 'Ab €9 pro Monat.' },
-  ]},
-  'image-grid': { columns: 3, images: [
-    { url: '', alt: 'Bild 1' },
-    { url: '', alt: 'Bild 2' },
-    { url: '', alt: 'Bild 3' },
-  ]},
-  'contact-form': { buttonText: 'Senden' },
-  'newsletter-form': { buttonText: 'Abonnieren', placeholder: 'deine@email.de' },
-  'blog-feed': { count: 3 },
-  'social-links': { links: [
-    { platform: 'Instagram', url: 'https://instagram.com/', icon: '📷' },
-    { platform: 'Facebook', url: 'https://facebook.com/', icon: '👍' },
-  ]},
-  'map-embed': { address: '', embedUrl: '' },
-  'countdown-timer': { targetDate: '', text: '' },
-  'before-after': { beforeImage: '', afterImage: '', beforeLabel: 'Vorher', afterLabel: 'Nachher' },
-  'whatsapp-btn': { phone: '', message: '', position: 'right', label: 'WhatsApp schreiben' },
 };
-function generateBlockId() {
-  return 'b' + Math.random().toString(36).substr(2, 9);
-}
-
 
 // ==================== FREESTYLE EDITOR ====================
 
@@ -780,38 +612,27 @@ const dragBlockIdx = useRef<number | null>(null);
       </div>
 
       {/* Block hinzufügen */}
-     {/* Block hinzufügen — kategorisiert */}
-{showAddMenu ? (
-  <div style={{ background: '#0d1117', border: '1px solid #30363d', borderRadius: 8, padding: 10, marginBottom: 12 }}>
-    <p style={{ fontSize: '0.68rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Basis-Elemente</p>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5, marginBottom: 10 }}>
-      {FREESTYLE_BLOCK_TYPES.filter(bt => bt.category === 'basis').map(bt => (
-        <button key={bt.type} onClick={() => addBlock(bt.type)}
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '8px 4px', borderRadius: 6, cursor: 'pointer', background: '#161b22', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.68rem', fontWeight: 600 }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = '#58a6ff')}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = '#21262d')}>
-          <span style={{ fontSize: '1rem' }}>{bt.icon}</span>
-          <span>{bt.label}</span>
-        </button>
-      ))}
-    </div>
-    <p style={{ fontSize: '0.68rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Komplex</p>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5 }}>
-      {FREESTYLE_BLOCK_TYPES.filter(bt => bt.category === 'komplex').map(bt => (
-        <button key={bt.type} onClick={() => addBlock(bt.type)}
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '8px 4px', borderRadius: 6, cursor: 'pointer', background: '#161b22', border: '1px solid rgba(88,166,255,0.2)', color: '#c9d1d9', fontSize: '0.68rem', fontWeight: 600 }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = '#58a6ff')}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(88,166,255,0.2)')}>
-          <span style={{ fontSize: '1rem' }}>{bt.icon}</span>
-          <span>{bt.label}</span>
-        </button>
-      ))}
-    </div>
-    <button onClick={() => setShowAddMenu(false)}
-      style={{ width: '100%', marginTop: 8, background: 'transparent', border: '1px solid #30363d', borderRadius: 6, color: '#6e7681', padding: '6px', fontSize: '0.75rem', cursor: 'pointer' }}>
-      Abbrechen
-    </button>
-  </div>
+      {showAddMenu ? (
+        <div style={{ background: '#0d1117', border: '1px solid #30363d', borderRadius: 8, padding: 10, marginBottom: 12 }}>
+          <p style={{ fontSize: '0.68rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+            Element hinzufügen
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5 }}>
+            {FREESTYLE_BLOCK_TYPES.map(bt => (
+              <button key={bt.type} onClick={() => addBlock(bt.type)}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '8px 4px', borderRadius: 6, cursor: 'pointer', background: '#161b22', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.68rem', fontWeight: 600 }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = '#58a6ff')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = '#21262d')}>
+                <span style={{ fontSize: '1rem' }}>{bt.icon}</span>
+                <span>{bt.label}</span>
+              </button>
+            ))}
+          </div>
+          <button onClick={() => setShowAddMenu(false)}
+            style={{ width: '100%', marginTop: 8, background: 'transparent', border: '1px solid #30363d', borderRadius: 6, color: '#6e7681', padding: '6px', fontSize: '0.75rem', cursor: 'pointer' }}>
+            Abbrechen
+          </button>
+        </div>
       ) : (
         <button onClick={() => setShowAddMenu(true)}
           style={{ width: '100%', padding: '7px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.78rem', cursor: 'pointer', marginBottom: 12 }}
@@ -1055,374 +876,7 @@ const dragBlockIdx = useRef<number | null>(null);
               </div>
             </div>
           )}
-          {selectedBlock.type === 'feature-grid' && (
-  <div>
-    <div style={{ marginBottom: 8 }}>
-      <label style={labelStyle}>Spalten</label>
-      <div style={{ display: 'flex', gap: 5 }}>
-        {[2, 3, 4].map(n => (
-          <button key={n} onClick={() => updateBlock(selectedBlock.id, { columns: n })}
-            style={{ flex: 1, padding: '5px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
-              background: (selectedBlock.columns || 3) === n ? '#1f6feb' : '#161b22',
-              border: `1px solid ${(selectedBlock.columns || 3) === n ? '#1f6feb' : '#30363d'}`,
-              color: (selectedBlock.columns || 3) === n ? '#fff' : '#8b949e' }}>
-            {n}
-          </button>
-        ))}
-      </div>
-    </div>
-    <label style={labelStyle}>Items ({(selectedBlock.items || []).length})</label>
-    {(selectedBlock.items || []).map((item: any, i: number) => (
-      <div key={i} style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 6, padding: 8, marginBottom: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span style={{ fontSize: '0.68rem', color: '#6e7681' }}>#{i + 1}</span>
-          <button onClick={() => updateBlock(selectedBlock.id, { items: (selectedBlock.items || []).filter((_: any, j: number) => j !== i) })}
-            style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer', fontSize: '0.7rem' }}>✕</button>
         </div>
-        {['icon', 'title', 'description', 'price'].map(f => (
-          <input key={f} type="text" placeholder={f} value={item[f] || ''}
-            onChange={e => { const u = [...(selectedBlock.items || [])]; u[i] = { ...u[i], [f]: e.target.value }; updateBlock(selectedBlock.id, { items: u }); }}
-            style={{ ...inputStyle, marginBottom: 3, fontSize: '0.72rem' }} />
-        ))}
-      </div>
-    ))}
-    <button onClick={() => updateBlock(selectedBlock.id, { items: [...(selectedBlock.items || []), { icon: '⭐', title: 'Neu', description: '' }] })}
-      style={{ width: '100%', padding: '6px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.75rem', cursor: 'pointer' }}>
-      + Item
-    </button>
-  </div>
-)}
-
-{selectedBlock.type === 'stat-grid' && (
-  <div>
-    <div style={{ marginBottom: 8 }}>
-      <label style={labelStyle}>Spalten</label>
-      <div style={{ display: 'flex', gap: 5 }}>
-        {[2, 3, 4].map(n => (
-          <button key={n} onClick={() => updateBlock(selectedBlock.id, { columns: n })}
-            style={{ flex: 1, padding: '5px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
-              background: (selectedBlock.columns || 4) === n ? '#1f6feb' : '#161b22',
-              border: `1px solid ${(selectedBlock.columns || 4) === n ? '#1f6feb' : '#30363d'}`,
-              color: (selectedBlock.columns || 4) === n ? '#fff' : '#8b949e' }}>
-            {n}
-          </button>
-        ))}
-      </div>
-    </div>
-    {(selectedBlock.items || []).map((item: any, i: number) => (
-      <div key={i} style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 6, padding: 8, marginBottom: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span style={{ fontSize: '0.68rem', color: '#6e7681' }}>#{i + 1}</span>
-          <button onClick={() => updateBlock(selectedBlock.id, { items: (selectedBlock.items || []).filter((_: any, j: number) => j !== i) })}
-            style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer', fontSize: '0.7rem' }}>✕</button>
-        </div>
-        {['value', 'label', 'description'].map(f => (
-          <input key={f} type="text" placeholder={f} value={item[f] || ''}
-            onChange={e => { const u = [...(selectedBlock.items || [])]; u[i] = { ...u[i], [f]: e.target.value }; updateBlock(selectedBlock.id, { items: u }); }}
-            style={{ ...inputStyle, marginBottom: 3, fontSize: '0.72rem' }} />
-        ))}
-      </div>
-    ))}
-    <button onClick={() => updateBlock(selectedBlock.id, { items: [...(selectedBlock.items || []), { value: '0', label: 'Neu', description: '' }] })}
-      style={{ width: '100%', padding: '6px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.75rem', cursor: 'pointer' }}>
-      + Stat
-    </button>
-  </div>
-)}
-
-{selectedBlock.type === 'testimonial-grid' && (
-  <div>
-    <div style={{ marginBottom: 8 }}>
-      <label style={labelStyle}>Spalten</label>
-      <div style={{ display: 'flex', gap: 5 }}>
-        {[1, 2, 3].map(n => (
-          <button key={n} onClick={() => updateBlock(selectedBlock.id, { columns: n })}
-            style={{ flex: 1, padding: '5px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
-              background: (selectedBlock.columns || 2) === n ? '#1f6feb' : '#161b22',
-              border: `1px solid ${(selectedBlock.columns || 2) === n ? '#1f6feb' : '#30363d'}`,
-              color: (selectedBlock.columns || 2) === n ? '#fff' : '#8b949e' }}>
-            {n}
-          </button>
-        ))}
-      </div>
-    </div>
-    {(selectedBlock.items || []).map((item: any, i: number) => (
-      <div key={i} style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 6, padding: 8, marginBottom: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span style={{ fontSize: '0.68rem', color: '#6e7681' }}>#{i + 1}</span>
-          <button onClick={() => updateBlock(selectedBlock.id, { items: (selectedBlock.items || []).filter((_: any, j: number) => j !== i) })}
-            style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer', fontSize: '0.7rem' }}>✕</button>
-        </div>
-        {['name', 'role', 'text', 'image'].map(f => (
-          <input key={f} type="text" placeholder={f} value={item[f] || ''}
-            onChange={e => { const u = [...(selectedBlock.items || [])]; u[i] = { ...u[i], [f]: e.target.value }; updateBlock(selectedBlock.id, { items: u }); }}
-            style={{ ...inputStyle, marginBottom: 3, fontSize: '0.72rem' }} />
-        ))}
-      </div>
-    ))}
-    <button onClick={() => updateBlock(selectedBlock.id, { items: [...(selectedBlock.items || []), { name: 'Name', role: 'Rolle', text: 'Bewertung', image: '' }] })}
-      style={{ width: '100%', padding: '6px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.75rem', cursor: 'pointer' }}>
-      + Bewertung
-    </button>
-  </div>
-)}
-
-{selectedBlock.type === 'team-grid' && (
-  <div>
-    <div style={{ marginBottom: 8 }}>
-      <label style={labelStyle}>Spalten</label>
-      <div style={{ display: 'flex', gap: 5 }}>
-        {[2, 3, 4].map(n => (
-          <button key={n} onClick={() => updateBlock(selectedBlock.id, { columns: n })}
-            style={{ flex: 1, padding: '5px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
-              background: (selectedBlock.columns || 3) === n ? '#1f6feb' : '#161b22',
-              border: `1px solid ${(selectedBlock.columns || 3) === n ? '#1f6feb' : '#30363d'}`,
-              color: (selectedBlock.columns || 3) === n ? '#fff' : '#8b949e' }}>
-            {n}
-          </button>
-        ))}
-      </div>
-    </div>
-    {(selectedBlock.items || []).map((item: any, i: number) => (
-      <div key={i} style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 6, padding: 8, marginBottom: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span style={{ fontSize: '0.68rem', color: '#6e7681' }}>#{i + 1}</span>
-          <button onClick={() => updateBlock(selectedBlock.id, { items: (selectedBlock.items || []).filter((_: any, j: number) => j !== i) })}
-            style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer', fontSize: '0.7rem' }}>✕</button>
-        </div>
-        {['name', 'role', 'bio', 'image'].map(f => (
-          <input key={f} type="text" placeholder={f} value={item[f] || ''}
-            onChange={e => { const u = [...(selectedBlock.items || [])]; u[i] = { ...u[i], [f]: e.target.value }; updateBlock(selectedBlock.id, { items: u }); }}
-            style={{ ...inputStyle, marginBottom: 3, fontSize: '0.72rem' }} />
-        ))}
-      </div>
-    ))}
-    <button onClick={() => updateBlock(selectedBlock.id, { items: [...(selectedBlock.items || []), { name: 'Name', role: 'Rolle', bio: '', image: '' }] })}
-      style={{ width: '100%', padding: '6px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.75rem', cursor: 'pointer' }}>
-      + Person
-    </button>
-  </div>
-)}
-
-{selectedBlock.type === 'pricing-grid' && (
-  <div>
-    <div style={{ marginBottom: 8 }}>
-      <label style={labelStyle}>Spalten</label>
-      <div style={{ display: 'flex', gap: 5 }}>
-        {[2, 3].map(n => (
-          <button key={n} onClick={() => updateBlock(selectedBlock.id, { columns: n })}
-            style={{ flex: 1, padding: '5px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
-              background: (selectedBlock.columns || 2) === n ? '#1f6feb' : '#161b22',
-              border: `1px solid ${(selectedBlock.columns || 2) === n ? '#1f6feb' : '#30363d'}`,
-              color: (selectedBlock.columns || 2) === n ? '#fff' : '#8b949e' }}>
-            {n}
-          </button>
-        ))}
-      </div>
-    </div>
-    {(selectedBlock.items || []).map((item: any, i: number) => (
-      <div key={i} style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 6, padding: 8, marginBottom: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span style={{ fontSize: '0.68rem', color: '#6e7681' }}>#{i + 1} {item.highlighted ? '⭐ Highlighted' : ''}</span>
-          <button onClick={() => updateBlock(selectedBlock.id, { items: (selectedBlock.items || []).filter((_: any, j: number) => j !== i) })}
-            style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer', fontSize: '0.7rem' }}>✕</button>
-        </div>
-        {['title', 'price', 'interval', 'buttonText'].map(f => (
-          <input key={f} type="text" placeholder={f} value={item[f] || ''}
-            onChange={e => { const u = [...(selectedBlock.items || [])]; u[i] = { ...u[i], [f]: e.target.value }; updateBlock(selectedBlock.id, { items: u }); }}
-            style={{ ...inputStyle, marginBottom: 3, fontSize: '0.72rem' }} />
-        ))}
-        <textarea placeholder="Features (eine pro Zeile)"
-          value={(item.features || []).join('\n')}
-          onChange={e => { const u = [...(selectedBlock.items || [])]; u[i] = { ...u[i], features: e.target.value.split('\n') }; updateBlock(selectedBlock.id, { items: u }); }}
-          rows={3} style={{ ...inputStyle, resize: 'vertical', marginBottom: 3, fontSize: '0.72rem' }} />
-        <button onClick={() => { const u = [...(selectedBlock.items || [])]; u[i] = { ...u[i], highlighted: !u[i].highlighted }; updateBlock(selectedBlock.id, { items: u }); }}
-          style={{ width: '100%', padding: '4px', borderRadius: 4, fontSize: '0.68rem', fontWeight: 600, cursor: 'pointer',
-            background: item.highlighted ? '#1f6feb' : '#161b22',
-            border: `1px solid ${item.highlighted ? '#1f6feb' : '#30363d'}`,
-            color: item.highlighted ? '#fff' : '#8b949e' }}>
-          {item.highlighted ? '⭐ Highlighted' : 'Als Highlighted markieren'}
-        </button>
-      </div>
-    ))}
-    <button onClick={() => updateBlock(selectedBlock.id, { items: [...(selectedBlock.items || []), { title: 'Paket', price: '€0', interval: 'Monat', features: ['Feature'], buttonText: 'Wählen', highlighted: false }] })}
-      style={{ width: '100%', padding: '6px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.75rem', cursor: 'pointer' }}>
-      + Paket
-    </button>
-  </div>
-)}
-
-{selectedBlock.type === 'faq-list' && (
-  <div>
-    {(selectedBlock.items || []).map((item: any, i: number) => (
-      <div key={i} style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 6, padding: 8, marginBottom: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span style={{ fontSize: '0.68rem', color: '#6e7681' }}>#{i + 1}</span>
-          <button onClick={() => updateBlock(selectedBlock.id, { items: (selectedBlock.items || []).filter((_: any, j: number) => j !== i) })}
-            style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer', fontSize: '0.7rem' }}>✕</button>
-        </div>
-        <input type="text" placeholder="Frage" value={item.question || ''}
-          onChange={e => { const u = [...(selectedBlock.items || [])]; u[i] = { ...u[i], question: e.target.value }; updateBlock(selectedBlock.id, { items: u }); }}
-          style={{ ...inputStyle, marginBottom: 3, fontSize: '0.72rem' }} />
-        <textarea placeholder="Antwort" value={item.answer || ''}
-          onChange={e => { const u = [...(selectedBlock.items || [])]; u[i] = { ...u[i], answer: e.target.value }; updateBlock(selectedBlock.id, { items: u }); }}
-          rows={2} style={{ ...inputStyle, resize: 'vertical', fontSize: '0.72rem' }} />
-      </div>
-    ))}
-    <button onClick={() => updateBlock(selectedBlock.id, { items: [...(selectedBlock.items || []), { question: 'Frage?', answer: 'Antwort.' }] })}
-      style={{ width: '100%', padding: '6px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.75rem', cursor: 'pointer' }}>
-      + FAQ
-    </button>
-  </div>
-)}
-
-{selectedBlock.type === 'image-grid' && (
-  <div>
-    <div style={{ marginBottom: 8 }}>
-      <label style={labelStyle}>Spalten</label>
-      <div style={{ display: 'flex', gap: 5 }}>
-        {[2, 3, 4].map(n => (
-          <button key={n} onClick={() => updateBlock(selectedBlock.id, { columns: n })}
-            style={{ flex: 1, padding: '5px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
-              background: (selectedBlock.columns || 3) === n ? '#1f6feb' : '#161b22',
-              border: `1px solid ${(selectedBlock.columns || 3) === n ? '#1f6feb' : '#30363d'}`,
-              color: (selectedBlock.columns || 3) === n ? '#fff' : '#8b949e' }}>
-            {n}
-          </button>
-        ))}
-      </div>
-    </div>
-    {(selectedBlock.images || []).map((img: any, i: number) => (
-      <div key={i} style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 6, padding: 8, marginBottom: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span style={{ fontSize: '0.68rem', color: '#6e7681' }}>#{i + 1}</span>
-          <button onClick={() => updateBlock(selectedBlock.id, { images: (selectedBlock.images || []).filter((_: any, j: number) => j !== i) })}
-            style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer', fontSize: '0.7rem' }}>✕</button>
-        </div>
-        <input type="text" placeholder="Bild URL" value={img.url || ''}
-          onChange={e => { const u = [...(selectedBlock.images || [])]; u[i] = { ...u[i], url: e.target.value }; updateBlock(selectedBlock.id, { images: u }); }}
-          style={{ ...inputStyle, marginBottom: 3, fontSize: '0.72rem' }} />
-        <input type="text" placeholder="Alt-Text" value={img.alt || ''}
-          onChange={e => { const u = [...(selectedBlock.images || [])]; u[i] = { ...u[i], alt: e.target.value }; updateBlock(selectedBlock.id, { images: u }); }}
-          style={{ ...inputStyle, fontSize: '0.72rem' }} />
-      </div>
-    ))}
-    <button onClick={() => updateBlock(selectedBlock.id, { images: [...(selectedBlock.images || []), { url: '', alt: '' }] })}
-      style={{ width: '100%', padding: '6px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.75rem', cursor: 'pointer' }}>
-      + Bild
-    </button>
-  </div>
-)}
-
-{selectedBlock.type === 'contact-form' && (
-  <div>
-    <label style={labelStyle}>Button Text</label>
-    <input type="text" value={selectedBlock.buttonText || 'Senden'}
-      onChange={e => updateBlock(selectedBlock.id, { buttonText: e.target.value })}
-      style={{ ...inputStyle, marginBottom: 8 }} />
-    <label style={labelStyle}>DSGVO Text</label>
-    <input type="text" value={selectedBlock.gdprText || ''}
-      onChange={e => updateBlock(selectedBlock.id, { gdprText: e.target.value })}
-      placeholder="Deine Daten sind sicher." style={inputStyle} />
-  </div>
-)}
-
-{selectedBlock.type === 'newsletter-form' && (
-  <div>
-    <label style={labelStyle}>Button Text</label>
-    <input type="text" value={selectedBlock.buttonText || 'Abonnieren'}
-      onChange={e => updateBlock(selectedBlock.id, { buttonText: e.target.value })}
-      style={{ ...inputStyle, marginBottom: 8 }} />
-    <label style={labelStyle}>Placeholder</label>
-    <input type="text" value={selectedBlock.placeholder || 'deine@email.de'}
-      onChange={e => updateBlock(selectedBlock.id, { placeholder: e.target.value })}
-      style={inputStyle} />
-  </div>
-)}
-
-{selectedBlock.type === 'blog-feed' && (
-  <div>
-    <label style={labelStyle}>Anzahl Posts</label>
-    <div style={{ display: 'flex', gap: 5 }}>
-      {[3, 6, 9].map(n => (
-        <button key={n} onClick={() => updateBlock(selectedBlock.id, { count: n })}
-          style={{ flex: 1, padding: '5px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
-            background: (selectedBlock.count || 3) === n ? '#1f6feb' : '#161b22',
-            border: `1px solid ${(selectedBlock.count || 3) === n ? '#1f6feb' : '#30363d'}`,
-            color: (selectedBlock.count || 3) === n ? '#fff' : '#8b949e' }}>
-          {n}
-        </button>
-      ))}
-    </div>
-  </div>
-)}
-
-{selectedBlock.type === 'social-links' && (
-  <div>
-    {(selectedBlock.links || []).map((link: any, i: number) => (
-      <div key={i} style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 6, padding: 8, marginBottom: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span style={{ fontSize: '0.68rem', color: '#6e7681' }}>{link.platform || `Link ${i+1}`}</span>
-          <button onClick={() => updateBlock(selectedBlock.id, { links: (selectedBlock.links || []).filter((_: any, j: number) => j !== i) })}
-            style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer', fontSize: '0.7rem' }}>✕</button>
-        </div>
-        {['platform', 'url', 'icon'].map(f => (
-          <input key={f} type="text" placeholder={f} value={link[f] || ''}
-            onChange={e => { const u = [...(selectedBlock.links || [])]; u[i] = { ...u[i], [f]: e.target.value }; updateBlock(selectedBlock.id, { links: u }); }}
-            style={{ ...inputStyle, marginBottom: 3, fontSize: '0.72rem' }} />
-        ))}
-      </div>
-    ))}
-    <button onClick={() => updateBlock(selectedBlock.id, { links: [...(selectedBlock.links || []), { platform: 'Instagram', url: '', icon: '📷' }] })}
-      style={{ width: '100%', padding: '6px', background: 'transparent', border: '1px dashed #30363d', borderRadius: 6, color: '#6e7681', fontSize: '0.75rem', cursor: 'pointer' }}>
-      + Link
-    </button>
-  </div>
-)}
-
-{selectedBlock.type === 'map-embed' && (
-  <div>
-    <label style={labelStyle}>Adresse</label>
-    <input type="text" value={selectedBlock.address || ''} onChange={e => updateBlock(selectedBlock.id, { address: e.target.value })} style={{ ...inputStyle, marginBottom: 8 }} />
-    <label style={labelStyle}>Google Maps Embed URL</label>
-    <input type="text" value={selectedBlock.embedUrl || ''} onChange={e => updateBlock(selectedBlock.id, { embedUrl: e.target.value })} style={inputStyle} placeholder="https://maps.google.com/..." />
-  </div>
-)}
-
-{selectedBlock.type === 'countdown-timer' && (
-  <div>
-    <label style={labelStyle}>Zieldatum</label>
-    <input type="date" value={selectedBlock.targetDate || ''} onChange={e => updateBlock(selectedBlock.id, { targetDate: e.target.value })} style={{ ...inputStyle, marginBottom: 8 }} />
-    <label style={labelStyle}>Text darunter</label>
-    <input type="text" value={selectedBlock.text || ''} onChange={e => updateBlock(selectedBlock.id, { text: e.target.value })} style={inputStyle} />
-  </div>
-)}
-
-{selectedBlock.type === 'before-after' && (
-  <div>
-    <label style={labelStyle}>Vorher-Bild URL</label>
-    <input type="text" value={selectedBlock.beforeImage || ''} onChange={e => updateBlock(selectedBlock.id, { beforeImage: e.target.value })} style={{ ...inputStyle, marginBottom: 8 }} />
-    <label style={labelStyle}>Nachher-Bild URL</label>
-    <input type="text" value={selectedBlock.afterImage || ''} onChange={e => updateBlock(selectedBlock.id, { afterImage: e.target.value })} style={{ ...inputStyle, marginBottom: 8 }} />
-    <label style={labelStyle}>Labels</label>
-    <div style={{ display: 'flex', gap: 6 }}>
-      <input type="text" value={selectedBlock.beforeLabel || 'Vorher'} onChange={e => updateBlock(selectedBlock.id, { beforeLabel: e.target.value })} style={{ ...inputStyle, flex: 1 }} placeholder="Vorher" />
-      <input type="text" value={selectedBlock.afterLabel || 'Nachher'} onChange={e => updateBlock(selectedBlock.id, { afterLabel: e.target.value })} style={{ ...inputStyle, flex: 1 }} placeholder="Nachher" />
-    </div>
-  </div>
-)}
-
-{selectedBlock.type === 'whatsapp-btn' && (
-  <div>
-    <label style={labelStyle}>Telefon</label>
-    <input type="text" value={selectedBlock.phone || ''} onChange={e => updateBlock(selectedBlock.id, { phone: e.target.value })} style={{ ...inputStyle, marginBottom: 8 }} placeholder="+49 151..." />
-    <label style={labelStyle}>Button Text</label>
-    <input type="text" value={selectedBlock.label || ''} onChange={e => updateBlock(selectedBlock.id, { label: e.target.value })} style={{ ...inputStyle, marginBottom: 8 }} />
-    <label style={labelStyle}>Vorausgefüllte Nachricht</label>
-    <textarea value={selectedBlock.message || ''} onChange={e => updateBlock(selectedBlock.id, { message: e.target.value })} rows={2} style={{ ...inputStyle, resize: 'vertical' }} />
-  </div>
-)}       
-    </div>
       )}
     </div>
   );
@@ -1455,341 +909,532 @@ const btnText = styling?.buttonTextColor || '#ffffff';
 
   const innerWidth = styling?.containerWidth === 'narrow' ? { maxWidth: '768px', margin: '0 auto' }
     : styling?.containerWidth === 'full' ? {}
-      : { maxWidth: '1100px', margin: '0 auto' };
-  
-  const renderBlock = (block: any): React.ReactNode => {
-  const alignStyle: React.CSSProperties = {
-    textAlign: (block.align || 'center') as any,
-    display: 'block',
-  };
+    : { maxWidth: '1100px', margin: '0 auto' };
 
-  switch (block.type) {
-    case 'heading': {
-      const Tag = (block.level || 'h2') as any;
-      const sizes: Record<string, string> = { h1: headingSize, h2: '1.75rem', h3: '1.25rem', h4: '1rem' };
-      return (
-        <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
-          <Tag style={{ fontSize: sizes[block.level || 'h2'], fontWeight: 700, margin: 0 }}>{block.text || 'Überschrift'}</Tag>
+  const renderContent = () => {
+    const h = content.heading || content.title || '';
+    const opt = content._optional || {}; 
+    const getItems = (): any[] => content.items || content.plans || content.members || content.testimonials || content.faqs || content.stats || [];
+    
+    switch (type) {
+     case 'hero': {
+  const layout = content._layout || 'center';
+  return (
+    <div style={{ ...innerWidth, textAlign: layout === 'center' ? 'center' : 'left', display: layout !== 'center' ? 'flex' : 'block', gap: '2rem', alignItems: 'center' }}>
+      <div style={{ flex: 1 }}>
+        <h1 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 800, margin: '0 0 1rem', lineHeight: 1.2 }}>{content.heading || 'Hero Überschrift'}</h1>
+        {content.subheading && <p style={{ fontSize: styling?.bodySize || '1.2rem', marginBottom: '1.5rem', opacity: 0.85 }}>{content.subheading}</p>}
+        {content.buttonText && <span style={{ display: 'inline-block', padding: '0.75rem 2rem', background: btnBg, color: btnText, borderRadius: '0.5rem', fontWeight: 600 }}>{content.buttonText}</span>}
+      </div>
+      {(layout === 'left' || layout === 'right' || layout === 'split') && content.heroImage && (
+        <div style={{ flex: 1, order: layout === 'right' ? -1 : 1 }}>
+          <img src={content.heroImage} style={{ width: '100%', borderRadius: '0.5rem' }} />
         </div>
-      );
-    }
-    case 'text':
-      return (
-        <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
-          <div dangerouslySetInnerHTML={{ __html: block.html || '<p>Text...</p>' }} style={{ lineHeight: 1.6 }} />
-        </div>
-      );
-    case 'button':
-      return (
-        <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
-          <span style={{
-            display: 'inline-block', padding: '0.6rem 1.5rem', borderRadius: '0.5rem', fontWeight: 600, fontSize: '0.875rem',
-            background: block.style === 'primary' ? btnBg : block.style === 'outline' ? 'transparent' : 'rgba(0,0,0,0.06)',
-            color: block.style === 'primary' ? btnText : primary,
-            border: block.style === 'outline' ? `2px solid ${primary}` : 'none',
-          }}>{block.text || 'Button'}</span>
-        </div>
-      );
-    case 'image':
-      return (
-        <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
-          {block.url
-            ? <img src={block.url} alt={block.alt || ''} style={{ width: block.width || '100%', maxWidth: '100%', borderRadius: '0.5rem', display: 'inline-block' }} />
-            : <div style={{ width: block.width || '100%', aspectRatio: '16/9', background: 'rgba(0,0,0,0.08)', borderRadius: '0.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '2rem' }}>🖼️</div>
-          }
-        </div>
-      );
-    case 'badge':
-      return (
-        <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
-          <span style={{ display: 'inline-block', padding: '4px 14px', background: 'rgba(88,166,255,0.15)', color: '#58a6ff', borderRadius: '2rem', fontSize: '0.8rem', fontWeight: 600, border: '1px solid rgba(88,166,255,0.3)' }}>
-            {block.text || '🏷️ Badge'}
-          </span>
-        </div>
-      );
-    case 'icon':
-      return (
-        <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
-          <span style={{ fontSize: block.size || '3rem', display: 'inline-block' }}>{block.emoji || '⭐'}</span>
-        </div>
-      );
-    case 'spacer':
-      return <div key={block.id} style={{ height: block.height || '2rem' }} />;
-    case 'divider':
-      return (
-        <div key={block.id} style={{ marginBottom: '0.75rem' }}>
-          <hr style={{ border: 'none', borderTop: `${block.thickness || '1px'} ${block.style || 'solid'} ${block.color || '#e5e7eb'}`, margin: 0 }} />
-        </div>
-      );
-    case 'list': {
-      const icons: Record<string, string> = { check: '✓', bullet: '•', arrow: '→', number: '' };
-      return (
-        <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
-          {(block.items || []).map((item: string, i: number) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', justifyContent: block.align === 'center' ? 'center' : block.align === 'right' ? 'flex-end' : 'flex-start' }}>
-              <span style={{ color: primary, fontWeight: 700, flexShrink: 0 }}>
-                {block.style === 'number' ? `${i + 1}.` : icons[block.style || 'check']}
-              </span>
-              <span style={{ fontSize: '0.875rem' }}>{item}</span>
+      )}
+    </div>
+  );
+}
+      case 'cta': {
+  const layout = content._layout || 'center';
+  return (
+    <div style={{ ...innerWidth, textAlign: layout === 'center' ? 'center' : 'left', display: layout === 'left' ? 'flex' : 'block', justifyContent: 'space-between', alignItems: 'center', gap: '2rem' }}>
+      <div>
+        <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 0.75rem' }}>{h || 'Call to Action'}</h2>
+        {content.subheading && layout !== 'left' && <p style={{ marginBottom: '1.25rem', opacity: 0.85 }}>{content.subheading}</p>}
+      </div>
+      {content.buttonText && <span style={{ display: 'inline-block', padding: '0.75rem 2rem', background: '#ffffff', color: '#0f172a', borderRadius: '0.5rem', fontWeight: 600, flexShrink: 0 }}>{content.buttonText}</span>}
+    </div>
+  );
+}
+     case 'features': case 'services': {
+  const layout = content._layout || 'grid-3';
+  const cols = layout === 'grid-2' ? 2 : layout === 'grid-4' ? 4 : 3;
+  return (
+    <div style={innerWidth}>
+      {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{h}</h2>}
+      <div style={{ display: layout === 'list' ? 'flex' : 'grid', flexDirection: layout === 'list' ? 'column' : undefined, gridTemplateColumns: layout === 'list' ? undefined : isMobile ? '1fr' : `repeat(${cols}, 1fr)`, gap: '1.5rem' }}>
+        {(content.items || []).slice(0, layout === 'grid-4' ? 4 : 3).map((item: any, i: number) => (
+          <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.06)', textAlign: layout === 'list' ? 'left' : 'center', display: layout === 'list' ? 'flex' : 'block', gap: '1rem', alignItems: 'center' }}>
+            {item.icon && <div style={{ fontSize: '2rem', marginBottom: layout === 'list' ? 0 : '0.5rem', flexShrink: 0 }}>{item.icon}</div>}
+            <div>
+              <h3 style={{ fontWeight: 600, margin: '0 0 0.25rem' }}>{item.title}</h3>
+              <p style={{ fontSize: '0.875rem', opacity: 0.7, margin: 0 }}>{item.description}</p>
             </div>
-          ))}
-        </div>
-      );
-    }
-    case 'video':
-      return (
-        <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
-          <div style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', aspectRatio: '16/9', maxWidth: 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '2rem' }}>
-            {block.url ? '▶️' : '📹'}
           </div>
-        </div>
-      );
-    case 'columns':
-      return (
-        <div key={block.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.75rem' }}>
-          <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: '0.5rem', padding: '1rem', minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '0.75rem', border: '1px dashed rgba(0,0,0,0.15)' }}>Linke Spalte</div>
-          <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: '0.5rem', padding: '1rem', minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '0.75rem', border: '1px dashed rgba(0,0,0,0.15)' }}>Rechte Spalte</div>
-        </div>
-      );
-
-    // ── KOMPLEX ──
-    case 'feature-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 3}, 1fr)`, gap: '1rem' }}>
-            {(block.items || []).map((item: any, i: number) => (
-              <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', textAlign: 'center' }}>
-                {item.icon && <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>}
-                <h3 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.95rem' }}>{item.title}</h3>
-                <p style={{ fontSize: '0.8rem', opacity: 0.7, margin: 0 }}>{item.description}</p>
-                {item.price && <p style={{ fontWeight: 700, color: primary, marginTop: '0.5rem', fontSize: '0.9rem' }}>{item.price}</p>}
+        ))}
+      </div>
+    </div>
+  );
+}
+      case 'about': case 'text':
+        return (
+          <div style={innerWidth}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 1rem' }}>{h}</h2>}
+            <p style={{ lineHeight: 1.75, opacity: 0.8, margin: 0 }}>{(content.text || '').replace(/<[^>]*>/g, '') || 'Text hier...'}</p>
+          </div>
+        );
+      case 'stats':
+        return (
+          <div style={{ ...innerWidth, textAlign: 'center' }}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 2rem' }}>{h}</h2>}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${Math.min(getItems().length || 4, 4)}, 1fr)`, gap: '2rem' }}>
+              {getItems().map((s: any, i: number) => (
+                <div key={i}>
+                  <div style={{ fontSize: isMobile ? '2rem' : '2.5rem', fontWeight: 800, color: primary }}>{s.value}</div>
+                  <div style={{ fontWeight: 600, margin: '0.25rem 0 0.1rem' }}>{s.title || s.label}</div>
+                  {s.description && <div style={{ opacity: 0.6, fontSize: '0.8rem' }}>{s.description}</div>}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'testimonials':
+        return (
+          <div style={innerWidth}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{h}</h2>}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+              {getItems().slice(0, 2).map((t: any, i: number) => (
+                <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', fontStyle: 'italic' }}>
+                  <p style={{ margin: '0 0 0.75rem' }}>„{t.description || t.text}"</p>
+                  <p style={{ fontWeight: 600, fontStyle: 'normal', opacity: 0.7, margin: 0 }}>— {t.title || t.name}{(t.subtitle || t.role) ? `, ${t.subtitle || t.role}` : ''}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'team':
+        return (
+          <div style={innerWidth}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{h}</h2>}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
+              {getItems().slice(0, isMobile ? 2 : 3).map((m: any, i: number) => (
+                <div key={i}>
+                  <div style={{ width: 72, height: 72, borderRadius: '50%', background: primary, margin: '0 auto 0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.75rem', overflow: 'hidden' }}>
+                    {m.image ? <img src={m.image} alt={m.title || m.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
+                  </div>
+                  <h3 style={{ fontWeight: 600, margin: '0 0 0.15rem' }}>{m.title || m.name}</h3>
+                  <p style={{ opacity: 0.6, fontSize: '0.875rem', margin: 0 }}>{m.subtitle || m.role}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'pricing':
+        return (
+          <div style={innerWidth}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 2rem' }}>{h}</h2>}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${Math.min(getItems().length || 2, 3)}, 1fr)`, gap: '1.5rem' }}>
+              {getItems().slice(0, 3).map((p: any, i: number) => (
+                <div key={i} style={{ padding: '1.5rem', borderRadius: '0.75rem', background: p.highlighted ? primary : 'rgba(0,0,0,0.05)', color: p.highlighted ? '#fff' : 'inherit', border: `2px solid ${p.highlighted ? primary : 'transparent'}` }}>
+                  <h3 style={{ fontWeight: 700, margin: '0 0 0.5rem' }}>{p.title || p.name}</h3>
+                  <div style={{ fontSize: '2rem', fontWeight: 800, margin: '0 0 1rem' }}>{p.price}<span style={{ fontSize: '0.875rem', fontWeight: 400 }}>/{p.interval}</span></div>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem' }}>
+                    {(p.features || []).map((f: string, fi: number) => <li key={fi} style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>✓ {f}</li>)}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'contact':
+        return (
+          <div style={{ ...innerWidth, textAlign: 'center' }}>
+            <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 1.5rem' }}>{h || 'Kontakt'}</h2>
+            <div style={{ maxWidth: 440, margin: '0 auto' }}>
+              {['Name', 'E-Mail', 'Nachricht'].map((f, i) => (
+                <div key={i} style={{ background: 'rgba(0,0,0,0.06)', borderRadius: '0.5rem', padding: '0.75rem 1rem', marginBottom: '0.5rem', textAlign: 'left', color: 'rgba(0,0,0,0.4)', fontSize: '0.875rem' }}>{f}</div>
+              ))}
+              <div style={{ background: btnBg, color: btnText, borderRadius: '0.5rem', padding: '0.75rem', fontWeight: 600 }}>{content.buttonText || 'Absenden'}</div>
+            </div>
+          </div>
+        );
+      case 'faq':
+        return (
+          <div style={innerWidth}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{h}</h2>}
+            {getItems().map((f: any, i: number) => (
+              <div key={i} style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', padding: '1rem 0' }}>
+                <h4 style={{ fontWeight: 600, margin: '0 0 0.25rem' }}>{f.title || f.question}</h4>
+                <p style={{ fontSize: '0.875rem', opacity: 0.7, margin: 0 }}>{f.description || f.answer}</p>
               </div>
             ))}
           </div>
-        </div>
-      );
-
-    case 'stat-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 4}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
-            {(block.items || []).map((item: any, i: number) => (
-              <div key={i}>
-                <div style={{ fontSize: isMobile ? '1.75rem' : '2.25rem', fontWeight: 800, color: primary }}>{item.value}</div>
-                <div style={{ fontWeight: 600, margin: '0.2rem 0 0.1rem', fontSize: '0.9rem' }}>{item.label}</div>
-                {item.description && <div style={{ opacity: 0.6, fontSize: '0.75rem' }}>{item.description}</div>}
+        );
+      case 'gallery':
+        return (
+          <div style={innerWidth}>
+            {(opt.heading ?? true) && h && (
+              <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{h}</h2>
+            )}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '0.75rem' }}>
+              {(content.images?.length > 0 ? content.images.slice(0, 6) : Array(3).fill(null)).map((img: any, i: number) => (
+                <div key={i} style={{ aspectRatio: '1', borderRadius: '0.5rem', overflow: 'hidden', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '2rem', position: 'relative' }}>
+                  {img?.url ? <img src={img.url} alt={img.alt || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '🖼️'}
+                  {(opt.caption ?? false) && img?.caption && (
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.5)', color: '#fff', padding: '4px 8px', fontSize: '0.7rem' }}>{img.caption}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+            {(opt.button ?? false) && content.buttonText && (
+              <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                <span style={{ display: 'inline-block', padding: '0.75rem 2rem', background: btnBg, color: btnText, borderRadius: '0.5rem', fontWeight: 600 }}>{content.buttonText}</span>
               </div>
-            ))}
+            )}
           </div>
-        </div>
-      );
+        );
 
-    case 'testimonial-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 2}, 1fr)`, gap: '1rem' }}>
-            {(block.items || []).map((item: any, i: number) => (
-              <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', fontStyle: 'italic' }}>
-                <p style={{ margin: '0 0 0.75rem', fontSize: '0.875rem' }}>„{item.text}"</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  {item.image && <div style={{ width: 36, height: 36, borderRadius: '50%', background: primary, overflow: 'hidden', flexShrink: 0 }}><img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
-                  <div>
-                    <p style={{ fontWeight: 600, fontStyle: 'normal', margin: 0, fontSize: '0.85rem' }}>{item.name}</p>
-                    {item.role && <p style={{ opacity: 0.6, fontStyle: 'normal', margin: 0, fontSize: '0.75rem' }}>{item.role}</p>}
+      case 'video':
+        return (
+          <div style={{ ...innerWidth, textAlign: 'center' }}>
+            {(opt.heading ?? true) && h && (
+              <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1.5rem' }}>{h}</h2>
+            )}
+            <div style={{ background: 'rgba(0,0,0,0.1)', borderRadius: '0.75rem', aspectRatio: '16/9', maxWidth: 600, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.35)', gap: '0.5rem' }}>
+              <span style={{ fontSize: '3rem' }}>{content.videoUrl ? '▶️' : '📹'}</span>
+              {!content.videoUrl && <span style={{ fontSize: '0.85rem' }}>Video URL eingeben</span>}
+            </div>
+            {(opt.description ?? false) && content.text && (
+              <p style={{ marginTop: '1rem', opacity: 0.75, maxWidth: 500, margin: '1rem auto 0' }}>{content.text}</p>
+            )}
+            {(opt.button ?? false) && content.buttonText && (
+              <div style={{ marginTop: '1.5rem' }}>
+                <span style={{ display: 'inline-block', padding: '0.75rem 2rem', background: btnBg, color: btnText, borderRadius: '0.5rem', fontWeight: 600 }}>{content.buttonText}</span>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'newsletter':
+        return (
+          <div style={{ ...innerWidth, textAlign: 'center' }}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 0.75rem' }}>{h}</h2>}
+            {(opt.incentive ?? false) && content.incentiveText && (
+              <div style={{ display: 'inline-block', background: 'rgba(245,158,11,0.15)', color: '#f59e0b', padding: '4px 12px', borderRadius: '2rem', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.75rem', border: '1px solid rgba(245,158,11,0.3)' }}>
+                {content.incentiveText}
+              </div>
+            )}
+            {(opt.subtext ?? true) && content.text && (
+              <p style={{ opacity: 0.8, marginBottom: '1.5rem' }}>{content.text}</p>
+            )}
+            <div style={{ display: 'flex', gap: '0.5rem', maxWidth: 400, margin: '0 auto' }}>
+              <div style={{ flex: 1, background: 'rgba(0,0,0,0.06)', borderRadius: '0.5rem', padding: '0.75rem 1rem', color: 'rgba(0,0,0,0.4)', fontSize: '0.875rem' }}>
+                {content.placeholder || 'deine@email.de'}
+              </div>
+              <div style={{ background: btnBg, color: btnText, borderRadius: '0.5rem', padding: '0.75rem 1.25rem', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                {content.buttonText || 'Abonnieren'}
+              </div>
+            </div>
+            {(opt.gdpr ?? true) && (
+              <p style={{ fontSize: '0.7rem', opacity: 0.5, marginTop: '0.75rem' }}>
+                🔒 {content.gdprText || 'Deine Daten sind sicher. Kein Spam.'}
+              </p>
+            )}
+            {(opt.doubleOptIn ?? false) && (
+              <p style={{ fontSize: '0.7rem', opacity: 0.4, marginTop: '0.25rem' }}>
+                ✉️ {content.doubleOptInText || 'Du erhältst eine Bestätigungs-E-Mail.'}
+              </p>
+            )}
+          </div>
+        );
+
+      case 'booking':
+        return (
+          <div style={{ ...innerWidth, textAlign: 'center' }}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 0.75rem' }}>{h}</h2>}
+            {(opt.description ?? true) && content.text && (
+              <p style={{ opacity: 0.8, marginBottom: '1.5rem' }}>{content.text}</p>
+            )}
+            {(opt.services ?? false) && (content.serviceList || []).length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxWidth: 400, margin: '0 auto 1.5rem', textAlign: 'left' }}>
+                {(content.serviceList || []).map((s: any, i: number) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0.75rem', background: 'rgba(0,0,0,0.04)', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
+                    <span>{s.name}</span>
+                    <span style={{ opacity: 0.6 }}>
+                      {(opt.duration ?? false) && s.duration && `${s.duration} · `}
+                      {(opt.price ?? false) && s.price && s.price}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <span style={{ display: 'inline-block', background: btnBg, color: btnText, borderRadius: '0.5rem', padding: '0.75rem 2rem', fontWeight: 600 }}>
+              {content.buttonText || 'Jetzt buchen'}
+            </span>
+            {(opt.phone ?? false) && content.contactPhone && (
+              <p style={{ marginTop: '0.75rem', fontSize: '0.875rem', opacity: 0.6 }}>
+                oder ruf an: <strong>{content.contactPhone}</strong>
+              </p>
+            )}
+          </div>
+        );
+      case 'map':
+        return (
+          <div style={innerWidth}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{h}</h2>}
+            <div style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', aspectRatio: '16/7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.35)', gap: '0.5rem' }}>
+              <span style={{ fontSize: '2.5rem' }}>🗺️</span>
+              <span style={{ fontSize: '0.875rem' }}>{content.address || 'Adresse eingeben'}</span>
+            </div>
+          </div>
+        );
+      case 'countdown':
+        return (
+          <div style={{ ...innerWidth, textAlign: 'center' }}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1rem' }}>{h}</h2>}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1rem' }}>
+              {['Tage', 'Std', 'Min', 'Sek'].map(u => (
+                <div key={u} style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.5rem', padding: '1rem', minWidth: 64 }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 800 }}>00</div>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>{u}</div>
+                </div>
+              ))}
+            </div>
+            {content.text && <p style={{ opacity: 0.7 }}>{content.text}</p>}
+          </div>
+        );
+      case 'social':
+        return (
+          <div style={{ ...innerWidth, textAlign: 'center' }}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1.5rem' }}>{h}</h2>}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              {(content.links || []).map((l: any, i: number) => (
+                <div key={i} style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', padding: '0.75rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>{l.icon}</span>
+                  <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>{l.platform}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'blog':
+        return (
+          <div style={innerWidth}>
+            {h && <h2 style={{ fontSize: headingSize, fontWeight: 700, textAlign: 'center', margin: '0 0 1.5rem' }}>{h}</h2>}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
+              {Array(content.count || 3).fill(null).map((_, i) => (
+                <div key={i} style={{ background: 'rgba(0,0,0,0.06)', borderRadius: '0.75rem', overflow: 'hidden' }}>
+                  <div style={{ aspectRatio: '16/9', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.2)', fontSize: '1.5rem' }}>📰</div>
+                  <div style={{ padding: '1rem' }}>
+                    <div style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.875rem' }}>Blog-Post Titel</div>
+                    <div style={{ fontSize: '0.75rem', opacity: 0.5 }}>Kurze Beschreibung...</div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-
-    case 'team-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 3}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
-            {(block.items || []).map((item: any, i: number) => (
-              <div key={i}>
-                <div style={{ width: 64, height: 64, borderRadius: '50%', background: primary, margin: '0 auto 0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.5rem', overflow: 'hidden' }}>
-                  {item.image ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
-                </div>
-                <h3 style={{ fontWeight: 600, margin: '0 0 0.15rem', fontSize: '0.9rem' }}>{item.name}</h3>
-                <p style={{ opacity: 0.6, fontSize: '0.8rem', margin: 0 }}>{item.role}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-
-    case 'pricing-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 2}, 1fr)`, gap: '1rem' }}>
-            {(block.items || []).map((item: any, i: number) => (
-              <div key={i} style={{ padding: '1.5rem', borderRadius: '0.75rem', background: item.highlighted ? primary : 'rgba(0,0,0,0.05)', color: item.highlighted ? '#fff' : 'inherit', border: `2px solid ${item.highlighted ? primary : 'transparent'}` }}>
-                <h3 style={{ fontWeight: 700, margin: '0 0 0.5rem', fontSize: '1rem' }}>{item.title}</h3>
-                <div style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 0.75rem' }}>{item.price}<span style={{ fontSize: '0.8rem', fontWeight: 400 }}>/{item.interval}</span></div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem' }}>
-                  {(item.features || []).map((f: string, fi: number) => <li key={fi} style={{ fontSize: '0.8rem', marginBottom: '0.2rem' }}>✓ {f}</li>)}
-                </ul>
-                <div style={{ background: item.highlighted ? 'rgba(255,255,255,0.2)' : btnBg, color: item.highlighted ? '#fff' : btnText, borderRadius: '0.5rem', padding: '0.5rem', textAlign: 'center', fontWeight: 600, fontSize: '0.85rem' }}>
-                  {item.buttonText || 'Jetzt starten'}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-
-    case 'faq-list':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          {(block.items || []).map((item: any, i: number) => (
-            <div key={i} style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', padding: '0.875rem 0' }}>
-              <h4 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.9rem' }}>{item.question}</h4>
-              <p style={{ fontSize: '0.82rem', opacity: 0.7, margin: 0 }}>{item.answer}</p>
+              ))}
             </div>
-          ))}
-        </div>
-      );
-
-    case 'image-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 3}, 1fr)`, gap: '0.75rem' }}>
-            {(block.images || []).map((img: any, i: number) => (
-              <div key={i} style={{ aspectRatio: '1', borderRadius: '0.5rem', overflow: 'hidden', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '1.75rem' }}>
-                {img?.url ? <img src={img.url} alt={img.alt || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '🖼️'}
-              </div>
-            ))}
           </div>
-        </div>
-      );
-
-    case 'contact-form':
-      return (
-        <div key={block.id} style={{ maxWidth: 440, margin: '0 auto 1rem', textAlign: 'center' }}>
-          {['Name', 'E-Mail', 'Nachricht'].map((f, i) => (
-            <div key={i} style={{ background: 'rgba(0,0,0,0.06)', borderRadius: '0.5rem', padding: '0.75rem 1rem', marginBottom: '0.5rem', textAlign: 'left', color: 'rgba(0,0,0,0.4)', fontSize: '0.875rem' }}>{f}</div>
-          ))}
-          <div style={{ background: btnBg, color: btnText, borderRadius: '0.5rem', padding: '0.75rem', fontWeight: 600 }}>{block.buttonText || 'Absenden'}</div>
-        </div>
-      );
-
-    case 'newsletter-form':
-      return (
-        <div key={block.id} style={{ maxWidth: 400, margin: '0 auto 1rem' }}>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <div style={{ flex: 1, background: 'rgba(0,0,0,0.06)', borderRadius: '0.5rem', padding: '0.75rem 1rem', color: 'rgba(0,0,0,0.4)', fontSize: '0.875rem' }}>{block.placeholder || 'deine@email.de'}</div>
-            <div style={{ background: btnBg, color: btnText, borderRadius: '0.5rem', padding: '0.75rem 1rem', fontWeight: 600, whiteSpace: 'nowrap', fontSize: '0.875rem' }}>{block.buttonText || 'Abonnieren'}</div>
+        );
+     case 'html':
+        return (
+          <div style={innerWidth}>
+            {(opt.heading ?? false) && h && (
+              <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: '0 0 1rem' }}>{h}</h2>
+            )}
+            {(opt.description ?? false) && content.text && (
+              <p style={{ opacity: 0.75, marginBottom: '1rem' }}>{content.text}</p>
+            )}
+            <div dangerouslySetInnerHTML={{ __html: content.html || '<p style="opacity:0.5">HTML Bereich</p>' }} />
           </div>
-        </div>
-      );
+        );
 
-    case 'blog-feed':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap: '1rem' }}>
-            {Array(block.count || 3).fill(null).map((_, i) => (
-              <div key={i} style={{ background: 'rgba(0,0,0,0.06)', borderRadius: '0.75rem', overflow: 'hidden' }}>
-                <div style={{ aspectRatio: '16/9', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.2)', fontSize: '1.25rem' }}>📰</div>
-                <div style={{ padding: '0.75rem' }}>
-                  <div style={{ fontWeight: 600, marginBottom: '0.25rem', fontSize: '0.8rem' }}>Blog-Post Titel</div>
-                  <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>Kurze Beschreibung...</div>
-                </div>
-              </div>
-            ))}
+      case 'spacer':
+        return (
+          <div style={{ height: content.height || '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+            {(opt.line ?? false)
+              ? <div style={{ width: '80%', height: 0, borderTop: `${content.lineThickness || '1px'} ${content.lineStyle || 'solid'} ${content.lineColor || '#e5e7eb'}` }} />
+              : <span style={{ fontSize: '0.68rem', color: 'rgba(0,0,0,0.2)', border: '1px dashed rgba(0,0,0,0.12)', padding: '2px 10px', borderRadius: 4 }}>
+                  Spacer — {content.height || '80px'}
+                </span>
+            }
           </div>
-        </div>
-      );
+        );
 
-    case 'social-links':
-      return (
-        <div key={block.id} style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-          {(block.links || []).map((l: any, i: number) => (
-            <div key={i} style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <span>{l.icon}</span>
-              <span style={{ fontWeight: 600, fontSize: '0.8rem' }}>{l.platform}</span>
+      case 'whatsapp':
+        return (
+          <div style={{ padding: '1.5rem', textAlign: 'center' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', padding: '0.875rem 1.5rem', background: '#25D366', color: '#fff', borderRadius: '3rem', fontWeight: 600, fontSize: '1rem' }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style={{ flexShrink: 0 }}>
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              {(opt.label ?? true) ? (content.label || 'WhatsApp schreiben') : '💬'}
             </div>
-          ))}
-        </div>
-      );
-
-    case 'map-embed':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', aspectRatio: '16/7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.35)', gap: '0.5rem' }}>
-            <span style={{ fontSize: '2rem' }}>🗺️</span>
-            <span style={{ fontSize: '0.8rem' }}>{block.address || 'Adresse eingeben'}</span>
+            <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.45)', marginTop: '0.5rem' }}>{content.phone}</p>
+            {(opt.tooltip ?? false) && content.tooltip && (
+              <p style={{ fontSize: '0.65rem', color: 'rgba(0,0,0,0.3)', marginTop: '0.25rem' }}>💡 {content.tooltip}</p>
+            )}
+            <p style={{ fontSize: '0.65rem', color: 'rgba(0,0,0,0.3)', marginTop: '0.2rem' }}>
+              Floating-Button erscheint {content.position === 'left' ? 'unten links' : 'unten rechts'} auf der Website
+            </p>
           </div>
-        </div>
-      );
+        );
 
-    case 'countdown-timer':
-      return (
-        <div key={block.id} style={{ textAlign: 'center', marginBottom: '1rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-            {['Tage', 'Std', 'Min', 'Sek'].map(u => (
-              <div key={u} style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.5rem', padding: '0.75rem', minWidth: 56 }}>
-                <div style={{ fontSize: '1.75rem', fontWeight: 800 }}>00</div>
-                <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>{u}</div>
+      case 'before_after':
+        return (
+          <div style={innerWidth}>
+            {(opt.heading ?? false) && h && (
+              <h2 style={{ fontSize: headingSize, fontWeight: styling?.fontWeight || 700, margin: '0 0 1rem', textAlign: 'center' }}>{h}</h2>
+            )}
+            <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', borderRadius: '0.75rem', overflow: 'hidden', background: 'rgba(0,0,0,0.08)' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '50%', overflow: 'hidden' }}>
+                {content.beforeImage
+                  ? <img src={content.beforeImage} alt="Vorher" style={{ position: 'absolute', top: 0, left: 0, width: '200%', height: '100%', objectFit: 'cover' }} />
+                  : <div style={{ width: '100%', height: '100%', background: '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.875rem' }}>Vorher-Bild</div>
+                }
+                {(opt.labels ?? true) && content.beforeLabel && (
+                  <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '3px 8px', borderRadius: 4, fontSize: '0.7rem', fontWeight: 600 }}>{content.beforeLabel}</div>
+                )}
+              </div>
+              <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: '50%', overflow: 'hidden' }}>
+                {content.afterImage
+                  ? <img src={content.afterImage} alt="Nachher" style={{ position: 'absolute', top: 0, right: 0, width: '200%', height: '100%', objectFit: 'cover' }} />
+                  : <div style={{ width: '100%', height: '100%', background: '#bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#60a5fa', fontSize: '0.875rem' }}>Nachher-Bild</div>
+                }
+                {(opt.labels ?? true) && content.afterLabel && (
+                  <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '3px 8px', borderRadius: 4, fontSize: '0.7rem', fontWeight: 600 }}>{content.afterLabel}</div>
+                )}
+              </div>
+              <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 3, background: '#fff', transform: 'translateX(-50%)', zIndex: 10 }}>
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 28, height: 28, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#374151', boxShadow: '0 1px 6px rgba(0,0,0,0.2)' }}>↔</div>
+              </div>
+            </div>
+            {(opt.description ?? false) && content.text && (
+              <p style={{ textAlign: 'center', opacity: 0.7, marginTop: '1rem', fontSize: '0.875rem' }}>{content.text}</p>
+            )}
+            {(opt.button ?? false) && content.buttonText && (
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <span style={{ display: 'inline-block', padding: '0.75rem 2rem', background: btnBg, color: btnText, borderRadius: '0.5rem', fontWeight: 600 }}>{content.buttonText}</span>
+              </div>
+            )}
+          </div>
+        );
+      case 'freestyle': {
+ const blocks: any[] = [...(content.blocks || [])].sort((a: any, b: any) => a.order - b.order);
+
+
+  const renderBlock = (block: any) => {
+    const alignStyle: React.CSSProperties = {
+      textAlign: (block.align || 'center') as any,
+      display: 'block',
+    };
+
+    switch (block.type) {
+      case 'heading': {
+        const Tag = (block.level || 'h2') as any;
+        const sizes: Record<string, string> = { h1: headingSize, h2: '1.75rem', h3: '1.25rem', h4: '1rem' };
+        return (
+          <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+            <Tag style={{ fontSize: sizes[block.level || 'h2'], fontWeight: 700, margin: 0 }}>{block.text || 'Überschrift'}</Tag>
+          </div>
+        );
+      }
+      case 'text':
+        return (
+          <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+            <div dangerouslySetInnerHTML={{ __html: block.html || '<p>Text...</p>' }} style={{ lineHeight: 1.6 }} />
+          </div>
+        );
+      case 'button':
+        return (
+          <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+            <span style={{
+              display: 'inline-block', padding: '0.6rem 1.5rem', borderRadius: '0.5rem', fontWeight: 600, fontSize: '0.875rem',
+              background: block.style === 'primary' ? primary : block.style === 'outline' ? 'transparent' : 'rgba(0,0,0,0.06)',
+              color: block.style === 'primary' ? '#fff' : primary,
+              border: block.style === 'outline' ? `2px solid ${primary}` : 'none',
+            }}>{block.text || 'Button'}</span>
+          </div>
+        );
+      case 'image':
+        return (
+          <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+            {block.url
+              ? <img src={block.url} alt={block.alt || ''} style={{ width: block.width || '100%', maxWidth: '100%', borderRadius: '0.5rem', display: 'inline-block' }} />
+              : <div style={{ width: block.width || '100%', aspectRatio: '16/9', background: 'rgba(0,0,0,0.08)', borderRadius: '0.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '2rem' }}>🖼️</div>
+            }
+          </div>
+        );
+      case 'badge':
+        return (
+          <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+            <span style={{ display: 'inline-block', padding: '4px 14px', background: 'rgba(88,166,255,0.15)', color: '#58a6ff', borderRadius: '2rem', fontSize: '0.8rem', fontWeight: 600, border: '1px solid rgba(88,166,255,0.3)' }}>
+              {block.text || '🏷️ Badge'}
+            </span>
+          </div>
+        );
+      case 'icon':
+        return (
+          <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+            <span style={{ fontSize: block.size || '3rem', display: 'inline-block' }}>{block.emoji || '⭐'}</span>
+          </div>
+        );
+      case 'spacer':
+        return <div key={block.id} style={{ height: block.height || '2rem' }} />;
+      case 'divider':
+        return (
+          <div key={block.id} style={{ marginBottom: '0.75rem' }}>
+            <hr style={{ border: 'none', borderTop: `${block.thickness || '1px'} ${block.style || 'solid'} ${block.color || '#e5e7eb'}`, margin: 0 }} />
+          </div>
+        );
+      case 'list': {
+        const icons: Record<string, string> = { check: '✓', bullet: '•', arrow: '→', number: '' };
+        return (
+          <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+            {(block.items || []).map((item: string, i: number) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', justifyContent: block.align === 'center' ? 'center' : block.align === 'right' ? 'flex-end' : 'flex-start' }}>
+                <span style={{ color: primary, fontWeight: 700, flexShrink: 0 }}>
+                  {block.style === 'number' ? `${i + 1}.` : icons[block.style || 'check']}
+                </span>
+                <span style={{ fontSize: '0.875rem' }}>{item}</span>
               </div>
             ))}
           </div>
-          {block.text && <p style={{ opacity: 0.7, fontSize: '0.875rem' }}>{block.text}</p>}
-        </div>
-      );
-
-    case 'before-after':
-      return (
-        <div key={block.id} style={{ position: 'relative', width: '100%', paddingBottom: '40%', borderRadius: '0.75rem', overflow: 'hidden', background: 'rgba(0,0,0,0.08)', marginBottom: '1rem' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '50%', overflow: 'hidden' }}>
-            {block.beforeImage ? <img src={block.beforeImage} alt="Vorher" style={{ position: 'absolute', top: 0, left: 0, width: '200%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', background: '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.8rem' }}>Vorher</div>}
-            {block.beforeLabel && <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '2px 8px', borderRadius: 4, fontSize: '0.65rem', fontWeight: 600 }}>{block.beforeLabel}</div>}
+        );
+      }
+      case 'video':
+        return (
+          <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+            <div style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '0.75rem', aspectRatio: '16/9', maxWidth: 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '2rem' }}>
+              {block.url ? '▶️' : '📹'}
+            </div>
           </div>
-          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: '50%', overflow: 'hidden' }}>
-            {block.afterImage ? <img src={block.afterImage} alt="Nachher" style={{ position: 'absolute', top: 0, right: 0, width: '200%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', background: '#bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#60a5fa', fontSize: '0.8rem' }}>Nachher</div>}
-            {block.afterLabel && <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '2px 8px', borderRadius: 4, fontSize: '0.65rem', fontWeight: 600 }}>{block.afterLabel}</div>}
+        );
+      case 'columns':
+        return (
+          <div key={block.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.75rem' }}>
+            <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: '0.5rem', padding: '1rem', minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '0.75rem', border: '1px dashed rgba(0,0,0,0.15)' }}>
+              Linke Spalte
+            </div>
+            <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: '0.5rem', padding: '1rem', minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '0.75rem', border: '1px dashed rgba(0,0,0,0.15)' }}>
+              Rechte Spalte
+            </div>
           </div>
-          <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 3, background: '#fff', transform: 'translateX(-50%)', zIndex: 10 }}>
-            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 24, height: 24, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 700, color: '#374151', boxShadow: '0 1px 6px rgba(0,0,0,0.2)' }}>↔</div>
-          </div>
-        </div>
-      );
-
-    case 'whatsapp-btn':
-      return (
-        <div key={block.id} style={{ textAlign: 'center', padding: '1rem 0', marginBottom: '0.5rem' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', background: '#25D366', color: '#fff', borderRadius: '3rem', fontWeight: 600, fontSize: '0.9rem' }}>
-            💬 {block.label || 'WhatsApp schreiben'}
-          </div>
-          <p style={{ fontSize: '0.7rem', color: 'rgba(0,0,0,0.4)', marginTop: '0.4rem' }}>{block.phone}</p>
-        </div>
-      );
-
-    default:
-      return <div key={block.id} style={{ opacity: 0.4, fontSize: '0.75rem', textAlign: 'center', marginBottom: '0.5rem' }}>[{block.type}]</div>;
-  }
-};
-
-const renderContent = () => {
-  const blocks = [...(content.blocks || [])].sort((a: any, b: any) => a.order - b.order);
-
-  if (blocks.length === 0) {
-    return (
-      <div style={{ ...innerWidth, textAlign: 'center', padding: '3rem', color: 'rgba(0,0,0,0.25)', border: '2px dashed rgba(0,0,0,0.1)', borderRadius: '0.75rem' }}>
-        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>+</div>
-        <p style={{ margin: 0, fontSize: '0.875rem' }}>Elemente hinzufügen</p>
-      </div>
-    );
-  }
+        );
+      default:
+        return <div key={block.id} style={{ opacity: 0.4, fontSize: '0.75rem', textAlign: 'center' }}>[{block.type}]</div>;
+    }
+  };
 
   return (
     <div style={{ ...innerWidth, position: 'relative' }}>
-      {blocks.map(block => renderBlock(block))}
+      {/* Freestyle Badge */}
+      <div style={{ position: 'absolute', top: -8, right: 0, background: 'linear-gradient(135deg, #7c3aed, #3b82f6)', color: '#fff', fontSize: '0.55rem', fontWeight: 700, padding: '2px 8px', borderRadius: '2rem', letterSpacing: '0.06em' }}>
+        ✦ FREESTYLE
+      </div>
+      {blocks.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '3rem', color: 'rgba(0,0,0,0.25)', border: '2px dashed rgba(0,0,0,0.1)', borderRadius: '0.75rem' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>✦</div>
+          <p style={{ margin: 0, fontSize: '0.875rem' }}>Freestyle Block — Elemente hinzufügen</p>
+        </div>
+      ) : (
+        <div>{blocks.map(block => renderBlock(block))}</div>
+      )}
     </div>
   );
-};
+}
+      default:
+        return <div style={{ textAlign: 'center', opacity: 0.4, fontSize: '0.875rem' }}>[{type.toUpperCase()}] {section.name}</div>;
+    }
+  };
 
 return (
     <div style={wrapStyle} onClick={isLocked ? undefined : onClick}>
@@ -1921,8 +1566,582 @@ function ContentEditor({ section, onChange, availableForms, availableBookingServ
   availableForms: { id: string; name: string; slug: string }[];
   availableBookingServices: { id: string; name: string; duration: number; price: number }[];
 }) {
-  return <FreestyleEditor content={section.content} onChange={onChange} />;
-}
+  const { type, content } = section;
+  const update = (key: string, val: any) => onChange({ ...content, [key]: val });
+
+  const inputStyle: React.CSSProperties = { width: '100%', background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, color: '#c9d1d9', padding: '8px 10px', fontSize: '0.8rem', boxSizing: 'border-box', outline: 'none' };
+  const taStyle: React.CSSProperties = { ...inputStyle, resize: 'vertical' };
+  const labelStyle: React.CSSProperties = { display: 'block', fontSize: '0.72rem', color: '#8b949e', marginBottom: 4, fontWeight: 600, letterSpacing: '0.03em' };
+  const wrapStyle: React.CSSProperties = { marginBottom: '1rem' };
+
+  const Field = (label: string, field: string, multi = false, rows = 3) => (
+  <div key={field} style={wrapStyle}>
+    <label style={labelStyle}>{label}</label>
+    {multi
+      ? <textarea value={content[field] || ''} onChange={e => update(field, e.target.value)} rows={rows} style={taStyle} />
+      : <input type="text" value={content[field] || ''} onChange={e => update(field, e.target.value)} style={inputStyle} />
+    }
+  </div>
+);
+
+  switch (type) {
+  
+  case 'hero':
+    return (
+      <>
+        <LayoutToggle type={type} content={content} update={update} /> 
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'subheading', label: 'Unterüberschrift', icon: '📝', defaultOn: true },
+          { key: 'button', label: 'Button', icon: '🔘', defaultOn: true },
+          { key: 'secondButton', label: '2. Button', icon: '🔘', defaultOn: false },
+          { key: 'badge', label: 'Badge', icon: '🏷️', defaultOn: false },
+          { key: 'image', label: 'Bild', icon: '🖼️', defaultOn: false },
+          { key: 'trustbar', label: 'Trust Bar', icon: '⭐', defaultOn: false },
+        ]} />
+      {Field("Überschrift", "heading")}
+{(content._optional?.subheading ?? true) && Field("Unterüberschrift", "subheading", true, 3)}
+{(content._optional?.badge ?? false) && Field("Badge Text (z.B. 🔥 Neu)", "badge")}
+{(content._optional?.button ?? true) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+{(content._optional?.secondButton ?? false) && <>{Field("2. Button Text", "button2Text")}{Field("2. Button Link", "button2Link")}</>}
+{(content._optional?.image ?? false) && Field("Bild URL", "heroImage")}
+{(content._optional?.trustbar ?? false) && Field("Trust Text", "trustText")}
+      </>
+    );
+
+  case 'cta':
+    return (
+      <>
+         <LayoutToggle type={type} content={content} update={update} />
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'subheading', label: 'Untertext', icon: '📝', defaultOn: true },
+          { key: 'button', label: 'Button', icon: '🔘', defaultOn: true },
+          { key: 'secondButton', label: '2. Button', icon: '🔘', defaultOn: false },
+          { key: 'guarantee', label: 'Garantie-Text', icon: '🛡️', defaultOn: false },
+        ]} />
+       {Field("Überschrift", "heading")}
+{(content._optional?.subheading ?? true) && Field("Unterüberschrift", "subheading", true, 2)}
+{(content._optional?.button ?? true) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+{(content._optional?.secondButton ?? false) && <>{Field("2. Button Text", "button2Text")}{Field("2. Button Link", "button2Link")}</>}
+{(content._optional?.guarantee ?? false) && Field("Garantie Text", "guaranteeText")}
+
+      </>
+    );
+
+  case 'text': case 'about':
+    
+    return (
+      <>
+         <LayoutToggle type={type} content={content} update={update} />
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: true },
+          { key: 'button', label: 'Button', icon: '🔘', defaultOn: false },
+          { key: 'image', label: 'Bild daneben', icon: '🖼️', defaultOn: false },
+          { key: 'checklist', label: 'Checkliste', icon: '✅', defaultOn: false },
+          { key: 'signature', label: 'Unterschrift', icon: '✍️', defaultOn: false },
+        ]} />
+        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+{Field("Text (HTML erlaubt)", "text", true, 8)}
+{(content._optional?.image ?? false) && Field("Bild URL", "sideImage")}
+{(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+{(content._optional?.signature ?? false) && <>{Field("Name / Unterschrift", "signatureName")}{Field("Titel", "signatureRole")}</>}
+      </>
+    );
+
+  case 'features': case 'services':
+    return (
+      <>
+         <LayoutToggle type={type} content={content} update={update} />
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'subheading', label: 'Unterüberschrift', icon: '📝', defaultOn: false },
+          { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
+          { key: 'link', label: 'Link pro Item', icon: '🔗', defaultOn: false },
+        ]} />
+       {Field("Überschrift", "heading")}
+{(content._optional?.subheading ?? false) && Field("Unterüberschrift", "subheading", true, 2)}
+{(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+        <ListEditor field="items" schema={[
+          { key: 'icon', label: 'Icon (Emoji)' },
+          { key: 'title', label: 'Titel' },
+          { key: 'description', label: 'Beschreibung' },
+          ...(type === 'services' ? [{ key: 'price', label: 'Preis' }] : []),
+          ...((content._optional?.link ?? false) ? [{ key: 'linkUrl', label: 'Link URL' }, { key: 'linkText', label: 'Link Text' }] : []),
+        ]}
+        content={content} update={update} inputStyle={inputStyle} labelStyle={labelStyle} wrapStyle={wrapStyle}/>
+        {(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+      </>
+    );
+
+  case 'testimonials':
+    return (
+      <>
+         <LayoutToggle type={type} content={content} update={update} />
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'stars', label: 'Sterne', icon: '⭐', defaultOn: false },
+          { key: 'platform', label: 'Plattform', icon: '🌐', defaultOn: false },
+          { key: 'totalRating', label: 'Gesamt-Bewertung', icon: '📊', defaultOn: false },
+        ]} />
+      {Field("Überschrift", "heading")}
+{(content._optional?.totalRating ?? false) && <>
+  {Field("Gesamt-Bewertung (z.B. 4.9)", "ratingValue")}
+  {Field("Anzahl Bewertungen", "ratingCount")}
+</>}
+        <ListEditor field="items" schema={[
+          { key: 'title', label: 'Name' },
+          { key: 'subtitle', label: 'Rolle / Firma' },
+          { key: 'description', label: 'Bewertungstext' },
+          ...((content._optional?.stars ?? false) ? [{ key: 'stars', label: 'Sterne (1-5)' }] : []),
+          ...((content._optional?.platform ?? false) ? [{ key: 'platform', label: 'Plattform (z.B. Google)' }] : []),
+          { key: 'image', label: 'Foto URL (optional)' },
+        ]}
+        content={content} update={update} inputStyle={inputStyle} labelStyle={labelStyle} wrapStyle={wrapStyle}/>
+      </>
+    );
+
+  case 'pricing':
+    return (
+      <>
+         <LayoutToggle type={type} content={content} update={update} />
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'badge', label: 'Badges', icon: '🏷️', defaultOn: false },
+          { key: 'guarantee', label: 'Garantie', icon: '🛡️', defaultOn: false },
+        ]} />
+       {Field("Überschrift", "heading")}
+{(content._optional?.guarantee ?? false) && Field("Garantie Text", "guaranteeText")}
+        <ListEditor field="items" schema={[
+          { key: 'title', label: 'Paket-Name' },
+          { key: 'price', label: 'Preis' },
+          { key: 'interval', label: 'Intervall' },
+          { key: 'buttonText', label: 'Button Text' },
+          ...((content._optional?.badge ?? false) ? [{ key: 'badge', label: 'Badge (z.B. Beliebt ⭐)' }] : []),
+        ]}
+        content={content} update={update} inputStyle={inputStyle} labelStyle={labelStyle} wrapStyle={wrapStyle}/>
+       </>
+    );
+
+  case 'contact':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'phone', label: 'Telefon', icon: '📞', defaultOn: false },
+          { key: 'email', label: 'E-Mail', icon: '📧', defaultOn: false },
+          { key: 'address', label: 'Adresse', icon: '📍', defaultOn: false },
+          { key: 'hours', label: 'Öffnungszeiten', icon: '🕐', defaultOn: false },
+          { key: 'gdpr', label: 'DSGVO Checkbox', icon: '🔒', defaultOn: true },
+        ]} />
+        {availableForms.length > 0 && (
+  <div style={wrapStyle}>
+    <label style={labelStyle}>Formular aus Form Builder wählen</label>
+    <select
+      value={content.formSlug || ''}
+      onChange={e => update('formSlug', e.target.value)}
+      style={{ ...inputStyle, width: '100%' }}
+    >
+      <option value="">— Standard Kontaktformular —</option>
+      {availableForms.map(f => (
+        <option key={f.id} value={f.slug}>{f.name}</option>
+      ))}
+    </select>
+    {content.formSlug && (
+      <p style={{ fontSize: '0.68rem', color: '#2ea043', marginTop: 4 }}>
+        ✓ Formular „{availableForms.find(f => f.slug === content.formSlug)?.name}" wird verwendet
+      </p>
+    )}
+  </div>
+)}
+      {Field("Überschrift", "heading")}
+{Field("Unterüberschrift", "subheading", true, 2)}
+{Field("Button Text", "buttonText")}
+{(content._optional?.phone ?? false) && Field("Telefonnummer", "contactPhone")}
+{(content._optional?.email ?? false) && Field("E-Mail Adresse", "contactEmail")}
+{(content._optional?.address ?? false) && Field("Adresse", "contactAddress")}
+{(content._optional?.hours ?? false) && Field("Öffnungszeiten", "openingHours", true, 3)}
+{(content._optional?.gdpr ?? true) && Field("DSGVO Text", "gdprText")}
+      </>
+    );
+ case 'stats':
+    return (
+      <>
+         <LayoutToggle type={type} content={content} update={update} />
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: true },
+          { key: 'description', label: 'Beschreibung pro Item', icon: '📝', defaultOn: true },
+          { key: 'icon', label: 'Icon pro Item', icon: '🎨', defaultOn: false },
+          { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
+        ]} />
+       {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+
+        <ListEditor field="items" schema={[
+          { key: 'value', label: 'Wert (z.B. 1.000+)' },
+          { key: 'title', label: 'Bezeichnung' },
+          ...((content._optional?.description ?? true) ? [{ key: 'description', label: 'Beschreibung' }] : []),
+          ...((content._optional?.icon ?? false) ? [{ key: 'icon', label: 'Icon (Emoji)' }] : []),
+        ]}
+        content={content} update={update} inputStyle={inputStyle} labelStyle={labelStyle} wrapStyle={wrapStyle}/>
+       {(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+
+      </>
+    );
+
+  case 'team':
+    return (
+      <>
+         <LayoutToggle type={type} content={content} update={update} />
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: true },
+          { key: 'bio', label: 'Bio-Text', icon: '📝', defaultOn: true },
+          { key: 'image', label: 'Foto', icon: '📷', defaultOn: true },
+          { key: 'social', label: 'Social Links', icon: '🌐', defaultOn: false },
+          { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
+        ]} />
+        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+
+        <ListEditor field="items" schema={[
+          { key: 'title', label: 'Name' },
+          { key: 'subtitle', label: 'Position / Rolle' },
+          ...((content._optional?.bio ?? true) ? [{ key: 'description', label: 'Bio' }] : []),
+          ...((content._optional?.image ?? true) ? [{ key: 'image', label: 'Foto URL' }] : []),
+          ...((content._optional?.social ?? false) ? [{ key: 'linkedin', label: 'LinkedIn URL' }, { key: 'twitter', label: 'Twitter URL' }] : []),
+        ]}
+        content={content} update={update} inputStyle={inputStyle} labelStyle={labelStyle} wrapStyle={wrapStyle}/>
+       {(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+
+      </>
+    );
+
+  case 'gallery':
+    return (
+      <>
+         <LayoutToggle type={type} content={content} update={update} />
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: true },
+          { key: 'caption', label: 'Bildunterschrift', icon: '📝', defaultOn: false },
+          { key: 'lightbox', label: 'Lightbox', icon: '🔍', defaultOn: false },
+          { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
+        ]} />
+        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+
+        <ListEditor field="images" schema={[
+          { key: 'url', label: 'Bild URL' },
+          { key: 'alt', label: 'Alt-Text' },
+          ...((content._optional?.caption ?? false) ? [{ key: 'caption', label: 'Bildunterschrift' }] : []),
+        ]}
+        content={content} update={update} inputStyle={inputStyle} labelStyle={labelStyle} wrapStyle={wrapStyle}/>
+        {(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+      </>
+    );
+
+  case 'faq':
+    return (
+      <>
+         <LayoutToggle type={type} content={content} update={update} />
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: true },
+          { key: 'subheading', label: 'Unterüberschrift', icon: '📝', defaultOn: false },
+          { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
+          { key: 'categories', label: 'Kategorien', icon: '🗂️', defaultOn: false },
+        ]} />
+        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+     {(content._optional?.subheading ?? false) && Field("Unterüberschrift", "subheading", true, 2)}
+        <ListEditor field="items" schema={[
+          { key: 'title', label: 'Frage' },
+          { key: 'description', label: 'Antwort' },
+          ...((content._optional?.categories ?? false) ? [{ key: 'category', label: 'Kategorie' }] : []),
+        ]}
+        content={content} update={update} inputStyle={inputStyle} labelStyle={labelStyle} wrapStyle={wrapStyle}/>
+        {(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+      </>
+    );
+
+  case 'video':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: true },
+          { key: 'description', label: 'Beschreibung', icon: '📝', defaultOn: false },
+          { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
+          { key: 'autoplay', label: 'Autoplay', icon: '▶️', defaultOn: false },
+        ]} />
+        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+{Field("Video URL (YouTube/Vimeo/MP4)", "videoUrl")}
+{Field("Poster Bild URL", "videoPoster")}
+{(content._optional?.description ?? false) && Field("Beschreibung", "text", true, 3)}
+{(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+      </>
+    );
+
+  case 'newsletter':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'subtext', label: 'Beschreibung', icon: '📝', defaultOn: true },
+          { key: 'gdpr', label: 'DSGVO Hinweis', icon: '🔒', defaultOn: true },
+          { key: 'nameField', label: 'Vorname-Feld', icon: '👤', defaultOn: false },
+          { key: 'doubleOptIn', label: 'Double Opt-In Hinweis', icon: '✉️', defaultOn: false },
+          { key: 'incentive', label: 'Lead Magnet Text', icon: '🎁', defaultOn: false },
+        ]} />
+     {Field("Überschrift", "heading")}
+{(content._optional?.subtext ?? true) && Field("Beschreibung", "text", true, 2)}
+{(content._optional?.incentive ?? false) && Field("Lead Magnet (z.B. 🎁 Gratis PDF)", "incentiveText")}
+{Field("Button Text", "buttonText")}
+{Field("Placeholder E-Mail", "placeholder")}
+{(content._optional?.gdpr ?? true) && Field("DSGVO Text", "gdprText")}
+{(content._optional?.doubleOptIn ?? false) && Field("Double Opt-In Hinweis", "doubleOptInText")}
+      </>
+    );
+
+  case 'booking':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'description', label: 'Beschreibung', icon: '📝', defaultOn: true },
+          { key: 'services', label: 'Service-Liste', icon: '⚙️', defaultOn: false },
+          { key: 'phone', label: 'Telefon Alternative', icon: '📞', defaultOn: false },
+          { key: 'duration', label: 'Dauer anzeigen', icon: '⏱️', defaultOn: false },
+          { key: 'price', label: 'Preis anzeigen', icon: '💶', defaultOn: false },
+        ]} />
+        {availableBookingServices.length > 0 && (
+  <div style={wrapStyle}>
+    <label style={labelStyle}>Services aus Booking importieren</label>
+    <button
+      onClick={() => update('serviceList', availableBookingServices.map(s => ({
+        name: s.name,
+        duration: `${s.duration} Min`,
+        price: s.price ? `€${s.price}` : '',
+      })))}
+      style={{ width: '100%', padding: '7px', background: '#1f6feb', border: 'none', borderRadius: 6, color: '#fff', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+    >
+      ↓ {availableBookingServices.length} Services importieren
+    </button>
+  </div>
+)}
+      {Field("Überschrift", "heading")}
+{(content._optional?.description ?? true) && Field("Beschreibung", "text", true, 3)}
+{Field("Button Text", "buttonText")}
+{Field("Booking URL / Link", "buttonLink")}
+{(content._optional?.phone ?? false) && Field("Telefon als Alternative", "contactPhone")}
+        {(content._optional?.services ?? false) && (
+          <ListEditor field="serviceList" schema={[
+            { key: 'name', label: 'Service Name' },
+            ...((content._optional?.duration ?? false) ? [{ key: 'duration', label: 'Dauer (z.B. 60 Min)' }] : []),
+            ...((content._optional?.price ?? false) ? [{ key: 'price', label: 'Preis' }] : []),
+          ]} content={content} update={update} inputStyle={inputStyle} labelStyle={labelStyle} wrapStyle={wrapStyle} />
+        )}
+      </>
+    );
+
+  case 'map':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: true },
+          { key: 'address', label: 'Adresse Text', icon: '📍', defaultOn: true },
+          { key: 'hours', label: 'Öffnungszeiten', icon: '🕐', defaultOn: false },
+          { key: 'phone', label: 'Telefon', icon: '📞', defaultOn: false },
+          { key: 'directions', label: 'Routenplaner Button', icon: '🧭', defaultOn: false },
+        ]} />
+       {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+{(content._optional?.address ?? true) && Field("Adresse (Text)", "address")}
+{Field("Google Maps Embed URL", "embedUrl")}
+{(content._optional?.hours ?? false) && Field("Öffnungszeiten", "openingHours", true, 4)}
+{(content._optional?.phone ?? false) && Field("Telefonnummer", "contactPhone")}
+{(content._optional?.directions ?? false) && Field("Google Maps Link (für Routenplaner)", "directionsUrl")}
+      </>
+    );
+
+  case 'countdown':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: true },
+          { key: 'subtext', label: 'Beschreibung', icon: '📝', defaultOn: true },
+          { key: 'button', label: 'Button', icon: '🔘', defaultOn: false },
+          { key: 'expiredText', label: 'Abgelaufen-Text', icon: '⏰', defaultOn: false },
+        ]} />
+       {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+{Field("Zieldatum (YYYY-MM-DD)", "targetDate")}
+{(content._optional?.subtext ?? true) && Field("Beschreibung", "text")}
+{(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+{(content._optional?.expiredText ?? false) && Field("Text wenn abgelaufen", "expiredText")}
+      </>
+    );
+
+  case 'social':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: true },
+          { key: 'followerCount', label: 'Follower-Anzahl', icon: '👥', defaultOn: false },
+          { key: 'description', label: 'Beschreibung', icon: '📝', defaultOn: false },
+        ]} />
+       {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+{(content._optional?.description ?? false) && Field("Beschreibung", "text", true, 2)}
+        <ListEditor field="links" schema={[
+          { key: 'platform', label: 'Plattform' },
+          { key: 'url', label: 'URL' },
+          { key: 'icon', label: 'Icon (Emoji)' },
+          ...((content._optional?.followerCount ?? false) ? [{ key: 'followers', label: 'Follower (z.B. 12.4K)' }] : []),
+        ]}
+        content={content} update={update} inputStyle={inputStyle} labelStyle={labelStyle} wrapStyle={wrapStyle}/>
+      </>
+    );
+
+  case 'blog':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: true },
+          { key: 'button', label: 'Alle anzeigen Button', icon: '🔘', defaultOn: false },
+          { key: 'category', label: 'Kategorie-Filter', icon: '🗂️', defaultOn: false },
+          { key: 'author', label: 'Autor anzeigen', icon: '👤', defaultOn: false },
+        ]} />
+        {(content._optional?.heading ?? true) && Field("Überschrift", "heading")}
+        <div style={wrapStyle}>
+          <label style={labelStyle}>Anzahl Posts</label>
+          <select value={content.count || 3} onChange={e => update('count', Number(e.target.value))} style={{ ...inputStyle, width: '100%' }}>
+            {[3, 6, 9, 12].map(n => <option key={n} value={n}>{n} Posts</option>)}
+          </select>
+        </div>
+       {(content._optional?.button ?? false) && <>{Field("Button Text (z.B. Alle Beiträge)", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+
+      </>
+    );
+
+  case 'html':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: false },
+          { key: 'description', label: 'Beschreibung', icon: '📝', defaultOn: false },
+        ]} />
+       {(content._optional?.heading ?? false) && Field("Überschrift", "heading")}
+{(content._optional?.description ?? false) && Field("Beschreibung", "text", true, 2)}
+        <div style={wrapStyle}>
+          <label style={labelStyle}>HTML Code</label>
+          <textarea value={content.html || ''} onChange={e => update('html', e.target.value)} rows={14} spellCheck={false}
+            style={{ ...taStyle, fontFamily: '"SF Mono", monospace', fontSize: '0.73rem', color: '#79c0ff' }} />
+        </div>
+      </>
+    );
+
+  case 'before_after':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'heading', label: 'Überschrift', icon: '📌', defaultOn: false },
+          { key: 'labels', label: 'Vorher/Nachher Labels', icon: '🏷️', defaultOn: true },
+          { key: 'description', label: 'Beschreibung unten', icon: '📝', defaultOn: false },
+          { key: 'button', label: 'Button unten', icon: '🔘', defaultOn: false },
+        ]} />
+       {(content._optional?.heading ?? false) && Field("Überschrift", "heading")}
+
+        <div style={wrapStyle}>
+          <label style={labelStyle}>Vorher-Bild URL</label>
+          <input type="text" value={content.beforeImage || ''} onChange={e => update('beforeImage', e.target.value)} placeholder="https://..." style={inputStyle} />
+        </div>
+        <div style={wrapStyle}>
+          <label style={labelStyle}>Nachher-Bild URL</label>
+          <input type="text" value={content.afterImage || ''} onChange={e => update('afterImage', e.target.value)} placeholder="https://..." style={inputStyle} />
+        </div>
+       {(content._optional?.labels ?? true) && <>
+  {Field("Vorher-Label", "beforeLabel")}
+  {Field("Nachher-Label", "afterLabel")}
+</>}
+{(content._optional?.description ?? false) && Field("Beschreibung", "text", true, 2)}
+{(content._optional?.button ?? false) && <>{Field("Button Text", "buttonText")}{Field("Button Link", "buttonLink")}</>}
+      </>
+    );
+
+  case 'whatsapp':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'label', label: 'Button Text', icon: '💬', defaultOn: true },
+          { key: 'message', label: 'Vorausgefüllte Nachricht', icon: '✉️', defaultOn: true },
+          { key: 'pulseAnimation', label: 'Puls-Animation', icon: '✨', defaultOn: false },
+          { key: 'tooltip', label: 'Tooltip Text', icon: '💡', defaultOn: false },
+        ]} />
+        {Field("Telefonnummer (mit Ländercode)", "phone")}
+{(content._optional?.message ?? true) && Field("Vorausgefüllte Nachricht", "message", true, 3)}
+{(content._optional?.label ?? true) && Field("Button-Text", "label")}
+{(content._optional?.tooltip ?? false) && Field("Tooltip Text", "tooltip")}
+        <div style={wrapStyle}>
+          <label style={labelStyle}>Position auf der Website</label>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {[{ v: 'right', l: '➡ Rechts' }, { v: 'left', l: '⬅ Links' }].map(o => (
+              <button key={o.v} onClick={() => update('position', o.v)}
+                style={{ flex: 1, padding: '6px', borderRadius: 5, fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer',
+                  background: (content.position || 'right') === o.v ? '#1f6feb' : '#0d1117',
+                  border: `1px solid ${(content.position || 'right') === o.v ? '#1f6feb' : '#30363d'}`,
+                  color: (content.position || 'right') === o.v ? '#fff' : '#8b949e' }}>
+                {o.l}
+              </button>
+            ))}
+          </div>
+        </div>
+      </>
+    );
+
+  case 'spacer':
+    return (
+      <>
+        <ElementToggleBar content={content} update={update} elements={[
+          { key: 'line', label: 'Trennlinie', icon: '—', defaultOn: false },
+          { key: 'gradient', label: 'Gradient Linie', icon: '🌈', defaultOn: false },
+        ]} />
+        <div style={wrapStyle}>
+          <label style={labelStyle}>Höhe</label>
+          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 6 }}>
+            {['40px','60px','80px','100px','120px','160px'].map(h => (
+              <button key={h} onClick={() => update('height', h)}
+                style={{ padding: '4px 8px', borderRadius: 4, fontSize: '0.68rem', fontWeight: 600, cursor: 'pointer',
+                  background: content.height === h ? '#1f6feb' : '#0d1117',
+                  border: `1px solid ${content.height === h ? '#1f6feb' : '#30363d'}`,
+                  color: content.height === h ? '#fff' : '#8b949e' }}>
+                {h}
+              </button>
+            ))}
+          </div>
+          <input type="text" value={content.height || ''} onChange={e => update('height', e.target.value)} placeholder="z.B. 80px" style={inputStyle} />
+        </div>
+        {(content._optional?.line ?? false) && (
+          <>
+            <div style={wrapStyle}>
+              <label style={labelStyle}>Linienfarbe</label>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <input type="color" value={content.lineColor || '#e5e7eb'} onChange={e => update('lineColor', e.target.value)}
+                  style={{ width: 36, height: 36, borderRadius: 6, border: '1px solid #30363d', cursor: 'pointer', padding: 2 }} />
+                <input type="text" value={content.lineColor || ''} onChange={e => update('lineColor', e.target.value)} style={inputStyle} />
+              </div>
+            </div>
+            <div style={wrapStyle}>
+              <label style={labelStyle}>Linienstil</label>
+              <div style={{ display: 'flex', gap: 5 }}>
+                {['solid','dashed','dotted'].map(s => (
+                  <button key={s} onClick={() => update('lineStyle', s)}
+                    style={{ flex: 1, padding: '5px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer',
+                      background: (content.lineStyle || 'solid') === s ? '#1f6feb' : '#0d1117',
+                      border: `1px solid ${(content.lineStyle || 'solid') === s ? '#1f6feb' : '#30363d'}`,
+                      color: (content.lineStyle || 'solid') === s ? '#fff' : '#8b949e' }}>
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          {Field("Linienstärke", "lineThickness")}
+          </>
+          
+        )}
+        
+
+      </>
+      );
+    
+case 'freestyle':
+    return <FreestyleEditor content={content} onChange={onChange} />;
+  default:
+    return <p style={{ color: '#6e7681', fontSize: '0.8rem' }}>Kein Editor für: {type}</p>;
+  } 
+  } 
 // ==================== STYLE PANEL ====================
 
 function StylePanel({ section, onChange, onPickMedia }: { section: Section; onChange: (s: Partial<SectionStyling>) => void; onPickMedia: (cb: (url: string) => void) => void }) {
