@@ -659,10 +659,9 @@ function generateBlockId() {
 
 // ==================== FREESTYLE EDITOR ====================
 
-function FreestyleEditor({ content, onChange, externalSelectedBlockId }: {
+function FreestyleEditor({ content, onChange }: {
   content: SectionContent;
   onChange: (c: SectionContent) => void;
-  externalSelectedBlockId?: string | null;
 }) {
   const blocks: any[] = content.blocks || [];
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
@@ -705,16 +704,7 @@ const dragBlockIdx = useRef<number | null>(null);
   };
 
   const selectedBlock = blocks.find(b => b.id === selectedBlockId) || null;
-// Sync external selection (Canvas click → Panel)
-useEffect(() => {
-  if (externalSelectedBlockId !== undefined && externalSelectedBlockId !== null) {
-    setSelectedBlockId(externalSelectedBlockId);
-    // Scroll to block in list
-    setTimeout(() => {
-      document.getElementById(`block-item-${externalSelectedBlockId}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 50);
-  }
-}, [externalSelectedBlockId]);
+
   const inputStyle: React.CSSProperties = {
     width: '100%', background: '#0d1117', border: '1px solid #30363d',
     borderRadius: 6, color: '#c9d1d9', padding: '7px 10px', fontSize: '0.78rem',
@@ -745,7 +735,6 @@ useEffect(() => {
         {[...blocks].sort((a, b) => a.order - b.order).map((block, idx) => (
 
          <div key={block.id}
-  id={`block-item-${block.id}`}
   draggable
   onDragStart={() => { dragBlockIdx.current = idx; }}
   onDragOver={e => { e.preventDefault(); setDragOverBlockIdx(idx); }}
@@ -1446,251 +1435,91 @@ function FloatingBlockToolbar({ block, onUpdate, onDelete, onDuplicate }: {
   onDelete: () => void;
   onDuplicate: () => void;
 }) {
-  const btn = (active = false, danger = false): React.CSSProperties => ({
+  const btnStyle = (active = false): React.CSSProperties => ({
     background: active ? '#1f6feb' : 'transparent',
-    border: 'none', borderRadius: 4,
-    color: danger ? '#f85149' : active ? '#fff' : '#8b949e',
-    padding: '3px 7px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 600, lineHeight: 1,
+    border: 'none',
+    borderRadius: 4,
+    color: active ? '#fff' : '#8b949e',
+    padding: '3px 7px',
+    cursor: 'pointer',
+    fontSize: '0.75rem',
+    fontWeight: 600,
+    lineHeight: 1,
   });
-  const sep = <div style={{ width: 1, height: 16, background: '#30363d', margin: '0 2px' }} />;
-
-  const SIZES = [
-    { l: 'XS', v: '0.75rem' }, { l: 'S', v: '1rem' }, { l: 'M', v: '1.25rem' },
-    { l: 'L', v: '1.5rem' }, { l: 'XL', v: '2rem' },
-  ];
 
   return (
     <div
       onClick={e => e.stopPropagation()}
       style={{
-        position: 'absolute', top: -44, left: '50%', transform: 'translateX(-50%)',
-        background: '#1c2128', border: '1px solid #30363d', borderRadius: 8,
-        display: 'flex', alignItems: 'center', gap: 2, padding: '4px 8px',
-        zIndex: 100, whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
-        flexWrap: 'wrap', maxWidth: 480,
+        position: 'absolute',
+        top: -38,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: '#1c2128',
+        border: '1px solid #30363d',
+        borderRadius: 8,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+        padding: '4px 6px',
+        zIndex: 100,
+        whiteSpace: 'nowrap',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
       }}
     >
-      {/* Ausrichtung — für alle außer spacer/divider */}
-      {block.align !== undefined && (
-        <>
-          {['left', 'center', 'right'].map(a => (
-            <button key={a} onClick={() => onUpdate({ align: a })} style={btn(block.align === a)} title={a}>
-              {a === 'left' ? '⬅' : a === 'center' ? '↔' : '➡'}
-            </button>
-          ))}
-          {sep}
-        </>
-      )}
+      {/* Ausrichtung */}
+      {block.align !== undefined && ['left', 'center', 'right'].map(a => (
+        <button key={a} onClick={() => onUpdate({ align: a })} style={btnStyle(block.align === a)} title={a}>
+          {a === 'left' ? '⬅' : a === 'center' ? '↔' : '➡'}
+        </button>
+      ))}
 
-      {/* HEADING spezifisch */}
+      {/* Heading-Level */}
       {block.type === 'heading' && (
         <>
+          <div style={{ width: 1, height: 16, background: '#30363d', margin: '0 2px' }} />
           {['h1', 'h2', 'h3', 'h4'].map(l => (
-            <button key={l} onClick={() => onUpdate({ level: l })} style={btn(block.level === l)}>
+            <button key={l} onClick={() => onUpdate({ level: l })} style={btnStyle(block.level === l)}>
               {l.toUpperCase()}
             </button>
           ))}
-          {sep}
-          {SIZES.map(s => (
-            <button key={s.v} onClick={() => onUpdate({ fontSize: s.v })} style={btn(block.fontSize === s.v)} title={s.v}>
-              {s.l}
-            </button>
-          ))}
-          {sep}
-          <input
-            type="color"
-            value={block.color || '#000000'}
-            onChange={e => onUpdate({ color: e.target.value })}
-            title="Textfarbe"
-            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }}
-          />
-          {sep}
         </>
       )}
 
-      {/* TEXT spezifisch */}
-      {block.type === 'text' && (
-        <>
-          {[
-            { cmd: 'bold', l: 'B', s: { fontWeight: 700 } },
-            { cmd: 'italic', l: 'I', s: { fontStyle: 'italic' } },
-            { cmd: 'underline', l: 'U', s: { textDecoration: 'underline' } },
-          ].map(f => (
-            <button key={f.cmd}
-              onClick={() => { document.execCommand(f.cmd); }}
-              style={{ ...btn(), ...f.s }}
-              title={f.cmd}>
-              {f.l}
-            </button>
-          ))}
-          {sep}
-          <input
-            type="color"
-            value={block.color || '#000000'}
-            onChange={e => {
-              onUpdate({ color: e.target.value });
-              document.execCommand('foreColor', false, e.target.value);
-            }}
-            title="Textfarbe"
-            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }}
-          />
-          {sep}
-          {SIZES.map(s => (
-            <button key={s.v} onClick={() => onUpdate({ fontSize: s.v })} style={btn(block.fontSize === s.v)} title={s.v}>
-              {s.l}
-            </button>
-          ))}
-          {sep}
-        </>
-      )}
-
-      {/* BUTTON spezifisch */}
+      {/* Button-Stil */}
       {block.type === 'button' && (
         <>
+          <div style={{ width: 1, height: 16, background: '#30363d', margin: '0 2px' }} />
           {[{ v: 'primary', l: 'P' }, { v: 'outline', l: 'O' }, { v: 'ghost', l: 'G' }].map(o => (
-            <button key={o.v} onClick={() => onUpdate({ style: o.v })} style={btn(block.style === o.v)} title={o.v}>{o.l}</button>
+            <button key={o.v} onClick={() => onUpdate({ style: o.v })} style={btnStyle(block.style === o.v)} title={o.v}>
+              {o.l}
+            </button>
           ))}
-          {sep}
-          {[{ v: 'sm', l: 'S' }, { v: 'md', l: 'M' }, { v: 'lg', l: 'L' }].map(s => (
-            <button key={s.v} onClick={() => onUpdate({ size: s.v })} style={btn(block.size === s.v)}>{s.l}</button>
-          ))}
-          {sep}
-          <input
-            type="color"
-            value={block.bgColor || '#3b82f6'}
-            onChange={e => onUpdate({ bgColor: e.target.value })}
-            title="Button-Farbe"
-            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }}
-          />
-          {sep}
         </>
       )}
 
-      {/* IMAGE spezifisch */}
-      {block.type === 'image' && (
-        <>
-          {['25%', '50%', '75%', '100%'].map(w => (
-            <button key={w} onClick={() => onUpdate({ width: w })} style={btn(block.width === w)}>{w}</button>
-          ))}
-          {sep}
-        </>
-      )}
+      <div style={{ width: 1, height: 16, background: '#30363d', margin: '0 2px' }} />
 
-      {/* Badge Farbe */}
-      {block.type === 'badge' && (
-        <>
-          <input
-            type="color"
-            value={block.color || '#3b82f6'}
-            onChange={e => onUpdate({ color: e.target.value })}
-            title="Farbe"
-            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1 }}
-          />
-          {sep}
-        </>
-      )}
+      {/* Duplizieren */}
+      <button onClick={onDuplicate} style={btnStyle()} title="Duplizieren">⧉</button>
 
-      {/* Icon Größe */}
-      {block.type === 'icon' && (
-        <>
-          {[{ v: '2rem', l: 'S' }, { v: '3rem', l: 'M' }, { v: '4rem', l: 'L' }, { v: '6rem', l: 'XL' }].map(s => (
-            <button key={s.v} onClick={() => onUpdate({ size: s.v })} style={btn(block.size === s.v)}>{s.l}</button>
-          ))}
-          {sep}
-        </>
-      )}
-
-      {/* Duplizieren + Löschen */}
-      <button onClick={onDuplicate} style={btn()} title="Duplizieren">⧉</button>
-      <button onClick={onDelete} style={btn(false, true)} title="Löschen">✕</button>
-    </div>
-  );
-}
-function InlineAddBlock({ sectionId, onAdd }: { sectionId: string; onAdd: (sectionId: string, type: string) => void }) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState('');
-
-  const filtered = FREESTYLE_BLOCK_TYPES.filter(b =>
-    !search || b.label.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <div style={{ position: 'relative', textAlign: 'center', marginTop: '0.75rem' }}>
-      {!open ? (
-        <button
-          onClick={e => { e.stopPropagation(); setOpen(true); }}
-          style={{
-            background: 'rgba(88,166,255,0.08)', border: '1px dashed rgba(88,166,255,0.4)',
-            borderRadius: 8, color: '#58a6ff', padding: '6px 20px', fontSize: '0.75rem',
-            fontWeight: 600, cursor: 'pointer', width: '100%',
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(88,166,255,0.15)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(88,166,255,0.08)'}
-        >
-          + Element hinzufügen
-        </button>
-      ) : (
-        <div
-          onClick={e => e.stopPropagation()}
-          style={{
-            background: '#1c2128', border: '1px solid #30363d', borderRadius: 10,
-            padding: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-            maxHeight: 280, overflowY: 'auto',
-          }}
-        >
-          <input
-            autoFocus
-            type="text"
-            placeholder="🔍 Suchen..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            onClick={e => e.stopPropagation()}
-            style={{
-              width: '100%', background: '#0d1117', border: '1px solid #30363d',
-              borderRadius: 6, color: '#c9d1d9', padding: '5px 8px', fontSize: '0.75rem',
-              outline: 'none', marginBottom: 8, boxSizing: 'border-box',
-            }}
-          />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 5 }}>
-            {filtered.map(bt => (
-              <button
-                key={bt.type}
-                onClick={e => { e.stopPropagation(); onAdd(sectionId, bt.type); setOpen(false); setSearch(''); }}
-                style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-                  padding: '6px 3px', borderRadius: 6, cursor: 'pointer',
-                  background: bt.category === 'komplex' ? 'rgba(88,166,255,0.06)' : '#0d1117',
-                  border: `1px solid ${bt.category === 'komplex' ? 'rgba(88,166,255,0.2)' : '#21262d'}`,
-                  color: '#c9d1d9', fontSize: '0.62rem', fontWeight: 600,
-                }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = '#58a6ff'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = bt.category === 'komplex' ? 'rgba(88,166,255,0.2)' : '#21262d'}
-              >
-                <span style={{ fontSize: '0.9rem' }}>{bt.icon}</span>
-                <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{bt.label}</span>
-              </button>
-            ))}
-          </div>
-          <button
-            onClick={e => { e.stopPropagation(); setOpen(false); setSearch(''); }}
-            style={{ width: '100%', marginTop: 8, background: 'transparent', border: '1px solid #30363d', borderRadius: 6, color: '#6e7681', padding: '5px', fontSize: '0.72rem', cursor: 'pointer' }}
-          >
-            Abbrechen
-          </button>
-        </div>
-      )}
+      {/* Löschen */}
+      <button
+        onClick={onDelete}
+        style={{ ...btnStyle(), color: '#f85149' }}
+        title="Löschen"
+      >✕</button>
     </div>
   );
 }
 // ==================== CANVAS SECTION PREVIEW ====================
 
-function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMode, selectedBlockId, onBlockClick, onBlockUpdate, onAddBlock }: {
+function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMode, selectedBlockId, onBlockClick, onBlockUpdate }: {
   section: Section; isSelected: boolean; onClick: () => void;
   settings: TemplateSettings; deviceMode: 'desktop' | 'tablet' | 'mobile';
   selectedBlockId?: string | null;
   onBlockClick?: (blockId: string) => void;
   onBlockUpdate?: (sectionId: string, blockId: string, updates: any) => void;
-  onAddBlock?: (sectionId: string, blockType: string) => void;
 }) {
   const { type, content, styling } = section;
   const primary = settings?.colors?.primary || '#3b82f6';
@@ -2089,7 +1918,6 @@ const renderContent = () => {
             ) : renderBlock(block)}
           </div>
         ))}
-          {onAddBlock && <InlineAddBlock sectionId={section.id} onAdd={onAddBlock} />}
       </div>
     );
   }
@@ -2269,12 +2097,11 @@ function ListEditor({ field, schema, content, update, inputStyle, labelStyle, wr
   );
 }
 // ==================== CONTENT EDITOR ====================
-function ContentEditor({ section, onChange, availableForms, availableBookingServices, externalSelectedBlockId }: {
+function ContentEditor({ section, onChange, availableForms, availableBookingServices }: {
   section: Section;
   onChange: (c: SectionContent) => void;
   availableForms: { id: string; name: string; slug: string }[];
   availableBookingServices: { id: string; name: string; duration: number; price: number }[];
-  externalSelectedBlockId?: string | null;
 }) {
   const hasBlocks = Array.isArray(section.content.blocks) && section.content.blocks.length > 0;
   const hasOldContent = !hasBlocks && (
@@ -2351,8 +2178,7 @@ function ContentEditor({ section, onChange, availableForms, availableBookingServ
     );
   }
 
-  return <FreestyleEditor content={section.content} onChange={onChange} externalSelectedBlockId={externalSelectedBlockId} />;
-
+  return <FreestyleEditor content={section.content} onChange={onChange} />;
 }
 // ==================== STYLE PANEL ====================
 
@@ -3615,28 +3441,7 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
     ));
   }
   setIsDirty(true);
-  };
-  
-  const handleCanvasAddBlock = (sectionId: string, blockType: string) => {
-  const section = sections.find(s => s.id === sectionId);
-  if (!section) return;
-  const blocks = section.content.blocks || [];
-  const newBlock = {
-    id: generateBlockId(),
-    type: blockType,
-    order: blocks.length,
-    ...DEFAULT_BLOCK[blockType],
-  };
-  setSections(prev => prev.map(s => s.id === sectionId
-    ? { ...s, content: { ...s.content, blocks: [...blocks, newBlock] } }
-    : s
-  ));
-  setSelectedId(sectionId);
-  setSelectedBlockId(newBlock.id);
-  setRightTab('content');
-  setIsDirty(true);
-  };
-  
+};
   const handleSave = async () => {
     if (!tenant?.id || isSaving) return;
     setIsSaving(true);
@@ -3967,8 +3772,7 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
     setSelectedBlockId(blockId);
     setRightTab('content');
   }}
-     onBlockUpdate={handleCanvasBlockUpdate}
-     onAddBlock={handleCanvasAddBlock} 
+  onBlockUpdate={handleCanvasBlockUpdate}
 />
                     
                     {selectedId === section.id && (
@@ -4040,7 +3844,7 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
                   </div>
                 ) : (
                   <>
-                    {rightTab === 'content' && <ContentEditor section={selectedSection} onChange={handleContentChange} availableForms={availableForms}availableBookingServices={availableBookingServices} externalSelectedBlockId={selectedBlockId} />}
+                    {rightTab === 'content' && <ContentEditor section={selectedSection} onChange={handleContentChange} availableForms={availableForms}availableBookingServices={availableBookingServices} />}
                     {rightTab === 'style' && <StylePanel section={selectedSection} onChange={handleStylingChange} onPickMedia={(cb) => setMediaPicker({ onSelect: cb })} />}
                     {rightTab === 'layout' && <LayoutPanel section={selectedSection} onChange={handleStylingChange} deviceMode={deviceMode} />}
                     {rightTab === 'css' && <CssPanel section={selectedSection} onChange={handleStylingChange} />}
