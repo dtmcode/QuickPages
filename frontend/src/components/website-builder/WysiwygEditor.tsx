@@ -1427,11 +1427,99 @@ const dragBlockIdx = useRef<number | null>(null);
     </div>
   );
 }
+// ==================== FLOATING BLOCK TOOLBAR ====================
+
+function FloatingBlockToolbar({ block, onUpdate, onDelete, onDuplicate }: {
+  block: any;
+  onUpdate: (updates: any) => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+}) {
+  const btnStyle = (active = false): React.CSSProperties => ({
+    background: active ? '#1f6feb' : 'transparent',
+    border: 'none',
+    borderRadius: 4,
+    color: active ? '#fff' : '#8b949e',
+    padding: '3px 7px',
+    cursor: 'pointer',
+    fontSize: '0.75rem',
+    fontWeight: 600,
+    lineHeight: 1,
+  });
+
+  return (
+    <div
+      onClick={e => e.stopPropagation()}
+      style={{
+        position: 'absolute',
+        top: -38,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: '#1c2128',
+        border: '1px solid #30363d',
+        borderRadius: 8,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+        padding: '4px 6px',
+        zIndex: 100,
+        whiteSpace: 'nowrap',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+      }}
+    >
+      {/* Ausrichtung */}
+      {block.align !== undefined && ['left', 'center', 'right'].map(a => (
+        <button key={a} onClick={() => onUpdate({ align: a })} style={btnStyle(block.align === a)} title={a}>
+          {a === 'left' ? '⬅' : a === 'center' ? '↔' : '➡'}
+        </button>
+      ))}
+
+      {/* Heading-Level */}
+      {block.type === 'heading' && (
+        <>
+          <div style={{ width: 1, height: 16, background: '#30363d', margin: '0 2px' }} />
+          {['h1', 'h2', 'h3', 'h4'].map(l => (
+            <button key={l} onClick={() => onUpdate({ level: l })} style={btnStyle(block.level === l)}>
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </>
+      )}
+
+      {/* Button-Stil */}
+      {block.type === 'button' && (
+        <>
+          <div style={{ width: 1, height: 16, background: '#30363d', margin: '0 2px' }} />
+          {[{ v: 'primary', l: 'P' }, { v: 'outline', l: 'O' }, { v: 'ghost', l: 'G' }].map(o => (
+            <button key={o.v} onClick={() => onUpdate({ style: o.v })} style={btnStyle(block.style === o.v)} title={o.v}>
+              {o.l}
+            </button>
+          ))}
+        </>
+      )}
+
+      <div style={{ width: 1, height: 16, background: '#30363d', margin: '0 2px' }} />
+
+      {/* Duplizieren */}
+      <button onClick={onDuplicate} style={btnStyle()} title="Duplizieren">⧉</button>
+
+      {/* Löschen */}
+      <button
+        onClick={onDelete}
+        style={{ ...btnStyle(), color: '#f85149' }}
+        title="Löschen"
+      >✕</button>
+    </div>
+  );
+}
 // ==================== CANVAS SECTION PREVIEW ====================
 
-function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMode }: {
+function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMode, selectedBlockId, onBlockClick, onBlockUpdate }: {
   section: Section; isSelected: boolean; onClick: () => void;
   settings: TemplateSettings; deviceMode: 'desktop' | 'tablet' | 'mobile';
+  selectedBlockId?: string | null;
+  onBlockClick?: (blockId: string) => void;
+  onBlockUpdate?: (sectionId: string, blockId: string, updates: any) => void;
 }) {
   const { type, content, styling } = section;
   const primary = settings?.colors?.primary || '#3b82f6';
@@ -1775,18 +1863,113 @@ const btnText = styling?.buttonTextColor || '#ffffff';
 const renderContent = () => {
   const blocks = [...(content.blocks || [])].sort((a: any, b: any) => a.order - b.order);
 
-  if (blocks.length === 0) {
+  // ── Neues Format mit blocks ──
+  if (blocks.length > 0) {
     return (
-      <div style={{ ...innerWidth, textAlign: 'center', padding: '3rem', color: 'rgba(0,0,0,0.25)', border: '2px dashed rgba(0,0,0,0.1)', borderRadius: '0.75rem' }}>
-        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>+</div>
-        <p style={{ margin: 0, fontSize: '0.875rem' }}>Elemente hinzufügen</p>
+      <div style={{ ...innerWidth, position: 'relative' }}>
+        {blocks.map(block => (
+          <div
+            key={block.id}
+            onClick={e => { e.stopPropagation(); onBlockClick?.(block.id); }}
+            style={{
+              position: 'relative',
+              outline: selectedBlockId === block.id ? '2px solid #58a6ff' : 'none',
+              outlineOffset: 2,
+              borderRadius: 4,
+              cursor: onBlockClick ? 'pointer' : 'inherit',
+              transition: 'outline 0.1s',
+            }}
+            onMouseEnter={e => { if (onBlockClick && selectedBlockId !== block.id) e.currentTarget.style.outline = '1px dashed rgba(88,166,255,0.3)'; }}
+            onMouseLeave={e => { if (selectedBlockId !== block.id) e.currentTarget.style.outline = 'none'; }}
+          >
+            {selectedBlockId === block.id && onBlockUpdate && (
+              <FloatingBlockToolbar
+                block={block}
+                onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+                onDelete={() => onBlockUpdate(section.id, block.id, { _action: 'delete' })}
+                onDuplicate={() => onBlockUpdate(section.id, block.id, { _action: 'duplicate' })}
+              />
+            )}
+            {/* Inline Text Editing für heading */}
+            {block.type === 'heading' && selectedBlockId === block.id ? (() => {
+              const Tag = (block.level || 'h2') as any;
+              const sizes: Record<string, string> = { h1: headingSize, h2: '1.75rem', h3: '1.25rem', h4: '1rem' };
+              return (
+                <div style={{ textAlign: (block.align || 'center') as any, marginBottom: '0.75rem' }}>
+                  <Tag
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e: React.FocusEvent<HTMLElement>) => onBlockUpdate?.(section.id, block.id, { text: e.currentTarget.textContent || '' })}
+                    style={{ fontSize: sizes[block.level || 'h2'], fontWeight: 700, margin: 0, outline: 'none', cursor: 'text', minWidth: 40, display: 'inline-block' }}
+                    dangerouslySetInnerHTML={{ __html: block.text || 'Überschrift' }}
+                  />
+                </div>
+              );
+            })() : block.type === 'text' && selectedBlockId === block.id ? (
+              <div style={{ textAlign: (block.align || 'left') as any, marginBottom: '0.75rem' }}>
+                <div
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e: React.FocusEvent<HTMLElement>) => onBlockUpdate?.(section.id, block.id, { html: e.currentTarget.innerHTML })}
+                  style={{ lineHeight: 1.6, outline: 'none', cursor: 'text', minWidth: 40 }}
+                  dangerouslySetInnerHTML={{ __html: block.html || '<p>Text...</p>' }}
+                />
+              </div>
+            ) : renderBlock(block)}
+          </div>
+        ))}
       </div>
     );
   }
 
+  // ── Fallback für alte Sections ohne blocks ──
+  const h = content.heading || content.title || '';
+  const getItems = (): any[] => content.items || content.plans || content.stats || [];
+  const hasOldContent = h || content.text || content.subheading || getItems().length > 0 || content.images?.length > 0;
+
+  if (hasOldContent) {
+    return (
+      <div style={{ ...innerWidth, position: 'relative' }}>
+        <div style={{ position: 'absolute', top: -10, right: 0, background: '#f0883e', color: '#fff', fontSize: '0.55rem', fontWeight: 700, padding: '2px 8px', borderRadius: '2rem', zIndex: 10 }}>
+          ⚠ ALT — Inhalt-Tab öffnen
+        </div>
+        {h && <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: headingSize, fontWeight: 700, margin: 0 }}>{h}</h2>
+        </div>}
+        {content.subheading && <p style={{ textAlign: 'center', opacity: 0.75, marginBottom: '1rem' }}>{content.subheading}</p>}
+        {content.text && <div dangerouslySetInnerHTML={{ __html: content.text }} style={{ opacity: 0.8, lineHeight: 1.6, marginBottom: '1rem' }} />}
+        {content.buttonText && <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+          <span style={{ display: 'inline-block', padding: '0.6rem 1.5rem', background: btnBg, color: btnText, borderRadius: '0.5rem', fontWeight: 600 }}>{content.buttonText}</span>
+        </div>}
+        {getItems().length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem' }}>
+            {getItems().slice(0, 4).map((item: any, i: number) => (
+              <div key={i} style={{ padding: '1rem', background: 'rgba(0,0,0,0.05)', borderRadius: '0.5rem', textAlign: 'center' }}>
+                {item.icon && <div style={{ fontSize: '1.75rem', marginBottom: '0.4rem' }}>{item.icon}</div>}
+                <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{item.title || item.name || item.value || item.label}</div>
+                {item.description && <div style={{ fontSize: '0.75rem', opacity: 0.6, marginTop: '0.2rem' }}>{item.description}</div>}
+              </div>
+            ))}
+          </div>
+        )}
+        {content.images?.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginTop: '1rem' }}>
+            {content.images.slice(0, 3).map((img: any, i: number) => (
+              <div key={i} style={{ aspectRatio: '1', background: 'rgba(0,0,0,0.08)', borderRadius: '0.5rem', overflow: 'hidden' }}>
+                {img.url && <img src={img.url} alt={img.alt || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Wirklich leer
   return (
-    <div style={{ ...innerWidth, position: 'relative' }}>
-      {blocks.map(block => renderBlock(block))}
+    <div style={{ ...innerWidth, textAlign: 'center', padding: '3rem', color: 'rgba(0,0,0,0.25)', border: '2px dashed rgba(0,0,0,0.1)', borderRadius: '0.75rem' }}>
+      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>+</div>
+      <p style={{ margin: 0, fontSize: '0.875rem' }}>Elemente hinzufügen</p>
     </div>
   );
 };
@@ -1914,13 +2097,87 @@ function ListEditor({ field, schema, content, update, inputStyle, labelStyle, wr
   );
 }
 // ==================== CONTENT EDITOR ====================
-
 function ContentEditor({ section, onChange, availableForms, availableBookingServices }: {
   section: Section;
   onChange: (c: SectionContent) => void;
   availableForms: { id: string; name: string; slug: string }[];
   availableBookingServices: { id: string; name: string; duration: number; price: number }[];
 }) {
+  const hasBlocks = Array.isArray(section.content.blocks) && section.content.blocks.length > 0;
+  const hasOldContent = !hasBlocks && (
+    section.content.heading || section.content.title ||
+    section.content.items || section.content.text || section.content.images
+  );
+
+  if (hasOldContent) {
+    const migrateContent = () => {
+      const blocks: any[] = [];
+      let order = 0;
+      const g = generateBlockId;
+      if (section.content.heading || section.content.title) {
+        blocks.push({ id: g(), type: 'heading', text: section.content.heading || section.content.title, level: 'h2', align: 'center', order: order++ });
+      }
+      if (section.content.subheading) {
+        blocks.push({ id: g(), type: 'text', html: `<p>${section.content.subheading}</p>`, align: 'center', order: order++ });
+      }
+      if (section.content.text) {
+        blocks.push({ id: g(), type: 'text', html: section.content.text, align: 'left', order: order++ });
+      }
+      if (section.content.items?.length) {
+        const type = section.type === 'stats' ? 'stat-grid'
+          : section.type === 'testimonials' ? 'testimonial-grid'
+          : section.type === 'team' ? 'team-grid'
+          : section.type === 'pricing' ? 'pricing-grid'
+          : section.type === 'faq' ? 'faq-list'
+          : 'feature-grid';
+        if (type === 'faq-list') {
+          blocks.push({ id: g(), type, items: (section.content.items || []).map((i: any) => ({ question: i.title || i.question || '', answer: i.description || i.answer || '' })), order: order++ });
+        } else if (type === 'stat-grid') {
+          blocks.push({ id: g(), type, columns: 4, items: (section.content.items || []).map((i: any) => ({ value: i.value || '', label: i.title || i.label || '', description: i.description || '' })), order: order++ });
+        } else if (type === 'testimonial-grid') {
+          blocks.push({ id: g(), type, columns: 2, items: (section.content.items || []).map((i: any) => ({ name: i.title || i.name || '', role: i.subtitle || i.role || '', text: i.description || i.text || '', image: i.image || '' })), order: order++ });
+        } else if (type === 'team-grid') {
+          blocks.push({ id: g(), type, columns: 3, items: (section.content.items || []).map((i: any) => ({ name: i.title || i.name || '', role: i.subtitle || i.role || '', bio: i.description || i.bio || '', image: i.image || '' })), order: order++ });
+        } else {
+          blocks.push({ id: g(), type, columns: 3, items: section.content.items, order: order++ });
+        }
+      }
+      if (section.content.images?.length) {
+        blocks.push({ id: g(), type: 'image-grid', columns: 3, images: section.content.images, order: order++ });
+      }
+      if (section.content.links?.length) {
+        blocks.push({ id: g(), type: 'social-links', links: section.content.links, order: order++ });
+      }
+      if (section.content.buttonText) {
+        blocks.push({ id: g(), type: 'button', text: section.content.buttonText, link: section.content.buttonLink || '#', style: 'primary', align: 'center', order: order++ });
+      }
+      onChange({ blocks });
+    };
+
+    return (
+      <div>
+        <div style={{ background: 'rgba(240,136,62,0.1)', border: '1px solid rgba(240,136,62,0.4)', borderRadius: 8, padding: '12px 14px', marginBottom: 12 }}>
+          <p style={{ fontSize: '0.75rem', color: '#f0883e', fontWeight: 600, margin: '0 0 4px' }}>⚠ Alte Section</p>
+          <p style={{ fontSize: '0.7rem', color: '#8b949e', margin: '0 0 10px', lineHeight: 1.5 }}>
+            Diese Section wurde vor dem Update erstellt. Bitte konvertieren um den Editor zu nutzen.
+          </p>
+          <button
+            onClick={migrateContent}
+            style={{ width: '100%', padding: '8px', background: '#238636', border: 'none', borderRadius: 6, color: '#fff', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', marginBottom: 6 }}
+          >
+            ✨ Inhalt übernehmen + konvertieren
+          </button>
+          <button
+            onClick={() => { const d = DEFAULT_CONTENT[section.type]; if (d) onChange(d); }}
+            style={{ width: '100%', padding: '8px', background: '#f0883e', border: 'none', borderRadius: 6, color: '#fff', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}
+          >
+            🔄 Mit Default-Inhalt neu starten
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return <FreestyleEditor content={section.content} onChange={onChange} />;
 }
 // ==================== STYLE PANEL ====================
@@ -2938,6 +3195,7 @@ const [showShortcuts, setShowShortcuts] = useState(false);
 const [leftCollapsed, setLeftCollapsed] = useState(false);
 const [rightCollapsed, setRightCollapsed] = useState(false);
   const [selectedNavId, setSelectedNavId] = useState<string | null>(null);
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [navigations, setNavigations] = useState<NavData[]>([]);
   const [blockSearch, setBlockSearch] = useState('');
   const [recentBlocks, setRecentBlocks] = useState<string[]>([]);
@@ -3014,21 +3272,22 @@ const { data: pagesData } = useQuery(GET_TEMPLATE_PAGES, {
     const h = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
       if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); handleSave(); }
-      if (e.key === 'Escape') setSelectedId(null);
+      if (e.key === 'Escape') { setSelectedId(null); setSelectedBlockId(null); }
+
     };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
   }, [undo]);
 
-  useEffect(() => {
+useEffect(() => {
   if (!isDirty) return;
   const timer = setTimeout(() => {
     handleSave().then(() => setSaveToast('Auto-gespeichert ✓'));
     setTimeout(() => setSaveToast(null), 2500);
   }, 30000);
   return () => clearTimeout(timer);
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [isDirty, sections]);
-
   const handleAddBlock = async (type: string) => {
     if (!tenant?.id) {
       setError('Kein Tenant gefunden — bitte Seite neu laden.');
@@ -3159,7 +3418,30 @@ const handleContentChange = (content: SectionContent) => {
     setSections(prev => prev.map(s => s.id === selectedId ? { ...s, styling: { ...s.styling, ...styling } } : s));
     setIsDirty(true);
   };
-
+const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: any) => {
+  if (updates._action === 'delete') {
+    setSections(prev => prev.map(s => s.id === sectionId
+      ? { ...s, content: { ...s.content, blocks: (s.content.blocks || []).filter((b: any) => b.id !== blockId) } }
+      : s
+    ));
+  } else if (updates._action === 'duplicate') {
+    setSections(prev => prev.map(s => {
+      if (s.id !== sectionId) return s;
+      const blocks = [...(s.content.blocks || [])];
+      const idx = blocks.findIndex((b: any) => b.id === blockId);
+      if (idx === -1) return s;
+      const copy = { ...blocks[idx], id: generateBlockId(), order: blocks[idx].order + 0.5 };
+      blocks.splice(idx + 1, 0, copy);
+      return { ...s, content: { ...s.content, blocks: blocks.map((b, i) => ({ ...b, order: i })) } };
+    }));
+  } else {
+    setSections(prev => prev.map(s => s.id === sectionId
+      ? { ...s, content: { ...s.content, blocks: (s.content.blocks || []).map((b: any) => b.id === blockId ? { ...b, ...updates } : b) } }
+      : s
+    ));
+  }
+  setIsDirty(true);
+};
   const handleSave = async () => {
     if (!tenant?.id || isSaving) return;
     setIsSaving(true);
@@ -3472,7 +3754,27 @@ const handleContentChange = (content: SectionContent) => {
                 sections.map((section, idx) => (
                   <div key={section.id} draggable onDragStart={() => handleDragStart(idx)} onDragOver={e => handleDragOver(e, idx)} onDrop={e => handleDrop(e, idx)} onDragEnd={() => setDragOverIdx(null)}
                     style={{ position: 'relative', borderTop: dragOverIdx === idx ? '3px solid #58a6ff' : '3px solid transparent' }}>
-                    <CanvasSectionPreview section={section} isSelected={selectedId === section.id} onClick={() => { setSelectedId(section.id); setSelectedNavId(null); setRightTab('content'); }} settings={templateSettings} deviceMode={deviceMode} />
+                  <CanvasSectionPreview
+  section={section}
+  isSelected={selectedId === section.id}
+  onClick={() => {
+    setSelectedId(section.id);
+    setSelectedNavId(null);
+    setSelectedBlockId(null);
+    setRightTab('content');
+  }}
+  settings={templateSettings}
+  deviceMode={deviceMode}
+  selectedBlockId={selectedId === section.id ? selectedBlockId : null}
+  onBlockClick={(blockId) => {
+    setSelectedId(section.id);
+    setSelectedNavId(null);
+    setSelectedBlockId(blockId);
+    setRightTab('content');
+  }}
+  onBlockUpdate={handleCanvasBlockUpdate}
+/>
+                    
                     {selectedId === section.id && (
                       <div style={{ position: 'absolute', top: 4, right: 8, display: 'flex', gap: 2, zIndex: 20, background: 'rgba(22,27,34,0.96)', borderRadius: 8, padding: '3px 5px', border: `1px solid ${C.border}` }}>
                         <CtrlBtn onClick={() => handleMove(section.id, 'up')} disabled={idx === 0} title="Nach oben">↑</CtrlBtn>
