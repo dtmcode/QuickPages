@@ -1683,17 +1683,23 @@ function FloatingBlockToolbar({ block, onUpdate, onDelete, onDuplicate }: {
             <button key={s.v} onClick={() => onUpdate({ size: s.v })} style={btn(block.size === s.v)}>{s.l}</button>
           ))}
           {sep}
-          <input
+       <input
             type="color"
             value={block.bgColor || '#3b82f6'}
             onChange={e => onUpdate({ bgColor: e.target.value })}
-            title="Button-Farbe"
+            title="Button-Hintergrund"
+            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }}
+          />
+          <input
+            type="color"
+            value={block.textColor || '#ffffff'}
+            onChange={e => onUpdate({ textColor: e.target.value })}
+            title="Button-Textfarbe"
             style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }}
           />
           {sep}
         </>
       )}
-
       {/* IMAGE spezifisch */}
       {block.type === 'image' && (
         <>
@@ -1926,10 +1932,10 @@ const btnText = styling?.buttonTextColor || '#ffffff';
   const isLocked = !!styling?.isLocked;
 
   const headingSize = (isMobile && mob.headingSize) ? mob.headingSize : (styling?.headingSize || 'clamp(1.75rem, 4vw, 3rem)');
-  const wrapStyle: React.CSSProperties = {
+const wrapStyle: React.CSSProperties = {
     ...getSectionStyle(styling, deviceMode),
     position: 'relative',
-    overflow: 'hidden',
+    overflow: 'visible',
     cursor: isLocked ? 'not-allowed' : 'pointer',
     outline: isSelected ? '2px solid #58a6ff' : 'none',
     outlineOffset: '-2px',
@@ -1972,18 +1978,18 @@ case 'text':
       <div dangerouslySetInnerHTML={{ __html: block.html || '<p>Text...</p>' }} 
         style={{ 
           lineHeight: 1.6,
-          fontSize: block.fontSize || 'inherit',  // ← block.fontSize
-          color: block.color || 'inherit',         // ← block.color
+          fontSize: block.fontSize || 'inherit',  
+          color: block.color || 'inherit',        
         }} />
     </div>
   );
-    case 'button':
+case 'button':
       return (
         <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
           <span style={{
             display: 'inline-block', padding: '0.6rem 1.5rem', borderRadius: '0.5rem', fontWeight: 600, fontSize: '0.875rem',
-            background: block.style === 'primary' ? btnBg : block.style === 'outline' ? 'transparent' : 'rgba(0,0,0,0.06)',
-            color: block.style === 'primary' ? btnText : primary,
+            background: block.style === 'primary' ? (block.bgColor || btnBg) : block.style === 'outline' ? 'transparent' : 'rgba(0,0,0,0.06)',
+            color: block.style === 'primary' ? (block.textColor || btnText) : primary,
             border: block.style === 'outline' ? `2px solid ${primary}` : 'none',
           }}>{block.text || 'Button'}</span>
         </div>
@@ -2097,17 +2103,31 @@ case 'feature-grid':
     </div>
   );
 
-    case 'stat-grid':
+case 'stat-grid':
       return (
         <div key={block.id} style={{ marginBottom: '1rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 4}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
-            {(block.items || []).map((item: any, i: number) => (
-              <div key={i}>
-                <div style={{ fontSize: isMobile ? '1.75rem' : '2.25rem', fontWeight: 800, color: primary }}>{item.value}</div>
-                <div style={{ fontWeight: 600, margin: '0.2rem 0 0.1rem', fontSize: '0.9rem' }}>{item.label}</div>
-                {item.description && <div style={{ opacity: 0.6, fontSize: '0.75rem' }}>{item.description}</div>}
-              </div>
-            ))}
+            {(block.items || []).map((item: any, i: number) => {
+              const itemKey = `${block.id}:${i}`;
+              const isItemSelected = selectedItemKey === itemKey;
+              return (
+                <div key={i} style={{ position: 'relative' }}
+                  onClick={e => { e.stopPropagation(); setSelectedItemKey(isItemSelected ? null : itemKey); }}>
+                  {isItemSelected && onBlockUpdate && (
+                    <FloatingItemEditor block={block} itemIndex={i}
+                      onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+                      onClose={() => setSelectedItemKey(null)} />
+                  )}
+                  <div style={{ outline: isItemSelected ? '2px solid #58a6ff' : '2px solid transparent', borderRadius: 6, cursor: 'pointer', padding: '0.5rem', transition: 'all 0.1s' }}
+                    onMouseEnter={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px dashed rgba(88,166,255,0.3)'; }}
+                    onMouseLeave={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px solid transparent'; }}>
+                    <div style={{ fontSize: isMobile ? '1.75rem' : '2.25rem', fontWeight: 800, color: primary }}>{item.value}</div>
+                    <div style={{ fontWeight: 600, margin: '0.2rem 0 0.1rem', fontSize: '0.9rem' }}>{item.label}</div>
+                    {item.description && <div style={{ opacity: 0.6, fontSize: '0.75rem' }}>{item.description}</div>}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       );
@@ -2145,19 +2165,33 @@ case 'testimonial-grid':
       </div>
     </div>
   );
-    case 'team-grid':
+case 'team-grid':
       return (
         <div key={block.id} style={{ marginBottom: '1rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 3}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
-            {(block.items || []).map((item: any, i: number) => (
-              <div key={i}>
+            {(block.items || []).map((item: any, i: number) => {
+              const itemKey = `${block.id}:${i}`;
+              const isItemSelected = selectedItemKey === itemKey;
+              return (
+                <div key={i} style={{ position: 'relative' }}
+                  onClick={e => { e.stopPropagation(); setSelectedItemKey(isItemSelected ? null : itemKey); }}>
+                  {isItemSelected && onBlockUpdate && (
+                    <FloatingItemEditor block={block} itemIndex={i}
+                      onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+                      onClose={() => setSelectedItemKey(null)} />
+                  )}
+                  <div style={{ outline: isItemSelected ? '2px solid #58a6ff' : '2px solid transparent', borderRadius: 6, cursor: 'pointer', padding: '0.5rem' }}
+                    onMouseEnter={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px dashed rgba(88,166,255,0.3)'; }}
+                    onMouseLeave={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px solid transparent'; }}>
                 <div style={{ width: 64, height: 64, borderRadius: '50%', background: primary, margin: '0 auto 0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.5rem', overflow: 'hidden' }}>
                   {item.image ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
                 </div>
                 <h3 style={{ fontWeight: 600, margin: '0 0 0.15rem', fontSize: '0.9rem' }}>{item.name}</h3>
-                <p style={{ opacity: 0.6, fontSize: '0.8rem', margin: 0 }}>{item.role}</p>
-              </div>
-            ))}
+         <p style={{ opacity: 0.6, fontSize: '0.8rem', margin: 0 }}>{item.role}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       );
@@ -2182,15 +2216,29 @@ case 'testimonial-grid':
         </div>
       );
 
-    case 'faq-list':
+case 'faq-list':
       return (
         <div key={block.id} style={{ marginBottom: '1rem' }}>
-          {(block.items || []).map((item: any, i: number) => (
-            <div key={i} style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', padding: '0.875rem 0' }}>
-              <h4 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.9rem' }}>{item.question}</h4>
-              <p style={{ fontSize: '0.82rem', opacity: 0.7, margin: 0 }}>{item.answer}</p>
-            </div>
-          ))}
+          {(block.items || []).map((item: any, i: number) => {
+            const itemKey = `${block.id}:${i}`;
+            const isItemSelected = selectedItemKey === itemKey;
+            return (
+              <div key={i} style={{ position: 'relative', borderBottom: '1px solid rgba(0,0,0,0.1)' }}
+                onClick={e => { e.stopPropagation(); setSelectedItemKey(isItemSelected ? null : itemKey); }}>
+                {isItemSelected && onBlockUpdate && (
+                  <FloatingItemEditor block={block} itemIndex={i}
+                    onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+                    onClose={() => setSelectedItemKey(null)} />
+                )}
+                <div style={{ padding: '0.875rem 0', outline: isItemSelected ? '2px solid #58a6ff' : '2px solid transparent', borderRadius: 4, cursor: 'pointer' }}
+                  onMouseEnter={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px dashed rgba(88,166,255,0.3)'; }}
+                  onMouseLeave={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px solid transparent'; }}>
+                  <h4 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.9rem' }}>{item.question}</h4>
+                  <p style={{ fontSize: '0.82rem', opacity: 0.7, margin: 0 }}>{item.answer}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       );
 
@@ -2358,7 +2406,9 @@ const renderContent = () => {
                   />
                 </div>
               );
-            })() : block.type === 'text' && selectedBlockId === block.id ? (
+            })(
+
+) : block.type === 'text' && selectedBlockId === block.id ? (
               <div style={{ textAlign: (block.align || 'left') as any, marginBottom: '0.75rem' }}>
                 <div
                   contentEditable
@@ -2368,7 +2418,23 @@ const renderContent = () => {
                   dangerouslySetInnerHTML={{ __html: block.html || '<p>Text...</p>' }}
                 />
               </div>
+            ) : block.type === 'button' && selectedBlockId === block.id ? (
+              <div style={{ textAlign: (block.align || 'center') as any, marginBottom: '0.75rem' }}>
+                <span
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e: React.FocusEvent<HTMLElement>) => onBlockUpdate?.(section.id, block.id, { text: e.currentTarget.textContent || '' })}
+                  style={{
+                    display: 'inline-block', padding: '0.6rem 1.5rem', borderRadius: '0.5rem',
+                    fontWeight: 600, fontSize: '0.875rem',
+                    background: block.bgColor || btnBg, color: block.textColor || btnText,
+                    outline: 'none', cursor: 'text', minWidth: 40,
+                  }}
+                  dangerouslySetInnerHTML={{ __html: block.text || 'Button' }}
+                />
+              </div>
             ) : renderBlock(block)}
+
           </div>
         ))}
           {onAddBlock && <InlineAddBlock sectionId={section.id} onAdd={onAddBlock} />}
@@ -2435,14 +2501,18 @@ return (
       )}
 
       {/* Hintergrundvideo */}
-      {styling?.backgroundVideo && (
-        <video autoPlay muted loop playsInline src={styling.backgroundVideo}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
+     {styling?.backgroundVideo && (
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
+          <video autoPlay muted loop playsInline src={styling.backgroundVideo}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
       )}
 
       {/* Farb-Overlay */}
       {styling?.overlayColor && (styling?.overlayOpacity ?? 0) > 0 && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: styling.overlayColor, opacity: (styling.overlayOpacity ?? 50) / 100, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 1 }}>
+          <div style={{ position: 'absolute', inset: 0, background: styling.overlayColor, opacity: (styling.overlayOpacity ?? 50) / 100, pointerEvents: 'none' }} />
+        </div>
       )}
 
       {/* Selection Label */}
@@ -4234,12 +4304,23 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
     boxShadow: '0 0 0 1px #21262d, 0 24px 64px rgba(0,0,0,0.6)',
     borderRadius: 8, overflow: 'visible',
     fontFamily: templateSettings?.fonts?.body || 'system-ui, sans-serif'
-  }}>{navigations.filter(n => n.location === 'header' && n.isActive).map(nav => (
+}}>{navigations.filter(n => n.location === 'header').length === 0 ? (
+      <div onClick={() => setShowNavEditor(true)} style={{
+        background: '#f9fafb', borderBottom: '1px solid rgba(0,0,0,0.1)',
+        padding: '0 1.5rem', height: 56, display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', cursor: 'pointer',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 28, height: 28, borderRadius: 6, background: templateSettings?.colors?.primary || '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.75rem', fontWeight: 700 }}>S</div>
+          <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1f2937' }}>Dein Logo</span>
+        </div>
+        <span style={{ fontSize: '0.72rem', color: '#9ca3af', fontStyle: 'italic' }}>+ Navigation erstellen (klicken)</span>
+      </div>
+    ) : navigations.filter(n => n.location === 'header' && n.isActive).map(nav => (
       <NavBarPreview key={nav.id} nav={nav} isSelected={selectedNavId === nav.id}
         onClick={() => { setSelectedNavId(nav.id); setSelectedId(null); }}
         primary={templateSettings?.colors?.primary || '#3b82f6'} />
     ))}
-              
                 {sections.length === 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 520, color: '#9ca3af', padding: '3rem', textAlign: 'center' }}>
                   <div style={{ fontSize: '3.5rem', marginBottom: 16, opacity: 0.5 }}>✦</div>
@@ -4286,7 +4367,15 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
                   </div>
                 ))
                )}
-               {navigations.filter(n => n.location === 'footer' && n.isActive).map(nav => (
+     {navigations.filter(n => n.location === 'footer').length === 0 ? (
+                <div onClick={() => setShowNavEditor(true)} style={{
+                  background: '#1f2937', borderTop: '1px solid rgba(255,255,255,0.1)',
+                  padding: '0 1.5rem', height: 56, display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', cursor: 'pointer',
+                }}>
+                  <span style={{ fontSize: '0.72rem', color: '#6b7280', fontStyle: 'italic' }}>+ Footer Navigation erstellen (klicken)</span>
+                </div>
+              ) : navigations.filter(n => n.location === 'footer' && n.isActive).map(nav => (
                 <NavBarPreview key={nav.id} nav={nav} isSelected={selectedNavId === nav.id}
                   onClick={() => { setSelectedNavId(nav.id); setSelectedId(null); }}
                   primary={templateSettings?.colors?.primary || '#3b82f6'} />
