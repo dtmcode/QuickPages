@@ -4,7 +4,6 @@ import { useQuery, gql } from '@apollo/client';
 import { useAuth } from '@/context/AuthContext';
 import { usePackage } from '@/contexts/package-context';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { PackageBadge } from '@/components/package-badge';
 import { Button } from '@/components/ui/button';
 import { UsageDashboard } from '@/components/usage-dashboard';
 import Link from 'next/link';
@@ -18,26 +17,108 @@ const ME_QUERY = gql`
   }
 `;
 
+// ─── PackageFeatures hat nur: cms | shop | email | analytics | customDomain ──
+// Alle anderen Module (booking, forms, ai, newsletter) sind nicht über
+// hasFeature prüfbar — Backend-Guards regeln den tatsächlichen Zugriff.
+type GatedFeature = 'cms' | 'shop' | 'email' | 'analytics' | 'customDomain';
+
+interface QuickAction {
+  icon: string;
+  label: string;
+  sub: string;
+  href: string;
+  gatedBy?: GatedFeature;
+}
+
+const QUICK_ACTIONS: QuickAction[] = [
+  { icon: '🎨', label: 'Website bearbeiten',  sub: 'Builder öffnen',           href: '/dashboard/website-builder' },
+  { icon: '📝', label: 'Neuer Post',          sub: 'Inhalt erstellen',          href: '/dashboard/cms/posts/new',            gatedBy: 'cms' },
+  { icon: '🛒', label: 'Neues Produkt',       sub: 'Shop erweitern',            href: '/dashboard/shop/products/new',        gatedBy: 'shop' },
+  { icon: '📅', label: 'Termin anlegen',      sub: 'Booking verwalten',         href: '/dashboard/booking' },
+  { icon: '📧', label: 'Neue Kampagne',       sub: 'Newsletter senden',         href: '/dashboard/newsletter/campaigns/new', gatedBy: 'email' },
+  { icon: '📋', label: 'Neues Formular',      sub: 'Formular erstellen',        href: '/dashboard/forms/new' },
+  { icon: '🤖', label: 'AI Content',          sub: 'Text generieren',           href: '/dashboard/ai' },
+  { icon: '📊', label: 'Analytics',           sub: 'Besucher auswerten',        href: '/dashboard/analytics',                gatedBy: 'analytics' },
+  { icon: '👥', label: 'Team verwalten',      sub: 'Benutzer einladen',         href: '/dashboard/users' },
+  { icon: '⚙️',  label: 'Einstellungen',      sub: 'Workspace konfigurieren',   href: '/dashboard/settings' },
+];
+
+// ─── Stat-Card ────────────────────────────────────────────────────────────────
+function StatCard({ icon, label, value }: { icon: string; label: string; value: string }) {
+  return (
+    <Card hover>
+      <CardContent className="p-5">
+        <span className="text-2xl">{icon}</span>
+        <p className="mt-3 text-2xl font-bold text-foreground">{value}</p>
+        <p className="text-xs text-muted-foreground mt-1">{label}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─── Package-Banner (slim) ────────────────────────────────────────────────────
+function PackageBanner({ packageName, currentPackage }: { packageName: string; currentPackage: string }) {
+  const isEnterprise = currentPackage === 'enterprise' || currentPackage === 'platform-admin';
+  return (
+    <div className={`flex items-center justify-between px-5 py-3 rounded-xl border transition-all duration-300 ${
+      isEnterprise ? 'bg-primary/5 border-primary/20' : 'bg-amber-500/5 border-amber-500/20'
+    }`}>
+      <div className="flex items-center gap-3">
+        <span className="text-lg">{isEnterprise ? '⭐' : '📦'}</span>
+        <div>
+          <span className="text-xs text-muted-foreground">Aktuelles Paket</span>
+          <p className="text-sm font-semibold text-foreground capitalize leading-tight">{packageName}</p>
+        </div>
+      </div>
+      <Link href="/dashboard/packages">
+        <Button size="sm" variant={isEnterprise ? 'ghost' : 'primary'} className={`text-xs h-8 ${!isEnterprise ? 'btn-glow' : ''}`}>
+          {isEnterprise ? 'Verwalten →' : 'Upgrade ↑'}
+        </Button>
+      </Link>
+    </div>
+  );
+}
+
+// ─── Quick Action Card ────────────────────────────────────────────────────────
+function ActionCard({ action, locked }: { action: QuickAction; locked: boolean }) {
+  if (locked) {
+    return (
+      <div className="flex items-center gap-3 p-4 rounded-xl border-2 border-dashed border-border opacity-40 cursor-not-allowed select-none">
+        <span className="text-xl grayscale">{action.icon}</span>
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-foreground truncate">{action.label}</p>
+          <p className="text-xs text-muted-foreground truncate">🔒 Upgrade erforderlich</p>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <Link
+      href={action.href}
+      className="flex items-center gap-3 p-4 rounded-xl border border-border transition-all duration-200 hover:bg-primary/5 hover:border-primary/30 hover:shadow-sm group"
+    >
+      <span className="text-xl transition-transform duration-200 group-hover:scale-110">{action.icon}</span>
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-foreground truncate">{action.label}</p>
+        <p className="text-xs text-muted-foreground truncate">{action.sub}</p>
+      </div>
+    </Link>
+  );
+}
+
+// ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const { user, tenant } = useAuth();
-  const { data, loading } = useQuery(ME_QUERY, {
-    fetchPolicy: 'cache-and-network',
-  });
-  const { hasFeature, getLimit, currentPackage, packageName } = usePackage();
-
-  const stats = [
-    { name: 'Gesamtumsatz', value: '€0', change: '+0%', trend: 'up' },
-    { name: 'Neue Benutzer', value: '1', change: '+100%', trend: 'up' },
-    { name: 'Posts', value: '0', change: '+0%', trend: 'up' },
-    { name: 'Besucher', value: '0', change: '0%', trend: 'up' },
-  ];
+  const { data, loading } = useQuery(ME_QUERY, { fetchPolicy: 'cache-and-network' });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { hasFeature, getLimit, currentPackage, packageName } = usePackage() as any;
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Lädt...</p>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground">Lädt...</p>
         </div>
       </div>
     );
@@ -46,237 +127,134 @@ export default function DashboardPage() {
   const currentUser = data?.me?.user || user;
   const currentTenant = data?.me?.tenant || tenant;
 
+  const fmt = (v: number) => (v === -1 ? '∞' : v?.toLocaleString() ?? '0');
+
+  const stats = [
+    { icon: '📝', label: 'Posts-Limit',    value: fmt(getLimit('posts')) },
+    { icon: '🛒', label: 'Produkte-Limit', value: fmt(getLimit('products')) },
+    { icon: '👥', label: 'User-Limit',     value: fmt(getLimit('users')) },
+    { icon: '📧', label: 'Emails / Monat', value: fmt(getLimit('emailsPerMonth')) },
+  ];
+
+  const actions = QUICK_ACTIONS.map((a) => ({
+    ...a,
+    locked: !!a.gatedBy && !hasFeature(a.gatedBy),
+  }));
+
+  // Nur PackageFeatures-Keys: cms | shop | email | analytics | customDomain
+  const activeFeatures: string[] = [
+    hasFeature('cms') && 'CMS',
+    hasFeature('shop') && 'Shop',
+    hasFeature('analytics') && 'Analytics',
+    hasFeature('email') && 'Newsletter',
+    hasFeature('customDomain') && 'Custom Domain',
+  ].filter(Boolean) as string[];
+
   return (
-    <div className="space-y-8">
-      {/* Welcome with Package Badge */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+
+      {/* ── Header ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground transition-colors duration-300">
+          <h1 className="text-2xl font-bold text-foreground">
             Willkommen zurück, {currentUser?.firstName}! 👋
           </h1>
-          <p className="mt-2 text-muted-foreground transition-colors duration-300">
-            Hier ist eine Übersicht deiner wichtigsten Kennzahlen.
+          <p className="text-sm text-muted-foreground mt-1">
+            {currentTenant?.name} · <span className="text-primary">{currentTenant?.slug}</span>
           </p>
         </div>
-        <PackageBadge />
+        <PackageBanner packageName={packageName} currentPackage={currentPackage} />
       </div>
 
-      {/* Package Info */}
-      <Card hover>
-        <CardHeader>
-          <CardTitle>📦 Dein Package</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-            <div className="p-4 bg-muted rounded-lg transition-all duration-300 hover:bg-primary/5 border border-border">
-              <div className="text-sm text-muted-foreground">Package</div>
-              <div className="text-2xl font-bold text-foreground capitalize transition-colors duration-300">
-                {packageName}
-              </div>
-            </div>
-            <div className="p-4 bg-muted rounded-lg transition-all duration-300 hover:bg-primary/5 border border-border">
-              <div className="text-sm text-muted-foreground">User Limit</div>
-              <div className="text-2xl font-bold text-foreground transition-colors duration-300">
-                {getLimit('users') === -1 ? '∞' : getLimit('users')}
-              </div>
-            </div>
-            <div className="p-4 bg-muted rounded-lg transition-all duration-300 hover:bg-primary/5 border border-border">
-              <div className="text-sm text-muted-foreground">Posts Limit</div>
-              <div className="text-2xl font-bold text-foreground transition-colors duration-300">
-                {getLimit('posts') === -1 ? '∞' : getLimit('posts')}
-              </div>
-            </div>
-            <div className="p-4 bg-muted rounded-lg transition-all duration-300 hover:bg-primary/5 border border-border">
-              <div className="text-sm text-muted-foreground">Produkte Limit</div>
-              <div className="text-2xl font-bold text-foreground transition-colors duration-300">
-                {getLimit('products') === -1 ? '∞' : getLimit('products') || '0'}
-              </div>
-            </div>
-          </div>
-
-          {currentPackage !== 'enterprise' && (
-            <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg flex items-center justify-between transition-all duration-300 hover:bg-primary/10 hover:border-primary/30">
-              <div>
-                <div className="font-semibold text-foreground transition-colors duration-300">
-                  Möchtest du mehr Features?
-                </div>
-                <div className="text-sm text-muted-foreground transition-colors duration-300">
-                  {currentPackage === 'starter' && 'Upgrade auf Business für Shop & Analytics'}
-                  {currentPackage === 'business' && 'Upgrade auf Enterprise für Email System & unbegrenzte Features'}
-                </div>
-              </div>
-              <Link href="/dashboard/packages">
-                <Button className="btn-glow">Upgrade</Button>
-              </Link>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <Card key={stat.name} hover>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground transition-colors duration-300">
-                  {stat.name}
-                </p>
-                <span className={`text-xs font-medium transition-colors duration-300 ${
-                  stat.trend === 'up' 
-                    ? 'text-green-600 dark:text-green-400' 
-                    : 'text-red-600 dark:text-red-400'
-                }`}>
-                  {stat.change}
-                </span>
-              </div>
-              <p className="mt-2 text-3xl font-bold text-foreground transition-colors duration-300">
-                {stat.value}
-              </p>
-            </CardContent>
-          </Card>
+      {/* ── Stats ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((s) => (
+          <StatCard key={s.label} {...s} />
         ))}
       </div>
 
-      {/* Quick Actions */}
+      {/* ── Schnellaktionen ── */}
       <Card>
         <CardHeader>
           <CardTitle>⚡ Schnellaktionen</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {hasFeature('cms') && (
-              <Link 
-                href="/dashboard/cms/posts/new" 
-                className="p-4 rounded-lg border border-border transition-all duration-300 hover:bg-primary/10 hover:border-primary/50 hover:shadow-md card-hover group"
-              >
-                <div className="font-medium text-foreground group-hover:text-primary transition-colors duration-300">
-                  📝 Neuer Post
-                </div>
-                <div className="text-sm text-muted-foreground transition-colors duration-300">
-                  Inhalt erstellen
-                </div>
-              </Link>
-            )}
-            
-            {hasFeature('shop') ? (
-              <Link 
-                href="/dashboard/shop/products/new" 
-                className="p-4 rounded-lg border border-border transition-all duration-300 hover:bg-primary/10 hover:border-primary/50 hover:shadow-md card-hover group"
-              >
-                <div className="font-medium text-foreground group-hover:text-primary transition-colors duration-300">
-                  🛒 Neues Produkt
-                </div>
-                <div className="text-sm text-muted-foreground transition-colors duration-300">
-                  Shop erweitern
-                </div>
-              </Link>
-            ) : (
-              <div className="p-4 rounded-lg border-2 border-dashed border-border opacity-50 transition-all duration-300">
-                <div className="font-medium text-foreground">🔒 Shop</div>
-                <div className="text-sm text-muted-foreground">Upgrade für Shop</div>
-              </div>
-            )}
-
-            <Link 
-              href="/dashboard/users" 
-              className="p-4 rounded-lg border border-border transition-all duration-300 hover:bg-primary/10 hover:border-primary/50 hover:shadow-md card-hover group"
-            >
-              <div className="font-medium text-foreground group-hover:text-primary transition-colors duration-300">
-                👥 Benutzer
-              </div>
-              <div className="text-sm text-muted-foreground transition-colors duration-300">
-                Team verwalten
-              </div>
-            </Link>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {actions.map((a) => (
+              <ActionCard key={a.href} action={a} locked={a.locked} />
+            ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Info Cards */}
+      {/* ── Info-Row ── */}
       <div className="grid lg:grid-cols-2 gap-6">
+
         <Card hover>
           <CardHeader>
-            <CardTitle>👤 Benutzer-Info</CardTitle>
+            <CardTitle>👤 Benutzer</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center py-2 border-b border-border transition-colors duration-300">
-                <span className="text-sm text-muted-foreground transition-colors duration-300">Name:</span>
-                <span className="text-sm font-medium text-foreground transition-colors duration-300">
-                  {currentUser?.firstName} {currentUser?.lastName}
-                </span>
+            <dl className="space-y-0">
+              {([
+                ['Name',   `${currentUser?.firstName ?? ''} ${currentUser?.lastName ?? ''}`],
+                ['E-Mail', currentUser?.email ?? ''],
+                ['Rolle',  currentUser?.role ?? ''],
+              ] as [string, string][]).map(([label, value]) => (
+                <div key={label} className="flex justify-between py-2 border-b border-border last:border-0">
+                  <dt className="text-xs text-muted-foreground">{label}</dt>
+                  <dd className="text-xs font-medium text-foreground capitalize">{value}</dd>
+                </div>
+              ))}
+              <div className="flex justify-between py-2">
+                <dt className="text-xs text-muted-foreground">E-Mail verifiziert</dt>
+                <dd>
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                    currentUser?.emailVerified
+                      ? 'text-green-600 bg-green-100 dark:bg-green-900/20'
+                      : 'text-red-600 bg-red-100 dark:bg-red-900/20'
+                  }`}>
+                    {currentUser?.emailVerified ? 'Ja ✓' : 'Nein ✗'}
+                  </span>
+                </dd>
               </div>
-              <div className="flex justify-between items-center py-2 border-b border-border transition-colors duration-300">
-                <span className="text-sm text-muted-foreground transition-colors duration-300">E-Mail:</span>
-                <span className="text-sm font-medium text-foreground transition-colors duration-300">
-                  {currentUser?.email}
-                </span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-border transition-colors duration-300">
-                <span className="text-sm text-muted-foreground transition-colors duration-300">Rolle:</span>
-                <span className="text-sm font-medium text-foreground capitalize transition-colors duration-300">
-                  {currentUser?.role}
-                </span>
-              </div>
-              <div className="flex justify-between items-center py-2">
-                <span className="text-sm text-muted-foreground transition-colors duration-300">E-Mail verifiziert:</span>
-                <span className={`text-sm font-medium px-2 py-1 rounded-full transition-colors duration-300 ${
-                  currentUser?.emailVerified 
-                    ? 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/20' 
-                    : 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20'
-                }`}>
-                  {currentUser?.emailVerified ? 'Ja ✓' : 'Nein ✗'}
-                </span>
-              </div>
-            </div>
+            </dl>
           </CardContent>
         </Card>
 
         <Card hover>
           <CardHeader>
-            <CardTitle>🏢 Workspace-Info</CardTitle>
+            <CardTitle>🏢 Workspace & Features</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center py-2 border-b border-border transition-colors duration-300">
-                <span className="text-sm text-muted-foreground transition-colors duration-300">Name:</span>
-                <span className="text-sm font-medium text-foreground transition-colors duration-300">
-                  {currentTenant?.name}
-                </span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-border transition-colors duration-300">
-                <span className="text-sm text-muted-foreground transition-colors duration-300">Slug:</span>
-                <span className="text-sm font-medium text-primary transition-colors duration-300">
-                  {currentTenant?.slug}
-                </span>
-              </div>
-              <div className="flex justify-between items-start py-2">
-                <span className="text-sm text-muted-foreground transition-colors duration-300">Aktive Features:</span>
-                <div className="flex flex-wrap gap-1 justify-end max-w-[60%]">
-                  {hasFeature('cms') && (
-                    <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full border border-primary/20 transition-all duration-300 hover:bg-primary/20">
-                      CMS
-                    </span>
-                  )}
-                  {hasFeature('shop') && (
-                    <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full border border-primary/20 transition-all duration-300 hover:bg-primary/20">
-                      Shop
-                    </span>
-                  )}
-                  {hasFeature('analytics') && (
-                    <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full border border-primary/20 transition-all duration-300 hover:bg-primary/20">
-                      Analytics
-                    </span>
-                  )}
+            <dl className="space-y-0 mb-4">
+              {([
+                ['Workspace', currentTenant?.name ?? ''],
+                ['Slug',      currentTenant?.slug ?? ''],
+              ] as [string, string][]).map(([label, value]) => (
+                <div key={label} className="flex justify-between py-2 border-b border-border last:border-0">
+                  <dt className="text-xs text-muted-foreground">{label}</dt>
+                  <dd className="text-xs font-medium text-primary">{value}</dd>
                 </div>
+              ))}
+            </dl>
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">Aktive Features</p>
+              <div className="flex flex-wrap gap-1.5">
+                {activeFeatures.length > 0 ? activeFeatures.map((f) => (
+                  <span key={f} className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full border border-primary/20">
+                    {f}
+                  </span>
+                )) : (
+                  <span className="text-xs text-muted-foreground">Keine Features aktiv</span>
+                )}
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Usage Dashboard */}
+      {/* ── Usage ── */}
       <UsageDashboard />
     </div>
   );
