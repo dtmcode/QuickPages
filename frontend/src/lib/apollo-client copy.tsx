@@ -1,18 +1,20 @@
 'use client';
 
-import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, from } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, ApolloLink, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { ReactNode, useMemo } from 'react';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
+import { createUploadLink } from 'apollo-upload-client';
 
 export function ApolloWrapper({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const client = useMemo(() => {
-    const httpLink = new HttpLink({
+    const uploadLink = createUploadLink({
       uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3000/graphql',
+      credentials: 'same-origin',
       headers: { 'Apollo-Require-Preflight': 'true' },
     });
 
@@ -29,6 +31,7 @@ export function ApolloWrapper({ children }: { children: ReactNode }) {
     const errorLink = onError(({ graphQLErrors, networkError }) => {
       if (graphQLErrors) {
         graphQLErrors.forEach(({ message, extensions }) => {
+          console.error(`[GraphQL error]: ${message}`);
           if (extensions?.code === 'UNAUTHENTICATED' || message.includes('Unauthorized')) {
             Cookies.remove('accessToken');
             Cookies.remove('refreshToken');
@@ -38,10 +41,13 @@ export function ApolloWrapper({ children }: { children: ReactNode }) {
           }
         });
       }
+      if (networkError) {
+        console.error(`[Network error]: ${networkError}`);
+      }
     });
 
     return new ApolloClient({
-      link: from([errorLink, authLink, httpLink]),
+      link: from([errorLink, authLink, uploadLink as unknown as ApolloLink]),
       cache: new InMemoryCache(),
       defaultOptions: {
         watchQuery: { fetchPolicy: 'cache-and-network' },

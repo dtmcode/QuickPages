@@ -1,18 +1,17 @@
 'use client';
 
-import { ApolloClient, InMemoryCache, ApolloProvider, ApolloLink, from } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { ReactNode, useMemo } from 'react';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import { createUploadLink } from 'apollo-upload-client';
 
 export function ApolloWrapper({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const client = useMemo(() => {
-    const uploadLink = createUploadLink({
+    const httpLink = new HttpLink({
       uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3000/graphql',
       credentials: 'same-origin',
       headers: { 'Apollo-Require-Preflight': 'true' },
@@ -47,7 +46,7 @@ export function ApolloWrapper({ children }: { children: ReactNode }) {
     });
 
     return new ApolloClient({
-      link: from([errorLink, authLink, uploadLink as unknown as ApolloLink]),
+      link: from([errorLink, authLink, httpLink]),
       cache: new InMemoryCache(),
       defaultOptions: {
         watchQuery: { fetchPolicy: 'cache-and-network' },
