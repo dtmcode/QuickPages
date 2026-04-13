@@ -1946,7 +1946,7 @@ const wrapStyle: React.CSSProperties = {
   const innerWidth = styling?.containerWidth === 'narrow' ? { maxWidth: '768px', margin: '0 auto' }
     : styling?.containerWidth === 'full' ? {}
       : { maxWidth: '1100px', margin: '0 auto' };
-  const [selectedItemKey, setSelectedItemKey] = useState<string | null>(null);
+
 
   const renderBlock = (block: any): React.ReactNode => {
   const alignStyle: React.CSSProperties = {
@@ -2074,173 +2074,78 @@ case 'feature-grid':
   return (
     <div key={block.id} style={{ marginBottom: '1rem' }}>
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 3}, 1fr)`, gap: '1rem' }}>
-        {(block.items || []).map((item: any, i: number) => {
-          const itemKey = `${block.id}:${i}`;
-          const isItemSelected = selectedItemKey === itemKey;
-          return (
-            <div key={i} style={{ position: 'relative' }}
-              onClick={e => { e.stopPropagation(); setSelectedItemKey(isItemSelected ? null : itemKey); }}>
-              {isItemSelected && onBlockUpdate && (
-                <FloatingItemEditor
-                  block={block}
-                  itemIndex={i}
-                  onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
-                  onClose={() => setSelectedItemKey(null)}
-                />
-              )}
-              <div style={{ padding: '1.25rem', borderRadius: '0.75rem', background: isItemSelected ? 'rgba(88,166,255,0.1)' : 'rgba(0,0,0,0.05)', textAlign: 'center', outline: isItemSelected ? '2px solid #58a6ff' : '2px solid transparent', cursor: 'pointer', transition: 'all 0.1s' }}
-                onMouseEnter={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px dashed rgba(88,166,255,0.3)'; }}
-                onMouseLeave={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px solid transparent'; }}>
-                {item.icon && <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>}
-                <h3 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.95rem' }}>{item.title}</h3>
-                <p style={{ fontSize: '0.8rem', opacity: 0.7, margin: 0 }}>{item.description}</p>
-                {item.price && <p style={{ fontWeight: 700, color: primary, marginTop: '0.5rem', fontSize: '0.9rem' }}>{item.price}</p>}
-              </div>
-            </div>
-          );
-        })}
+        {(block.items || []).map((item: any, i: number) => (
+          <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', textAlign: 'center' }}>
+            {item.icon && <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>}
+            <h3 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.95rem' }}>{item.title}</h3>
+            <p style={{ fontSize: '0.8rem', opacity: 0.7, margin: 0 }}>{item.description}</p>
+            {item.price && <p style={{ fontWeight: 700, color: primary, marginTop: '0.5rem', fontSize: '0.9rem' }}>{item.price}</p>}
+          </div>
+        ))}
       </div>
     </div>
   );
-
 case 'stat-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 4}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
-            {(block.items || []).map((item: any, i: number) => {
-              const itemKey = `${block.id}:${i}`;
-              const isItemSelected = selectedItemKey === itemKey;
-              return (
-                <div key={i} style={{ position: 'relative' }}
-                  onClick={e => { e.stopPropagation(); setSelectedItemKey(isItemSelected ? null : itemKey); }}>
-                  {isItemSelected && onBlockUpdate && (
-                    <FloatingItemEditor block={block} itemIndex={i}
-                      onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
-                      onClose={() => setSelectedItemKey(null)} />
-                  )}
-                  <div style={{ outline: isItemSelected ? '2px solid #58a6ff' : '2px solid transparent', borderRadius: 6, cursor: 'pointer', padding: '0.5rem', transition: 'all 0.1s' }}
-                    onMouseEnter={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px dashed rgba(88,166,255,0.3)'; }}
-                    onMouseLeave={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px solid transparent'; }}>
-                    <div style={{ fontSize: isMobile ? '1.75rem' : '2.25rem', fontWeight: 800, color: primary }}>{item.value}</div>
-                    <div style={{ fontWeight: 600, margin: '0.2rem 0 0.1rem', fontSize: '0.9rem' }}>{item.label}</div>
-                    {item.description && <div style={{ opacity: 0.6, fontSize: '0.75rem' }}>{item.description}</div>}
-                  </div>
-                </div>
-              );
-            })}
+  return (
+    <div key={block.id} style={{ marginBottom: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 4}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
+        {(block.items || []).map((item: any, i: number) => (
+          <div key={i}>
+            <div style={{ fontSize: isMobile ? '1.75rem' : '2.25rem', fontWeight: 800, color: primary }}>{item.value}</div>
+            <div style={{ fontWeight: 600, margin: '0.2rem 0 0.1rem', fontSize: '0.9rem' }}>{item.label}</div>
+            {item.description && <div style={{ opacity: 0.6, fontSize: '0.75rem' }}>{item.description}</div>}
           </div>
-        </div>
-      );
-
+        ))}
+      </div>
+    </div>
+  );
 case 'testimonial-grid':
   return (
     <div key={block.id} style={{ marginBottom: '1rem' }}>
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 2}, 1fr)`, gap: '1rem' }}>
-        {(block.items || []).map((item: any, i: number) => {
-          const itemKey = `${block.id}:${i}`;
-          const isItemSelected = selectedItemKey === itemKey;
-          return (
-            <div key={i} style={{ position: 'relative' }}
-              onClick={e => { e.stopPropagation(); setSelectedItemKey(isItemSelected ? null : itemKey); }}>
-              {isItemSelected && onBlockUpdate && (
-                <FloatingItemEditor block={block} itemIndex={i}
-                  onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
-                  onClose={() => setSelectedItemKey(null)} />
-              )}
-              <div style={{ padding: '1.25rem', borderRadius: '0.75rem', background: isItemSelected ? 'rgba(88,166,255,0.1)' : 'rgba(0,0,0,0.05)', fontStyle: 'italic', outline: isItemSelected ? '2px solid #58a6ff' : '2px solid transparent', cursor: 'pointer' }}
-                onMouseEnter={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px dashed rgba(88,166,255,0.3)'; }}
-                onMouseLeave={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px solid transparent'; }}>
-                <p style={{ margin: '0 0 0.75rem', fontSize: '0.875rem' }}>„{item.text}"</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  {item.image && <div style={{ width: 36, height: 36, borderRadius: '50%', background: primary, overflow: 'hidden', flexShrink: 0 }}><img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
-                  <div>
-                    <p style={{ fontWeight: 600, fontStyle: 'normal', margin: 0, fontSize: '0.85rem' }}>{item.name}</p>
-                    {item.role && <p style={{ opacity: 0.6, fontStyle: 'normal', margin: 0, fontSize: '0.75rem' }}>{item.role}</p>}
-                  </div>
-                </div>
+        {(block.items || []).map((item: any, i: number) => (
+          <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', fontStyle: 'italic' }}>
+            <p style={{ margin: '0 0 0.75rem', fontSize: '0.875rem' }}>„{item.text}"</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {item.image && <div style={{ width: 36, height: 36, borderRadius: '50%', background: primary, overflow: 'hidden', flexShrink: 0 }}><img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+              <div>
+                <p style={{ fontWeight: 600, fontStyle: 'normal', margin: 0, fontSize: '0.85rem' }}>{item.name}</p>
+                {item.role && <p style={{ opacity: 0.6, fontStyle: 'normal', margin: 0, fontSize: '0.75rem' }}>{item.role}</p>}
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );
 case 'team-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 3}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
-            {(block.items || []).map((item: any, i: number) => {
-              const itemKey = `${block.id}:${i}`;
-              const isItemSelected = selectedItemKey === itemKey;
-              return (
-                <div key={i} style={{ position: 'relative' }}
-                  onClick={e => { e.stopPropagation(); setSelectedItemKey(isItemSelected ? null : itemKey); }}>
-                  {isItemSelected && onBlockUpdate && (
-                    <FloatingItemEditor block={block} itemIndex={i}
-                      onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
-                      onClose={() => setSelectedItemKey(null)} />
-                  )}
-                  <div style={{ outline: isItemSelected ? '2px solid #58a6ff' : '2px solid transparent', borderRadius: 6, cursor: 'pointer', padding: '0.5rem' }}
-                    onMouseEnter={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px dashed rgba(88,166,255,0.3)'; }}
-                    onMouseLeave={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px solid transparent'; }}>
-                <div style={{ width: 64, height: 64, borderRadius: '50%', background: primary, margin: '0 auto 0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.5rem', overflow: 'hidden' }}>
-                  {item.image ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
-                </div>
-                <h3 style={{ fontWeight: 600, margin: '0 0 0.15rem', fontSize: '0.9rem' }}>{item.name}</h3>
-         <p style={{ opacity: 0.6, fontSize: '0.8rem', margin: 0 }}>{item.role}</p>
-                  </div>
-                </div>
-              );
-            })}
+  return (
+    <div key={block.id} style={{ marginBottom: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 3}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
+        {(block.items || []).map((item: any, i: number) => (
+          <div key={i}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: primary, margin: '0 auto 0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.5rem', overflow: 'hidden' }}>
+              {item.image ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
+            </div>
+            <h3 style={{ fontWeight: 600, margin: '0 0 0.15rem', fontSize: '0.9rem' }}>{item.name}</h3>
+            <p style={{ opacity: 0.6, fontSize: '0.8rem', margin: 0 }}>{item.role}</p>
           </div>
-        </div>
-      );
-
-    case 'pricing-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 2}, 1fr)`, gap: '1rem' }}>
-            {(block.items || []).map((item: any, i: number) => (
-              <div key={i} style={{ padding: '1.5rem', borderRadius: '0.75rem', background: item.highlighted ? primary : 'rgba(0,0,0,0.05)', color: item.highlighted ? '#fff' : 'inherit', border: `2px solid ${item.highlighted ? primary : 'transparent'}` }}>
-                <h3 style={{ fontWeight: 700, margin: '0 0 0.5rem', fontSize: '1rem' }}>{item.title}</h3>
-                <div style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 0.75rem' }}>{item.price}<span style={{ fontSize: '0.8rem', fontWeight: 400 }}>/{item.interval}</span></div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem' }}>
-                  {(item.features || []).map((f: string, fi: number) => <li key={fi} style={{ fontSize: '0.8rem', marginBottom: '0.2rem' }}>✓ {f}</li>)}
-                </ul>
-                <div style={{ background: item.highlighted ? 'rgba(255,255,255,0.2)' : btnBg, color: item.highlighted ? '#fff' : btnText, borderRadius: '0.5rem', padding: '0.5rem', textAlign: 'center', fontWeight: 600, fontSize: '0.85rem' }}>
-                  {item.buttonText || 'Jetzt starten'}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
+        ))}
+      </div>
+    </div>
+  );
 
 case 'faq-list':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          {(block.items || []).map((item: any, i: number) => {
-            const itemKey = `${block.id}:${i}`;
-            const isItemSelected = selectedItemKey === itemKey;
-            return (
-              <div key={i} style={{ position: 'relative', borderBottom: '1px solid rgba(0,0,0,0.1)' }}
-                onClick={e => { e.stopPropagation(); setSelectedItemKey(isItemSelected ? null : itemKey); }}>
-                {isItemSelected && onBlockUpdate && (
-                  <FloatingItemEditor block={block} itemIndex={i}
-                    onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
-                    onClose={() => setSelectedItemKey(null)} />
-                )}
-                <div style={{ padding: '0.875rem 0', outline: isItemSelected ? '2px solid #58a6ff' : '2px solid transparent', borderRadius: 4, cursor: 'pointer' }}
-                  onMouseEnter={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px dashed rgba(88,166,255,0.3)'; }}
-                  onMouseLeave={e => { if (!isItemSelected) (e.currentTarget as HTMLElement).style.outline = '2px solid transparent'; }}>
-                  <h4 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.9rem' }}>{item.question}</h4>
-                  <p style={{ fontSize: '0.82rem', opacity: 0.7, margin: 0 }}>{item.answer}</p>
-                </div>
-              </div>
-            );
-          })}
+  return (
+    <div key={block.id} style={{ marginBottom: '1rem' }}>
+      {(block.items || []).map((item: any, i: number) => (
+        <div key={i} style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', padding: '0.875rem 0' }}>
+          <h4 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.9rem' }}>{item.question}</h4>
+          <p style={{ fontSize: '0.82rem', opacity: 0.7, margin: 0 }}>{item.answer}</p>
         </div>
-      );
+      ))}
+    </div>
+  );
 
     case 'image-grid':
       return (
