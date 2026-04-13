@@ -1335,7 +1335,7 @@ export const tenantsRelations = relations(tenants, ({ many, one }) => ({
   domainEvents: many(domainEvents),
   bookingServices: many(bookingServices),
   bookingAppointments: many(bookingAppointments),
-  analyticsPageviews: many(analyticsPageviews),
+  pageViews: many(pageViews),
   analyticsDaily: many(analyticsDaily),
   forms: many(forms),
   formSubmissions: many(formSubmissions),

@@ -1,3 +1,4 @@
+// 📂 PFAD: frontend/src/app/dashboard/website-builder/create/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -37,162 +38,7 @@ const GET_MY_TEMPLATES_COUNT = gql`
   }
 `;
 
-// ==================== LEGAL DEFAULT CONTENT ====================
-
-const IMPRESSUM_CONTENT = `# Impressum
-
-**Angaben gemäß § 5 TMG**
-
-[Firmenname]  
-[Straße und Hausnummer]  
-[PLZ Ort]
-
-**Vertreten durch:**  
-[Vorname Nachname]
-
-**Kontakt:**  
-Telefon: [Telefonnummer]  
-E-Mail: [E-Mail-Adresse]
-
----
-
-**Umsatzsteuer-ID:**  
-Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:  
-[USt-IdNr. falls vorhanden]
-
-**Handelsregistereintrag:**  
-Eingetragen im Handelsregister  
-Registergericht: [Amtsgericht]  
-Registernummer: [HRB-Nummer falls vorhanden]
-
----
-
-**Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:**  
-[Vorname Nachname]  
-[Adresse wie oben]
-
----
-
-**Haftungsausschluss:**
-
-Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.
-
-> ⚠️ **Bitte ersetze alle Platzhalter in eckigen Klammern mit deinen echten Daten.**`;
-
-const DATENSCHUTZ_CONTENT = `# Datenschutzerklärung
-
-## 1. Datenschutz auf einen Blick
-
-**Allgemeine Hinweise**  
-Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen.
-
-**Datenerfassung auf dieser Website**  
-Die Datenverarbeitung auf dieser Website erfolgt durch den Websitebetreiber. Dessen Kontaktdaten können Sie dem Impressum dieser Website entnehmen.
-
----
-
-## 2. Allgemeine Hinweise und Pflichtinformationen
-
-**Datenschutz**  
-Der Betreiber dieser Seiten nimmt den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.
-
-**Verantwortliche Stelle**  
-[Firmenname]  
-[Adresse]  
-[E-Mail]
-
----
-
-## 3. Datenerfassung auf dieser Website
-
-**Server-Log-Dateien**  
-Der Provider der Seiten erhebt und speichert automatisch Informationen in sogenannten Server-Log-Dateien, die Ihr Browser automatisch übermittelt. Dies sind:
-- Browsertyp und Browserversion
-- Verwendetes Betriebssystem
-- Referrer URL
-- Hostname des zugreifenden Rechners
-- Uhrzeit der Serveranfrage
-- IP-Adresse
-
-**Kontaktformular**  
-Wenn Sie uns per Kontaktformular Anfragen zukommen lassen, werden Ihre Angaben aus dem Anfrageformular inklusive der von Ihnen dort angegebenen Kontaktdaten zwecks Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei uns gespeichert.
-
----
-
-## 4. Ihre Rechte
-
-Sie haben jederzeit das Recht:
-- **Auskunft** über Ihre gespeicherten personenbezogenen Daten zu erhalten
-- **Berichtigung** unrichtiger Daten zu verlangen
-- **Löschung** Ihrer Daten zu verlangen
-- **Widerspruch** gegen die Verarbeitung einzulegen
-
-Kontakt für Datenschutzanfragen: [E-Mail-Adresse]
-
----
-
-> ⚠️ **Bitte ersetze alle Platzhalter in eckigen Klammern mit deinen echten Daten und passe die Erklärung an deine tatsächliche Datenverarbeitung an. Bei Unsicherheiten empfehlen wir einen Anwalt zu konsultieren.**`;
-
-const AGB_CONTENT = `# Allgemeine Geschäftsbedingungen (AGB)
-
-## § 1 Geltungsbereich
-
-Diese Allgemeinen Geschäftsbedingungen gelten für alle Verträge zwischen  
-[Firmenname], [Adresse]  
-und Verbrauchern sowie Unternehmern.
-
-## § 2 Vertragsschluss
-
-Der Kaufvertrag kommt zustande, wenn Sie unsere Angebote durch Klick auf den Bestell-Button annehmen.
-
-## § 3 Preise und Zahlung
-
-Alle Preise verstehen sich inklusive der gesetzlichen Mehrwertsteuer.  
-Zahlungsmöglichkeiten: [Zahlungsarten angeben]
-
-## § 4 Lieferung
-
-[Lieferbedingungen angeben]
-
-## § 5 Gewährleistung
-
-Es gelten die gesetzlichen Gewährleistungsrechte.
-
----
-
-> ⚠️ **Diese AGB sind ein Muster und müssen an dein tatsächliches Geschäftsmodell angepasst werden. Bitte lasse sie von einem Anwalt prüfen.**`;
-
-const WIDERRUF_CONTENT = `# Widerrufsbelehrung
-
-## Widerrufsrecht
-
-Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.
-
-Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter Dritter, der nicht der Beförderer ist, die letzte Ware in Besitz genommen hat.
-
-## Ausübung des Widerrufsrechts
-
-Um Ihr Widerrufsrecht auszuüben, müssen Sie uns  
-([Firmenname], [Adresse], [E-Mail])  
-mittels einer eindeutigen Erklärung (z.B. ein mit der Post versandter Brief oder E-Mail) über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.
-
-## Folgen des Widerrufs
-
-Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben, unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen.
-
----
-
-> ⚠️ **Bitte passe diese Widerrufsbelehrung an dein Geschäftsmodell an und lasse sie rechtlich prüfen.**`;
-
-// Map: slug → default content
-const LEGAL_CONTENT: Record<string, string> = {
-  impressum: IMPRESSUM_CONTENT,
-  datenschutz: DATENSCHUTZ_CONTENT,
-  agb: AGB_CONTENT,
-  widerruf: WIDERRUF_CONTENT,
-};
-
-// ==================== TYPES ====================
+// ==================== CONFIG ====================
 
 interface PageDef {
   name: string;
@@ -258,7 +104,7 @@ const SITE_TYPES: SiteType[] = [
     badgeColor: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
     pages: [
       { name: 'Startseite', slug: 'home', isHomepage: true },
-      { name: 'Shop', slug: 'shop', isHomepage: false },
+      { name: 'Shop', slug: 'shop', isHomepage: false, description: 'Über Shop-Modul' },
       { name: 'Über uns', slug: 'ueber-uns', isHomepage: false },
       { name: 'Impressum', slug: 'impressum', isHomepage: false, isLegal: true },
       { name: 'Datenschutz', slug: 'datenschutz', isHomepage: false, isLegal: true },
@@ -278,7 +124,7 @@ const SITE_TYPES: SiteType[] = [
     badgeColor: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
     pages: [
       { name: 'Startseite', slug: 'home', isHomepage: true },
-      { name: 'Blog', slug: 'blog', isHomepage: false },
+      { name: 'Blog', slug: 'blog', isHomepage: false, description: 'Über CMS-Modul' },
       { name: 'Über uns', slug: 'ueber-uns', isHomepage: false },
       { name: 'Impressum', slug: 'impressum', isHomepage: false, isLegal: true },
       { name: 'Datenschutz', slug: 'datenschutz', isHomepage: false, isLegal: true },
@@ -319,7 +165,7 @@ const SITE_TYPES: SiteType[] = [
   },
 ];
 
-// ==================== MAIN ====================
+// ==================== COMPONENT ====================
 
 export default function CreateWebsitePage() {
   const { tenant } = useAuth();
@@ -335,7 +181,7 @@ export default function CreateWebsitePage() {
   const [error, setError] = useState('');
 
   const { data: globalData } = useQuery(GET_GLOBAL_TEMPLATES);
-  const { data: myData, loading: myDataLoading } = useQuery(GET_MY_TEMPLATES_COUNT, {
+  const { data: myData } = useQuery(GET_MY_TEMPLATES_COUNT, {
     variables: { tenantId: tenant?.id },
     skip: !tenant?.id,
   });
@@ -344,22 +190,17 @@ export default function CreateWebsitePage() {
   const [cloneGlobalTemplate] = useMutation(CLONE_GLOBAL_TEMPLATE);
   const [setDefault] = useMutation(SET_DEFAULT);
 
-  // ✅ FIX: nur true wenn Query fertig geladen und wirklich 0 Templates
-  const isFirstTemplate = !myDataLoading && myData !== undefined && (myData?.wbTemplates?.length ?? 0) === 0;
+  const isFirstTemplate = (myData?.wbTemplates?.length ?? 0) === 0;
   const allGlobal = globalData?.wbGlobalTemplates || [];
   const filteredGlobal = selectedType
     ? allGlobal.filter((t: any) =>
         selectedType.globalCategories.some((cat) =>
-          (t.category || '').toLowerCase().includes(cat.toLowerCase()),
+          (t.category || '').toLowerCase().includes(cat.toLowerCase())
         )
       )
     : [];
 
-  const goStep = (s: number) => {
-    setError('');
-    setStep(s);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const goStep = (s: number) => { setError(''); setStep(s); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
   const handleCreate = async () => {
     if (!tenant?.id || !selectedType) return;
@@ -369,11 +210,13 @@ export default function CreateWebsitePage() {
       let templateId: string;
 
       if (selectedGlobalId) {
+        // Clone global template first
         const res = await cloneGlobalTemplate({
           variables: { globalTemplateId: selectedGlobalId, tenantId: tenant.id },
         });
         templateId = res.data.cloneGlobalTemplate.id;
       } else {
+        // Create blank template
         const res = await createTemplate({
           variables: {
             input: {
@@ -385,6 +228,7 @@ export default function CreateWebsitePage() {
                 siteType: selectedType.id,
                 colors: { primary: '#3b82f6', secondary: '#6366f1', accent: '#f59e0b', background: '#ffffff', text: '#1f2937' },
                 fonts: { heading: 'Inter', body: 'Inter' },
+                spacing: { default: 'normal' },
               },
             },
             tenantId: tenant.id,
@@ -393,7 +237,7 @@ export default function CreateWebsitePage() {
         templateId = res.data.createTemplate.id;
       }
 
-      // ✅ Seiten erstellen — Pflichtseiten bekommen Default-Content
+      // Always create all required pages — silently skip if slug already exists (cloned template)
       for (let i = 0; i < selectedType.pages.length; i++) {
         const p = selectedType.pages[i];
         try {
@@ -403,8 +247,6 @@ export default function CreateWebsitePage() {
                 templateId,
                 name: p.name,
                 slug: p.slug,
-                // ✅ NEU: Legal-Seiten bekommen automatisch Platzhalter-Content
-                content: p.isLegal ? (LEGAL_CONTENT[p.slug] ?? '') : '',
                 description: p.description || null,
                 isActive: true,
                 isHomepage: p.isHomepage,
@@ -414,7 +256,7 @@ export default function CreateWebsitePage() {
             },
           });
         } catch {
-          // Slug bereits vorhanden (geklontes Template) — überspringen
+          // Slug already exists from cloned template — skip silently
         }
       }
 
@@ -475,7 +317,7 @@ export default function CreateWebsitePage() {
 
       <div className="max-w-4xl mx-auto px-4 py-10">
 
-        {/* STEP 1 */}
+        {/* STEP 1 — TYPE */}
         {step === 1 && (
           <div>
             <div className="text-center mb-10">
@@ -485,6 +327,7 @@ export default function CreateWebsitePage() {
                 Wähle den Typ — alle nötigen Seiten werden automatisch angelegt, inklusive Impressum und Datenschutz
               </p>
             </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {SITE_TYPES.map((type) => (
                 <button
@@ -519,15 +362,16 @@ export default function CreateWebsitePage() {
                 </button>
               ))}
             </div>
+
             <div className="mt-8 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl text-center">
               <p className="text-sm text-amber-800 dark:text-amber-300">
-                ⚖️ <strong>DSGVO-konform:</strong> Alle Typen enthalten automatisch Impressum &amp; Datenschutzerklärung mit Platzhalter-Texten
+                ⚖️ <strong>DSGVO-konform:</strong> Alle Typen enthalten automatisch Impressum &amp; Datenschutzerklärung
               </p>
             </div>
           </div>
         )}
 
-        {/* STEP 2 */}
+        {/* STEP 2 — NAME */}
         {step === 2 && selectedType && (
           <div className="max-w-xl mx-auto">
             <button onClick={() => goStep(1)} className="text-sm text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1 transition-colors">
@@ -539,6 +383,7 @@ export default function CreateWebsitePage() {
             </div>
             <h2 className="text-3xl font-bold text-foreground mb-2">Wie heißt deine Website?</h2>
             <p className="text-muted-foreground mb-8">Du kannst den Namen jederzeit ändern</p>
+
             <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
               <div>
                 <label className="block text-sm font-semibold text-foreground mb-2">Name der Website <span className="text-red-500">*</span></label>
@@ -546,12 +391,14 @@ export default function CreateWebsitePage() {
                   type="text"
                   value={siteName}
                   onChange={(e) => { setSiteName(e.target.value); setError(''); }}
-                  placeholder="z.B. Meine Website"
+                  placeholder={selectedType.id === 'shop' ? 'z.B. Mein Online-Shop' : selectedType.id === 'blog' ? 'z.B. Mein Blog' : 'z.B. Meine Website'}
                   className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   autoFocus
+                  onKeyDown={(e) => e.key === 'Enter' && (() => { if (!siteName.trim()) { setError('Bitte gib einen Namen ein.'); return; } goStep(3); })()}
                 />
                 {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
               </div>
+
               <div>
                 <label className="block text-sm font-semibold text-foreground mb-2">Kurzbeschreibung <span className="text-muted-foreground font-normal">(optional)</span></label>
                 <textarea
@@ -562,6 +409,7 @@ export default function CreateWebsitePage() {
                   className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
                 />
               </div>
+
               <div className="bg-muted/40 rounded-xl p-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Wird automatisch angelegt:</p>
                 <div className="space-y-1.5">
@@ -571,11 +419,12 @@ export default function CreateWebsitePage() {
                       <span className="font-medium text-foreground">{p.name}</span>
                       <span className="text-muted-foreground text-xs">/{p.slug}</span>
                       {p.isHomepage && <span className="ml-auto text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded-full">Homepage</span>}
-                      {p.isLegal && <span className="ml-auto text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full">Pflicht + Vorlage</span>}
+                      {p.isLegal && <span className="ml-auto text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full">Pflicht</span>}
                     </div>
                   ))}
                 </div>
               </div>
+
               <button
                 onClick={() => { if (!siteName.trim()) { setError('Bitte gib einen Namen ein.'); return; } goStep(3); }}
                 className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all"
@@ -586,7 +435,7 @@ export default function CreateWebsitePage() {
           </div>
         )}
 
-        {/* STEP 3 */}
+        {/* STEP 3 — TEMPLATE CHOICE */}
         {step === 3 && selectedType && (
           <div>
             <button onClick={() => goStep(2)} className="text-sm text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1 transition-colors">
@@ -594,8 +443,10 @@ export default function CreateWebsitePage() {
             </button>
             <h2 className="text-3xl font-bold text-foreground mb-2">Mit einer Vorlage starten?</h2>
             <p className="text-muted-foreground mb-8">
-              Pflicht-Seiten werden immer automatisch mit Platzhalter-Texten angelegt
+              Alle fehlenden Pflicht-Seiten werden immer automatisch ergänzt — egal welche Vorlage du wählst
             </p>
+
+            {/* Blank */}
             <button
               onClick={() => setSelectedGlobalId(null)}
               className={`w-full mb-5 p-5 rounded-2xl border-2 transition-all text-left flex items-center gap-4 ${
@@ -606,7 +457,7 @@ export default function CreateWebsitePage() {
               <div className="flex-1">
                 <h3 className="font-bold text-foreground">Leeres Template</h3>
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  Von Null starten — {selectedType.pages.length} Seiten werden angelegt
+                  Von Null starten — {selectedType.pages.length} Seiten werden angelegt, du gestaltest sie selbst
                 </p>
               </div>
               {selectedGlobalId === null && (
@@ -616,7 +467,7 @@ export default function CreateWebsitePage() {
 
             {filteredGlobal.length > 0 && (
               <div className="mb-6">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Passende Vorlagen</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Passende Vorlagen für {selectedType.label}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredGlobal.map((t: any) => (
                     <button
@@ -643,6 +494,14 @@ export default function CreateWebsitePage() {
               </div>
             )}
 
+            {filteredGlobal.length === 0 && (
+              <div className="text-center py-8 bg-muted/30 rounded-2xl mb-6">
+                <p className="text-3xl mb-2">🎨</p>
+                <p className="text-sm text-muted-foreground">Noch keine spezifischen Vorlagen für diesen Typ.</p>
+              </div>
+            )}
+
+            {/* Summary + Create */}
             <div className="bg-card border border-border rounded-2xl p-6">
               <h3 className="font-bold text-foreground mb-4">📋 Zusammenfassung</h3>
               <div className="space-y-2 text-sm mb-5">
@@ -650,7 +509,7 @@ export default function CreateWebsitePage() {
                   ['Typ', `${selectedType.icon} ${selectedType.label}`],
                   ['Name', siteName],
                   ['Vorlage', selectedGlobalId ? (filteredGlobal.find((t: any) => t.id === selectedGlobalId)?.name ?? 'Vorlage') : 'Leeres Template'],
-                  ['Seiten', `${selectedType.pages.length} Seiten inkl. Pflicht-Seiten mit Vorlagen-Text`],
+                  ['Seiten', `${selectedType.pages.length} Seiten (inkl. Pflicht-Seiten)`],
                   ...(isFirstTemplate ? [['Status', '⭐ Wird als aktive Website gesetzt']] : []),
                 ].map(([k, v]) => (
                   <div key={k} className="flex justify-between py-1.5 border-b border-border last:border-0">
@@ -659,26 +518,27 @@ export default function CreateWebsitePage() {
                   </div>
                 ))}
               </div>
+
               {error && (
                 <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-700 dark:text-red-400">
                   ❌ {error}
                 </div>
               )}
+
               <button
                 onClick={handleCreate}
                 disabled={isCreating}
                 className="w-full py-4 bg-primary text-primary-foreground rounded-xl font-bold text-base hover:bg-primary/90 disabled:opacity-60 disabled:cursor-wait transition-all flex items-center justify-center gap-2"
               >
-                {isCreating
-                  ? <><div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />Website wird erstellt…</>
-                  : '🚀 Website jetzt erstellen'
-                }
+                {isCreating ? (
+                  <><div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />Website wird erstellt…</>
+                ) : '🚀 Website jetzt erstellen'}
               </button>
             </div>
           </div>
         )}
 
-        {/* STEP 4 */}
+        {/* STEP 4 — SUCCESS */}
         {step === 4 && createdId && selectedType && (
           <div className="max-w-lg mx-auto text-center">
             <div className="text-7xl mb-6">🎉</div>
@@ -687,22 +547,16 @@ export default function CreateWebsitePage() {
               <strong className="text-foreground">{siteName || selectedType.label}</strong> ist bereit.
               Alle {selectedType.pages.length} Seiten wurden angelegt.
             </p>
-            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-4 mb-6 text-left">
-              <p className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-2">
-                ⚖️ Wichtig: Pflicht-Seiten ausfüllen
-              </p>
-              <p className="text-xs text-amber-700 dark:text-amber-400">
-                Impressum und Datenschutz wurden mit Platzhalter-Texten angelegt. Bitte ersetze alle Angaben in eckigen Klammern mit deinen echten Daten bevor du live gehst.
-              </p>
-            </div>
+
             <div className="bg-card border border-border rounded-2xl p-6 text-left mb-6">
               <h3 className="font-bold text-foreground mb-4">🗺️ Was jetzt?</h3>
               <div className="space-y-3">
                 {[
                   { n: 1, title: 'Startseite gestalten', sub: 'Sections hinzufügen und Inhalte bearbeiten', active: true },
-                  { n: 2, title: 'Impressum & Datenschutz ausfüllen', sub: 'Platzhalter in eckigen Klammern durch echte Daten ersetzen', active: false },
+                  { n: 2, title: 'Pflicht-Seiten ausfüllen', sub: 'Impressum und Datenschutz mit deinen echten Daten befüllen', active: false },
                   ...(selectedType.id === 'shop' ? [{ n: 3, title: 'Produkte im Shop-Modul anlegen', sub: 'Die Shop-Seite zeigt deine Produkte automatisch', active: false }] : []),
-                  { n: selectedType.id === 'shop' ? 4 : 3, title: 'Navigation einrichten', sub: 'Menü im Website Builder → Navigation konfigurieren', active: false },
+                  ...(selectedType.id === 'blog' ? [{ n: 3, title: 'Ersten Beitrag im CMS schreiben', sub: 'Die Blog-Seite zeigt deine Beiträge automatisch', active: false }] : []),
+                  { n: selectedType.id === 'shop' || selectedType.id === 'blog' ? 4 : 3, title: 'Navigation einrichten', sub: 'Menü im Website Builder → Navigation konfigurieren', active: false },
                 ].map((item) => (
                   <div key={item.n} className="flex items-start gap-3">
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 ${item.active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
@@ -716,6 +570,7 @@ export default function CreateWebsitePage() {
                 ))}
               </div>
             </div>
+
             <div className="flex flex-col sm:flex-row gap-3">
               <Link href={`/dashboard/website-builder/website-templates/${createdId}`} className="flex-1 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-all text-center">
                 🎨 Website jetzt gestalten

@@ -74,6 +74,10 @@ export function clearOnboardingProgress() {
   try { localStorage.removeItem(STORAGE_KEY); } catch {}
 }
 
+export function getOnboardingProgress(): SavedProgress | null {
+  return loadProgress();
+}
+
 // ==================== CONSTANTS ====================
 
 const DEFAULT_HOURS: OpeningHours = {
@@ -144,92 +148,11 @@ const GOAL_HERO_BUTTON: Record<Goal, string> = {
 };
 
 const BUILD_MESSAGES = [
-  'Website wird aufgebaut …',
-  'Template wird geladen …',
-  'Inhalte werden befüllt …',
-  'Impressum & Datenschutz werden erstellt …',
-  'Design wird angewendet …',
-  'Fast fertig …',
+  'Website wird aufgebaut …', 'Template wird geladen …', 'Inhalte werden befüllt …',
+  'Öffnungszeiten werden eingetragen …', 'Design wird angewendet …', 'Fast fertig …',
 ];
 
 const STEP_LABELS = ['Unternehmen', 'Design', 'Ziel', 'Template'] as const;
-
-// ==================== LEGAL CONTENT GENERATOR ====================
-// Generiert Impressum und Datenschutz mit echten Onboarding-Daten
-
-function buildImpressumText(d: WizardData): string {
-  const addr = [d.address, [d.zip, d.city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
-  const name = d.companyName || '[Firmenname]';
-  const email = d.contactEmail || '[E-Mail-Adresse]';
-  const phone = d.phone || '[Telefonnummer]';
-
-  return `# Impressum
-
-**Angaben gemäß § 5 TMG**
-
-${name}
-${d.address || '[Straße und Hausnummer]'}
-${[d.zip, d.city].filter(Boolean).join(' ') || '[PLZ Ort]'}
-
-**Kontakt:**
-Telefon: ${phone}
-E-Mail: ${email}
-
----
-
-**Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:**
-${name}
-${addr || '[Adresse]'}
-
----
-
-**Haftungsausschluss:**
-Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte kann keine Gewähr übernommen werden.
-
-> ⚠️ Bitte ergänze fehlende Pflichtangaben (z.B. Handelsregisternummer, USt-IdNr.) und lasse das Impressum bei Bedarf rechtlich prüfen.`;
-}
-
-function buildDatenschutzText(d: WizardData): string {
-  const name = d.companyName || '[Firmenname]';
-  const email = d.contactEmail || '[E-Mail-Adresse]';
-  const addr = [d.address, [d.zip, d.city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
-
-  return `# Datenschutzerklärung
-
-## 1. Verantwortlicher
-
-${name}
-${addr || '[Adresse]'}
-E-Mail: ${email}
-
-## 2. Erhebung und Verarbeitung personenbezogener Daten
-
-Wir erheben personenbezogene Daten nur, soweit dies für die Bereitstellung unserer Dienste erforderlich ist.
-
-**Server-Log-Dateien:**
-Beim Aufruf dieser Website speichert der Hosting-Anbieter automatisch folgende Daten: IP-Adresse, Browsertyp, Betriebssystem, Referrer-URL, Uhrzeit des Zugriffs. Diese Daten dienen ausschließlich der technischen Bereitstellung der Website.
-
-**Kontaktformular:**
-Bei Kontaktaufnahme über unser Formular werden die übermittelten Daten zur Bearbeitung Ihrer Anfrage gespeichert.
-
-## 3. Ihre Rechte
-
-Sie haben das Recht auf:
-- **Auskunft** über Ihre gespeicherten Daten (Art. 15 DSGVO)
-- **Berichtigung** unrichtiger Daten (Art. 16 DSGVO)
-- **Löschung** Ihrer Daten (Art. 17 DSGVO)
-- **Widerspruch** gegen die Verarbeitung (Art. 21 DSGVO)
-
-Kontakt für Datenschutzanfragen: ${email}
-
-## 4. Cookies
-
-Diese Website verwendet keine Tracking-Cookies.
-
----
-
-> ⚠️ Diese Datenschutzerklärung ist ein Ausgangspunkt. Bitte passe sie an deine tatsächliche Datenverarbeitung an und lasse sie bei Unsicherheiten rechtlich prüfen.`;
-}
 
 // ==================== GRAPHQL ====================
 
@@ -247,7 +170,7 @@ const CLONE_GLOBAL_TEMPLATE = gql`
 
 const GET_PAGES_WITH_SECTIONS = gql`
   query OnboardingGetPages($templateId: String!, $tenantId: String!) {
-    wbPages(templateId: $templateId, tenantId: $tenantId) { id name slug isHomepage }
+    wbPages(templateId: $templateId, tenantId: $tenantId) { id name isHomepage }
   }
 `;
 
@@ -259,31 +182,13 @@ const GET_PAGE_SECTIONS = gql`
 
 const UPDATE_SECTION = gql`
   mutation OnboardingUpdateSection($id: String!, $input: UpdateSectionInput!, $tenantId: String!) {
-    updateSection(id: $id, input: $input, tenantId: $tenantId) { id }
-  }
-`;
-
-const CREATE_PAGE = gql`
-  mutation OnboardingCreatePage($input: CreatePageInput!, $tenantId: String!) {
-    createPage(input: $input, tenantId: $tenantId) { id slug }
-  }
-`;
-
-const CREATE_SECTION = gql`
-  mutation OnboardingCreateSection($input: CreateSectionInput!, $tenantId: String!) {
-    createSection(input: $input, tenantId: $tenantId) { id }
+    updateSection(id: $id, input: $input, tenantId: $tenantId) { id type content }
   }
 `;
 
 const UPDATE_TEMPLATE_SETTINGS = gql`
   mutation OnboardingUpdateTemplate($id: String!, $input: UpdateTemplateInput!, $tenantId: String!) {
     updateTemplate(id: $id, input: $input, tenantId: $tenantId) { id settings }
-  }
-`;
-
-const SET_DEFAULT_TEMPLATE = gql`
-  mutation OnboardingSetDefault($id: String!, $tenantId: String!) {
-    setDefaultTemplate(id: $id, tenantId: $tenantId) { id isDefault }
   }
 `;
 
@@ -312,9 +217,7 @@ function buildContactContent(data: WizardData): Record<string, unknown> {
   return {
     title: 'Kontakt aufnehmen',
     address: [data.address, `${data.zip} ${data.city}`].filter(Boolean).join(', '),
-    phone: data.phone,
-    email: data.contactEmail,
-    openingHours: hoursText,
+    phone: data.phone, email: data.contactEmail, openingHours: hoursText,
   };
 }
 
@@ -325,6 +228,7 @@ function buildAboutContent(data: WizardData): Record<string, unknown> {
   };
 }
 
+// Template-Relevanz-Score berechnen
 function getTemplateScore(template: GlobalTemplate, data: WizardData): number {
   if (!template.category) return 0;
   const cat = template.category.toLowerCase();
@@ -435,7 +339,7 @@ function Step2Design({ data, onChange }: { data: WizardData; onChange: <K extend
     <div className="space-y-8">
       <div>
         <label className={labelCls}>Primärfarbe</label>
-        <p className="text-xs text-gray-400 mb-3">Wird für Buttons, Links und Akzente verwendet.</p>
+        <p className="text-xs text-gray-400 mb-3">Wird für Buttons, Links und Akzente verwendet — auch auf deiner Website.</p>
         <div className="flex flex-wrap gap-2 mb-3">
           {COLOR_PRESETS.map(color => (
             <button key={color} type="button" onClick={() => onChange('primaryColor', color)}
@@ -448,10 +352,13 @@ function Step2Design({ data, onChange }: { data: WizardData; onChange: <K extend
           <input type="color" value={data.primaryColor} onChange={e => onChange('primaryColor', e.target.value)}
             className="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-1 bg-white" />
           <span className="text-sm text-gray-600 font-mono">{data.primaryColor}</span>
+          <span className="text-xs text-gray-400">Eigene Farbe wählen</span>
         </div>
       </div>
+
       <div>
         <label className={labelCls}>Logo URL (optional)</label>
+        <p className="text-xs text-gray-400 mb-3">Kann später in den Einstellungen geändert werden.</p>
         <input type="url" className={inputCls} placeholder="https://..." value={data.logoUrl} onChange={e => onChange('logoUrl', e.target.value)} />
         {data.logoUrl && (
           <div className="mt-3 flex items-center gap-3">
@@ -460,8 +367,10 @@ function Step2Design({ data, onChange }: { data: WizardData; onChange: <K extend
           </div>
         )}
       </div>
+
       <div>
         <label className={labelCls}>Schriftart</label>
+        <p className="text-xs text-gray-400 mb-3">Diese Schrift wird auf deiner Website verwendet.</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {FONT_OPTIONS.map(font => (
             <button key={font.value} type="button" onClick={() => onChange('fontFamily', font.value)}
@@ -473,12 +382,14 @@ function Step2Design({ data, onChange }: { data: WizardData; onChange: <K extend
           ))}
         </div>
       </div>
+
+      {/* Live Vorschau */}
       <div className="rounded-xl border border-gray-200 p-6 text-center" style={{ fontFamily: data.fontFamily }}>
-        <div className="text-xs text-gray-400 mb-3">Live-Vorschau</div>
+        <div className="text-xs text-gray-400 mb-3">Live-Vorschau deiner Website</div>
         <div className="text-2xl font-bold mb-2" style={{ color: data.primaryColor }}>
           {data.companyName || 'Dein Firmenname'}
         </div>
-        <p className="text-gray-600 text-sm mb-4">{data.description || 'Deine kurze Beschreibung.'}</p>
+        <p className="text-gray-600 text-sm mb-4">{data.description || 'Deine kurze Beschreibung erscheint hier.'}</p>
         <span className="inline-block px-5 py-2 rounded-lg text-white text-sm font-semibold" style={{ backgroundColor: data.primaryColor }}>
           Jetzt anfragen
         </span>
@@ -490,11 +401,11 @@ function Step2Design({ data, onChange }: { data: WizardData; onChange: <K extend
 function Step3Goal({ data, onChange }: { data: WizardData; onChange: <K extends keyof WizardData>(k: K, v: WizardData[K]) => void }) {
   return (
     <div>
-      <p className="text-sm text-gray-500 mb-6">Wähle das Hauptziel deiner Website.</p>
+      <p className="text-sm text-gray-500 mb-6">Wähle das Hauptziel deiner Website. Wir passen Templates und Inhalte automatisch an.</p>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {GOALS.map(goal => (
           <button key={goal.id} type="button" onClick={() => onChange('goal', goal.id)}
-            className={`p-5 rounded-xl border-2 text-left transition-all ${data.goal === goal.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50'}`}>
+            className={`p-5 rounded-xl border-2 text-left transition-all group ${data.goal === goal.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50'}`}>
             <div className="text-3xl mb-3">{goal.icon}</div>
             <div className="font-semibold text-gray-900 text-sm mb-1">{goal.label}</div>
             <div className="text-xs text-gray-500">{goal.description}</div>
@@ -520,20 +431,25 @@ function Step4Template({ data, onChange, templates, loading }: {
     );
   }
 
+  // Templates nach Relevanz sortieren
   const sorted = [...templates].sort((a, b) => getTemplateScore(b, data) - getTemplateScore(a, data));
   const hasRelevant = sorted.some(t => getTemplateScore(t, data) > 0);
+
   const displayed = sorted.length > 0 ? sorted : [
     { id: '__blank', name: 'Leeres Template', description: 'Starte mit einer leeren Seite', thumbnailUrl: null, category: null },
   ];
+
   const industryLabel = INDUSTRIES.find(i => i.value === data.industry)?.label;
   const goalLabel = GOALS.find(g => g.id === data.goal)?.label;
 
   return (
     <div>
-      <p className="text-sm text-gray-500 mb-2">Alle Inhalte werden mit deinen Daten befüllt — inkl. Impressum und Datenschutz.</p>
+      <p className="text-sm text-gray-500 mb-2">
+        Wähle ein Template als Ausgangspunkt. Alle Inhalte werden mit deinen Daten befüllt.
+      </p>
       {hasRelevant && (
         <div className="mb-4 px-3 py-2 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-700">
-          ✨ Passende Templates für <strong>{industryLabel}</strong>{goalLabel ? ` · ${goalLabel}` : ''} zuerst
+          ✨ Passende Templates für <strong>{industryLabel}</strong>{goalLabel ? ` · ${goalLabel}` : ''} zuerst angezeigt
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -543,13 +459,16 @@ function Step4Template({ data, onChange, templates, loading }: {
             <button key={template.id} type="button" onClick={() => onChange('globalTemplateId', template.id)}
               className={`rounded-xl border-2 text-left overflow-hidden transition-all relative ${data.globalTemplateId === template.id ? 'border-blue-500 shadow-md' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
               {score > 0 && (
-                <div className="absolute top-2 left-2 z-10 px-2 py-0.5 bg-blue-500 text-white text-[10px] font-bold rounded-full">✨ Empfohlen</div>
+                <div className="absolute top-2 left-2 z-10 px-2 py-0.5 bg-blue-500 text-white text-[10px] font-bold rounded-full">
+                  ✨ Empfohlen
+                </div>
               )}
               <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 relative">
-                {template.thumbnailUrl
-                  ? <img src={template.thumbnailUrl} alt={template.name} className="w-full h-full object-cover" />
-                  : <div className="absolute inset-0 flex items-center justify-center text-3xl text-gray-300">🎨</div>
-                }
+                {template.thumbnailUrl ? (
+                  <img src={template.thumbnailUrl} alt={template.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-3xl text-gray-300">🎨</div>
+                )}
                 {data.globalTemplateId === template.id && (
                   <div className="absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
                     <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -561,7 +480,9 @@ function Step4Template({ data, onChange, templates, loading }: {
               <div className="p-4">
                 <div className="font-semibold text-gray-900 text-sm mb-1">{template.name}</div>
                 {template.description && <div className="text-xs text-gray-500 line-clamp-2">{template.description}</div>}
-                {template.category && <span className="inline-block mt-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">{template.category}</span>}
+                {template.category && (
+                  <span className="inline-block mt-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">{template.category}</span>
+                )}
               </div>
             </button>
           );
@@ -612,10 +533,8 @@ export default function OnboardingPage(): React.ReactElement {
   const [updateSection] = useMutation(UPDATE_SECTION);
   const [updateTemplateMut] = useMutation(UPDATE_TEMPLATE_SETTINGS);
   const [updateBranding] = useMutation(UPDATE_BRANDING);
-  const [createPage] = useMutation(CREATE_PAGE);
-  const [createSection] = useMutation(CREATE_SECTION);
-  const [setDefaultTemplate] = useMutation(SET_DEFAULT_TEMPLATE);
 
+  // Gespeicherten Fortschritt laden
   useEffect(() => {
     const saved = loadProgress();
     if (saved) {
@@ -633,6 +552,7 @@ export default function OnboardingPage(): React.ReactElement {
     });
   }, [step, completedSteps]);
 
+  // Templates laden wenn Step 4
   useEffect(() => {
     if (step !== 4 || templates.length > 0) return;
     setTemplatesLoading(true);
@@ -661,74 +581,17 @@ export default function OnboardingPage(): React.ReactElement {
   const nextStep = () => { if (step < 4) goToStep((step + 1) as 1 | 2 | 3 | 4); };
   const prevStep = () => { if (step > 1) goToStep((step - 1) as 1 | 2 | 3 | 4); };
 
+  // Schritt überspringen
   const skipStep = () => {
-    if (step < 4) goToStep((step + 1) as 1 | 2 | 3 | 4);
-    else { clearOnboardingProgress(); router.push('/dashboard'); }
+    if (step < 4) {
+      goToStep((step + 1) as 1 | 2 | 3 | 4);
+    } else {
+      // Schritt 4 überspringen = ohne Template zum Dashboard
+      clearOnboardingProgress();
+      router.push('/dashboard');
+    }
   };
 
-  // ─── Legal Page Creator ────────────────────────────────────────────────────
-  async function ensureLegalPages(templateId: string, existingPages: { id: string; slug: string; name: string }[]) {
-    const legalPages = [
-      { slug: 'impressum', name: 'Impressum', getText: buildImpressumText },
-      { slug: 'datenschutz', name: 'Datenschutz', getText: buildDatenschutzText },
-    ];
-
-    for (let i = 0; i < legalPages.length; i++) {
-      const lp = legalPages[i];
-      // Prüfe ob Seite bereits existiert (z.B. aus geklontem Template)
-      const existing = existingPages.find(p => p.slug === lp.slug);
-
-      let pageId: string;
-
-      if (existing) {
-        pageId = existing.id;
-      } else {
-        try {
-          const res = await createPage({
-            variables: {
-              input: {
-                templateId,
-                name: lp.name,
-                slug: lp.slug,
-                isActive: true,
-                isHomepage: false,
-                order: 100 + i, // ans Ende
-              },
-              tenantId: tenant!.id,
-            },
-          });
-          pageId = res.data?.createPage?.id;
-        } catch {
-          continue; // Slug conflict — überspringen
-        }
-      }
-
-      if (!pageId!) continue;
-
-      // Section mit echtem Content anlegen
-      try {
-        await createSection({
-          variables: {
-            input: {
-              pageId,
-              templateId,
-              name: lp.name,
-              type: 'text',
-              order: 0,
-              isActive: true,
-              // ✅ Echter Content mit Onboarding-Daten
-              content: { text: lp.getText(data) },
-            },
-            tenantId: tenant!.id,
-          },
-        });
-      } catch {
-        // Section konnte nicht erstellt werden — nicht kritisch
-      }
-    }
-  }
-
-  // ─── Build ────────────────────────────────────────────────────────────────
   const handleBuild = async (): Promise<void> => {
     if (!tenant?.id) return;
     setError(null);
@@ -736,7 +599,9 @@ export default function OnboardingPage(): React.ReactElement {
     setBuildStep(0);
 
     try {
-      // 1. Branding
+      setBuildStep(0);
+
+      // 1. Branding speichern
       try {
         await updateBranding({
           variables: { input: { primaryColor: data.primaryColor, logoUrl: data.logoUrl || null, platformName: data.companyName } },
@@ -746,19 +611,19 @@ export default function OnboardingPage(): React.ReactElement {
       setBuildStep(1);
 
       // 2. Template klonen
-      const globalTemplateId = data.globalTemplateId === '__blank' ? null : data.globalTemplateId;
+      const templateId = data.globalTemplateId === '__blank' ? null : data.globalTemplateId;
       let newTemplateId: string | null = null;
 
-      if (globalTemplateId) {
-        const res = await cloneTemplate({
-          variables: { globalTemplateId, tenantId: tenant.id },
+      if (templateId) {
+        const cloneResult = await cloneTemplate({
+          variables: { globalTemplateId: templateId, tenantId: tenant.id },
         });
-        newTemplateId = res.data?.cloneGlobalTemplate?.id ?? null;
+        newTemplateId = cloneResult.data?.cloneGlobalTemplate?.id ?? null;
       }
 
       setBuildStep(2);
 
-      // 3. Template-Settings (Farbe & Font)
+      // 3. Template-Settings mit Farbe & Font befüllen (FIX: Design wird übernommen!)
       if (newTemplateId) {
         try {
           await updateTemplateMut({
@@ -778,10 +643,9 @@ export default function OnboardingPage(): React.ReactElement {
 
       setBuildStep(3);
 
-      // 4. Sections befüllen + Legal Pages erstellen
+      // 4. Sections befüllen
       if (newTemplateId) {
-        // Vorhandene Seiten laden
-        const pagesResult = await client.query<{ wbPages: { id: string; name: string; slug: string; isHomepage: boolean }[] }>({
+        const pagesResult = await client.query<{ wbPages: { id: string; name: string; isHomepage: boolean }[] }>({
           query: GET_PAGES_WITH_SECTIONS,
           variables: { templateId: newTemplateId, tenantId: tenant.id },
           fetchPolicy: 'network-only',
@@ -790,7 +654,6 @@ export default function OnboardingPage(): React.ReactElement {
         const pages = pagesResult.data?.wbPages ?? [];
         const homepage = pages.find(p => p.isHomepage) ?? pages[0] ?? null;
 
-        // Hero/Contact/About Sections der Homepage befüllen
         if (homepage) {
           const pageResult = await client.query<{ wbPage: WbPage }>({
             query: GET_PAGE_SECTIONS,
@@ -813,12 +676,6 @@ export default function OnboardingPage(): React.ReactElement {
 
           await Promise.all(updates);
         }
-
-        // ✅ NEU: Impressum & Datenschutz mit echten Daten anlegen
-        await ensureLegalPages(newTemplateId, pages);
-
-        // Als Standard setzen (erste Website)
-        await setDefaultTemplate({ variables: { id: newTemplateId, tenantId: tenant.id } }).catch(() => {});
       }
 
       setBuildStep(4);
@@ -826,6 +683,7 @@ export default function OnboardingPage(): React.ReactElement {
       setBuildStep(5);
       await new Promise(r => setTimeout(r, 400));
 
+      // Fortschritt löschen — fertig!
       clearOnboardingProgress();
       router.push('/dashboard');
     } catch (err: unknown) {
@@ -840,6 +698,7 @@ export default function OnboardingPage(): React.ReactElement {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-4">
@@ -849,8 +708,18 @@ export default function OnboardingPage(): React.ReactElement {
               </div>
               <span className="font-semibold text-gray-900 text-sm">{data.companyName || 'Deine Website einrichten'}</span>
             </div>
-            <span className="text-xs text-gray-400">Schritt {step} / 4</span>
+            <div className="flex items-center gap-3">
+              {/* Fortschritt anzeigen wenn Steps übersprungen */}
+              {completedSteps.length > 0 && (
+                <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
+                  {completedSteps.length} von 4 erledigt
+                </span>
+              )}
+              <span className="text-xs text-gray-400">Schritt {step} / 4</span>
+            </div>
           </div>
+
+          {/* Progress mit klickbaren abgeschlossenen Steps */}
           <div className="flex gap-1.5">
             {STEP_LABELS.map((label, i) => {
               const stepNum = (i + 1) as 1 | 2 | 3 | 4;
@@ -875,6 +744,7 @@ export default function OnboardingPage(): React.ReactElement {
         </div>
       </div>
 
+      {/* Content */}
       <div className="max-w-2xl mx-auto px-6 py-10">
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
           <div className="mb-8">
@@ -885,7 +755,7 @@ export default function OnboardingPage(): React.ReactElement {
               {step === 4 && 'Wähle dein Template'}
             </h1>
             <p className="text-gray-500 text-sm mt-1">
-              {step === 1 && 'Diese Daten erscheinen direkt auf deiner Website und im Impressum.'}
+              {step === 1 && 'Diese Daten erscheinen direkt auf deiner Website.'}
               {step === 2 && 'Farbe und Schrift werden auf deiner Website übernommen.'}
               {step === 3 && 'Wir zeigen dir passende Templates für dein Ziel.'}
               {step === 4 && 'Das Template ist dein Startpunkt — alles lässt sich danach bearbeiten.'}
@@ -905,6 +775,7 @@ export default function OnboardingPage(): React.ReactElement {
           {step === 4 && <Step4Template data={data} onChange={onChange} templates={templates} loading={templatesLoading} />}
         </div>
 
+        {/* Navigation */}
         <div className="flex items-center justify-between mt-6">
           <div className="flex items-center gap-3">
             {step > 1 && (
@@ -912,10 +783,12 @@ export default function OnboardingPage(): React.ReactElement {
                 ← Zurück
               </button>
             )}
+            {/* Überspringen Button */}
             <button type="button" onClick={skipStep} className="px-4 py-3 rounded-xl text-gray-400 font-medium text-sm hover:text-gray-600 transition">
               {step === 4 ? 'Ohne Template starten →' : 'Überspringen →'}
             </button>
           </div>
+
           {step < 4 ? (
             <button type="button" onClick={nextStep} disabled={!canProceed()}
               className="px-8 py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"

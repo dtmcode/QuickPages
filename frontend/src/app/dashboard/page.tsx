@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { UsageDashboard } from '@/components/usage-dashboard';
 import Link from 'next/link';
+import { SetupProgress } from '@/components/setup-progress';
 
 const ME_QUERY = gql`
   query Me {
@@ -165,6 +166,7 @@ export default function DashboardPage() {
         </div>
         <PackageBanner packageName={packageName} currentPackage={currentPackage} />
       </div>
+      <SetupProgress />
 
       {/* ── Stats ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
