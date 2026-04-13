@@ -162,6 +162,13 @@
       "when": 1775745106005,
       "tag": "0022_violet_wendell_vaughn",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1776068081475,
+      "tag": "0023_violet_dark_phoenix",
+      "breakpoints": true
     }
   ]
 }

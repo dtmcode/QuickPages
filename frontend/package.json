@@ -25,6 +25,7 @@
     "@tiptap/extension-youtube": "^3.6.5",
     "@tiptap/react": "^3.6.5",
     "@tiptap/starter-kit": "^3.6.5",
+    "apollo-upload-client": "^18.0.1",
     "graphql": "^16.11.0",
     "js-cookie": "^3.0.5",
     "next": "15.5.4",

@@ -27,7 +27,6 @@ export async function generateMetadata(): Promise<Metadata> {
         template: `%s | ${branding?.platformName || tenant.name}`,
       },
       description: `${tenant.name} — Entdecke unsere Produkte und Services`,
-      // ✅ FIX: kein manifest → kein 404-Fehler für site.webmanifest
       icons: branding?.faviconUrl ? { icon: branding.faviconUrl } : undefined,
       openGraph: {
         title: branding?.platformName || tenant.name,
@@ -93,31 +92,26 @@ export default async function RootLayout({
   return (
     <html lang="de">
       <body className={inter.className}>
-        {/*
-          ✅ FIX: Alle Provider INNEN — AnalyticsTracker war davor außerhalb
-          der I18nProvider-Struktur und damit auch außerhalb des Flex-Containers
-        */}
         <I18nProvider tenant={tenantSlug}>
-          <CustomerAuthProvider>
-            <div className="min-h-screen flex flex-col">
-              <Header
-                navigation={headerNav}
-                tenantName={branding?.platformName || tenant.name}
-                logoUrl={branding?.logoUrl}
-                logoInitial={branding?.logoInitial}
-                primaryColor={branding?.primaryColor}
-              />
-              <main className="flex-grow">{children}</main>
-              <Footer
-                navigation={footerNav}
-                tenantName={branding?.platformName || tenant.name}
-                hidePoweredBy={branding?.hidePoweredBy}
-              />
+           <CustomerAuthProvider>
+        <div className="min-h-screen flex flex-col">
+          <Header
+            navigation={headerNav}
+            tenantName={branding?.platformName || tenant.name}
+            logoUrl={branding?.logoUrl}
+            logoInitial={branding?.logoInitial}
+            primaryColor={branding?.primaryColor}
+          />
+          <main className="flex-grow">{children}</main>
+          <Footer
+            navigation={footerNav}
+            tenantName={branding?.platformName || tenant.name}
+            hidePoweredBy={branding?.hidePoweredBy}
+          />
             </div>
-            {/* ✅ Tracker innerhalb des Providers — hat Zugriff auf Context */}
-            <AnalyticsTracker tenantSlug={tenantSlug} />
-          </CustomerAuthProvider>
-        </I18nProvider>
+            </CustomerAuthProvider>
+          </I18nProvider>
+        <AnalyticsTracker tenantSlug={tenantSlug} />
       </body>
     </html>
   );

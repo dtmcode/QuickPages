@@ -145,7 +145,9 @@ export const tenants = pgTable(
     lastDnsCheck: timestamp('last_dns_check'),
     defaultLocale: varchar('default_locale', { length: 10 }).default('de'),
     enabledLocales: text('enabled_locales').array().default(['de']),
-    package: varchar('package', { length: 50 }).default('website_micro').notNull(),
+    package: varchar('package', { length: 50 })
+      .default('website_micro')
+      .notNull(),
     shopTemplate: shopTemplateEnum('shop_template').default('default'),
     settings: jsonb('settings').default({
       modules: {
@@ -190,7 +192,7 @@ export const subscriptions = pgTable(
     tenantId: uuid('tenant_id')
       .references(() => tenants.id, { onDelete: 'cascade' })
       .notNull(),
-   package: varchar('package', { length: 50 }).notNull(),
+    package: varchar('package', { length: 50 }).notNull(),
     status: subscriptionStatusEnum('status').default('active').notNull(),
     currentPeriodStart: timestamp('current_period_start').notNull(),
     currentPeriodEnd: timestamp('current_period_end').notNull(),
@@ -1067,33 +1069,48 @@ export const bookingAppointments = pgTable(
 
 // ==================== ANALYTICS ====================
 
-export const analyticsPageviews = pgTable(
-  'analytics_pageviews',
+export const pageViews = pgTable(
+  'page_views',
   {
     id: uuid('id').defaultRandom().primaryKey(),
     tenantId: uuid('tenant_id')
       .notNull()
       .references(() => tenants.id, { onDelete: 'cascade' }),
-    pageSlug: varchar('page_slug', { length: 500 }),
-    pageTitle: varchar('page_title', { length: 500 }),
+
+    // Was wurde besucht
+    path: varchar('path', { length: 500 }).notNull().default('/'),
     referrer: text('referrer'),
+
+    // Client-Infos (privacy-safe)
     userAgent: text('user_agent'),
-    ipHash: varchar('ip_hash', { length: 64 }),
+    ipHash: varchar('ip_hash', { length: 16 }), // 8-byte Hex, täglicher Salt
     country: varchar('country', { length: 2 }),
-    device: varchar('device', { length: 20 }), // 'desktop'|'mobile'|'tablet'
+
+    // Gerät / Browser
+    deviceType: varchar('device_type', { length: 20 }), // desktop|mobile|tablet
     browser: varchar('browser', { length: 50 }),
-    sessionId: varchar('session_id', { length: 64 }),
-    isNewSession: boolean('is_new_session').default(true),
+    os: varchar('os', { length: 50 }),
+
+    // Session
+    sessionId: varchar('session_id', { length: 32 }).notNull(),
+    isUnique: boolean('is_unique').default(true).notNull(), // erster View in Session
+    durationSeconds: integer('duration_seconds').default(0), // via sendBeacon aktualisiert
+
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
   (table) => ({
-    tenantIdx: index('analytics_pageviews_tenant_idx').on(table.tenantId),
-    createdAtIdx: index('analytics_pageviews_created_at_idx').on(
+    tenantIdx: index('page_views_tenant_idx').on(table.tenantId),
+    createdAtIdx: index('page_views_created_at_idx').on(table.createdAt),
+    sessionIdx: index('page_views_session_idx').on(table.sessionId),
+    tenantDateIdx: index('page_views_tenant_date_idx').on(
+      table.tenantId,
       table.createdAt,
     ),
-    sessionIdx: index('analytics_pageviews_session_idx').on(table.sessionId),
   }),
 );
+
+// ========== ANALYTICS DAILY (erweiterte Version) =======================
+// Aggregierte Tagesdaten — befüllt vom Cron-Job um 00:05
 
 export const analyticsDaily = pgTable(
   'analytics_daily',
@@ -1102,12 +1119,24 @@ export const analyticsDaily = pgTable(
     tenantId: uuid('tenant_id')
       .notNull()
       .references(() => tenants.id, { onDelete: 'cascade' }),
-    date: varchar('date', { length: 10 }).notNull(), // 'YYYY-MM-DD'
-    pageviews: integer('pageviews').default(0).notNull(),
+
+    date: varchar('date', { length: 10 }).notNull(),
+
+    pageViews: integer('page_views').default(0).notNull(),
     uniqueVisitors: integer('unique_visitors').default(0).notNull(),
+    sessions: integer('sessions').default(0).notNull(),
     newSessions: integer('new_sessions').default(0).notNull(),
-    bounceRate: integer('bounce_rate').default(0), // in percent * 100
-    avgSessionDuration: integer('avg_session_duration').default(0), // seconds
+
+    avgDuration: integer('avg_duration').default(0).notNull(),
+    bounceRate: integer('bounce_rate').default(0),
+
+    ordersCount: integer('orders_count').default(0).notNull(),
+    revenue: integer('revenue').default(0).notNull(),
+
+    topPages: jsonb('top_pages').default([]),
+    topReferrers: jsonb('top_referrers').default([]),
+    devices: jsonb('devices').default({}),
+
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
@@ -1116,6 +1145,7 @@ export const analyticsDaily = pgTable(
       table.tenantId,
       table.date,
     ),
+    tenantIdx: index('analytics_daily_tenant_idx').on(table.tenantId),
   }),
 );
 
@@ -1658,15 +1688,12 @@ export const blogCommentsRelations = relations(
   }),
 );
 
-export const analyticsPageviewsRelations = relations(
-  analyticsPageviews,
-  ({ one }) => ({
-    tenant: one(tenants, {
-      fields: [analyticsPageviews.tenantId],
-      references: [tenants.id],
-    }),
+export const pageViewsRelations = relations(pageViews, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [pageViews.tenantId],
+    references: [tenants.id],
   }),
-);
+}));
 
 export const analyticsDailyRelations = relations(analyticsDaily, ({ one }) => ({
   tenant: one(tenants, {
