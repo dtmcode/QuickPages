@@ -1984,16 +1984,23 @@ case 'text':
     </div>
   );
 case 'button':
-      return (
-        <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
-          <span style={{
-            display: 'inline-block', padding: '0.6rem 1.5rem', borderRadius: '0.5rem', fontWeight: 600, fontSize: '0.875rem',
-            background: block.style === 'primary' ? (block.bgColor || btnBg) : block.style === 'outline' ? 'transparent' : 'rgba(0,0,0,0.06)',
-            color: block.style === 'primary' ? (block.textColor || btnText) : primary,
-            border: block.style === 'outline' ? `2px solid ${primary}` : 'none',
-          }}>{block.text || 'Button'}</span>
-        </div>
-      );
+  return (
+    <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
+      <span style={{
+        display: 'inline-block', padding: '0.6rem 1.5rem', borderRadius: '0.5rem', fontWeight: 600, fontSize: '0.875rem',
+        background: block.bgColor
+          ? block.bgColor
+          : block.style === 'primary' ? btnBg
+          : block.style === 'outline' ? 'transparent'
+          : 'rgba(0,0,0,0.06)',
+        color: block.textColor
+          ? block.textColor
+          : block.style === 'primary' ? btnText
+          : primary,
+        border: block.style === 'outline' ? `2px solid ${block.bgColor || primary}` : 'none',
+      }}>{block.text || 'Button'}</span>
+    </div>
+  );
     case 'image':
       return (
         <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
