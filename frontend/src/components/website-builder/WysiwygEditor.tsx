@@ -3324,7 +3324,40 @@ function CtrlBtn({ children, onClick, disabled = false, danger = false, title }:
     </button>
   );
 }
-
+function InlineAddSection({ onAdd, index }: { onAdd: (type: string, afterIndex: number) => void; index: number }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ position: 'relative', height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}
+      onMouseEnter={e => { const btn = e.currentTarget.querySelector('button'); if (btn) (btn as HTMLElement).style.opacity = '1'; }}
+      onMouseLeave={e => { const btn = e.currentTarget.querySelector('button'); if (btn && !open) (btn as HTMLElement).style.opacity = '0'; }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, height: 1, background: '#238636', opacity: 0.3 }} />
+      <button
+        onClick={e => { e.stopPropagation(); setOpen(v => !v); }}
+        style={{ opacity: 0, transition: 'opacity 0.15s', background: '#238636', border: 'none', borderRadius: '50%', width: 24, height: 24, color: '#fff', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, zIndex: 11, position: 'relative', boxShadow: '0 2px 8px rgba(35,134,54,0.5)' }}>
+        +
+      </button>
+      {open && (
+        <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 30, left: '50%', transform: 'translateX(-50%)', background: '#161b22', border: '1px solid #238636', borderRadius: 10, padding: 10, zIndex: 500, width: 320, boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: '0.72rem', color: '#2ea043', fontWeight: 700 }}>⊞ Section einfügen</span>
+            <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5, maxHeight: 280, overflowY: 'auto' }}>
+            {BLOCK_CATEGORIES.flatMap(c => c.blocks).map(block => (
+              <button key={block.type} onClick={() => { onAdd(block.type, index); setOpen(false); }}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '7px 4px', borderRadius: 6, cursor: 'pointer', background: '#0d1117', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.65rem', fontWeight: 600 }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#238636'; e.currentTarget.style.background = '#0f2318'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#21262d'; e.currentTarget.style.background = '#0d1117'; }}>
+                <span style={{ fontSize: '0.9rem' }}>{block.icon}</span>
+                <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{block.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 // ==================== MAIN EDITOR ====================
 
 interface WysiwygEditorProps { pageId: string; templateId?: string; }
@@ -3393,6 +3426,11 @@ function NavBarPreview({ nav, isSelected, onClick, primary }: {
       {isSelected && (
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, background: '#58a6ff', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '2px 8px', zIndex: 10, textTransform: 'uppercase' }}>
           🧭 {nav.name}
+        </div>
+      )}
+      {!isSelected && (
+        <div style={{ position: 'absolute', top: '50%', right: 12, transform: 'translateY(-50%)', background: 'rgba(88,166,255,0.15)', border: '1px solid rgba(88,166,255,0.3)', borderRadius: 5, padding: '2px 8px', fontSize: '0.6rem', color: '#58a6ff', fontWeight: 700, pointerEvents: 'none' }}>
+          ✎ Bearbeiten
         </div>
       )}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -3649,8 +3687,19 @@ export function WysiwygEditor({ pageId: initialPageId, templateId }: WysiwygEdit
 const [showShortcuts, setShowShortcuts] = useState(false);
   const [saveToast, setSaveToast] = useState<string | null>(null);
   const [mediaPicker, setMediaPicker] = useState<{ onSelect: (url: string) => void } | null>(null);
-const [leftCollapsed, setLeftCollapsed] = useState(false);
-const [rightCollapsed, setRightCollapsed] = useState(false);
+const [isMobileView, setIsMobileView] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+const [leftCollapsed, setLeftCollapsed] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+const [rightCollapsed, setRightCollapsed] = useState(true);
+
+useEffect(() => {
+  const check = () => {
+    const mobile = window.innerWidth < 768;
+    setIsMobileView(mobile);
+    if (mobile) { setLeftCollapsed(true); setRightCollapsed(true); }
+  };
+  window.addEventListener('resize', check);
+  return () => window.removeEventListener('resize', check);
+}, []);
   const [selectedNavId, setSelectedNavId] = useState<string | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [navigations, setNavigations] = useState<NavData[]>([]);
@@ -3919,7 +3968,24 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
   setRightTab('content');
   setIsDirty(true);
   };
-  
+  const handleInsertSectionAfter = async (type: string, afterIndex: number) => {
+  if (!tenant?.id) return;
+  const label = BLOCK_CATEGORIES.flatMap(c => c.blocks).find(b => b.type === type)?.label || type;
+  try {
+    const res = await createSectionMut({
+      variables: {
+        input: { pageId: currentPageId, name: label, type, order: afterIndex + 1, isActive: true, content: DEFAULT_CONTENT[type] ?? {} },
+        tenantId: tenant.id,
+      },
+    });
+    if (res.data?.createSection) {
+      pushUndo(sections);
+      setSections(prev => [...prev, res.data.createSection].sort((a, b) => a.order - b.order));
+      setSelectedId(res.data.createSection.id);
+      setRightTab('content');
+    }
+  } catch (err) { console.error(err); }
+};
   const handleSave = async () => {
     if (!tenant?.id || isSaving) return;
     setIsSaving(true);
@@ -4054,10 +4120,26 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
       {/* ── MAIN LAYOUT ── */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
-        {/* ── LEFT SIDEBAR ── */}
-        <div style={{ width: leftCollapsed ? 0 : 256, overflow: 'hidden', transition: 'width 0.2s ease', background: C.panel, borderRight: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+      {/* ── LEFT SIDEBAR ── */}
+        {isMobileView && !leftCollapsed && (
+          <div onClick={() => setLeftCollapsed(true)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 98, top: 52 }} />
+        )}
+        <div style={{
+          ...(isMobileView ? {
+            position: 'fixed', left: 0, top: 52, bottom: 0, zIndex: 99,
+            transform: leftCollapsed ? 'translateX(-100%)' : 'translateX(0)',
+            transition: 'transform 0.25s ease',
+            width: 280,
+          } : {
+            width: leftCollapsed ? 0 : 256,
+            overflow: 'hidden',
+            transition: 'width 0.2s ease',
+            flexShrink: 0,
+          }),
+          background: C.panel, borderRight: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column',
+        }}>
           <div style={{ display: 'flex', borderBottom: `1px solid ${C.border}` }}>
-            {[{ id: 'blocks', label: '⊞ Blöcke' }, { id: 'layers', label: '☰ Ebenen' }].map(tab => (
+            {[{ id: 'blocks', label: '⊞ Sections' }, { id: 'layers', label: '☰ Ebenen' }].map(tab => (
               <button key={tab.id} onClick={() => setLeftPanel(tab.id as any)}
                 style={{ flex: 1, padding: '10px 0', background: leftPanel === tab.id ? '#0d1117' : 'transparent', border: 'none', borderBottom: `2px solid ${leftPanel === tab.id ? C.accent : 'transparent'}`, cursor: 'pointer', color: leftPanel === tab.id ? C.accent : C.muted, fontSize: '0.75rem', fontWeight: 600 }}>
                 {tab.label}
@@ -4142,7 +4224,7 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
                             <div style={{ fontSize: '0.78rem', fontWeight: 600, color: C.text }}>{block.label}</div>
                             <div style={{ fontSize: '0.67rem', color: C.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{block.description}</div>
                           </div>
-                          <span style={{ color: '#30363d', fontSize: '0.9rem', flexShrink: 0 }}>+</span>
+                         <span style={{ color: '#238636', fontSize: '0.9rem', flexShrink: 0, fontWeight: 700 }}>+</span>
                         </button>
                       ))}
                     </div>
@@ -4229,28 +4311,50 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
         <span style={{ fontSize: '0.72rem', color: '#9ca3af', fontStyle: 'italic' }}>+ Navigation erstellen (klicken)</span>
       </div>
     ) : navigations.filter(n => n.location === 'header' && n.isActive).map(nav => (
-      <NavBarPreview key={nav.id} nav={nav} isSelected={selectedNavId === nav.id}
+<NavBarPreview key={nav.id} nav={nav} isSelected={selectedNavId === nav.id}
         onClick={() => { setSelectedNavId(nav.id); setSelectedId(null); }}
         primary={templateSettings?.colors?.primary || '#3b82f6'} />
-    ))}
-                {sections.length === 0 ? (
+         ))}
+              {sections.length === 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 520, color: '#9ca3af', padding: '3rem', textAlign: 'center' }}>
                   <div style={{ fontSize: '3.5rem', marginBottom: 16, opacity: 0.5 }}>✦</div>
                   <h3 style={{ fontSize: '1.1rem', fontWeight: 600, margin: '0 0 8px', color: '#6b7280' }}>Seite ist leer</h3>
                   <p style={{ fontSize: '0.875rem', maxWidth: 280, lineHeight: 1.6, margin: 0 }}>Wähle einen Block aus der Sidebar.</p>
                 </div>
               ) : (
-                sections.map((section, idx) => (
-                  <div key={section.id} draggable onDragStart={() => handleDragStart(idx)} onDragOver={e => handleDragOver(e, idx)} onDrop={e => handleDrop(e, idx)} onDragEnd={() => setDragOverIdx(null)}
+                 sections.map((section, idx) => (
+                  <React.Fragment key={section.id}>
+                  <div draggable onDragStart={() => handleDragStart(idx)} onDragOver={e => handleDragOver(e, idx)} onDrop={e => handleDrop(e, idx)} onDragEnd={() => setDragOverIdx(null)}
                     style={{ position: 'relative', borderTop: dragOverIdx === idx ? '3px solid #58a6ff' : '3px solid transparent' }}>
                   <CanvasSectionPreview
   section={section}
   isSelected={selectedId === section.id}
-  onClick={() => {
+onClick={() => {
     setSelectedId(section.id);
     setSelectedNavId(null);
-    setSelectedBlockId(null);
     setRightTab('content');
+    const blocks = section.content?.blocks || [];
+    const PRIORITY_TYPES: Record<string, string[]> = {
+      newsletter: ['newsletter-form'],
+      contact: ['contact-form'],
+      booking: ['button'],
+      faq: ['faq-list'],
+      pricing: ['pricing-grid'],
+      testimonials: ['testimonial-grid'],
+      team: ['team-grid'],
+      stats: ['stat-grid'],
+      features: ['feature-grid'],
+      services: ['feature-grid'],
+      gallery: ['image-grid'],
+      social: ['social-links'],
+      map: ['map-embed'],
+      countdown: ['countdown-timer'],
+      whatsapp: ['whatsapp-btn'],
+    };
+    const priorities = PRIORITY_TYPES[section.type] || [];
+    const target = blocks.find((b: any) => priorities.includes(b.type)) || blocks[0];
+   setSelectedBlockId(target?.id || null);
+    if (isMobileView) { setRightCollapsed(false); setLeftCollapsed(true); }
   }}
   settings={templateSettings}
   deviceMode={deviceMode}
@@ -4276,7 +4380,9 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
                         <CtrlBtn onClick={() => handleDelete(section.id)} danger title="Löschen">✕</CtrlBtn>
                       </div>
                     )}
-                  </div>
+                </div>
+                  <InlineAddSection index={idx} onAdd={handleInsertSectionAfter} />
+                  </React.Fragment>
                 ))
                )}
      {navigations.filter(n => n.location === 'footer').length === 0 ? (
@@ -4297,10 +4403,27 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
           </>
           )}
         </div>
-
-        
-        {/* ── RIGHT SIDEBAR ── */}
-        <div style={{ width: rightCollapsed ? 0 : 300, overflow: 'hidden', transition: 'width 0.2s ease', background: C.panel, borderLeft: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+{/* ── RIGHT SIDEBAR ── */}
+        {isMobileView && !rightCollapsed && (
+          <div onClick={() => setRightCollapsed(true)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 98, top: 52 }} />
+        )}
+        <div style={{
+          ...(isMobileView ? {
+            position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 99,
+            height: rightCollapsed ? 0 : '65vh',
+            transform: rightCollapsed ? 'translateY(100%)' : 'translateY(0)',
+            transition: 'transform 0.25s ease',
+            borderTop: `2px solid ${C.accent}`,
+            borderRadius: '16px 16px 0 0',
+            overflow: 'hidden',
+          } : {
+            width: rightCollapsed ? 0 : 300,
+            overflow: 'hidden',
+            transition: 'width 0.2s ease',
+            flexShrink: 0,
+          }),
+          background: C.panel, borderLeft: isMobileView ? 'none' : `1px solid ${C.border}`, display: 'flex', flexDirection: 'column',
+        }}>
           {selectedSection ? (
             <>
               {/* Header */}
@@ -4390,7 +4513,26 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
             </div>
           )}
         </div>
+        {/* ── MOBILE BOTTOM TOOLBAR ── */}
+      {isMobileView && (
+        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 97, background: C.panel, borderTop: `1px solid ${C.border}`, display: 'flex', height: 56, alignItems: 'center', padding: '0 12px', gap: 8 }}>
+          <button onClick={() => { setLeftCollapsed(v => !v); setRightCollapsed(true); }}
+            style={{ flex: 1, background: !leftCollapsed ? '#238636' : '#0d1117', border: `1px solid ${!leftCollapsed ? '#2ea043' : C.border}`, borderRadius: 8, color: !leftCollapsed ? '#fff' : C.muted, padding: '10px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
+            ⊞ Sections
+          </button>
+          <button onClick={handleSave} disabled={isSaving}
+            style={{ background: isDirty ? '#238636' : '#161b22', border: `1px solid ${isDirty ? '#2ea043' : C.border}`, borderRadius: 8, color: isDirty ? '#fff' : C.muted, padding: '10px 16px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
+            {isSaving ? '⟳' : '💾'}
+          </button>
+          <button onClick={() => { setRightCollapsed(v => !v); setLeftCollapsed(true); }}
+            style={{ flex: 1, background: !rightCollapsed ? '#1f6feb' : '#0d1117', border: `1px solid ${!rightCollapsed ? '#1f6feb' : C.border}`, borderRadius: 8, color: !rightCollapsed ? '#fff' : C.muted, padding: '10px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', opacity: selectedSection || selectedNavId ? 1 : 0.4 }}
+            disabled={!selectedSection && !selectedNavId}>
+            ✎ Bearbeiten
+          </button>
+        </div>
+      )}
       </div>
+
     {/* Toast */}
       {saveToast && (
         <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', background: '#238636', color: '#fff', borderRadius: 8, padding: '8px 18px', fontSize: '0.8rem', fontWeight: 600, zIndex: 400, pointerEvents: 'none' }}>
