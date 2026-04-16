@@ -1,5 +1,5 @@
 export type PackageType = 'website_micro' | 'website_standard' | 'website_pro' | 'blog_personal' | 'blog_publisher' | 'blog_magazine' | 'business_starter' | 'business_professional' | 'business_agency' | 'shop_mini' | 'shop_wachstum' | 'shop_premium' | 'members_community' | 'members_kurse' | 'members_academy';
-export type AddonType = 'shop_module' | 'shop_extra' | 'booking_module' | 'blog_module' | 'newsletter_extra' | 'members_module' | 'ai_content' | 'extra_pages' | 'extra_users' | 'i18n' | 'custom_domain';
+export type AddonType = 'shop_module' | 'shop_extra' | 'booking_module' | 'blog_module' | 'newsletter_extra' | 'members_module' | 'ai_content' | 'extra_pages' | 'extra_users' | 'i18n' | 'custom_domain' | 'restaurant_module' | 'local_store_module' | 'funnels_module';
 export interface PackageFeatures {
     websiteBuilder: boolean;
     maxPages: number;
@@ -30,6 +30,11 @@ export interface PackageFeatures {
     maxUsers: number;
     storageMb: number;
     removeBranding: boolean;
+    restaurant: boolean;
+    localStore: boolean;
+    funnels: boolean;
+    maxFunnels: number;
+    coupons: boolean;
 }
 export interface PackageDefinition {
     type: PackageType;

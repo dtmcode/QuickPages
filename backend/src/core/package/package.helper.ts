@@ -38,7 +38,10 @@ export type AddonType =
   | 'extra_pages' // +10 Seiten
   | 'extra_users' // +1 Benutzer
   | 'i18n' // Mehrsprachigkeit
-  | 'custom_domain'; // Custom Domain
+  | 'custom_domain' // Custom Domain
+  | 'restaurant_module' // NEU
+  | 'local_store_module' // NEU
+  | 'funnels_module'; // NEU
 
 // ==================== FEATURES ====================
 
@@ -87,6 +90,12 @@ export interface PackageFeatures {
   maxUsers: number;
   storageMb: number;
   removeBranding: boolean;
+
+  restaurant: boolean;
+  localStore: boolean;
+  funnels: boolean;
+  maxFunnels: number;
+  coupons: boolean;
 }
 
 // ==================== PACKAGE DEFINITION ====================
@@ -149,6 +158,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 1,
       storageMb: 500,
       removeBranding: false,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: false,
     },
     highlightFeatures: [
       '3 Seiten (inkl. Impressum & Datenschutz)',
@@ -198,6 +212,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 2,
       storageMb: 2000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: false,
     },
     highlightFeatures: [
       '10 Seiten (inkl. Pflichtseiten)',
@@ -248,6 +267,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 3,
       storageMb: 10000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: false,
     },
     highlightFeatures: [
       '30 Seiten',
@@ -300,6 +324,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 1,
       storageMb: 3000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: false,
     },
     highlightFeatures: [
       '100 Blog-Beiträge',
@@ -349,6 +378,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 3,
       storageMb: 10000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: false,
     },
     highlightFeatures: [
       '500 Blog-Beiträge',
@@ -398,6 +432,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 10,
       storageMb: 50000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: false,
     },
     highlightFeatures: [
       '2.000 Blog-Beiträge',
@@ -452,6 +491,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 3,
       storageMb: 5000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: false,
     },
     highlightFeatures: [
       '15 Seiten',
@@ -501,6 +545,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 5,
       storageMb: 20000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: true, // ← professional hat Funnels inklusive
+      maxFunnels: 5,
+      coupons: false,
     },
     highlightFeatures: [
       '50 Seiten',
@@ -550,6 +599,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 15,
       storageMb: 100000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: true, // ← agency auch
+      maxFunnels: 20,
+      coupons: false,
     },
     highlightFeatures: [
       '150 Seiten',
@@ -603,6 +657,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 2,
       storageMb: 10000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: true,
     },
     highlightFeatures: [
       '100 Produkte',
@@ -652,6 +711,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 5,
       storageMb: 30000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: true,
     },
     highlightFeatures: [
       '500 Produkte',
@@ -701,6 +765,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 10,
       storageMb: 100000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: true,
     },
     highlightFeatures: [
       '2.000 Produkte',
@@ -755,6 +824,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 2,
       storageMb: 5000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: false,
     },
     highlightFeatures: [
       '100 Mitglieder',
@@ -805,6 +879,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 3,
       storageMb: 30000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: false,
     },
     highlightFeatures: [
       '500 Mitglieder',
@@ -855,6 +934,11 @@ export const PACKAGES: Record<PackageType, PackageDefinition> = {
       maxUsers: 10,
       storageMb: 100000,
       removeBranding: true,
+      restaurant: false,
+      localStore: false,
+      funnels: false,
+      maxFunnels: 0,
+      coupons: false,
     },
     highlightFeatures: [
       '2.000 Mitglieder',
@@ -989,6 +1073,34 @@ export const ADDONS: Record<AddonType, AddonDefinition> = {
     icon: '🌐',
     adds: { customDomain: true },
     availableForCategories: ['all'],
+  },
+  restaurant_module: {
+    type: 'restaurant_module',
+    name: 'Restaurant-Modul',
+    description:
+      'Digitale Speisekarte, Tischbestellungen, Lieferung und Abholung.',
+    priceMonthly: 1900, // €19
+    icon: '🍽️',
+    adds: { restaurant: true },
+    availableForCategories: ['business', 'website'],
+  },
+  local_store_module: {
+    type: 'local_store_module',
+    name: 'Lokaler Handel',
+    description: 'Online-Bestellungen mit Abholslots für lokale Geschäfte.',
+    priceMonthly: 1900, // €19
+    icon: '🏪',
+    adds: { localStore: true },
+    availableForCategories: ['business', 'website', 'shop'],
+  },
+  funnels_module: {
+    type: 'funnels_module',
+    name: 'Sales Funnels',
+    description: 'Lead-Funnels, Opt-in Seiten und Conversion-Tracking.',
+    priceMonthly: 1500, // €15
+    icon: '🎯',
+    adds: { funnels: true, maxFunnels: 10 },
+    availableForCategories: ['business', 'shop', 'members'],
   },
 };
 

@@ -591,7 +591,7 @@ export declare class PublicService {
         description: string | null;
         location: string;
         items: {
-            [x: string]: any;
+            id: string;
         }[];
     } | null>;
     subscribeToNewsletter(tenantSlug: string, data: {
@@ -670,4 +670,16 @@ export declare class PublicService {
     }[]>;
     getPublicForms(tenantSlug: string): Promise<any>;
     getPublicBookingServices(tenantSlug: string): Promise<any>;
+    getRestaurantSettings(tenant: string): Promise<any>;
+    getRestaurantMenu(tenant: string): Promise<any>;
+    createRestaurantOrder(tenant: string, body: Record<string, unknown>): Promise<{
+        message: string;
+    }>;
+    getLocalStoreSettings(tenant: string): Promise<any>;
+    getLocalStoreProducts(tenant: string): Promise<any>;
+    getLocalStoreSlots(tenant: string): Promise<any>;
+    getPublicCourses(tenant: string): Promise<any>;
+    getPublicCourse(tenant: string, slug: string): Promise<any>;
+    getMembershipPlans(tenant: string): Promise<any>;
+    getFunnel(tenant: string, slug: string): Promise<any>;
 }

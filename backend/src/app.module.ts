@@ -35,6 +35,8 @@ import { CustomerAuthModule } from './modules/customer-auth/customer-auth.module
 import { RestaurantModule } from './modules/restaurant/restaurant.module';
 import { LocalStoreModule } from './modules/local-store/local-store.module';
 import { FunnelsModule } from './modules/funnels/funnels.module';
+import { CouponsModule } from './modules/coupons/coupons.module';
+import { CoursesModule } from './modules/courses/courses.module';
 
 @Module({
   imports: [
@@ -89,9 +91,11 @@ import { FunnelsModule } from './modules/funnels/funnels.module';
     WhiteLabelModule,
     SupportModule,
     CustomerAuthModule,
-    RestaurantModule,
+    CoursesModule,
     FunnelsModule,
+    RestaurantModule,
     LocalStoreModule,
+    CouponsModule,
   ],
   providers: [
     // ✅ Rate Limiting global als Guard

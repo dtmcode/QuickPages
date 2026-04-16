@@ -51,6 +51,15 @@ let PackageGuard = class PackageGuard {
         const settings = tenant.settings;
         if (settings?.isSuperAdmin === true || settings?.platformAdmin === true)
             return true;
+        if (requiredFeature === 'coupons') {
+            const f = tenant.package;
+            const implicitCoupons = (0, package_helper_1.hasFeature)(f, 'shop') ||
+                (0, package_helper_1.hasFeature)(f, 'restaurant') ||
+                (0, package_helper_1.hasFeature)(f, 'localStore') ||
+                (0, package_helper_1.hasFeature)(f, 'courses');
+            if (implicitCoupons)
+                return true;
+        }
         const hasAccess = (0, package_helper_1.hasFeature)(tenant.package, requiredFeature);
         if (!hasAccess) {
             throw new Error(`Diese Funktion ist in deinem ${tenant.package.toUpperCase()} Package nicht verfügbar.`);

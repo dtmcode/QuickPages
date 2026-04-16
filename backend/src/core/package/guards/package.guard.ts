@@ -50,6 +50,17 @@ export class PackageGuard implements CanActivate {
       return true;
     // ===== END BYPASS =====
 
+    // Coupons implizit erlauben wenn transaktionale Module aktiv sind
+    if (requiredFeature === 'coupons') {
+      const f = tenant.package as PackageType;
+      const implicitCoupons =
+        hasFeature(f, 'shop') ||
+        hasFeature(f, 'restaurant') ||
+        hasFeature(f, 'localStore') ||
+        hasFeature(f, 'courses');
+      if (implicitCoupons) return true;
+    }
+
     const hasAccess = hasFeature(
       tenant.package as PackageType,
       requiredFeature as any,

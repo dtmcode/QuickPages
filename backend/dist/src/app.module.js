@@ -44,6 +44,8 @@ const customer_auth_module_1 = require("./modules/customer-auth/customer-auth.mo
 const restaurant_module_1 = require("./modules/restaurant/restaurant.module");
 const local_store_module_1 = require("./modules/local-store/local-store.module");
 const funnels_module_1 = require("./modules/funnels/funnels.module");
+const coupons_module_1 = require("./modules/coupons/coupons.module");
+const courses_module_1 = require("./modules/courses/courses.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -95,9 +97,11 @@ exports.AppModule = AppModule = __decorate([
             white_label_module_1.WhiteLabelModule,
             support_module_1.SupportModule,
             customer_auth_module_1.CustomerAuthModule,
-            restaurant_module_1.RestaurantModule,
+            courses_module_1.CoursesModule,
             funnels_module_1.FunnelsModule,
+            restaurant_module_1.RestaurantModule,
             local_store_module_1.LocalStoreModule,
+            coupons_module_1.CouponsModule,
         ],
         providers: [
             {

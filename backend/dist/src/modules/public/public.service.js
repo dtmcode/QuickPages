@@ -466,8 +466,111 @@ let PublicService = class PublicService {
         ORDER BY name ASC`);
         return result.rows || [];
     }
+    async getRestaurantSettings(tenant) {
+        return this.publicService.getRestaurantSettings(tenant);
+    }
+    async getRestaurantMenu(tenant) {
+        return this.publicService.getRestaurantMenu(tenant);
+    }
+    async createRestaurantOrder(tenant, body) {
+        return { message: 'Order received' };
+    }
+    async getLocalStoreSettings(tenant) {
+        return this.publicService.getLocalStoreSettings(tenant);
+    }
+    async getLocalStoreProducts(tenant) {
+        return this.publicService.getLocalStoreProducts(tenant);
+    }
+    async getLocalStoreSlots(tenant) {
+        return this.publicService.getLocalStoreSlots(tenant);
+    }
+    async getPublicCourses(tenant) {
+        return this.publicService.getPublicCourses(tenant);
+    }
+    async getPublicCourse(tenant, slug) {
+        return this.publicService.getPublicCourseBySlug(tenant, slug);
+    }
+    async getMembershipPlans(tenant) {
+        return this.publicService.getPublicMembershipPlans(tenant);
+    }
+    async getFunnel(tenant, slug) {
+        return this.publicService.getPublicFunnel(tenant, slug);
+    }
 };
 exports.PublicService = PublicService;
+__decorate([
+    Get('restaurant/settings'),
+    __param(0, Param('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicService.prototype, "getRestaurantSettings", null);
+__decorate([
+    Get('restaurant/menu'),
+    __param(0, Param('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicService.prototype, "getRestaurantMenu", null);
+__decorate([
+    Post('restaurant/order'),
+    __param(0, Param('tenant')),
+    __param(1, Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PublicService.prototype, "createRestaurantOrder", null);
+__decorate([
+    Get('local-store/settings'),
+    __param(0, Param('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicService.prototype, "getLocalStoreSettings", null);
+__decorate([
+    Get('local-store/products'),
+    __param(0, Param('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicService.prototype, "getLocalStoreProducts", null);
+__decorate([
+    Get('local-store/slots'),
+    __param(0, Param('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicService.prototype, "getLocalStoreSlots", null);
+__decorate([
+    Get('courses'),
+    __param(0, Param('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicService.prototype, "getPublicCourses", null);
+__decorate([
+    Get('courses/:slug'),
+    __param(0, Param('tenant')),
+    __param(1, Param('slug')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], PublicService.prototype, "getPublicCourse", null);
+__decorate([
+    Get('membership/plans'),
+    __param(0, Param('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicService.prototype, "getMembershipPlans", null);
+__decorate([
+    Get('funnel/:slug'),
+    __param(0, Param('tenant')),
+    __param(1, Param('slug')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], PublicService.prototype, "getFunnel", null);
 exports.PublicService = PublicService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(drizzle_module_1.DRIZZLE)),
