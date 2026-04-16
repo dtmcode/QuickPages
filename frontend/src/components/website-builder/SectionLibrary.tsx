@@ -227,6 +227,72 @@ const SECTION_TEMPLATES: SectionTemplate[] = [
       title: 'Custom Section',
     },
   },
+  // ==================== MODULE ====================
+  {
+    type: SectionType.RESTAURANT_MENU,
+    name: 'Speisekarte',
+    icon: '🍽️',
+    description: 'Zeigt die Restaurant-Speisekarte mit Kategorien und Preisen',
+    category: 'module' as any,
+    defaultContent: {
+      heading: 'Unsere Speisekarte',
+      buttonText: 'Jetzt bestellen',
+      buttonLink: '/restaurant',
+    },
+  },
+  {
+    type: SectionType.LOCAL_PRODUCTS,
+    name: 'Lokale Produkte',
+    icon: '🏪',
+    description: 'Zeigt Produkte des lokalen Ladens mit Preisen',
+    category: 'module' as any,
+    defaultContent: {
+      heading: 'Unsere Produkte',
+      count: 6,
+      buttonText: 'Alle Produkte',
+      buttonLink: '/local-store',
+    },
+  },
+  {
+    type: SectionType.COURSE_LIST,
+    name: 'Kurse',
+    icon: '🎓',
+    description: 'Zeigt verfügbare Online-Kurse',
+    category: 'module' as any,
+    defaultContent: {
+      heading: 'Unsere Kurse',
+      count: 3,
+      buttonText: 'Alle Kurse',
+      buttonLink: '/courses',
+    },
+  },
+  {
+    type: SectionType.MEMBERSHIP_PLANS,
+    name: 'Membership-Pläne',
+    icon: '👑',
+    description: 'Zeigt Mitgliedschaftspläne und Preise',
+    category: 'module' as any,
+    defaultContent: {
+      heading: 'Mitgliedschaft',
+      buttonText: 'Mitglied werden',
+      buttonLink: '/membership',
+    },
+  },
+  {
+    type: SectionType.FUNNEL_OPTIN,
+    name: 'Funnel Opt-in',
+    icon: '🎯',
+    description: 'E-Mail Opt-in Formular für Sales Funnels',
+    category: 'module' as any,
+    defaultContent: {
+      heading: 'Jetzt anmelden',
+      subheading: 'Trag dich ein und erhalte exklusive Inhalte.',
+      buttonText: 'Kostenlos anmelden',
+      funnelSlug: '',
+      showName: false,
+      successMessage: 'Vielen Dank! Wir melden uns.',
+    },
+  },
 ];
 
 const CATEGORIES = [
@@ -234,6 +300,7 @@ const CATEGORIES = [
   { id: 'content', label: 'Content', icon: '📝' },
   { id: 'marketing', label: 'Marketing', icon: '📢' },
   { id: 'media', label: 'Media', icon: '🖼️' },
+  { id: 'module', label: 'Module', icon: '🔌' },  
   { id: 'advanced', label: 'Advanced', icon: '🧩' },
 ];
 

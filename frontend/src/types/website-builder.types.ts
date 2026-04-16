@@ -25,7 +25,12 @@ export enum SectionType {
   TEXT = 'text',
   HTML = 'html',
   CUSTOM = 'custom',
-   FREESTYLE = 'freestyle',
+  FREESTYLE = 'freestyle',
+    RESTAURANT_MENU = 'restaurant_menu',
+  LOCAL_PRODUCTS = 'local_products',
+  COURSE_LIST = 'course_list',
+  MEMBERSHIP_PLANS = 'membership_plans',
+  FUNNEL_OPTIN = 'funnel_optin',
 }
 
 export enum PageStatus {
