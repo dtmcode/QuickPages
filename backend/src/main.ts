@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser';
 import { graphqlUploadExpress } from 'graphql-upload-ts';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { rawBody: true });
 
   // ✅ CORS — Production-ready mit Wildcard-Subdomain Support
   const allowedOrigins = [
@@ -50,6 +50,12 @@ async function bootstrap() {
   // Cookie Parser
   app.use(cookieParser());
 
+  // ✅ Stripe Webhook — Raw Body (MUSS vor JSON Middleware stehen)
+app.use(
+  '/payments/webhook',
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('express').raw({ type: 'application/json' }),
+);
   // GraphQL Upload Middleware
   app.use(graphqlUploadExpress({ maxFileSize: 10_000_000, maxFiles: 10 }));
 

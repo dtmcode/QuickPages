@@ -36,13 +36,16 @@ import {
 } from './dto/courses.input';
 
 type MembershipPlanRow = typeof membershipPlans.$inferSelect;
-type RequiredPlan = Omit<MembershipPlanRow, 'features'> & { features: unknown[] };
+type RequiredPlan = Omit<MembershipPlanRow, 'features'> & {
+  features: unknown[];
+};
 
 @Injectable()
 export class CoursesService {
   constructor(@Inject(DRIZZLE) private db: DrizzleDB) {}
 
   private toSlug(name: string): string {
+    if (!name) return `course-${Date.now()}`;
     return name
       .toLowerCase()
       .replace(/ä/g, 'ae')
@@ -101,7 +104,10 @@ export class CoursesService {
     return { ...plan, features: (plan.features as unknown[]) ?? [] };
   }
 
-  async createMembershipPlan(tenantId: string, input: CreateMembershipPlanInput) {
+  async createMembershipPlan(
+    tenantId: string,
+    input: CreateMembershipPlanInput,
+  ) {
     const slug = this.toSlug(input.name);
     const [plan] = await this.db
       .insert(membershipPlans)
@@ -120,8 +126,15 @@ export class CoursesService {
     return { ...plan, features: (plan.features as unknown[]) ?? [] };
   }
 
-  async updateMembershipPlan(tenantId: string, id: string, input: UpdateMembershipPlanInput) {
-    const updateData: Record<string, unknown> = { ...input, updatedAt: new Date() };
+  async updateMembershipPlan(
+    tenantId: string,
+    id: string,
+    input: UpdateMembershipPlanInput,
+  ) {
+    const updateData: Record<string, unknown> = {
+      ...input,
+      updatedAt: new Date(),
+    };
     if (input.name) updateData.slug = this.toSlug(input.name);
     if (input.features !== undefined) updateData.features = input.features;
 
@@ -227,12 +240,19 @@ export class CoursesService {
     return membership;
   }
 
-  async updateMembershipStatus(tenantId: string, id: string, input: UpdateMembershipStatusInput) {
+  async updateMembershipStatus(
+    tenantId: string,
+    id: string,
+    input: UpdateMembershipStatusInput,
+  ) {
     const valid = ['active', 'cancelled', 'expired', 'trial', 'paused'];
     if (!valid.includes(input.status))
       throw new BadRequestException('Ungültiger Status');
 
-    const updateData: Record<string, unknown> = { status: input.status, updatedAt: new Date() };
+    const updateData: Record<string, unknown> = {
+      status: input.status,
+      updatedAt: new Date(),
+    };
     if (input.status === 'cancelled') updateData.cancelledAt = new Date();
 
     const [updated] = await this.db
@@ -390,7 +410,10 @@ export class CoursesService {
   }
 
   async updateCourse(tenantId: string, id: string, input: UpdateCourseInput) {
-    const updateData: Record<string, unknown> = { ...input, updatedAt: new Date() };
+    const updateData: Record<string, unknown> = {
+      ...input,
+      updatedAt: new Date(),
+    };
     if (input.title) updateData.slug = this.toSlug(input.title);
 
     const [updated] = await this.db
@@ -409,7 +432,9 @@ export class CoursesService {
       .where(eq(courseEnrollments.courseId, id));
 
     if (Number(enrollCount) > 0) {
-      throw new BadRequestException(`Kurs hat noch ${enrollCount} Einschreibungen`);
+      throw new BadRequestException(
+        `Kurs hat noch ${enrollCount} Einschreibungen`,
+      );
     }
 
     await this.db
@@ -595,7 +620,11 @@ export class CoursesService {
     return true;
   }
 
-  async reorderChapters(tenantId: string, courseId: string, chapterIds: string[]) {
+  async reorderChapters(
+    tenantId: string,
+    courseId: string,
+    chapterIds: string[],
+  ) {
     await Promise.all(
       chapterIds.map((chapterId, index) =>
         this.db
@@ -612,7 +641,11 @@ export class CoursesService {
     return this.getCourseById(tenantId, courseId);
   }
 
-  async reorderLessons(tenantId: string, chapterId: string, lessonIds: string[]) {
+  async reorderLessons(
+    tenantId: string,
+    chapterId: string,
+    lessonIds: string[],
+  ) {
     await Promise.all(
       lessonIds.map((lessonId, index) =>
         this.db
@@ -686,7 +719,9 @@ export class CoursesService {
 
       const requiredPlanId = course.requiresMembershipPlanId;
       if (requiredPlanId && membership.planId !== requiredPlanId) {
-        throw new ForbiddenException('Membership-Plan hat keinen Zugang zu diesem Kurs');
+        throw new ForbiddenException(
+          'Membership-Plan hat keinen Zugang zu diesem Kurs',
+        );
       }
 
       accessGrantedBy = 'membership';
@@ -721,7 +756,8 @@ export class CoursesService {
           eq(courseEnrollments.tenantId, tenantId),
         ),
       );
-    if (!enrollment) throw new NotFoundException('Einschreibung nicht gefunden');
+    if (!enrollment)
+      throw new NotFoundException('Einschreibung nicht gefunden');
 
     const progress = await this.db
       .select()
@@ -738,13 +774,19 @@ export class CoursesService {
         ),
       );
 
-    const completedLessons = progress.filter((p) => p.completedAt !== null).length;
+    const completedLessons = progress.filter(
+      (p) => p.completedAt !== null,
+    ).length;
     const progressPercent =
       Number(totalLessons) > 0
         ? Math.round((completedLessons / Number(totalLessons)) * 100)
         : 0;
 
-    return { ...enrollment, lessonProgress: progress, progress: progressPercent };
+    return {
+      ...enrollment,
+      lessonProgress: progress,
+      progress: progressPercent,
+    };
   }
 
   async trackLessonProgress(tenantId: string, input: TrackLessonProgressInput) {
@@ -800,7 +842,9 @@ export class CoursesService {
         .from(lessonProgress)
         .where(eq(lessonProgress.enrollmentId, input.enrollmentId));
 
-      const completed = allProgress.filter((p) => p.completedAt !== null).length;
+      const completed = allProgress.filter(
+        (p) => p.completedAt !== null,
+      ).length;
       const progressPercent =
         Number(totalLessons) > 0
           ? Math.round((completed / Number(totalLessons)) * 100)
@@ -836,7 +880,9 @@ export class CoursesService {
     const [{ value: publishedCourses }] = await this.db
       .select({ value: count() })
       .from(courses)
-      .where(and(eq(courses.tenantId, tenantId), eq(courses.isPublished, true)));
+      .where(
+        and(eq(courses.tenantId, tenantId), eq(courses.isPublished, true)),
+      );
 
     const [{ value: totalEnrollments }] = await this.db
       .select({ value: count() })
@@ -847,7 +893,10 @@ export class CoursesService {
       .select({ value: count() })
       .from(memberships)
       .where(
-        and(eq(memberships.tenantId, tenantId), eq(memberships.status, 'active')),
+        and(
+          eq(memberships.tenantId, tenantId),
+          eq(memberships.status, 'active'),
+        ),
       );
 
     return {
@@ -863,7 +912,11 @@ export class CoursesService {
   // ACCESS CHECK (Public)
   // ════════════════════════════════════════════════════════
 
-  async checkCourseAccess(tenantId: string, courseId: string, customerEmail: string): Promise<boolean> {
+  async checkCourseAccess(
+    tenantId: string,
+    courseId: string,
+    customerEmail: string,
+  ): Promise<boolean> {
     const [enrollment] = await this.db
       .select()
       .from(courseEnrollments)
@@ -877,7 +930,11 @@ export class CoursesService {
     return !!enrollment;
   }
 
-  async checkMembershipAccess(tenantId: string, customerEmail: string, planId?: string): Promise<boolean> {
+  async checkMembershipAccess(
+    tenantId: string,
+    customerEmail: string,
+    planId?: string,
+  ): Promise<boolean> {
     const conditions = [
       eq(memberships.tenantId, tenantId),
       eq(memberships.customerEmail, customerEmail),

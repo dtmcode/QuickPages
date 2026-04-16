@@ -23,14 +23,17 @@ import {
 @Injectable()
 export class FunnelsService {
   constructor(@Inject(DRIZZLE) private db: DrizzleDB) {}
-
-  private toSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-  }
+private toSlug(name: string): string {
+  if (!name) return `funnel-${Date.now()}`;
+  return name
+    .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
 
   // ─── Funnels CRUD ─────────────────────────────────────────────────────────────
 

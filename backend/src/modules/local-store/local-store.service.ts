@@ -29,14 +29,17 @@ export class LocalStoreService {
   constructor(@Inject(DRIZZLE) private db: DrizzleDB) {}
 
   // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-  private toSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-  }
+private toSlug(name: string): string {
+  if (!name) return `product-${Date.now()}`;
+  return name
+    .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
 
   private generatePickupCode(): string {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
