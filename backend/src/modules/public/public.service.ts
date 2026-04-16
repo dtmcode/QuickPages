@@ -22,16 +22,6 @@ import {
   newsletterSubscribers,
   emailLogs,
   tenantCustomers,
-} from '../../drizzle/schema';
-import {
-  wbPages,
-  wbSections,
-  wbTemplates,
-} from '../../drizzle/website-builder.schema';
-import { eq, and, desc, asc, sql } from 'drizzle-orm';
-import { randomUUID } from 'crypto';
-import * as bcrypt from 'bcryptjs';
-import {
   restaurantSettings,
   menuCategories,
   menuItems,
@@ -45,6 +35,15 @@ import {
   funnels,
   funnelSteps,
 } from '../../drizzle/schema';
+import {
+  wbPages,
+  wbSections,
+  wbTemplates,
+} from '../../drizzle/website-builder.schema';
+import { eq, and, desc, asc, sql } from 'drizzle-orm';
+import { randomUUID } from 'crypto';
+import * as bcrypt from 'bcryptjs';
+
 // ==================== TYPES ====================
 
 interface CustomerRecord {
@@ -750,71 +749,173 @@ export class PublicService {
   }
   // ==================== RESTAURANT ====================
 
-@Get('restaurant/settings')
-async getRestaurantSettings(@Param('tenant') tenant: string) {
-  return this.publicService.getRestaurantSettings(tenant);
-}
+  async getRestaurantSettings(tenantSlug: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
+    const [s] = await this.db
+      .select()
+      .from(restaurantSettings)
+      .where(eq(restaurantSettings.tenantId, tenantId));
+    return s ?? null;
+  }
 
-@Get('restaurant/menu')
-async getRestaurantMenu(@Param('tenant') tenant: string) {
-  return this.publicService.getRestaurantMenu(tenant);
-}
+  async getRestaurantMenu(tenantSlug: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
+    const cats = await this.db
+      .select()
+      .from(menuCategories)
+      .where(
+        and(
+          eq(menuCategories.tenantId, tenantId),
+          eq(menuCategories.isActive, true),
+        ),
+      )
+      .orderBy(asc(menuCategories.position));
+    const items = await this.db
+      .select()
+      .from(menuItems)
+      .where(
+        and(eq(menuItems.tenantId, tenantId), eq(menuItems.isAvailable, true)),
+      )
+      .orderBy(asc(menuItems.position));
+    return cats.map((cat) => ({
+      ...cat,
+      items: items.filter((i) => i.categoryId === cat.id),
+    }));
+  }
+  // ==================== LOCAL STORE ====================
 
-@Post('restaurant/order')
-async createRestaurantOrder(
-  @Param('tenant') tenant: string,
-  @Body() body: Record<string, unknown>,
-) {
-  // direkt an RestaurantService weiterleiten (über injection oder sql)
-  return { message: 'Order received' }; // Platzhalter — RestaurantService injecten
-}
+  async getLocalStoreSettings(tenantSlug: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
+    const [s] = await this.db
+      .select()
+      .from(localStoreSettings)
+      .where(eq(localStoreSettings.tenantId, tenantId));
+    return s ?? null;
+  }
 
-// ==================== LOCAL STORE ====================
+  async getLocalStoreProducts(tenantSlug: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
+    return this.db
+      .select()
+      .from(localProducts)
+      .where(
+        and(
+          eq(localProducts.tenantId, tenantId),
+          eq(localProducts.isAvailable, true),
+        ),
+      )
+      .orderBy(asc(localProducts.name));
+  }
 
-@Get('local-store/settings')
-async getLocalStoreSettings(@Param('tenant') tenant: string) {
-  return this.publicService.getLocalStoreSettings(tenant);
-}
+  async getLocalStoreSlots(tenantSlug: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
+    return this.db
+      .select()
+      .from(localPickupSlots)
+      .where(
+        and(
+          eq(localPickupSlots.tenantId, tenantId),
+          eq(localPickupSlots.isActive, true),
+        ),
+      )
+      .orderBy(
+        asc(localPickupSlots.dayOfWeek),
+        asc(localPickupSlots.startTime),
+      );
+  }
 
-@Get('local-store/products')
-async getLocalStoreProducts(@Param('tenant') tenant: string) {
-  return this.publicService.getLocalStoreProducts(tenant);
-}
+  // ==================== COURSES ====================
 
-@Get('local-store/slots')
-async getLocalStoreSlots(@Param('tenant') tenant: string) {
-  return this.publicService.getLocalStoreSlots(tenant);
-}
+  async getPublicCourses(tenantSlug: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
+    return this.db
+      .select()
+      .from(courses)
+      .where(and(eq(courses.tenantId, tenantId), eq(courses.isPublished, true)))
+      .orderBy(desc(courses.createdAt));
+  }
 
-// ==================== COURSES ====================
+  async getPublicCourseBySlug(tenantSlug: string, slug: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
+    const [course] = await this.db
+      .select()
+      .from(courses)
+      .where(
+        and(
+          eq(courses.tenantId, tenantId),
+          eq(courses.slug, slug),
+          eq(courses.isPublished, true),
+        ),
+      );
+    if (!course) throw new NotFoundException('Kurs nicht gefunden');
+    const chapters = await this.db
+      .select()
+      .from(courseChapters)
+      .where(
+        and(
+          eq(courseChapters.courseId, course.id),
+          eq(courseChapters.isPublished, true),
+        ),
+      )
+      .orderBy(asc(courseChapters.position));
+    const chaptersWithLessons = await Promise.all(
+      chapters.map(async (ch) => {
+        const lessons = await this.db
+          .select()
+          .from(courseLessons)
+          .where(
+            and(
+              eq(courseLessons.chapterId, ch.id),
+              eq(courseLessons.isPublished, true),
+            ),
+          )
+          .orderBy(asc(courseLessons.position));
+        return { ...ch, lessons };
+      }),
+    );
+    return { ...course, chapters: chaptersWithLessons };
+  }
 
-@Get('courses')
-async getPublicCourses(@Param('tenant') tenant: string) {
-  return this.publicService.getPublicCourses(tenant);
-}
+  // ==================== MEMBERSHIP ====================
 
-@Get('courses/:slug')
-async getPublicCourse(
-  @Param('tenant') tenant: string,
-  @Param('slug') slug: string,
-) {
-  return this.publicService.getPublicCourseBySlug(tenant, slug);
-}
+  async getPublicMembershipPlans(tenantSlug: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
+    return this.db
+      .select()
+      .from(membershipPlans)
+      .where(
+        and(
+          eq(membershipPlans.tenantId, tenantId),
+          eq(membershipPlans.isActive, true),
+        ),
+      )
+      .orderBy(asc(membershipPlans.position));
+  }
+  // ==================== FUNNELS ====================
 
-// ==================== MEMBERSHIP ====================
-
-@Get('membership/plans')
-async getMembershipPlans(@Param('tenant') tenant: string) {
-  return this.publicService.getPublicMembershipPlans(tenant);
-}
-
-// ==================== FUNNELS ====================
-
-@Get('funnel/:slug')
-async getFunnel(
-  @Param('tenant') tenant: string,
-  @Param('slug') slug: string,
-) {
-  return this.publicService.getPublicFunnel(tenant, slug);
-}
+  async getPublicFunnel(tenantSlug: string, slug: string) {
+    const tenantId = await this.getTenantId(tenantSlug);
+    const [funnel] = await this.db
+      .select()
+      .from(funnels)
+      .where(
+        and(
+          eq(funnels.tenantId, tenantId),
+          eq(funnels.slug, slug),
+          eq(funnels.isPublished, true),
+        ),
+      );
+    if (!funnel) throw new NotFoundException('Funnel nicht gefunden');
+    const steps = await this.db
+      .select()
+      .from(funnelSteps)
+      .where(
+        and(
+          eq(funnelSteps.funnelId, funnel.id),
+          eq(funnelSteps.isActive, true),
+        ),
+      )
+      .orderBy(asc(funnelSteps.position));
+    return { ...funnel, steps };
+  }
 }

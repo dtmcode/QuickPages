@@ -107,6 +107,36 @@ let PublicController = class PublicController {
             return null;
         }
     }
+    async getRestaurantSettings(tenant) {
+        return this.publicService.getRestaurantSettings(tenant);
+    }
+    async getRestaurantMenu(tenant) {
+        return this.publicService.getRestaurantMenu(tenant);
+    }
+    async createRestaurantOrder(tenant, body) {
+        return { message: 'Order received' };
+    }
+    async getLocalStoreSettings(tenant) {
+        return this.publicService.getLocalStoreSettings(tenant);
+    }
+    async getLocalStoreProducts(tenant) {
+        return this.publicService.getLocalStoreProducts(tenant);
+    }
+    async getLocalStoreSlots(tenant) {
+        return this.publicService.getLocalStoreSlots(tenant);
+    }
+    async getPublicCourses(tenant) {
+        return this.publicService.getPublicCourses(tenant);
+    }
+    async getPublicCourse(tenant, slug) {
+        return this.publicService.getPublicCourseBySlug(tenant, slug);
+    }
+    async getMembershipPlans(tenant) {
+        return this.publicService.getPublicMembershipPlans(tenant);
+    }
+    async getFunnel(tenant, slug) {
+        return this.publicService.getPublicFunnel(tenant, slug);
+    }
 };
 exports.PublicController = PublicController;
 __decorate([
@@ -267,6 +297,79 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], PublicController.prototype, "getCustomerOrders", null);
+__decorate([
+    (0, common_1.Get)('restaurant/settings'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getRestaurantSettings", null);
+__decorate([
+    (0, common_1.Get)('restaurant/menu'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getRestaurantMenu", null);
+__decorate([
+    (0, common_1.Post)('restaurant/order'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "createRestaurantOrder", null);
+__decorate([
+    (0, common_1.Get)('local-store/settings'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getLocalStoreSettings", null);
+__decorate([
+    (0, common_1.Get)('local-store/products'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getLocalStoreProducts", null);
+__decorate([
+    (0, common_1.Get)('local-store/slots'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getLocalStoreSlots", null);
+__decorate([
+    (0, common_1.Get)('courses'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getPublicCourses", null);
+__decorate([
+    (0, common_1.Get)('courses/:slug'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __param(1, (0, common_1.Param)('slug')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getPublicCourse", null);
+__decorate([
+    (0, common_1.Get)('membership/plans'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getMembershipPlans", null);
+__decorate([
+    (0, common_1.Get)('funnel/:slug'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __param(1, (0, common_1.Param)('slug')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getFunnel", null);
 exports.PublicController = PublicController = __decorate([
     (0, common_1.Controller)('api/public/:tenant'),
     __metadata("design:paramtypes", [public_service_1.PublicService])

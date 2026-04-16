@@ -18,16 +18,26 @@ type AddonDefinitionType {
 
 enum AddonType {
   AI_CONTENT
+  BLOG_MODULE
   BOOKING
+  BOOKING_MODULE
+  CUSTOM_DOMAIN
   EMAIL_BUSINESS
   EMAIL_STARTER
   EXTRA_AI_CREDITS
+  EXTRA_PAGES
   EXTRA_PRODUCTS
   EXTRA_USERS
   FORM_BUILDER
+  FUNNELS_MODULE
   I18N
+  LOCAL_STORE_MODULE
+  MEMBERS_MODULE
   NEWSLETTER
+  NEWSLETTER_EXTRA
+  RESTAURANT_MODULE
   SHOP_BUSINESS
+  SHOP_EXTRA
   SHOP_MODULE
   SHOP_PRO
 }
@@ -212,6 +222,131 @@ type CommentType {
   status: String!
 }
 
+type Coupon {
+  applicableModule: String!
+  code: String!
+  createdAt: DateTime
+  expiresAt: DateTime
+  id: ID!
+  isActive: Boolean!
+  maxUses: Int
+  minOrderAmount: Int
+  tenantId: String!
+  type: String!
+  updatedAt: DateTime
+  usedCount: Int!
+  value: Int!
+}
+
+type CouponUse {
+  couponId: String!
+  customerEmail: String!
+  discountAmount: Int!
+  id: ID!
+  referenceId: String
+  referenceType: String!
+  tenantId: String!
+  usedAt: DateTime
+}
+
+type CouponUsesResponse {
+  total: Int!
+  uses: [CouponUse!]!
+}
+
+type CouponValidationResult {
+  discountAmount: Int
+  discountType: String
+  discountValue: Int
+  message: String
+  valid: Boolean!
+}
+
+type CouponsResponse {
+  coupons: [Coupon!]!
+  total: Int!
+}
+
+type Course {
+  certificateEnabled: Boolean!
+  chapters: [CourseChapter!]
+  createdAt: DateTime
+  description: String
+  enrollmentCount: Int
+  id: ID!
+  isFree: Boolean!
+  isPublished: Boolean!
+  language: String!
+  level: String!
+  price: Int!
+  requiredPlan: MembershipPlan
+  requiresMembershipPlanId: String
+  shortDescription: String
+  slug: String!
+  stripePriceId: String
+  thumbnail: String
+  title: String!
+  totalDuration: Int
+  updatedAt: DateTime
+}
+
+type CourseChapter {
+  courseId: String!
+  createdAt: DateTime
+  description: String
+  id: ID!
+  isPublished: Boolean!
+  lessons: [CourseLesson!]
+  position: Int!
+  title: String!
+}
+
+type CourseEnrollment {
+  accessGrantedBy: String!
+  certificateUrl: String
+  completedAt: DateTime
+  course: Course
+  courseId: String!
+  createdAt: DateTime
+  customerEmail: String!
+  customerName: String!
+  enrolledAt: DateTime
+  id: ID!
+  lessonProgress: [LessonProgressEntry!]
+  membershipId: String
+  progress: Int!
+  updatedAt: DateTime
+}
+
+type CourseLesson {
+  chapterId: String!
+  courseId: String!
+  createdAt: DateTime
+  duration: Int
+  id: ID!
+  isFreePreview: Boolean!
+  isPublished: Boolean!
+  position: Int!
+  slug: String!
+  title: String!
+  type: String!
+  updatedAt: DateTime
+  videoUrl: String
+}
+
+type CoursesResponse {
+  courses: [Course!]!
+  total: Int!
+}
+
+type CoursesStats {
+  activeMembers: Int!
+  publishedCourses: Int!
+  totalCourses: Int!
+  totalEnrollments: Int!
+  totalRevenue: Int!
+}
+
 input CreateBookingServiceInput {
   bufferMinutes: Int! = 0
   color: String! = "#3b82f6"
@@ -242,6 +377,37 @@ input CreateCategoryInput {
   image: String
   isActive: Boolean! = true
   name: String!
+}
+
+input CreateChapterInput {
+  courseId: String!
+  description: String
+  position: Int
+  title: String!
+}
+
+input CreateCouponInput {
+  applicableTo: String
+  code: String!
+  expiresAt: DateTime
+  isActive: Boolean
+  maxUses: Int
+  minOrderAmount: Int
+  type: String!
+  value: Int!
+}
+
+input CreateCourseInput {
+  certificateEnabled: Boolean
+  description: String
+  isFree: Boolean
+  language: String
+  level: String
+  price: Int
+  requiresMembershipPlanId: String
+  shortDescription: String
+  thumbnail: String
+  title: String!
 }
 
 input CreateFoodOrderInput {
@@ -296,6 +462,18 @@ input CreateFunnelSubmissionInput {
   utmSource: String
 }
 
+input CreateLessonInput {
+  chapterId: String!
+  content: JSON
+  courseId: String!
+  duration: Int
+  isFreePreview: Boolean
+  position: Int
+  title: String!
+  type: String
+  videoUrl: String
+}
+
 input CreateLocalDealInput {
   description: String
   discountType: String!
@@ -334,6 +512,16 @@ input CreateLocalProductInput {
   price: Int!
   stock: Int
   unit: String
+}
+
+input CreateMembershipPlanInput {
+  description: String
+  features: [String!]
+  interval: String
+  isPublic: Boolean
+  name: String!
+  position: Int
+  price: Int!
 }
 
 input CreateMenuCategoryInput {
@@ -543,6 +731,19 @@ input EmailSettingsInput {
   smtpUser: String
 }
 
+input EnrollCourseInput {
+  courseId: String!
+  customerEmail: String!
+  customerName: String!
+  membershipId: String
+  stripePaymentIntentId: String
+}
+
+type EnrollmentsResponse {
+  enrollments: [CourseEnrollment!]!
+  total: Int!
+}
+
 type FoodOrder {
   createdAt: DateTime
   customerEmail: String
@@ -705,6 +906,13 @@ type FunnelsResponse {
   total: Int!
 }
 
+input GrantMembershipInput {
+  customerEmail: String!
+  customerName: String!
+  expiresAt: DateTime
+  planId: String
+}
+
 input ItemOrderInput {
   id: String!
   order: Int!
@@ -719,6 +927,14 @@ scalar JSON
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
 scalar JSONObject
+
+type LessonProgressEntry {
+  completedAt: DateTime
+  createdAt: DateTime
+  id: ID!
+  lessonId: String!
+  watchTime: Int
+}
 
 type LocalDeal {
   createdAt: DateTime
@@ -870,6 +1086,49 @@ type MediaFile {
   width: Int
 }
 
+type Membership {
+  cancelledAt: DateTime
+  createdAt: DateTime
+  customerEmail: String!
+  customerName: String!
+  expiresAt: DateTime
+  grantedManually: Boolean!
+  id: ID!
+  plan: MembershipPlan
+  planId: String
+  startedAt: DateTime
+  status: String!
+  stripeSubscriptionId: String
+  updatedAt: DateTime
+}
+
+type MembershipPlan {
+  createdAt: DateTime
+  description: String
+  features: [String!]
+  id: ID!
+  interval: String!
+  isActive: Boolean!
+  isPublic: Boolean!
+  memberCount: Int
+  name: String!
+  position: Int!
+  price: Int!
+  slug: String!
+  stripePriceId: String
+  updatedAt: DateTime
+}
+
+type MembershipPlansResponse {
+  plans: [MembershipPlan!]!
+  total: Int!
+}
+
+type MembershipsResponse {
+  memberships: [Membership!]!
+  total: Int!
+}
+
 type MenuCategoriesResponse {
   categories: [MenuCategory!]!
   total: Int!
@@ -956,14 +1215,19 @@ type Mutation {
   createBookingService(input: CreateBookingServiceInput!): BookingServiceType!
   createCampaign(input: CreateCampaignInput!): NewsletterCampaign!
   createCategory(input: CreateCategoryInput!): Category!
+  createChapter(input: CreateChapterInput!): CourseChapter!
+  createCoupon(input: CreateCouponInput!): Coupon!
+  createCourse(input: CreateCourseInput!): Course!
   createFoodOrder(input: CreateFoodOrderInput!): FoodOrder!
   createForm(input: CreateFormInput!): FormType!
   createFunnel(input: CreateFunnelInput!): Funnel!
   createFunnelStep(input: CreateFunnelStepInput!): FunnelStep!
+  createLesson(input: CreateLessonInput!): CourseLesson!
   createLocalDeal(input: CreateLocalDealInput!): LocalDeal!
   createLocalOrder(input: CreateLocalOrderInput!): LocalOrder!
   createLocalPickupSlot(input: CreatePickupSlotInput!): LocalPickupSlot!
   createLocalProduct(input: CreateLocalProductInput!): LocalProduct!
+  createMembershipPlan(input: CreateMembershipPlanInput!): MembershipPlan!
   createMenuCategory(input: CreateMenuCategoryInput!): MenuCategory!
   createMenuItem(input: CreateMenuItemInput!): MenuItem!
   createModifier(input: CreateModifierInput!): MenuModifier!
@@ -982,15 +1246,20 @@ type Mutation {
   deleteBookingService(id: String!): Boolean!
   deleteCampaign(id: String!): Boolean!
   deleteCategory(id: String!): Boolean!
+  deleteChapter(id: ID!): Boolean!
   deleteComment(id: String!): Boolean!
+  deleteCoupon(id: ID!): Boolean!
+  deleteCourse(id: ID!): Boolean!
   deleteEmailSettings: Boolean!
   deleteForm(id: String!): Boolean!
   deleteFunnel(id: ID!): Boolean!
   deleteFunnelStep(id: ID!): Boolean!
+  deleteLesson(id: ID!): Boolean!
   deleteLocalDeal(id: ID!): Boolean!
   deleteLocalPickupSlot(id: ID!): Boolean!
   deleteLocalProduct(id: ID!): Boolean!
   deleteMedia(id: String!): Boolean!
+  deleteMembershipPlan(id: ID!): Boolean!
   deleteMenuCategory(id: ID!): Boolean!
   deleteMenuItem(id: ID!): Boolean!
   deleteModifier(id: ID!): Boolean!
@@ -1008,10 +1277,13 @@ type Mutation {
   deleteTemplate(id: String!, tenantId: String!): Boolean!
   deleteTranslations(entityId: String!, entityType: String!, locale: String): Boolean!
   duplicateCampaign(id: String!): NewsletterCampaign!
+  duplicateCourse(id: ID!): Course!
   duplicateFunnel(id: ID!): Funnel!
   duplicatePage(id: String!): Page!
   duplicateSection(id: String!, tenantId: String!): Section!
+  enrollCourse(input: EnrollCourseInput!): CourseEnrollment!
   forgotPassword(input: ForgotPasswordInput!): SuccessResponse!
+  grantMembership(input: GrantMembershipInput!): Membership!
   login(input: LoginInput!): AuthResponse!
   markCommentAsSpam(id: String!): Boolean!
   markSubmissionRead(id: String!, read: Boolean!): Boolean!
@@ -1022,12 +1294,15 @@ type Mutation {
   rejectComment(id: String!): Boolean!
   removeBookingBlockedDate(id: String!): Boolean!
   removeCustomDomain: Boolean!
+  reorderChapters(chapterIds: [ID!]!, courseId: ID!): Course!
   reorderFunnelSteps(funnelId: ID!, stepIds: [ID!]!): Funnel!
+  reorderLessons(chapterId: ID!, lessonIds: [ID!]!): Boolean!
   reorderNavigationItems(itemOrders: [ItemOrderInput!]!, navigationId: String!): Boolean!
   reorderSections(pageId: String!, sectionIds: [String!]!, tenantId: String!): WbPage!
   replyToTicket(content: String!, isInternal: Boolean! = false, ticketId: String!): SupportMessageType!
   resendVerificationEmail: SuccessResponse!
   resetPassword(input: ResetPasswordInput!): SuccessResponse!
+  revokeMembership(id: ID!): Boolean!
   sendCampaign(id: String!): SendCampaignResult!
   setBookingAvailability(slots: [AvailabilitySlotInput!]!): [BookingAvailabilityType!]!
   setDefaultTemplate(id: String!, tenantId: String!): Template!
@@ -1038,17 +1313,22 @@ type Mutation {
   testEmailSettings(testTo: String!): TestEmailResult!
   toggleSectionVisibility(id: String!, tenantId: String!): Section!
   trackFunnelEvent(input: TrackFunnelEventInput!): Boolean!
+  trackLessonProgress(input: TrackLessonProgressInput!): Boolean!
   updateAppointmentStatus(id: String!, status: String!): Boolean!
   updateBookingSettings(input: BookingSettingsInput!): Boolean!
   updateBranding(input: UpdateBrandingInput!): BrandingSettingsType!
   updateCampaign(id: String!, input: UpdateCampaignInput!): NewsletterCampaign!
   updateCategory(id: String!, input: UpdateCategoryInput!): Category!
+  updateChapter(id: ID!, input: UpdateChapterInput!): CourseChapter!
+  updateCoupon(id: ID!, input: UpdateCouponInput!): Coupon!
+  updateCourse(id: ID!, input: UpdateCourseInput!): Course!
   updateEmailSettings(input: EmailSettingsInput!): EmailSettings!
   updateFoodOrderStatus(id: ID!, input: UpdateFoodOrderStatusInput!): FoodOrder!
   updateForm(id: String!, input: CreateFormInput!): FormType!
   updateFunnel(id: ID!, input: UpdateFunnelInput!): Funnel!
   updateFunnelStep(id: ID!, input: UpdateFunnelStepInput!): FunnelStep!
   updateFunnelStepContent(id: ID!, input: UpdateFunnelStepContentInput!): FunnelStep!
+  updateLesson(id: ID!, input: UpdateLessonInput!): CourseLesson!
   updateLocalDeal(id: ID!, input: UpdateLocalDealInput!): LocalDeal!
   updateLocalOrderStatus(id: ID!, input: UpdateLocalOrderStatusInput!): LocalOrder!
   updateLocalPickupSlot(id: ID!, input: UpdatePickupSlotInput!): LocalPickupSlot!
@@ -1056,6 +1336,8 @@ type Mutation {
   updateLocalStoreSettings(input: UpdateLocalStoreSettingsInput!): LocalStoreSettings!
   updateLocaleSettings(defaultLocale: String!, enabledLocales: [String!]!): Boolean!
   updateMedia(id: String!, input: UpdateMediaInput!): MediaFile!
+  updateMembershipPlan(id: ID!, input: UpdateMembershipPlanInput!): MembershipPlan!
+  updateMembershipStatus(id: ID!, input: UpdateMembershipStatusInput!): Membership!
   updateMenuCategory(id: ID!, input: UpdateMenuCategoryInput!): MenuCategory!
   updateMenuItem(id: ID!, input: UpdateMenuItemInput!): MenuItem!
   updateModifier(id: ID!, input: UpdateModifierInput!): MenuModifier!
@@ -1312,11 +1594,21 @@ type Query {
   brandingSettings: BrandingSettingsType!
   campaignStats(id: String!): CampaignStats!
   categories: CategoriesResponse!
+  checkCourseAccess(courseId: ID!, customerEmail: String!): Boolean!
+  checkMembershipAccess(customerEmail: String!, planId: String): Boolean!
   commentCounts: CommentCountsType!
   comments(postId: String, status: String): [CommentType!]!
+  coupon(id: ID!): Coupon!
+  couponUses(couponId: ID!): CouponUsesResponse!
+  coupons: CouponsResponse!
+  course(id: ID!): Course!
+  courses: CoursesResponse!
+  coursesStats: CoursesStats!
   currentTenant: CurrentUserResponse!
   domainStatus: DomainStatusResponse!
   emailSettings: EmailSettings
+  enrollmentProgress(enrollmentId: ID!): CourseEnrollment!
+  enrollments(courseId: ID): EnrollmentsResponse!
   foodOrder(id: ID!): FoodOrder!
   foodOrders(status: String): FoodOrdersResponse!
   form(id: String!): FormType
@@ -1338,6 +1630,9 @@ type Query {
   mediaFile(id: String!): MediaFile
   mediaFiles(folder: String, limit: Int, offset: Int, search: String, type: String): [MediaFile!]!
   mediaFolders: [String!]!
+  membershipPlan(id: ID!): MembershipPlan!
+  membershipPlans: MembershipPlansResponse!
+  memberships(status: String): MembershipsResponse!
   menuCategories: MenuCategoriesResponse!
   menuItem(id: ID!): MenuItem!
   menuItems(categoryId: ID): MenuItemsResponse!
@@ -1372,6 +1667,7 @@ type Query {
   translations(entityId: String!, entityType: String!, locale: String): [TranslationType!]!
   uiTranslations(locale: String!): JSON!
   users: UsersResponse!
+  validateCoupon(input: ValidateCouponInput!): CouponValidationResult!
   wbDefaultTemplate(tenantId: String!): Template
   wbGlobalSection(id: String!): WbGlobalSection
   wbGlobalSections: [WbGlobalSection!]!
@@ -1639,6 +1935,13 @@ input TrackFunnelEventInput {
   stepId: String
 }
 
+input TrackLessonProgressInput {
+  completed: Boolean
+  enrollmentId: String!
+  lessonId: String!
+  watchTime: Int
+}
+
 type TranslationType {
   entityId: String!
   entityType: String!
@@ -1678,6 +1981,39 @@ input UpdateCategoryInput {
   name: String
 }
 
+input UpdateChapterInput {
+  description: String
+  isPublished: Boolean
+  position: Int
+  title: String
+}
+
+input UpdateCouponInput {
+  applicableTo: String
+  code: String
+  expiresAt: DateTime
+  isActive: Boolean
+  maxUses: Int
+  minOrderAmount: Int
+  type: String
+  value: Int
+}
+
+input UpdateCourseInput {
+  certificateEnabled: Boolean
+  description: String
+  isFree: Boolean
+  isPublished: Boolean
+  language: String
+  level: String
+  price: Int
+  requiresMembershipPlanId: String
+  shortDescription: String
+  stripePriceId: String
+  thumbnail: String
+  title: String
+}
+
 input UpdateFoodOrderStatusInput {
   note: String
   status: String!
@@ -1704,6 +2040,17 @@ input UpdateFunnelStepInput {
   position: Int
   stepType: String
   title: String
+}
+
+input UpdateLessonInput {
+  content: JSON
+  duration: Int
+  isFreePreview: Boolean
+  isPublished: Boolean
+  position: Int
+  title: String
+  type: String
+  videoUrl: String
 }
 
 input UpdateLocalDealInput {
@@ -1757,6 +2104,22 @@ input UpdateMediaInput {
   folder: String
   tags: [String!]
   title: String
+}
+
+input UpdateMembershipPlanInput {
+  description: String
+  features: [String!]
+  interval: String
+  isActive: Boolean
+  isPublic: Boolean
+  name: String
+  position: Int
+  price: Int
+  stripePriceId: String
+}
+
+input UpdateMembershipStatusInput {
+  status: String!
 }
 
 input UpdateMenuCategoryInput {
@@ -1966,6 +2329,12 @@ enum UserRole {
 type UsersResponse {
   total: Float!
   users: [UserListItem!]!
+}
+
+input ValidateCouponInput {
+  code: String!
+  module: String!
+  orderAmount: Int!
 }
 
 type VerifyDomainResponse {

@@ -466,111 +466,111 @@ let PublicService = class PublicService {
         ORDER BY name ASC`);
         return result.rows || [];
     }
-    async getRestaurantSettings(tenant) {
-        return this.publicService.getRestaurantSettings(tenant);
+    async getRestaurantSettings(tenantSlug) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        const [s] = await this.db
+            .select()
+            .from(schema_1.restaurantSettings)
+            .where((0, drizzle_orm_1.eq)(schema_1.restaurantSettings.tenantId, tenantId));
+        return s ?? null;
     }
-    async getRestaurantMenu(tenant) {
-        return this.publicService.getRestaurantMenu(tenant);
+    async getRestaurantMenu(tenantSlug) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        const cats = await this.db
+            .select()
+            .from(schema_1.menuCategories)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.menuCategories.tenantId, tenantId), (0, drizzle_orm_1.eq)(schema_1.menuCategories.isActive, true)))
+            .orderBy((0, drizzle_orm_1.asc)(schema_1.menuCategories.position));
+        const items = await this.db
+            .select()
+            .from(schema_1.menuItems)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.menuItems.tenantId, tenantId), (0, drizzle_orm_1.eq)(schema_1.menuItems.isAvailable, true)))
+            .orderBy((0, drizzle_orm_1.asc)(schema_1.menuItems.position));
+        return cats.map((cat) => ({
+            ...cat,
+            items: items.filter((i) => i.categoryId === cat.id),
+        }));
     }
-    async createRestaurantOrder(tenant, body) {
-        return { message: 'Order received' };
+    async getLocalStoreSettings(tenantSlug) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        const [s] = await this.db
+            .select()
+            .from(schema_1.localStoreSettings)
+            .where((0, drizzle_orm_1.eq)(schema_1.localStoreSettings.tenantId, tenantId));
+        return s ?? null;
     }
-    async getLocalStoreSettings(tenant) {
-        return this.publicService.getLocalStoreSettings(tenant);
+    async getLocalStoreProducts(tenantSlug) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        return this.db
+            .select()
+            .from(schema_1.localProducts)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.localProducts.tenantId, tenantId), (0, drizzle_orm_1.eq)(schema_1.localProducts.isAvailable, true)))
+            .orderBy((0, drizzle_orm_1.asc)(schema_1.localProducts.name));
     }
-    async getLocalStoreProducts(tenant) {
-        return this.publicService.getLocalStoreProducts(tenant);
+    async getLocalStoreSlots(tenantSlug) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        return this.db
+            .select()
+            .from(schema_1.localPickupSlots)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.localPickupSlots.tenantId, tenantId), (0, drizzle_orm_1.eq)(schema_1.localPickupSlots.isActive, true)))
+            .orderBy((0, drizzle_orm_1.asc)(schema_1.localPickupSlots.dayOfWeek), (0, drizzle_orm_1.asc)(schema_1.localPickupSlots.startTime));
     }
-    async getLocalStoreSlots(tenant) {
-        return this.publicService.getLocalStoreSlots(tenant);
+    async getPublicCourses(tenantSlug) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        return this.db
+            .select()
+            .from(schema_1.courses)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.courses.tenantId, tenantId), (0, drizzle_orm_1.eq)(schema_1.courses.isPublished, true)))
+            .orderBy((0, drizzle_orm_1.desc)(schema_1.courses.createdAt));
     }
-    async getPublicCourses(tenant) {
-        return this.publicService.getPublicCourses(tenant);
+    async getPublicCourseBySlug(tenantSlug, slug) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        const [course] = await this.db
+            .select()
+            .from(schema_1.courses)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.courses.tenantId, tenantId), (0, drizzle_orm_1.eq)(schema_1.courses.slug, slug), (0, drizzle_orm_1.eq)(schema_1.courses.isPublished, true)));
+        if (!course)
+            throw new common_1.NotFoundException('Kurs nicht gefunden');
+        const chapters = await this.db
+            .select()
+            .from(schema_1.courseChapters)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.courseChapters.courseId, course.id), (0, drizzle_orm_1.eq)(schema_1.courseChapters.isPublished, true)))
+            .orderBy((0, drizzle_orm_1.asc)(schema_1.courseChapters.position));
+        const chaptersWithLessons = await Promise.all(chapters.map(async (ch) => {
+            const lessons = await this.db
+                .select()
+                .from(schema_1.courseLessons)
+                .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.courseLessons.chapterId, ch.id), (0, drizzle_orm_1.eq)(schema_1.courseLessons.isPublished, true)))
+                .orderBy((0, drizzle_orm_1.asc)(schema_1.courseLessons.position));
+            return { ...ch, lessons };
+        }));
+        return { ...course, chapters: chaptersWithLessons };
     }
-    async getPublicCourse(tenant, slug) {
-        return this.publicService.getPublicCourseBySlug(tenant, slug);
+    async getPublicMembershipPlans(tenantSlug) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        return this.db
+            .select()
+            .from(schema_1.membershipPlans)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.membershipPlans.tenantId, tenantId), (0, drizzle_orm_1.eq)(schema_1.membershipPlans.isActive, true)))
+            .orderBy((0, drizzle_orm_1.asc)(schema_1.membershipPlans.position));
     }
-    async getMembershipPlans(tenant) {
-        return this.publicService.getPublicMembershipPlans(tenant);
-    }
-    async getFunnel(tenant, slug) {
-        return this.publicService.getPublicFunnel(tenant, slug);
+    async getPublicFunnel(tenantSlug, slug) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        const [funnel] = await this.db
+            .select()
+            .from(schema_1.funnels)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.funnels.tenantId, tenantId), (0, drizzle_orm_1.eq)(schema_1.funnels.slug, slug), (0, drizzle_orm_1.eq)(schema_1.funnels.isPublished, true)));
+        if (!funnel)
+            throw new common_1.NotFoundException('Funnel nicht gefunden');
+        const steps = await this.db
+            .select()
+            .from(schema_1.funnelSteps)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.funnelSteps.funnelId, funnel.id), (0, drizzle_orm_1.eq)(schema_1.funnelSteps.isActive, true)))
+            .orderBy((0, drizzle_orm_1.asc)(schema_1.funnelSteps.position));
+        return { ...funnel, steps };
     }
 };
 exports.PublicService = PublicService;
-__decorate([
-    Get('restaurant/settings'),
-    __param(0, Param('tenant')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PublicService.prototype, "getRestaurantSettings", null);
-__decorate([
-    Get('restaurant/menu'),
-    __param(0, Param('tenant')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PublicService.prototype, "getRestaurantMenu", null);
-__decorate([
-    Post('restaurant/order'),
-    __param(0, Param('tenant')),
-    __param(1, Body()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], PublicService.prototype, "createRestaurantOrder", null);
-__decorate([
-    Get('local-store/settings'),
-    __param(0, Param('tenant')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PublicService.prototype, "getLocalStoreSettings", null);
-__decorate([
-    Get('local-store/products'),
-    __param(0, Param('tenant')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PublicService.prototype, "getLocalStoreProducts", null);
-__decorate([
-    Get('local-store/slots'),
-    __param(0, Param('tenant')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PublicService.prototype, "getLocalStoreSlots", null);
-__decorate([
-    Get('courses'),
-    __param(0, Param('tenant')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PublicService.prototype, "getPublicCourses", null);
-__decorate([
-    Get('courses/:slug'),
-    __param(0, Param('tenant')),
-    __param(1, Param('slug')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", Promise)
-], PublicService.prototype, "getPublicCourse", null);
-__decorate([
-    Get('membership/plans'),
-    __param(0, Param('tenant')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PublicService.prototype, "getMembershipPlans", null);
-__decorate([
-    Get('funnel/:slug'),
-    __param(0, Param('tenant')),
-    __param(1, Param('slug')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", Promise)
-], PublicService.prototype, "getFunnel", null);
 exports.PublicService = PublicService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(drizzle_module_1.DRIZZLE)),
