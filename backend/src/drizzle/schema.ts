@@ -450,6 +450,11 @@ export const products = pgTable(
     images: varchar('images', { length: 2000 }),
     isActive: boolean('is_active').default(true).notNull(),
     isFeatured: boolean('is_featured').default(false).notNull(),
+     hasVariants: boolean('has_variants').default(false).notNull(),
+   sku: varchar('sku', { length: 100 }),
+   weight: integer('weight'),
+   isDigital: boolean('is_digital').default(false).notNull(),
+   downloadUrl: varchar('download_url', { length: 500 }),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
   },
@@ -482,6 +487,21 @@ export const orders = pgTable(
     shipping: integer('shipping').default(0).notNull(),
     total: integer('total').notNull(),
     notes: varchar('notes', { length: 1000 }),
+    orderType: varchar('order_type', { length: 30 })
+      .default('shipping')
+      .notNull(),
+     trackingNumber: varchar('tracking_number', { length: 100 }),
+     carrier: varchar('carrier', { length: 100 }),
+      shippedAt: timestamp('shipped_at'),
+    deliveredAt: timestamp('delivered_at'),
+      pickupCode: varchar('pickup_code', { length: 20 }),
+     pickupCodeUsed: boolean('pickup_code_used').default(false).notNull(),
+     pickupSlot: timestamp('pickup_slot'),
+     pickupConfirmedAt: timestamp('pickup_confirmed_at'),
+    stripePaymentIntentId: varchar('stripe_payment_intent_id', { length: 255 }),
+     paidAt: timestamp('paid_at'),
+     couponId: uuid('coupon_id'),
+   discountAmount: integer('discount_amount').default(0).notNull(),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
   },
@@ -515,6 +535,601 @@ export const orderItems = pgTable(
   }),
 );
 
+// ============================================================
+// 1. SHOP ERWEITERUNGEN
+// ============================================================
+ 
+export const productVariantGroups = pgTable('product_variant_groups', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  productId: uuid('product_id').references(() => products.id, { onDelete: 'cascade' }).notNull(),
+  name: varchar('name', { length: 100 }).notNull(),
+  isRequired: boolean('is_required').default(true).notNull(),
+  position: integer('position').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  productIdx: index('pvg_product_idx').on(table.productId),
+}));
+ 
+export const productVariants = pgTable('product_variants', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  groupId: uuid('group_id').references(() => productVariantGroups.id, { onDelete: 'cascade' }).notNull(),
+  productId: uuid('product_id').references(() => products.id, { onDelete: 'cascade' }).notNull(),
+  label: varchar('label', { length: 100 }).notNull(),
+  sku: varchar('sku', { length: 100 }),
+  priceModifier: integer('price_modifier').default(0).notNull(),
+  stock: integer('stock').default(0).notNull(),
+  isDefault: boolean('is_default').default(false).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  position: integer('position').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  groupIdx: index('pv_group_idx').on(table.groupId),
+  productIdx: index('pv_product_idx').on(table.productId),
+}));
+ 
+export const orderStatusHistory = pgTable('order_status_history', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  orderId: uuid('order_id').references(() => orders.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  // pending | processing | shipped | delivered | completed | cancelled | refunded
+  status: varchar('status', { length: 30 }).notNull(),
+  note: varchar('note', { length: 500 }),
+  createdBy: uuid('created_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  orderIdx: index('osh_order_idx').on(table.orderId),
+}));
+ 
+// ============================================================
+// 2. GUTSCHEINE — Platform Feature (alle Module)
+// ============================================================
+ 
+export const coupons = pgTable('coupons', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  code: varchar('code', { length: 50 }).notNull(),
+  description: varchar('description', { length: 500 }),
+  // percent | fixed | free_shipping
+  type: varchar('type', { length: 20 }).notNull(),
+  value: integer('value').notNull(),
+  minOrderAmount: integer('min_order_amount').default(0),
+  maxUses: integer('max_uses'),
+  usedCount: integer('used_count').default(0).notNull(),
+  // shop | restaurant | local | courses | all
+  applicableModule: varchar('applicable_module', { length: 30 }).default('all').notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  startsAt: timestamp('starts_at'),
+  expiresAt: timestamp('expires_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  tenantCodeIdx: uniqueIndex('coupons_tenant_code_idx').on(table.tenantId, table.code),
+  tenantIdx: index('coupons_tenant_idx').on(table.tenantId),
+}));
+ 
+export const couponUses = pgTable('coupon_uses', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  couponId: uuid('coupon_id').references(() => coupons.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  customerEmail: varchar('customer_email', { length: 255 }).notNull(),
+  referenceId: uuid('reference_id'),
+  // shop | restaurant | local | course
+  referenceType: varchar('reference_type', { length: 30 }),
+  discountAmount: integer('discount_amount').notNull(),
+  usedAt: timestamp('used_at').defaultNow(),
+}, (table) => ({
+  couponIdx: index('coupon_uses_coupon_idx').on(table.couponId),
+  tenantIdx: index('coupon_uses_tenant_idx').on(table.tenantId),
+}));
+ 
+// ============================================================
+// 3. RESTAURANT / FOOD MODUL
+// ============================================================
+ 
+export const restaurantSettings = pgTable('restaurant_settings', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull().unique(),
+  dineInEnabled: boolean('dine_in_enabled').default(true).notNull(),
+  pickupEnabled: boolean('pickup_enabled').default(true).notNull(),
+  deliveryEnabled: boolean('delivery_enabled').default(false).notNull(),
+  deliveryRadius: integer('delivery_radius').default(5),
+  deliveryFee: integer('delivery_fee').default(0),
+  freeDeliveryFrom: integer('free_delivery_from'),
+  minOrderAmount: integer('min_order_amount').default(0),
+  estimatedPickupTime: integer('estimated_pickup_time').default(20),
+  estimatedDeliveryTime: integer('estimated_delivery_time').default(45),
+  cashEnabled: boolean('cash_enabled').default(true).notNull(),
+  cardOnPickupEnabled: boolean('card_on_pickup_enabled').default(true).notNull(),
+  onlinePaymentEnabled: boolean('online_payment_enabled').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+ 
+export const restaurantTables = pgTable('restaurant_tables', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  number: varchar('number', { length: 20 }).notNull(),
+  name: varchar('name', { length: 100 }),
+  capacity: integer('capacity').default(4).notNull(),
+  qrCode: varchar('qr_code', { length: 500 }),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  tenantIdx: index('rt_tenant_idx').on(table.tenantId),
+  tenantNumberIdx: uniqueIndex('rt_tenant_number_idx').on(table.tenantId, table.number),
+}));
+ 
+export const menuCategories = pgTable('menu_categories', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  name: varchar('name', { length: 200 }).notNull(),
+  slug: varchar('slug', { length: 200 }).notNull(),
+  description: varchar('description', { length: 500 }),
+  image: varchar('image', { length: 500 }),
+  position: integer('position').default(0).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  availableFrom: varchar('available_from', { length: 5 }),
+  availableTo: varchar('available_to', { length: 5 }),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  tenantSlugIdx: uniqueIndex('mc_tenant_slug_idx').on(table.tenantId, table.slug),
+  tenantIdx: index('mc_tenant_idx').on(table.tenantId),
+}));
+ 
+export const menuItems = pgTable('menu_items', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  categoryId: uuid('category_id').references(() => menuCategories.id, { onDelete: 'set null' }),
+  name: varchar('name', { length: 300 }).notNull(),
+  slug: varchar('slug', { length: 300 }).notNull(),
+  description: varchar('description', { length: 1000 }),
+  price: integer('price').notNull(),
+  images: jsonb('images').default([]),
+  allergens: text('allergens').array().default([]),
+  isVegan: boolean('is_vegan').default(false).notNull(),
+  isVegetarian: boolean('is_vegetarian').default(false).notNull(),
+  isSpicy: boolean('is_spicy').default(false).notNull(),
+  isPopular: boolean('is_popular').default(false).notNull(),
+  isAvailable: boolean('is_available').default(true).notNull(),
+  position: integer('position').default(0).notNull(),
+  preparationTime: integer('preparation_time').default(15),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  tenantSlugIdx: uniqueIndex('mi_tenant_slug_idx').on(table.tenantId, table.slug),
+  tenantIdx: index('mi_tenant_idx').on(table.tenantId),
+  categoryIdx: index('mi_category_idx').on(table.categoryId),
+}));
+ 
+export const menuModifierGroups = pgTable('menu_modifier_groups', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  menuItemId: uuid('menu_item_id').references(() => menuItems.id, { onDelete: 'cascade' }).notNull(),
+  name: varchar('name', { length: 100 }).notNull(),
+  isRequired: boolean('is_required').default(false).notNull(),
+  minSelections: integer('min_selections').default(0).notNull(),
+  maxSelections: integer('max_selections').default(1).notNull(),
+  position: integer('position').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  menuItemIdx: index('mmg_menu_item_idx').on(table.menuItemId),
+}));
+ 
+export const menuModifiers = pgTable('menu_modifiers', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  groupId: uuid('group_id').references(() => menuModifierGroups.id, { onDelete: 'cascade' }).notNull(),
+  name: varchar('name', { length: 100 }).notNull(),
+  priceModifier: integer('price_modifier').default(0).notNull(),
+  isDefault: boolean('is_default').default(false).notNull(),
+  isAvailable: boolean('is_available').default(true).notNull(),
+  position: integer('position').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  groupIdx: index('mm_group_idx').on(table.groupId),
+}));
+ 
+export const foodOrders = pgTable('food_orders', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  orderNumber: varchar('order_number', { length: 50 }).notNull(),
+  // dine_in | pickup | delivery
+  orderType: varchar('order_type', { length: 20 }).notNull(),
+  tableId: uuid('table_id').references(() => restaurantTables.id, { onDelete: 'set null' }),
+  customerName: varchar('customer_name', { length: 255 }).notNull(),
+  customerEmail: varchar('customer_email', { length: 255 }),
+  customerPhone: varchar('customer_phone', { length: 50 }),
+  deliveryAddress: varchar('delivery_address', { length: 1000 }),
+  // new | accepted | preparing | ready | on_the_way | delivered | cancelled
+  status: varchar('status', { length: 30 }).default('new').notNull(),
+  notes: varchar('notes', { length: 1000 }),
+  subtotal: integer('subtotal').notNull(),
+  tax: integer('tax').default(0).notNull(),
+  deliveryFee: integer('delivery_fee').default(0).notNull(),
+  discountAmount: integer('discount_amount').default(0).notNull(),
+  total: integer('total').notNull(),
+  pickupCode: varchar('pickup_code', { length: 20 }),
+  pickupCodeUsed: boolean('pickup_code_used').default(false).notNull(),
+  estimatedReadyAt: timestamp('estimated_ready_at'),
+  // cash | card_on_pickup | online
+  paymentMethod: varchar('payment_method', { length: 30 }).default('cash').notNull(),
+  stripePaymentIntentId: varchar('stripe_payment_intent_id', { length: 255 }),
+  paidAt: timestamp('paid_at'),
+  couponId: uuid('coupon_id'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  tenantIdx: index('fo_tenant_idx').on(table.tenantId),
+  orderNumberIdx: uniqueIndex('fo_order_number_idx').on(table.orderNumber),
+  statusIdx: index('fo_status_idx').on(table.status),
+}));
+ 
+export const foodOrderItems = pgTable('food_order_items', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  foodOrderId: uuid('food_order_id').references(() => foodOrders.id, { onDelete: 'cascade' }).notNull(),
+  menuItemId: uuid('menu_item_id').references(() => menuItems.id, { onDelete: 'set null' }),
+  menuItemName: varchar('menu_item_name', { length: 300 }).notNull(),
+  menuItemPrice: integer('menu_item_price').notNull(),
+  quantity: integer('quantity').notNull(),
+  selectedModifiers: jsonb('selected_modifiers').default([]),
+  notes: varchar('notes', { length: 500 }),
+  total: integer('total').notNull(),
+}, (table) => ({
+  orderIdx: index('foi_order_idx').on(table.foodOrderId),
+}));
+ 
+export const foodOrderStatusHistory = pgTable('food_order_status_history', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  foodOrderId: uuid('food_order_id').references(() => foodOrders.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  status: varchar('status', { length: 30 }).notNull(),
+  note: varchar('note', { length: 500 }),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  orderIdx: index('fosh_order_idx').on(table.foodOrderId),
+}));
+ 
+// ============================================================
+// 4. LOKALER HANDEL MODUL
+// ============================================================
+ 
+export const localStoreSettings = pgTable('local_store_settings', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull().unique(),
+  // market | pharmacy | florist | bakery | butcher | kiosk | farm | other
+  storeType: varchar('store_type', { length: 50 }).default('other').notNull(),
+  pickupEnabled: boolean('pickup_enabled').default(true).notNull(),
+  deliveryEnabled: boolean('delivery_enabled').default(false).notNull(),
+  pickupSlotDuration: integer('pickup_slot_duration').default(30),
+  maxOrdersPerSlot: integer('max_orders_per_slot').default(5),
+  minOrderAmount: integer('min_order_amount').default(0),
+  cashOnPickupEnabled: boolean('cash_on_pickup_enabled').default(true).notNull(),
+  cardOnPickupEnabled: boolean('card_on_pickup_enabled').default(true).notNull(),
+  onlinePaymentEnabled: boolean('online_payment_enabled').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+ 
+export const localProducts = pgTable('local_products', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  categoryId: uuid('category_id'),
+  name: varchar('name', { length: 300 }).notNull(),
+  slug: varchar('slug', { length: 300 }).notNull(),
+  description: varchar('description', { length: 2000 }),
+  price: integer('price').notNull(),
+  compareAtPrice: integer('compare_at_price'),
+  // kg | g | Stück | Liter | ml | Bund | Packung
+  unit: varchar('unit', { length: 30 }).default('Stück').notNull(),
+  images: jsonb('images').default([]),
+  stock: integer('stock').default(0),
+  isUnlimited: boolean('is_unlimited').default(false).notNull(),
+  isAvailable: boolean('is_available').default(true).notNull(),
+  isFeatured: boolean('is_featured').default(false).notNull(),
+  isOrganic: boolean('is_organic').default(false).notNull(),
+  isRegional: boolean('is_regional').default(false).notNull(),
+  origin: varchar('origin', { length: 200 }),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  tenantSlugIdx: uniqueIndex('lp_tenant_slug_idx').on(table.tenantId, table.slug),
+  tenantIdx: index('lp_tenant_idx').on(table.tenantId),
+}));
+ 
+export const localDeals = pgTable('local_deals', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  localProductId: uuid('local_product_id').references(() => localProducts.id, { onDelete: 'cascade' }),
+  title: varchar('title', { length: 300 }).notNull(),
+  description: varchar('description', { length: 1000 }),
+  image: varchar('image', { length: 500 }),
+  // percent | fixed
+  discountType: varchar('discount_type', { length: 20 }).notNull(),
+  discountValue: integer('discount_value').notNull(),
+  startsAt: timestamp('starts_at').notNull(),
+  endsAt: timestamp('ends_at').notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  tenantIdx: index('ld_tenant_idx').on(table.tenantId),
+}));
+ 
+export const localPickupSlots = pgTable('local_pickup_slots', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  // 0=So, 1=Mo, ... 6=Sa
+  dayOfWeek: integer('day_of_week').notNull(),
+  startTime: varchar('start_time', { length: 5 }).notNull(),
+  endTime: varchar('end_time', { length: 5 }).notNull(),
+  maxOrders: integer('max_orders').default(5).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  tenantIdx: index('lps_tenant_idx').on(table.tenantId),
+}));
+ 
+export const localOrders = pgTable('local_orders', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  orderNumber: varchar('order_number', { length: 50 }).notNull(),
+  // pickup | delivery
+  orderType: varchar('order_type', { length: 20 }).default('pickup').notNull(),
+  pickupSlotId: uuid('pickup_slot_id').references(() => localPickupSlots.id, { onDelete: 'set null' }),
+  pickupDate: varchar('pickup_date', { length: 10 }),
+  pickupCode: varchar('pickup_code', { length: 20 }),
+  pickupCodeUsed: boolean('pickup_code_used').default(false).notNull(),
+  pickupConfirmedAt: timestamp('pickup_confirmed_at'),
+  pickupConfirmedBy: uuid('pickup_confirmed_by').references(() => users.id, { onDelete: 'set null' }),
+  customerName: varchar('customer_name', { length: 255 }).notNull(),
+  customerEmail: varchar('customer_email', { length: 255 }),
+  customerPhone: varchar('customer_phone', { length: 50 }),
+  deliveryAddress: varchar('delivery_address', { length: 1000 }),
+  // pending | confirmed | ready | picked_up | cancelled
+  status: varchar('status', { length: 30 }).default('pending').notNull(),
+  notes: varchar('notes', { length: 1000 }),
+  subtotal: integer('subtotal').notNull(),
+  discountAmount: integer('discount_amount').default(0).notNull(),
+  total: integer('total').notNull(),
+  // cash_on_pickup | card_on_pickup | online
+  paymentMethod: varchar('payment_method', { length: 30 }).default('cash_on_pickup').notNull(),
+  stripePaymentIntentId: varchar('stripe_payment_intent_id', { length: 255 }),
+  paidAt: timestamp('paid_at'),
+  couponId: uuid('coupon_id'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  tenantIdx: index('lo_tenant_idx').on(table.tenantId),
+  orderNumberIdx: uniqueIndex('lo_order_number_idx').on(table.orderNumber),
+  statusIdx: index('lo_status_idx').on(table.status),
+}));
+ 
+export const localOrderItems = pgTable('local_order_items', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  localOrderId: uuid('local_order_id').references(() => localOrders.id, { onDelete: 'cascade' }).notNull(),
+  localProductId: uuid('local_product_id').references(() => localProducts.id, { onDelete: 'set null' }),
+  productName: varchar('product_name', { length: 300 }).notNull(),
+  productPrice: integer('product_price').notNull(),
+  unit: varchar('unit', { length: 30 }).notNull(),
+  quantity: integer('quantity').notNull(),
+  total: integer('total').notNull(),
+}, (table) => ({
+  orderIdx: index('loi_order_idx').on(table.localOrderId),
+}));
+ 
+// ============================================================
+// 5. FUNNELS MODUL
+// ============================================================
+ 
+export const funnels = pgTable('funnels', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  name: varchar('name', { length: 300 }).notNull(),
+  slug: varchar('slug', { length: 300 }).notNull(),
+  description: varchar('description', { length: 1000 }),
+  isActive: boolean('is_active').default(false).notNull(),
+  isPublished: boolean('is_published').default(false).notNull(),
+  // email | purchase | booking
+  conversionGoal: varchar('conversion_goal', { length: 30 }).default('email').notNull(),
+  utmSource: varchar('utm_source', { length: 100 }),
+  utmMedium: varchar('utm_medium', { length: 100 }),
+  utmCampaign: varchar('utm_campaign', { length: 100 }),
+  totalViews: integer('total_views').default(0).notNull(),
+  totalConversions: integer('total_conversions').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  tenantSlugIdx: uniqueIndex('funnels_tenant_slug_idx').on(table.tenantId, table.slug),
+  tenantIdx: index('funnels_tenant_idx').on(table.tenantId),
+}));
+ 
+export const funnelSteps = pgTable('funnel_steps', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  funnelId: uuid('funnel_id').references(() => funnels.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  title: varchar('title', { length: 300 }).notNull(),
+  slug: varchar('slug', { length: 300 }).notNull(),
+  // optin | sales | upsell | downsell | thankyou | video
+  stepType: varchar('step_type', { length: 30 }).notNull(),
+  content: jsonb('content').default([]),
+  position: integer('position').default(0).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  nextStepId: uuid('next_step_id'),
+  views: integer('views').default(0).notNull(),
+  conversions: integer('conversions').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  funnelIdx: index('fs_funnel_idx').on(table.funnelId),
+  tenantSlugIdx: uniqueIndex('fs_tenant_slug_idx').on(table.tenantId, table.slug),
+}));
+ 
+export const funnelSubmissions = pgTable('funnel_submissions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  funnelId: uuid('funnel_id').references(() => funnels.id, { onDelete: 'cascade' }).notNull(),
+  stepId: uuid('step_id').references(() => funnelSteps.id, { onDelete: 'set null' }),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  customerEmail: varchar('customer_email', { length: 255 }),
+  customerName: varchar('customer_name', { length: 255 }),
+  data: jsonb('data').default({}),
+  utmSource: varchar('utm_source', { length: 100 }),
+  utmMedium: varchar('utm_medium', { length: 100 }),
+  utmCampaign: varchar('utm_campaign', { length: 100 }),
+  ipAddress: varchar('ip_address', { length: 45 }),
+  userAgent: text('user_agent'),
+  convertedAt: timestamp('converted_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  funnelIdx: index('fsub_funnel_idx').on(table.funnelId),
+  tenantIdx: index('fsub_tenant_idx').on(table.tenantId),
+}));
+ 
+// ============================================================
+// 6. MEMBERSHIP PLÄNE + KURSE
+// ============================================================
+ 
+export const membershipPlans = pgTable('membership_plans', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  name: varchar('name', { length: 200 }).notNull(),
+  slug: varchar('slug', { length: 200 }).notNull(),
+  description: varchar('description', { length: 2000 }),
+  price: integer('price').notNull(),
+  // monthly | yearly | lifetime
+  interval: varchar('interval', { length: 20 }).default('monthly').notNull(),
+  features: jsonb('features').default([]),
+  isActive: boolean('is_active').default(true).notNull(),
+  isPublic: boolean('is_public').default(true).notNull(),
+  stripePriceId: varchar('stripe_price_id', { length: 255 }),
+  position: integer('position').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  tenantSlugIdx: uniqueIndex('mp_tenant_slug_idx').on(table.tenantId, table.slug),
+  tenantIdx: index('mp_tenant_idx').on(table.tenantId),
+}));
+ 
+export const memberships = pgTable('memberships', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  planId: uuid('plan_id').references(() => membershipPlans.id, { onDelete: 'set null' }),
+  customerEmail: varchar('customer_email', { length: 255 }).notNull(),
+  customerName: varchar('customer_name', { length: 255 }).notNull(),
+  // active | cancelled | expired | trial | paused
+  status: varchar('status', { length: 30 }).default('active').notNull(),
+  startedAt: timestamp('started_at').defaultNow(),
+  expiresAt: timestamp('expires_at'),
+  cancelledAt: timestamp('cancelled_at'),
+  stripeSubscriptionId: varchar('stripe_subscription_id', { length: 255 }),
+  stripeCustomerId: varchar('stripe_customer_id', { length: 255 }),
+  grantedManually: boolean('granted_manually').default(false).notNull(),
+  grantedBy: uuid('granted_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  tenantIdx: index('mem_tenant_idx').on(table.tenantId),
+  emailIdx: index('mem_email_idx').on(table.customerEmail),
+  planIdx: index('mem_plan_idx').on(table.planId),
+  stripeIdx: index('mem_stripe_idx').on(table.stripeSubscriptionId),
+}));
+ 
+export const courses = pgTable('courses', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  title: varchar('title', { length: 500 }).notNull(),
+  slug: varchar('slug', { length: 500 }).notNull(),
+  description: text('description'),
+  shortDescription: varchar('short_description', { length: 500 }),
+  thumbnail: varchar('thumbnail', { length: 500 }),
+  price: integer('price').default(0).notNull(),
+  isFree: boolean('is_free').default(false).notNull(),
+  isPublished: boolean('is_published').default(false).notNull(),
+  requiresMembershipPlanId: uuid('requires_membership_plan_id').references(() => membershipPlans.id, { onDelete: 'set null' }),
+  // beginner | intermediate | advanced
+  level: varchar('level', { length: 30 }).default('beginner').notNull(),
+  language: varchar('language', { length: 10 }).default('de').notNull(),
+  totalDuration: integer('total_duration').default(0),
+  certificateEnabled: boolean('certificate_enabled').default(false).notNull(),
+  stripePriceId: varchar('stripe_price_id', { length: 255 }),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  tenantSlugIdx: uniqueIndex('courses_tenant_slug_idx').on(table.tenantId, table.slug),
+  tenantIdx: index('courses_tenant_idx').on(table.tenantId),
+}));
+ 
+export const courseChapters = pgTable('course_chapters', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  courseId: uuid('course_id').references(() => courses.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  title: varchar('title', { length: 300 }).notNull(),
+  description: varchar('description', { length: 1000 }),
+  position: integer('position').default(0).notNull(),
+  isPublished: boolean('is_published').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  courseIdx: index('cc_course_idx').on(table.courseId),
+}));
+ 
+export const courseLessons = pgTable('course_lessons', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  chapterId: uuid('chapter_id').references(() => courseChapters.id, { onDelete: 'cascade' }).notNull(),
+  courseId: uuid('course_id').references(() => courses.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  title: varchar('title', { length: 300 }).notNull(),
+  slug: varchar('slug', { length: 300 }).notNull(),
+  // video | text | pdf | quiz
+  type: varchar('type', { length: 20 }).default('video').notNull(),
+  content: jsonb('content').default({}),
+  videoUrl: varchar('video_url', { length: 500 }),
+  duration: integer('duration').default(0),
+  position: integer('position').default(0).notNull(),
+  isPublished: boolean('is_published').default(true).notNull(),
+  isFreePreview: boolean('is_free_preview').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  chapterIdx: index('cl_chapter_idx').on(table.chapterId),
+  courseIdx: index('cl_course_idx').on(table.courseId),
+  tenantSlugIdx: uniqueIndex('cl_tenant_slug_idx').on(table.tenantId, table.slug),
+}));
+ 
+export const courseEnrollments = pgTable('course_enrollments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  courseId: uuid('course_id').references(() => courses.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  customerEmail: varchar('customer_email', { length: 255 }).notNull(),
+  customerName: varchar('customer_name', { length: 255 }).notNull(),
+  // purchase | membership | manual | free
+  accessGrantedBy: varchar('access_granted_by', { length: 30 }).default('purchase').notNull(),
+  membershipId: uuid('membership_id').references(() => memberships.id, { onDelete: 'set null' }),
+  stripePaymentIntentId: varchar('stripe_payment_intent_id', { length: 255 }),
+  enrolledAt: timestamp('enrolled_at').defaultNow(),
+  completedAt: timestamp('completed_at'),
+  progress: integer('progress').default(0).notNull(),
+  certificateUrl: varchar('certificate_url', { length: 500 }),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  courseIdx: index('ce_course_idx').on(table.courseId),
+  emailIdx: index('ce_email_idx').on(table.customerEmail),
+  tenantEmailCourseIdx: uniqueIndex('ce_tenant_email_course_idx').on(table.tenantId, table.customerEmail, table.courseId),
+}));
+ 
+export const lessonProgress = pgTable('lesson_progress', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  enrollmentId: uuid('enrollment_id').references(() => courseEnrollments.id, { onDelete: 'cascade' }).notNull(),
+  lessonId: uuid('lesson_id').references(() => courseLessons.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: uuid('tenant_id').references(() => tenants.id, { onDelete: 'cascade' }).notNull(),
+  completedAt: timestamp('completed_at'),
+  watchTime: integer('watch_time').default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  enrollmentIdx: index('lp_enrollment_idx').on(table.enrollmentId),
+  enrollmentLessonIdx: uniqueIndex('lp_enrollment_lesson_idx').on(table.enrollmentId, table.lessonId),
+}));
 // ==================== EMAIL SYSTEM ====================
 
 export const passwordResetTokens = pgTable('password_reset_tokens', {
@@ -1700,6 +2315,167 @@ export const analyticsDailyRelations = relations(analyticsDaily, ({ one }) => ({
     fields: [analyticsDaily.tenantId],
     references: [tenants.id],
   }),
+}));
+
+export const productVariantGroupsRelations = relations(productVariantGroups, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [productVariantGroups.tenantId], references: [tenants.id] }),
+  product: one(products, { fields: [productVariantGroups.productId], references: [products.id] }),
+  variants: many(productVariants),
+}));
+ 
+export const productVariantsRelations = relations(productVariants, ({ one }) => ({
+  tenant: one(tenants, { fields: [productVariants.tenantId], references: [tenants.id] }),
+  group: one(productVariantGroups, { fields: [productVariants.groupId], references: [productVariantGroups.id] }),
+  product: one(products, { fields: [productVariants.productId], references: [products.id] }),
+}));
+ 
+export const orderStatusHistoryRelations = relations(orderStatusHistory, ({ one }) => ({
+  order: one(orders, { fields: [orderStatusHistory.orderId], references: [orders.id] }),
+  tenant: one(tenants, { fields: [orderStatusHistory.tenantId], references: [tenants.id] }),
+  createdByUser: one(users, { fields: [orderStatusHistory.createdBy], references: [users.id] }),
+}));
+ 
+export const couponsRelations = relations(coupons, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [coupons.tenantId], references: [tenants.id] }),
+  uses: many(couponUses),
+}));
+ 
+export const couponUsesRelations = relations(couponUses, ({ one }) => ({
+  coupon: one(coupons, { fields: [couponUses.couponId], references: [coupons.id] }),
+  tenant: one(tenants, { fields: [couponUses.tenantId], references: [tenants.id] }),
+}));
+ 
+export const menuCategoriesRelations = relations(menuCategories, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [menuCategories.tenantId], references: [tenants.id] }),
+  items: many(menuItems),
+}));
+ 
+export const menuItemsRelations = relations(menuItems, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [menuItems.tenantId], references: [tenants.id] }),
+  category: one(menuCategories, { fields: [menuItems.categoryId], references: [menuCategories.id] }),
+  modifierGroups: many(menuModifierGroups),
+}));
+ 
+export const menuModifierGroupsRelations = relations(menuModifierGroups, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [menuModifierGroups.tenantId], references: [tenants.id] }),
+  menuItem: one(menuItems, { fields: [menuModifierGroups.menuItemId], references: [menuItems.id] }),
+  modifiers: many(menuModifiers),
+}));
+ 
+export const menuModifiersRelations = relations(menuModifiers, ({ one }) => ({
+  tenant: one(tenants, { fields: [menuModifiers.tenantId], references: [tenants.id] }),
+  group: one(menuModifierGroups, { fields: [menuModifiers.groupId], references: [menuModifierGroups.id] }),
+}));
+ 
+export const restaurantTablesRelations = relations(restaurantTables, ({ one }) => ({
+  tenant: one(tenants, { fields: [restaurantTables.tenantId], references: [tenants.id] }),
+}));
+ 
+export const foodOrdersRelations = relations(foodOrders, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [foodOrders.tenantId], references: [tenants.id] }),
+  table: one(restaurantTables, { fields: [foodOrders.tableId], references: [restaurantTables.id] }),
+  items: many(foodOrderItems),
+  statusHistory: many(foodOrderStatusHistory),
+}));
+ 
+export const foodOrderItemsRelations = relations(foodOrderItems, ({ one }) => ({
+  foodOrder: one(foodOrders, { fields: [foodOrderItems.foodOrderId], references: [foodOrders.id] }),
+  menuItem: one(menuItems, { fields: [foodOrderItems.menuItemId], references: [menuItems.id] }),
+}));
+ 
+export const foodOrderStatusHistoryRelations = relations(foodOrderStatusHistory, ({ one }) => ({
+  foodOrder: one(foodOrders, { fields: [foodOrderStatusHistory.foodOrderId], references: [foodOrders.id] }),
+  tenant: one(tenants, { fields: [foodOrderStatusHistory.tenantId], references: [tenants.id] }),
+}));
+ 
+export const localProductsRelations = relations(localProducts, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [localProducts.tenantId], references: [tenants.id] }),
+  deals: many(localDeals),
+}));
+ 
+export const localDealsRelations = relations(localDeals, ({ one }) => ({
+  tenant: one(tenants, { fields: [localDeals.tenantId], references: [tenants.id] }),
+  localProduct: one(localProducts, { fields: [localDeals.localProductId], references: [localProducts.id] }),
+}));
+ 
+export const localPickupSlotsRelations = relations(localPickupSlots, ({ one }) => ({
+  tenant: one(tenants, { fields: [localPickupSlots.tenantId], references: [tenants.id] }),
+}));
+ 
+export const localOrdersRelations = relations(localOrders, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [localOrders.tenantId], references: [tenants.id] }),
+  pickupSlot: one(localPickupSlots, { fields: [localOrders.pickupSlotId], references: [localPickupSlots.id] }),
+  confirmedByUser: one(users, { fields: [localOrders.pickupConfirmedBy], references: [users.id] }),
+  items: many(localOrderItems),
+}));
+ 
+export const localOrderItemsRelations = relations(localOrderItems, ({ one }) => ({
+  localOrder: one(localOrders, { fields: [localOrderItems.localOrderId], references: [localOrders.id] }),
+  localProduct: one(localProducts, { fields: [localOrderItems.localProductId], references: [localProducts.id] }),
+}));
+ 
+export const funnelsRelations = relations(funnels, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [funnels.tenantId], references: [tenants.id] }),
+  steps: many(funnelSteps),
+  submissions: many(funnelSubmissions),
+}));
+ 
+export const funnelStepsRelations = relations(funnelSteps, ({ one, many }) => ({
+  funnel: one(funnels, { fields: [funnelSteps.funnelId], references: [funnels.id] }),
+  tenant: one(tenants, { fields: [funnelSteps.tenantId], references: [tenants.id] }),
+  submissions: many(funnelSubmissions),
+}));
+ 
+export const funnelSubmissionsRelations = relations(funnelSubmissions, ({ one }) => ({
+  funnel: one(funnels, { fields: [funnelSubmissions.funnelId], references: [funnels.id] }),
+  step: one(funnelSteps, { fields: [funnelSubmissions.stepId], references: [funnelSteps.id] }),
+  tenant: one(tenants, { fields: [funnelSubmissions.tenantId], references: [tenants.id] }),
+}));
+ 
+export const membershipPlansRelations = relations(membershipPlans, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [membershipPlans.tenantId], references: [tenants.id] }),
+  memberships: many(memberships),
+  courses: many(courses),
+}));
+ 
+export const membershipsRelations = relations(memberships, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [memberships.tenantId], references: [tenants.id] }),
+  plan: one(membershipPlans, { fields: [memberships.planId], references: [membershipPlans.id] }),
+  grantedByUser: one(users, { fields: [memberships.grantedBy], references: [users.id] }),
+  enrollments: many(courseEnrollments),
+}));
+ 
+export const coursesRelations = relations(courses, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [courses.tenantId], references: [tenants.id] }),
+  requiredPlan: one(membershipPlans, { fields: [courses.requiresMembershipPlanId], references: [membershipPlans.id] }),
+  chapters: many(courseChapters),
+  enrollments: many(courseEnrollments),
+}));
+ 
+export const courseChaptersRelations = relations(courseChapters, ({ one, many }) => ({
+  course: one(courses, { fields: [courseChapters.courseId], references: [courses.id] }),
+  tenant: one(tenants, { fields: [courseChapters.tenantId], references: [tenants.id] }),
+  lessons: many(courseLessons),
+}));
+ 
+export const courseLessonsRelations = relations(courseLessons, ({ one, many }) => ({
+  chapter: one(courseChapters, { fields: [courseLessons.chapterId], references: [courseChapters.id] }),
+  course: one(courses, { fields: [courseLessons.courseId], references: [courses.id] }),
+  tenant: one(tenants, { fields: [courseLessons.tenantId], references: [tenants.id] }),
+  progress: many(lessonProgress),
+}));
+ 
+export const courseEnrollmentsRelations = relations(courseEnrollments, ({ one, many }) => ({
+  course: one(courses, { fields: [courseEnrollments.courseId], references: [courses.id] }),
+  tenant: one(tenants, { fields: [courseEnrollments.tenantId], references: [tenants.id] }),
+  membership: one(memberships, { fields: [courseEnrollments.membershipId], references: [memberships.id] }),
+  lessonProgress: many(lessonProgress),
+}));
+ 
+export const lessonProgressRelations = relations(lessonProgress, ({ one }) => ({
+  enrollment: one(courseEnrollments, { fields: [lessonProgress.enrollmentId], references: [courseEnrollments.id] }),
+  lesson: one(courseLessons, { fields: [lessonProgress.lessonId], references: [courseLessons.id] }),
+  tenant: one(tenants, { fields: [lessonProgress.tenantId], references: [tenants.id] }),
 }));
 // ==================== TENANT CUSTOMERS (Public Member Area) ====================
 

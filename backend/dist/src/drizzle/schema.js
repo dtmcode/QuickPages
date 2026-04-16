@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.forms = exports.analyticsDaily = exports.analyticsPageviews = exports.bookingAppointments = exports.bookingSettings = exports.bookingBlockedDates = exports.bookingAvailability = exports.bookingServices = exports.supportMessages = exports.supportTickets = exports.emailVerificationTokens = exports.seoMeta = exports.navigationItems = exports.navigations = exports.mediaFiles = exports.campaignQueue = exports.campaignEvents = exports.newsletterCampaigns = exports.newsletterSubscribers = exports.tenantEmailTemplates = exports.tenantEmailSettings = exports.emailEvents = exports.emailLogs = exports.passwordResetTokens = exports.orderItems = exports.orders = exports.products = exports.categories = exports.pages = exports.posts = exports.auditLogs = exports.refreshTokens = exports.users = exports.usageTracking = exports.tenantAddons = exports.subscriptions = exports.domainEvents = exports.tenants = exports.campaignEventTypeEnum = exports.campaignStatusEnum = exports.subscriberStatusEnum = exports.emailProviderEnum = exports.mediaTypeEnum = exports.orderStatusEnum = exports.pageTemplateEnum = exports.postStatusEnum = exports.subscriptionStatusEnum = exports.addonTypeEnum = exports.shopTemplateEnum = exports.userRoleEnum = void 0;
-exports.uiTranslationsRelations = exports.translationsRelations = exports.tenantPaymentSettings = exports.tenantCustomers = exports.analyticsDailyRelations = exports.analyticsPageviewsRelations = exports.blogCommentsRelations = exports.formSubmissionsRelations = exports.formsRelations = exports.bookingAppointmentsRelations = exports.bookingServicesRelations = exports.domainEventsRelations = exports.supportMessagesRelations = exports.supportTicketsRelations = exports.navigationItemsRelations = exports.navigationsRelations = exports.mediaFilesRelations = exports.campaignQueueRelations = exports.campaignEventsRelations = exports.newsletterCampaignsRelations = exports.newsletterSubscribersRelations = exports.tenantEmailTemplatesRelations = exports.tenantEmailSettingsRelations = exports.emailEventsRelations = exports.emailLogsRelations = exports.orderItemsRelations = exports.ordersRelations = exports.productsRelations = exports.categoriesRelations = exports.pagesRelations = exports.postsRelations = exports.auditLogsRelations = exports.passwordResetTokensRelations = exports.refreshTokensRelations = exports.usageTrackingRelations = exports.tenantAddonsRelations = exports.subscriptionsRelations = exports.usersRelations = exports.tenantsRelations = exports.uiTranslations = exports.translations = exports.commentSettings = exports.blogComments = exports.formSubmissions = void 0;
+exports.membershipPlans = exports.funnelSubmissions = exports.funnelSteps = exports.funnels = exports.localOrderItems = exports.localOrders = exports.localPickupSlots = exports.localDeals = exports.localProducts = exports.localStoreSettings = exports.foodOrderStatusHistory = exports.foodOrderItems = exports.foodOrders = exports.menuModifiers = exports.menuModifierGroups = exports.menuItems = exports.menuCategories = exports.restaurantTables = exports.restaurantSettings = exports.couponUses = exports.coupons = exports.orderStatusHistory = exports.productVariants = exports.productVariantGroups = exports.orderItems = exports.orders = exports.products = exports.categories = exports.pages = exports.posts = exports.auditLogs = exports.refreshTokens = exports.users = exports.usageTracking = exports.tenantAddons = exports.subscriptions = exports.domainEvents = exports.tenants = exports.campaignEventTypeEnum = exports.campaignStatusEnum = exports.subscriberStatusEnum = exports.emailProviderEnum = exports.mediaTypeEnum = exports.orderStatusEnum = exports.pageTemplateEnum = exports.postStatusEnum = exports.subscriptionStatusEnum = exports.addonTypeEnum = exports.shopTemplateEnum = exports.userRoleEnum = void 0;
+exports.emailLogsRelations = exports.orderItemsRelations = exports.ordersRelations = exports.productsRelations = exports.categoriesRelations = exports.pagesRelations = exports.postsRelations = exports.auditLogsRelations = exports.passwordResetTokensRelations = exports.refreshTokensRelations = exports.usageTrackingRelations = exports.tenantAddonsRelations = exports.subscriptionsRelations = exports.usersRelations = exports.tenantsRelations = exports.uiTranslations = exports.translations = exports.commentSettings = exports.blogComments = exports.formSubmissions = exports.forms = exports.analyticsDaily = exports.pageViews = exports.bookingAppointments = exports.bookingSettings = exports.bookingBlockedDates = exports.bookingAvailability = exports.bookingServices = exports.supportMessages = exports.supportTickets = exports.emailVerificationTokens = exports.seoMeta = exports.navigationItems = exports.navigations = exports.mediaFiles = exports.campaignQueue = exports.campaignEvents = exports.newsletterCampaigns = exports.newsletterSubscribers = exports.tenantEmailTemplates = exports.tenantEmailSettings = exports.emailEvents = exports.emailLogs = exports.passwordResetTokens = exports.lessonProgress = exports.courseEnrollments = exports.courseLessons = exports.courseChapters = exports.courses = exports.memberships = void 0;
+exports.tenantPaymentSettings = exports.tenantCustomers = exports.lessonProgressRelations = exports.courseEnrollmentsRelations = exports.courseLessonsRelations = exports.courseChaptersRelations = exports.coursesRelations = exports.membershipsRelations = exports.membershipPlansRelations = exports.funnelSubmissionsRelations = exports.funnelStepsRelations = exports.funnelsRelations = exports.localOrderItemsRelations = exports.localOrdersRelations = exports.localPickupSlotsRelations = exports.localDealsRelations = exports.localProductsRelations = exports.foodOrderStatusHistoryRelations = exports.foodOrderItemsRelations = exports.foodOrdersRelations = exports.restaurantTablesRelations = exports.menuModifiersRelations = exports.menuModifierGroupsRelations = exports.menuItemsRelations = exports.menuCategoriesRelations = exports.couponUsesRelations = exports.couponsRelations = exports.orderStatusHistoryRelations = exports.productVariantsRelations = exports.productVariantGroupsRelations = exports.analyticsDailyRelations = exports.pageViewsRelations = exports.blogCommentsRelations = exports.formSubmissionsRelations = exports.formsRelations = exports.bookingAppointmentsRelations = exports.bookingServicesRelations = exports.domainEventsRelations = exports.supportMessagesRelations = exports.supportTicketsRelations = exports.navigationItemsRelations = exports.navigationsRelations = exports.mediaFilesRelations = exports.campaignQueueRelations = exports.campaignEventsRelations = exports.newsletterCampaignsRelations = exports.newsletterSubscribersRelations = exports.tenantEmailTemplatesRelations = exports.tenantEmailSettingsRelations = exports.emailEventsRelations = void 0;
+exports.uiTranslationsRelations = exports.translationsRelations = void 0;
 const pg_core_1 = require("drizzle-orm/pg-core");
 const drizzle_orm_1 = require("drizzle-orm");
 exports.userRoleEnum = (0, pg_core_1.pgEnum)('user_role', ['owner', 'admin', 'user']);
@@ -116,7 +118,9 @@ exports.tenants = (0, pg_core_1.pgTable)('tenants', {
     lastDnsCheck: (0, pg_core_1.timestamp)('last_dns_check'),
     defaultLocale: (0, pg_core_1.varchar)('default_locale', { length: 10 }).default('de'),
     enabledLocales: (0, pg_core_1.text)('enabled_locales').array().default(['de']),
-    package: (0, pg_core_1.varchar)('package', { length: 50 }).default('website_micro').notNull(),
+    package: (0, pg_core_1.varchar)('package', { length: 50 })
+        .default('website_micro')
+        .notNull(),
     shopTemplate: (0, exports.shopTemplateEnum)('shop_template').default('default'),
     settings: (0, pg_core_1.jsonb)('settings').default({
         modules: {
@@ -337,6 +341,11 @@ exports.products = (0, pg_core_1.pgTable)('products', {
     images: (0, pg_core_1.varchar)('images', { length: 2000 }),
     isActive: (0, pg_core_1.boolean)('is_active').default(true).notNull(),
     isFeatured: (0, pg_core_1.boolean)('is_featured').default(false).notNull(),
+    hasVariants: (0, pg_core_1.boolean)('has_variants').default(false).notNull(),
+    sku: (0, pg_core_1.varchar)('sku', { length: 100 }),
+    weight: (0, pg_core_1.integer)('weight'),
+    isDigital: (0, pg_core_1.boolean)('is_digital').default(false).notNull(),
+    downloadUrl: (0, pg_core_1.varchar)('download_url', { length: 500 }),
     createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
     updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
 }, (table) => ({
@@ -360,6 +369,21 @@ exports.orders = (0, pg_core_1.pgTable)('orders', {
     shipping: (0, pg_core_1.integer)('shipping').default(0).notNull(),
     total: (0, pg_core_1.integer)('total').notNull(),
     notes: (0, pg_core_1.varchar)('notes', { length: 1000 }),
+    orderType: (0, pg_core_1.varchar)('order_type', { length: 30 })
+        .default('shipping')
+        .notNull(),
+    trackingNumber: (0, pg_core_1.varchar)('tracking_number', { length: 100 }),
+    carrier: (0, pg_core_1.varchar)('carrier', { length: 100 }),
+    shippedAt: (0, pg_core_1.timestamp)('shipped_at'),
+    deliveredAt: (0, pg_core_1.timestamp)('delivered_at'),
+    pickupCode: (0, pg_core_1.varchar)('pickup_code', { length: 20 }),
+    pickupCodeUsed: (0, pg_core_1.boolean)('pickup_code_used').default(false).notNull(),
+    pickupSlot: (0, pg_core_1.timestamp)('pickup_slot'),
+    pickupConfirmedAt: (0, pg_core_1.timestamp)('pickup_confirmed_at'),
+    stripePaymentIntentId: (0, pg_core_1.varchar)('stripe_payment_intent_id', { length: 255 }),
+    paidAt: (0, pg_core_1.timestamp)('paid_at'),
+    couponId: (0, pg_core_1.uuid)('coupon_id'),
+    discountAmount: (0, pg_core_1.integer)('discount_amount').default(0).notNull(),
     createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
     updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
 }, (table) => ({
@@ -381,6 +405,527 @@ exports.orderItems = (0, pg_core_1.pgTable)('order_items', {
     total: (0, pg_core_1.integer)('total').notNull(),
 }, (table) => ({
     orderIdx: (0, pg_core_1.index)('order_items_order_idx').on(table.orderId),
+}));
+exports.productVariantGroups = (0, pg_core_1.pgTable)('product_variant_groups', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    productId: (0, pg_core_1.uuid)('product_id').references(() => exports.products.id, { onDelete: 'cascade' }).notNull(),
+    name: (0, pg_core_1.varchar)('name', { length: 100 }).notNull(),
+    isRequired: (0, pg_core_1.boolean)('is_required').default(true).notNull(),
+    position: (0, pg_core_1.integer)('position').default(0).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    productIdx: (0, pg_core_1.index)('pvg_product_idx').on(table.productId),
+}));
+exports.productVariants = (0, pg_core_1.pgTable)('product_variants', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    groupId: (0, pg_core_1.uuid)('group_id').references(() => exports.productVariantGroups.id, { onDelete: 'cascade' }).notNull(),
+    productId: (0, pg_core_1.uuid)('product_id').references(() => exports.products.id, { onDelete: 'cascade' }).notNull(),
+    label: (0, pg_core_1.varchar)('label', { length: 100 }).notNull(),
+    sku: (0, pg_core_1.varchar)('sku', { length: 100 }),
+    priceModifier: (0, pg_core_1.integer)('price_modifier').default(0).notNull(),
+    stock: (0, pg_core_1.integer)('stock').default(0).notNull(),
+    isDefault: (0, pg_core_1.boolean)('is_default').default(false).notNull(),
+    isActive: (0, pg_core_1.boolean)('is_active').default(true).notNull(),
+    position: (0, pg_core_1.integer)('position').default(0).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    groupIdx: (0, pg_core_1.index)('pv_group_idx').on(table.groupId),
+    productIdx: (0, pg_core_1.index)('pv_product_idx').on(table.productId),
+}));
+exports.orderStatusHistory = (0, pg_core_1.pgTable)('order_status_history', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    orderId: (0, pg_core_1.uuid)('order_id').references(() => exports.orders.id, { onDelete: 'cascade' }).notNull(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    status: (0, pg_core_1.varchar)('status', { length: 30 }).notNull(),
+    note: (0, pg_core_1.varchar)('note', { length: 500 }),
+    createdBy: (0, pg_core_1.uuid)('created_by').references(() => exports.users.id, { onDelete: 'set null' }),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    orderIdx: (0, pg_core_1.index)('osh_order_idx').on(table.orderId),
+}));
+exports.coupons = (0, pg_core_1.pgTable)('coupons', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    code: (0, pg_core_1.varchar)('code', { length: 50 }).notNull(),
+    description: (0, pg_core_1.varchar)('description', { length: 500 }),
+    type: (0, pg_core_1.varchar)('type', { length: 20 }).notNull(),
+    value: (0, pg_core_1.integer)('value').notNull(),
+    minOrderAmount: (0, pg_core_1.integer)('min_order_amount').default(0),
+    maxUses: (0, pg_core_1.integer)('max_uses'),
+    usedCount: (0, pg_core_1.integer)('used_count').default(0).notNull(),
+    applicableModule: (0, pg_core_1.varchar)('applicable_module', { length: 30 }).default('all').notNull(),
+    isActive: (0, pg_core_1.boolean)('is_active').default(true).notNull(),
+    startsAt: (0, pg_core_1.timestamp)('starts_at'),
+    expiresAt: (0, pg_core_1.timestamp)('expires_at'),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    tenantCodeIdx: (0, pg_core_1.uniqueIndex)('coupons_tenant_code_idx').on(table.tenantId, table.code),
+    tenantIdx: (0, pg_core_1.index)('coupons_tenant_idx').on(table.tenantId),
+}));
+exports.couponUses = (0, pg_core_1.pgTable)('coupon_uses', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    couponId: (0, pg_core_1.uuid)('coupon_id').references(() => exports.coupons.id, { onDelete: 'cascade' }).notNull(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    customerEmail: (0, pg_core_1.varchar)('customer_email', { length: 255 }).notNull(),
+    referenceId: (0, pg_core_1.uuid)('reference_id'),
+    referenceType: (0, pg_core_1.varchar)('reference_type', { length: 30 }),
+    discountAmount: (0, pg_core_1.integer)('discount_amount').notNull(),
+    usedAt: (0, pg_core_1.timestamp)('used_at').defaultNow(),
+}, (table) => ({
+    couponIdx: (0, pg_core_1.index)('coupon_uses_coupon_idx').on(table.couponId),
+    tenantIdx: (0, pg_core_1.index)('coupon_uses_tenant_idx').on(table.tenantId),
+}));
+exports.restaurantSettings = (0, pg_core_1.pgTable)('restaurant_settings', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull().unique(),
+    dineInEnabled: (0, pg_core_1.boolean)('dine_in_enabled').default(true).notNull(),
+    pickupEnabled: (0, pg_core_1.boolean)('pickup_enabled').default(true).notNull(),
+    deliveryEnabled: (0, pg_core_1.boolean)('delivery_enabled').default(false).notNull(),
+    deliveryRadius: (0, pg_core_1.integer)('delivery_radius').default(5),
+    deliveryFee: (0, pg_core_1.integer)('delivery_fee').default(0),
+    freeDeliveryFrom: (0, pg_core_1.integer)('free_delivery_from'),
+    minOrderAmount: (0, pg_core_1.integer)('min_order_amount').default(0),
+    estimatedPickupTime: (0, pg_core_1.integer)('estimated_pickup_time').default(20),
+    estimatedDeliveryTime: (0, pg_core_1.integer)('estimated_delivery_time').default(45),
+    cashEnabled: (0, pg_core_1.boolean)('cash_enabled').default(true).notNull(),
+    cardOnPickupEnabled: (0, pg_core_1.boolean)('card_on_pickup_enabled').default(true).notNull(),
+    onlinePaymentEnabled: (0, pg_core_1.boolean)('online_payment_enabled').default(false).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+});
+exports.restaurantTables = (0, pg_core_1.pgTable)('restaurant_tables', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    number: (0, pg_core_1.varchar)('number', { length: 20 }).notNull(),
+    name: (0, pg_core_1.varchar)('name', { length: 100 }),
+    capacity: (0, pg_core_1.integer)('capacity').default(4).notNull(),
+    qrCode: (0, pg_core_1.varchar)('qr_code', { length: 500 }),
+    isActive: (0, pg_core_1.boolean)('is_active').default(true).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    tenantIdx: (0, pg_core_1.index)('rt_tenant_idx').on(table.tenantId),
+    tenantNumberIdx: (0, pg_core_1.uniqueIndex)('rt_tenant_number_idx').on(table.tenantId, table.number),
+}));
+exports.menuCategories = (0, pg_core_1.pgTable)('menu_categories', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    name: (0, pg_core_1.varchar)('name', { length: 200 }).notNull(),
+    slug: (0, pg_core_1.varchar)('slug', { length: 200 }).notNull(),
+    description: (0, pg_core_1.varchar)('description', { length: 500 }),
+    image: (0, pg_core_1.varchar)('image', { length: 500 }),
+    position: (0, pg_core_1.integer)('position').default(0).notNull(),
+    isActive: (0, pg_core_1.boolean)('is_active').default(true).notNull(),
+    availableFrom: (0, pg_core_1.varchar)('available_from', { length: 5 }),
+    availableTo: (0, pg_core_1.varchar)('available_to', { length: 5 }),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    tenantSlugIdx: (0, pg_core_1.uniqueIndex)('mc_tenant_slug_idx').on(table.tenantId, table.slug),
+    tenantIdx: (0, pg_core_1.index)('mc_tenant_idx').on(table.tenantId),
+}));
+exports.menuItems = (0, pg_core_1.pgTable)('menu_items', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    categoryId: (0, pg_core_1.uuid)('category_id').references(() => exports.menuCategories.id, { onDelete: 'set null' }),
+    name: (0, pg_core_1.varchar)('name', { length: 300 }).notNull(),
+    slug: (0, pg_core_1.varchar)('slug', { length: 300 }).notNull(),
+    description: (0, pg_core_1.varchar)('description', { length: 1000 }),
+    price: (0, pg_core_1.integer)('price').notNull(),
+    images: (0, pg_core_1.jsonb)('images').default([]),
+    allergens: (0, pg_core_1.text)('allergens').array().default([]),
+    isVegan: (0, pg_core_1.boolean)('is_vegan').default(false).notNull(),
+    isVegetarian: (0, pg_core_1.boolean)('is_vegetarian').default(false).notNull(),
+    isSpicy: (0, pg_core_1.boolean)('is_spicy').default(false).notNull(),
+    isPopular: (0, pg_core_1.boolean)('is_popular').default(false).notNull(),
+    isAvailable: (0, pg_core_1.boolean)('is_available').default(true).notNull(),
+    position: (0, pg_core_1.integer)('position').default(0).notNull(),
+    preparationTime: (0, pg_core_1.integer)('preparation_time').default(15),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    tenantSlugIdx: (0, pg_core_1.uniqueIndex)('mi_tenant_slug_idx').on(table.tenantId, table.slug),
+    tenantIdx: (0, pg_core_1.index)('mi_tenant_idx').on(table.tenantId),
+    categoryIdx: (0, pg_core_1.index)('mi_category_idx').on(table.categoryId),
+}));
+exports.menuModifierGroups = (0, pg_core_1.pgTable)('menu_modifier_groups', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    menuItemId: (0, pg_core_1.uuid)('menu_item_id').references(() => exports.menuItems.id, { onDelete: 'cascade' }).notNull(),
+    name: (0, pg_core_1.varchar)('name', { length: 100 }).notNull(),
+    isRequired: (0, pg_core_1.boolean)('is_required').default(false).notNull(),
+    minSelections: (0, pg_core_1.integer)('min_selections').default(0).notNull(),
+    maxSelections: (0, pg_core_1.integer)('max_selections').default(1).notNull(),
+    position: (0, pg_core_1.integer)('position').default(0).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    menuItemIdx: (0, pg_core_1.index)('mmg_menu_item_idx').on(table.menuItemId),
+}));
+exports.menuModifiers = (0, pg_core_1.pgTable)('menu_modifiers', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    groupId: (0, pg_core_1.uuid)('group_id').references(() => exports.menuModifierGroups.id, { onDelete: 'cascade' }).notNull(),
+    name: (0, pg_core_1.varchar)('name', { length: 100 }).notNull(),
+    priceModifier: (0, pg_core_1.integer)('price_modifier').default(0).notNull(),
+    isDefault: (0, pg_core_1.boolean)('is_default').default(false).notNull(),
+    isAvailable: (0, pg_core_1.boolean)('is_available').default(true).notNull(),
+    position: (0, pg_core_1.integer)('position').default(0).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    groupIdx: (0, pg_core_1.index)('mm_group_idx').on(table.groupId),
+}));
+exports.foodOrders = (0, pg_core_1.pgTable)('food_orders', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    orderNumber: (0, pg_core_1.varchar)('order_number', { length: 50 }).notNull(),
+    orderType: (0, pg_core_1.varchar)('order_type', { length: 20 }).notNull(),
+    tableId: (0, pg_core_1.uuid)('table_id').references(() => exports.restaurantTables.id, { onDelete: 'set null' }),
+    customerName: (0, pg_core_1.varchar)('customer_name', { length: 255 }).notNull(),
+    customerEmail: (0, pg_core_1.varchar)('customer_email', { length: 255 }),
+    customerPhone: (0, pg_core_1.varchar)('customer_phone', { length: 50 }),
+    deliveryAddress: (0, pg_core_1.varchar)('delivery_address', { length: 1000 }),
+    status: (0, pg_core_1.varchar)('status', { length: 30 }).default('new').notNull(),
+    notes: (0, pg_core_1.varchar)('notes', { length: 1000 }),
+    subtotal: (0, pg_core_1.integer)('subtotal').notNull(),
+    tax: (0, pg_core_1.integer)('tax').default(0).notNull(),
+    deliveryFee: (0, pg_core_1.integer)('delivery_fee').default(0).notNull(),
+    discountAmount: (0, pg_core_1.integer)('discount_amount').default(0).notNull(),
+    total: (0, pg_core_1.integer)('total').notNull(),
+    pickupCode: (0, pg_core_1.varchar)('pickup_code', { length: 20 }),
+    pickupCodeUsed: (0, pg_core_1.boolean)('pickup_code_used').default(false).notNull(),
+    estimatedReadyAt: (0, pg_core_1.timestamp)('estimated_ready_at'),
+    paymentMethod: (0, pg_core_1.varchar)('payment_method', { length: 30 }).default('cash').notNull(),
+    stripePaymentIntentId: (0, pg_core_1.varchar)('stripe_payment_intent_id', { length: 255 }),
+    paidAt: (0, pg_core_1.timestamp)('paid_at'),
+    couponId: (0, pg_core_1.uuid)('coupon_id'),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    tenantIdx: (0, pg_core_1.index)('fo_tenant_idx').on(table.tenantId),
+    orderNumberIdx: (0, pg_core_1.uniqueIndex)('fo_order_number_idx').on(table.orderNumber),
+    statusIdx: (0, pg_core_1.index)('fo_status_idx').on(table.status),
+}));
+exports.foodOrderItems = (0, pg_core_1.pgTable)('food_order_items', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    foodOrderId: (0, pg_core_1.uuid)('food_order_id').references(() => exports.foodOrders.id, { onDelete: 'cascade' }).notNull(),
+    menuItemId: (0, pg_core_1.uuid)('menu_item_id').references(() => exports.menuItems.id, { onDelete: 'set null' }),
+    menuItemName: (0, pg_core_1.varchar)('menu_item_name', { length: 300 }).notNull(),
+    menuItemPrice: (0, pg_core_1.integer)('menu_item_price').notNull(),
+    quantity: (0, pg_core_1.integer)('quantity').notNull(),
+    selectedModifiers: (0, pg_core_1.jsonb)('selected_modifiers').default([]),
+    notes: (0, pg_core_1.varchar)('notes', { length: 500 }),
+    total: (0, pg_core_1.integer)('total').notNull(),
+}, (table) => ({
+    orderIdx: (0, pg_core_1.index)('foi_order_idx').on(table.foodOrderId),
+}));
+exports.foodOrderStatusHistory = (0, pg_core_1.pgTable)('food_order_status_history', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    foodOrderId: (0, pg_core_1.uuid)('food_order_id').references(() => exports.foodOrders.id, { onDelete: 'cascade' }).notNull(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    status: (0, pg_core_1.varchar)('status', { length: 30 }).notNull(),
+    note: (0, pg_core_1.varchar)('note', { length: 500 }),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    orderIdx: (0, pg_core_1.index)('fosh_order_idx').on(table.foodOrderId),
+}));
+exports.localStoreSettings = (0, pg_core_1.pgTable)('local_store_settings', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull().unique(),
+    storeType: (0, pg_core_1.varchar)('store_type', { length: 50 }).default('other').notNull(),
+    pickupEnabled: (0, pg_core_1.boolean)('pickup_enabled').default(true).notNull(),
+    deliveryEnabled: (0, pg_core_1.boolean)('delivery_enabled').default(false).notNull(),
+    pickupSlotDuration: (0, pg_core_1.integer)('pickup_slot_duration').default(30),
+    maxOrdersPerSlot: (0, pg_core_1.integer)('max_orders_per_slot').default(5),
+    minOrderAmount: (0, pg_core_1.integer)('min_order_amount').default(0),
+    cashOnPickupEnabled: (0, pg_core_1.boolean)('cash_on_pickup_enabled').default(true).notNull(),
+    cardOnPickupEnabled: (0, pg_core_1.boolean)('card_on_pickup_enabled').default(true).notNull(),
+    onlinePaymentEnabled: (0, pg_core_1.boolean)('online_payment_enabled').default(false).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+});
+exports.localProducts = (0, pg_core_1.pgTable)('local_products', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    categoryId: (0, pg_core_1.uuid)('category_id'),
+    name: (0, pg_core_1.varchar)('name', { length: 300 }).notNull(),
+    slug: (0, pg_core_1.varchar)('slug', { length: 300 }).notNull(),
+    description: (0, pg_core_1.varchar)('description', { length: 2000 }),
+    price: (0, pg_core_1.integer)('price').notNull(),
+    compareAtPrice: (0, pg_core_1.integer)('compare_at_price'),
+    unit: (0, pg_core_1.varchar)('unit', { length: 30 }).default('Stück').notNull(),
+    images: (0, pg_core_1.jsonb)('images').default([]),
+    stock: (0, pg_core_1.integer)('stock').default(0),
+    isUnlimited: (0, pg_core_1.boolean)('is_unlimited').default(false).notNull(),
+    isAvailable: (0, pg_core_1.boolean)('is_available').default(true).notNull(),
+    isFeatured: (0, pg_core_1.boolean)('is_featured').default(false).notNull(),
+    isOrganic: (0, pg_core_1.boolean)('is_organic').default(false).notNull(),
+    isRegional: (0, pg_core_1.boolean)('is_regional').default(false).notNull(),
+    origin: (0, pg_core_1.varchar)('origin', { length: 200 }),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    tenantSlugIdx: (0, pg_core_1.uniqueIndex)('lp_tenant_slug_idx').on(table.tenantId, table.slug),
+    tenantIdx: (0, pg_core_1.index)('lp_tenant_idx').on(table.tenantId),
+}));
+exports.localDeals = (0, pg_core_1.pgTable)('local_deals', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    localProductId: (0, pg_core_1.uuid)('local_product_id').references(() => exports.localProducts.id, { onDelete: 'cascade' }),
+    title: (0, pg_core_1.varchar)('title', { length: 300 }).notNull(),
+    description: (0, pg_core_1.varchar)('description', { length: 1000 }),
+    image: (0, pg_core_1.varchar)('image', { length: 500 }),
+    discountType: (0, pg_core_1.varchar)('discount_type', { length: 20 }).notNull(),
+    discountValue: (0, pg_core_1.integer)('discount_value').notNull(),
+    startsAt: (0, pg_core_1.timestamp)('starts_at').notNull(),
+    endsAt: (0, pg_core_1.timestamp)('ends_at').notNull(),
+    isActive: (0, pg_core_1.boolean)('is_active').default(true).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    tenantIdx: (0, pg_core_1.index)('ld_tenant_idx').on(table.tenantId),
+}));
+exports.localPickupSlots = (0, pg_core_1.pgTable)('local_pickup_slots', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    dayOfWeek: (0, pg_core_1.integer)('day_of_week').notNull(),
+    startTime: (0, pg_core_1.varchar)('start_time', { length: 5 }).notNull(),
+    endTime: (0, pg_core_1.varchar)('end_time', { length: 5 }).notNull(),
+    maxOrders: (0, pg_core_1.integer)('max_orders').default(5).notNull(),
+    isActive: (0, pg_core_1.boolean)('is_active').default(true).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    tenantIdx: (0, pg_core_1.index)('lps_tenant_idx').on(table.tenantId),
+}));
+exports.localOrders = (0, pg_core_1.pgTable)('local_orders', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    orderNumber: (0, pg_core_1.varchar)('order_number', { length: 50 }).notNull(),
+    orderType: (0, pg_core_1.varchar)('order_type', { length: 20 }).default('pickup').notNull(),
+    pickupSlotId: (0, pg_core_1.uuid)('pickup_slot_id').references(() => exports.localPickupSlots.id, { onDelete: 'set null' }),
+    pickupDate: (0, pg_core_1.varchar)('pickup_date', { length: 10 }),
+    pickupCode: (0, pg_core_1.varchar)('pickup_code', { length: 20 }),
+    pickupCodeUsed: (0, pg_core_1.boolean)('pickup_code_used').default(false).notNull(),
+    pickupConfirmedAt: (0, pg_core_1.timestamp)('pickup_confirmed_at'),
+    pickupConfirmedBy: (0, pg_core_1.uuid)('pickup_confirmed_by').references(() => exports.users.id, { onDelete: 'set null' }),
+    customerName: (0, pg_core_1.varchar)('customer_name', { length: 255 }).notNull(),
+    customerEmail: (0, pg_core_1.varchar)('customer_email', { length: 255 }),
+    customerPhone: (0, pg_core_1.varchar)('customer_phone', { length: 50 }),
+    deliveryAddress: (0, pg_core_1.varchar)('delivery_address', { length: 1000 }),
+    status: (0, pg_core_1.varchar)('status', { length: 30 }).default('pending').notNull(),
+    notes: (0, pg_core_1.varchar)('notes', { length: 1000 }),
+    subtotal: (0, pg_core_1.integer)('subtotal').notNull(),
+    discountAmount: (0, pg_core_1.integer)('discount_amount').default(0).notNull(),
+    total: (0, pg_core_1.integer)('total').notNull(),
+    paymentMethod: (0, pg_core_1.varchar)('payment_method', { length: 30 }).default('cash_on_pickup').notNull(),
+    stripePaymentIntentId: (0, pg_core_1.varchar)('stripe_payment_intent_id', { length: 255 }),
+    paidAt: (0, pg_core_1.timestamp)('paid_at'),
+    couponId: (0, pg_core_1.uuid)('coupon_id'),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    tenantIdx: (0, pg_core_1.index)('lo_tenant_idx').on(table.tenantId),
+    orderNumberIdx: (0, pg_core_1.uniqueIndex)('lo_order_number_idx').on(table.orderNumber),
+    statusIdx: (0, pg_core_1.index)('lo_status_idx').on(table.status),
+}));
+exports.localOrderItems = (0, pg_core_1.pgTable)('local_order_items', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    localOrderId: (0, pg_core_1.uuid)('local_order_id').references(() => exports.localOrders.id, { onDelete: 'cascade' }).notNull(),
+    localProductId: (0, pg_core_1.uuid)('local_product_id').references(() => exports.localProducts.id, { onDelete: 'set null' }),
+    productName: (0, pg_core_1.varchar)('product_name', { length: 300 }).notNull(),
+    productPrice: (0, pg_core_1.integer)('product_price').notNull(),
+    unit: (0, pg_core_1.varchar)('unit', { length: 30 }).notNull(),
+    quantity: (0, pg_core_1.integer)('quantity').notNull(),
+    total: (0, pg_core_1.integer)('total').notNull(),
+}, (table) => ({
+    orderIdx: (0, pg_core_1.index)('loi_order_idx').on(table.localOrderId),
+}));
+exports.funnels = (0, pg_core_1.pgTable)('funnels', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    name: (0, pg_core_1.varchar)('name', { length: 300 }).notNull(),
+    slug: (0, pg_core_1.varchar)('slug', { length: 300 }).notNull(),
+    description: (0, pg_core_1.varchar)('description', { length: 1000 }),
+    isActive: (0, pg_core_1.boolean)('is_active').default(false).notNull(),
+    isPublished: (0, pg_core_1.boolean)('is_published').default(false).notNull(),
+    conversionGoal: (0, pg_core_1.varchar)('conversion_goal', { length: 30 }).default('email').notNull(),
+    utmSource: (0, pg_core_1.varchar)('utm_source', { length: 100 }),
+    utmMedium: (0, pg_core_1.varchar)('utm_medium', { length: 100 }),
+    utmCampaign: (0, pg_core_1.varchar)('utm_campaign', { length: 100 }),
+    totalViews: (0, pg_core_1.integer)('total_views').default(0).notNull(),
+    totalConversions: (0, pg_core_1.integer)('total_conversions').default(0).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    tenantSlugIdx: (0, pg_core_1.uniqueIndex)('funnels_tenant_slug_idx').on(table.tenantId, table.slug),
+    tenantIdx: (0, pg_core_1.index)('funnels_tenant_idx').on(table.tenantId),
+}));
+exports.funnelSteps = (0, pg_core_1.pgTable)('funnel_steps', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    funnelId: (0, pg_core_1.uuid)('funnel_id').references(() => exports.funnels.id, { onDelete: 'cascade' }).notNull(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    title: (0, pg_core_1.varchar)('title', { length: 300 }).notNull(),
+    slug: (0, pg_core_1.varchar)('slug', { length: 300 }).notNull(),
+    stepType: (0, pg_core_1.varchar)('step_type', { length: 30 }).notNull(),
+    content: (0, pg_core_1.jsonb)('content').default([]),
+    position: (0, pg_core_1.integer)('position').default(0).notNull(),
+    isActive: (0, pg_core_1.boolean)('is_active').default(true).notNull(),
+    nextStepId: (0, pg_core_1.uuid)('next_step_id'),
+    views: (0, pg_core_1.integer)('views').default(0).notNull(),
+    conversions: (0, pg_core_1.integer)('conversions').default(0).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    funnelIdx: (0, pg_core_1.index)('fs_funnel_idx').on(table.funnelId),
+    tenantSlugIdx: (0, pg_core_1.uniqueIndex)('fs_tenant_slug_idx').on(table.tenantId, table.slug),
+}));
+exports.funnelSubmissions = (0, pg_core_1.pgTable)('funnel_submissions', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    funnelId: (0, pg_core_1.uuid)('funnel_id').references(() => exports.funnels.id, { onDelete: 'cascade' }).notNull(),
+    stepId: (0, pg_core_1.uuid)('step_id').references(() => exports.funnelSteps.id, { onDelete: 'set null' }),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    customerEmail: (0, pg_core_1.varchar)('customer_email', { length: 255 }),
+    customerName: (0, pg_core_1.varchar)('customer_name', { length: 255 }),
+    data: (0, pg_core_1.jsonb)('data').default({}),
+    utmSource: (0, pg_core_1.varchar)('utm_source', { length: 100 }),
+    utmMedium: (0, pg_core_1.varchar)('utm_medium', { length: 100 }),
+    utmCampaign: (0, pg_core_1.varchar)('utm_campaign', { length: 100 }),
+    ipAddress: (0, pg_core_1.varchar)('ip_address', { length: 45 }),
+    userAgent: (0, pg_core_1.text)('user_agent'),
+    convertedAt: (0, pg_core_1.timestamp)('converted_at'),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    funnelIdx: (0, pg_core_1.index)('fsub_funnel_idx').on(table.funnelId),
+    tenantIdx: (0, pg_core_1.index)('fsub_tenant_idx').on(table.tenantId),
+}));
+exports.membershipPlans = (0, pg_core_1.pgTable)('membership_plans', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    name: (0, pg_core_1.varchar)('name', { length: 200 }).notNull(),
+    slug: (0, pg_core_1.varchar)('slug', { length: 200 }).notNull(),
+    description: (0, pg_core_1.varchar)('description', { length: 2000 }),
+    price: (0, pg_core_1.integer)('price').notNull(),
+    interval: (0, pg_core_1.varchar)('interval', { length: 20 }).default('monthly').notNull(),
+    features: (0, pg_core_1.jsonb)('features').default([]),
+    isActive: (0, pg_core_1.boolean)('is_active').default(true).notNull(),
+    isPublic: (0, pg_core_1.boolean)('is_public').default(true).notNull(),
+    stripePriceId: (0, pg_core_1.varchar)('stripe_price_id', { length: 255 }),
+    position: (0, pg_core_1.integer)('position').default(0).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    tenantSlugIdx: (0, pg_core_1.uniqueIndex)('mp_tenant_slug_idx').on(table.tenantId, table.slug),
+    tenantIdx: (0, pg_core_1.index)('mp_tenant_idx').on(table.tenantId),
+}));
+exports.memberships = (0, pg_core_1.pgTable)('memberships', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    planId: (0, pg_core_1.uuid)('plan_id').references(() => exports.membershipPlans.id, { onDelete: 'set null' }),
+    customerEmail: (0, pg_core_1.varchar)('customer_email', { length: 255 }).notNull(),
+    customerName: (0, pg_core_1.varchar)('customer_name', { length: 255 }).notNull(),
+    status: (0, pg_core_1.varchar)('status', { length: 30 }).default('active').notNull(),
+    startedAt: (0, pg_core_1.timestamp)('started_at').defaultNow(),
+    expiresAt: (0, pg_core_1.timestamp)('expires_at'),
+    cancelledAt: (0, pg_core_1.timestamp)('cancelled_at'),
+    stripeSubscriptionId: (0, pg_core_1.varchar)('stripe_subscription_id', { length: 255 }),
+    stripeCustomerId: (0, pg_core_1.varchar)('stripe_customer_id', { length: 255 }),
+    grantedManually: (0, pg_core_1.boolean)('granted_manually').default(false).notNull(),
+    grantedBy: (0, pg_core_1.uuid)('granted_by').references(() => exports.users.id, { onDelete: 'set null' }),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    tenantIdx: (0, pg_core_1.index)('mem_tenant_idx').on(table.tenantId),
+    emailIdx: (0, pg_core_1.index)('mem_email_idx').on(table.customerEmail),
+    planIdx: (0, pg_core_1.index)('mem_plan_idx').on(table.planId),
+    stripeIdx: (0, pg_core_1.index)('mem_stripe_idx').on(table.stripeSubscriptionId),
+}));
+exports.courses = (0, pg_core_1.pgTable)('courses', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    title: (0, pg_core_1.varchar)('title', { length: 500 }).notNull(),
+    slug: (0, pg_core_1.varchar)('slug', { length: 500 }).notNull(),
+    description: (0, pg_core_1.text)('description'),
+    shortDescription: (0, pg_core_1.varchar)('short_description', { length: 500 }),
+    thumbnail: (0, pg_core_1.varchar)('thumbnail', { length: 500 }),
+    price: (0, pg_core_1.integer)('price').default(0).notNull(),
+    isFree: (0, pg_core_1.boolean)('is_free').default(false).notNull(),
+    isPublished: (0, pg_core_1.boolean)('is_published').default(false).notNull(),
+    requiresMembershipPlanId: (0, pg_core_1.uuid)('requires_membership_plan_id').references(() => exports.membershipPlans.id, { onDelete: 'set null' }),
+    level: (0, pg_core_1.varchar)('level', { length: 30 }).default('beginner').notNull(),
+    language: (0, pg_core_1.varchar)('language', { length: 10 }).default('de').notNull(),
+    totalDuration: (0, pg_core_1.integer)('total_duration').default(0),
+    certificateEnabled: (0, pg_core_1.boolean)('certificate_enabled').default(false).notNull(),
+    stripePriceId: (0, pg_core_1.varchar)('stripe_price_id', { length: 255 }),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    tenantSlugIdx: (0, pg_core_1.uniqueIndex)('courses_tenant_slug_idx').on(table.tenantId, table.slug),
+    tenantIdx: (0, pg_core_1.index)('courses_tenant_idx').on(table.tenantId),
+}));
+exports.courseChapters = (0, pg_core_1.pgTable)('course_chapters', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    courseId: (0, pg_core_1.uuid)('course_id').references(() => exports.courses.id, { onDelete: 'cascade' }).notNull(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    title: (0, pg_core_1.varchar)('title', { length: 300 }).notNull(),
+    description: (0, pg_core_1.varchar)('description', { length: 1000 }),
+    position: (0, pg_core_1.integer)('position').default(0).notNull(),
+    isPublished: (0, pg_core_1.boolean)('is_published').default(true).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    courseIdx: (0, pg_core_1.index)('cc_course_idx').on(table.courseId),
+}));
+exports.courseLessons = (0, pg_core_1.pgTable)('course_lessons', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    chapterId: (0, pg_core_1.uuid)('chapter_id').references(() => exports.courseChapters.id, { onDelete: 'cascade' }).notNull(),
+    courseId: (0, pg_core_1.uuid)('course_id').references(() => exports.courses.id, { onDelete: 'cascade' }).notNull(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    title: (0, pg_core_1.varchar)('title', { length: 300 }).notNull(),
+    slug: (0, pg_core_1.varchar)('slug', { length: 300 }).notNull(),
+    type: (0, pg_core_1.varchar)('type', { length: 20 }).default('video').notNull(),
+    content: (0, pg_core_1.jsonb)('content').default({}),
+    videoUrl: (0, pg_core_1.varchar)('video_url', { length: 500 }),
+    duration: (0, pg_core_1.integer)('duration').default(0),
+    position: (0, pg_core_1.integer)('position').default(0).notNull(),
+    isPublished: (0, pg_core_1.boolean)('is_published').default(true).notNull(),
+    isFreePreview: (0, pg_core_1.boolean)('is_free_preview').default(false).notNull(),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    chapterIdx: (0, pg_core_1.index)('cl_chapter_idx').on(table.chapterId),
+    courseIdx: (0, pg_core_1.index)('cl_course_idx').on(table.courseId),
+    tenantSlugIdx: (0, pg_core_1.uniqueIndex)('cl_tenant_slug_idx').on(table.tenantId, table.slug),
+}));
+exports.courseEnrollments = (0, pg_core_1.pgTable)('course_enrollments', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    courseId: (0, pg_core_1.uuid)('course_id').references(() => exports.courses.id, { onDelete: 'cascade' }).notNull(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    customerEmail: (0, pg_core_1.varchar)('customer_email', { length: 255 }).notNull(),
+    customerName: (0, pg_core_1.varchar)('customer_name', { length: 255 }).notNull(),
+    accessGrantedBy: (0, pg_core_1.varchar)('access_granted_by', { length: 30 }).default('purchase').notNull(),
+    membershipId: (0, pg_core_1.uuid)('membership_id').references(() => exports.memberships.id, { onDelete: 'set null' }),
+    stripePaymentIntentId: (0, pg_core_1.varchar)('stripe_payment_intent_id', { length: 255 }),
+    enrolledAt: (0, pg_core_1.timestamp)('enrolled_at').defaultNow(),
+    completedAt: (0, pg_core_1.timestamp)('completed_at'),
+    progress: (0, pg_core_1.integer)('progress').default(0).notNull(),
+    certificateUrl: (0, pg_core_1.varchar)('certificate_url', { length: 500 }),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+    updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow(),
+}, (table) => ({
+    courseIdx: (0, pg_core_1.index)('ce_course_idx').on(table.courseId),
+    emailIdx: (0, pg_core_1.index)('ce_email_idx').on(table.customerEmail),
+    tenantEmailCourseIdx: (0, pg_core_1.uniqueIndex)('ce_tenant_email_course_idx').on(table.tenantId, table.customerEmail, table.courseId),
+}));
+exports.lessonProgress = (0, pg_core_1.pgTable)('lesson_progress', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    enrollmentId: (0, pg_core_1.uuid)('enrollment_id').references(() => exports.courseEnrollments.id, { onDelete: 'cascade' }).notNull(),
+    lessonId: (0, pg_core_1.uuid)('lesson_id').references(() => exports.courseLessons.id, { onDelete: 'cascade' }).notNull(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id').references(() => exports.tenants.id, { onDelete: 'cascade' }).notNull(),
+    completedAt: (0, pg_core_1.timestamp)('completed_at'),
+    watchTime: (0, pg_core_1.integer)('watch_time').default(0),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    enrollmentIdx: (0, pg_core_1.index)('lp_enrollment_idx').on(table.enrollmentId),
+    enrollmentLessonIdx: (0, pg_core_1.uniqueIndex)('lp_enrollment_lesson_idx').on(table.enrollmentId, table.lessonId),
 }));
 exports.passwordResetTokens = (0, pg_core_1.pgTable)('password_reset_tokens', {
     id: (0, pg_core_1.uuid)('id').primaryKey().defaultRandom(),
@@ -800,26 +1345,28 @@ exports.bookingAppointments = (0, pg_core_1.pgTable)('booking_appointments', {
     statusIdx: (0, pg_core_1.index)('booking_appointments_status_idx').on(table.status),
     tokenIdx: (0, pg_core_1.index)('booking_appointments_token_idx').on(table.confirmationToken),
 }));
-exports.analyticsPageviews = (0, pg_core_1.pgTable)('analytics_pageviews', {
+exports.pageViews = (0, pg_core_1.pgTable)('page_views', {
     id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
     tenantId: (0, pg_core_1.uuid)('tenant_id')
         .notNull()
         .references(() => exports.tenants.id, { onDelete: 'cascade' }),
-    pageSlug: (0, pg_core_1.varchar)('page_slug', { length: 500 }),
-    pageTitle: (0, pg_core_1.varchar)('page_title', { length: 500 }),
+    path: (0, pg_core_1.varchar)('path', { length: 500 }).notNull().default('/'),
     referrer: (0, pg_core_1.text)('referrer'),
     userAgent: (0, pg_core_1.text)('user_agent'),
-    ipHash: (0, pg_core_1.varchar)('ip_hash', { length: 64 }),
+    ipHash: (0, pg_core_1.varchar)('ip_hash', { length: 16 }),
     country: (0, pg_core_1.varchar)('country', { length: 2 }),
-    device: (0, pg_core_1.varchar)('device', { length: 20 }),
+    deviceType: (0, pg_core_1.varchar)('device_type', { length: 20 }),
     browser: (0, pg_core_1.varchar)('browser', { length: 50 }),
-    sessionId: (0, pg_core_1.varchar)('session_id', { length: 64 }),
-    isNewSession: (0, pg_core_1.boolean)('is_new_session').default(true),
+    os: (0, pg_core_1.varchar)('os', { length: 50 }),
+    sessionId: (0, pg_core_1.varchar)('session_id', { length: 32 }).notNull(),
+    isUnique: (0, pg_core_1.boolean)('is_unique').default(true).notNull(),
+    durationSeconds: (0, pg_core_1.integer)('duration_seconds').default(0),
     createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow().notNull(),
 }, (table) => ({
-    tenantIdx: (0, pg_core_1.index)('analytics_pageviews_tenant_idx').on(table.tenantId),
-    createdAtIdx: (0, pg_core_1.index)('analytics_pageviews_created_at_idx').on(table.createdAt),
-    sessionIdx: (0, pg_core_1.index)('analytics_pageviews_session_idx').on(table.sessionId),
+    tenantIdx: (0, pg_core_1.index)('page_views_tenant_idx').on(table.tenantId),
+    createdAtIdx: (0, pg_core_1.index)('page_views_created_at_idx').on(table.createdAt),
+    sessionIdx: (0, pg_core_1.index)('page_views_session_idx').on(table.sessionId),
+    tenantDateIdx: (0, pg_core_1.index)('page_views_tenant_date_idx').on(table.tenantId, table.createdAt),
 }));
 exports.analyticsDaily = (0, pg_core_1.pgTable)('analytics_daily', {
     id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
@@ -827,15 +1374,22 @@ exports.analyticsDaily = (0, pg_core_1.pgTable)('analytics_daily', {
         .notNull()
         .references(() => exports.tenants.id, { onDelete: 'cascade' }),
     date: (0, pg_core_1.varchar)('date', { length: 10 }).notNull(),
-    pageviews: (0, pg_core_1.integer)('pageviews').default(0).notNull(),
+    pageViews: (0, pg_core_1.integer)('page_views').default(0).notNull(),
     uniqueVisitors: (0, pg_core_1.integer)('unique_visitors').default(0).notNull(),
+    sessions: (0, pg_core_1.integer)('sessions').default(0).notNull(),
     newSessions: (0, pg_core_1.integer)('new_sessions').default(0).notNull(),
+    avgDuration: (0, pg_core_1.integer)('avg_duration').default(0).notNull(),
     bounceRate: (0, pg_core_1.integer)('bounce_rate').default(0),
-    avgSessionDuration: (0, pg_core_1.integer)('avg_session_duration').default(0),
+    ordersCount: (0, pg_core_1.integer)('orders_count').default(0).notNull(),
+    revenue: (0, pg_core_1.integer)('revenue').default(0).notNull(),
+    topPages: (0, pg_core_1.jsonb)('top_pages').default([]),
+    topReferrers: (0, pg_core_1.jsonb)('top_referrers').default([]),
+    devices: (0, pg_core_1.jsonb)('devices').default({}),
     createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow().notNull(),
     updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow().notNull(),
 }, (table) => ({
     tenantDateIdx: (0, pg_core_1.uniqueIndex)('analytics_daily_tenant_date_idx').on(table.tenantId, table.date),
+    tenantIdx: (0, pg_core_1.index)('analytics_daily_tenant_idx').on(table.tenantId),
 }));
 exports.forms = (0, pg_core_1.pgTable)('forms', {
     id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
@@ -973,7 +1527,7 @@ exports.tenantsRelations = (0, drizzle_orm_1.relations)(exports.tenants, ({ many
     domainEvents: many(exports.domainEvents),
     bookingServices: many(exports.bookingServices),
     bookingAppointments: many(exports.bookingAppointments),
-    analyticsPageviews: many(exports.analyticsPageviews),
+    pageViews: many(exports.pageViews),
     analyticsDaily: many(exports.analyticsDaily),
     forms: many(exports.forms),
     formSubmissions: many(exports.formSubmissions),
@@ -1260,9 +1814,9 @@ exports.blogCommentsRelations = (0, drizzle_orm_1.relations)(exports.blogComment
     post: one(exports.posts, { fields: [exports.blogComments.postId], references: [exports.posts.id] }),
     replies: many(exports.blogComments, { relationName: 'replies' }),
 }));
-exports.analyticsPageviewsRelations = (0, drizzle_orm_1.relations)(exports.analyticsPageviews, ({ one }) => ({
+exports.pageViewsRelations = (0, drizzle_orm_1.relations)(exports.pageViews, ({ one }) => ({
     tenant: one(exports.tenants, {
-        fields: [exports.analyticsPageviews.tenantId],
+        fields: [exports.pageViews.tenantId],
         references: [exports.tenants.id],
     }),
 }));
@@ -1271,6 +1825,139 @@ exports.analyticsDailyRelations = (0, drizzle_orm_1.relations)(exports.analytics
         fields: [exports.analyticsDaily.tenantId],
         references: [exports.tenants.id],
     }),
+}));
+exports.productVariantGroupsRelations = (0, drizzle_orm_1.relations)(exports.productVariantGroups, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.productVariantGroups.tenantId], references: [exports.tenants.id] }),
+    product: one(exports.products, { fields: [exports.productVariantGroups.productId], references: [exports.products.id] }),
+    variants: many(exports.productVariants),
+}));
+exports.productVariantsRelations = (0, drizzle_orm_1.relations)(exports.productVariants, ({ one }) => ({
+    tenant: one(exports.tenants, { fields: [exports.productVariants.tenantId], references: [exports.tenants.id] }),
+    group: one(exports.productVariantGroups, { fields: [exports.productVariants.groupId], references: [exports.productVariantGroups.id] }),
+    product: one(exports.products, { fields: [exports.productVariants.productId], references: [exports.products.id] }),
+}));
+exports.orderStatusHistoryRelations = (0, drizzle_orm_1.relations)(exports.orderStatusHistory, ({ one }) => ({
+    order: one(exports.orders, { fields: [exports.orderStatusHistory.orderId], references: [exports.orders.id] }),
+    tenant: one(exports.tenants, { fields: [exports.orderStatusHistory.tenantId], references: [exports.tenants.id] }),
+    createdByUser: one(exports.users, { fields: [exports.orderStatusHistory.createdBy], references: [exports.users.id] }),
+}));
+exports.couponsRelations = (0, drizzle_orm_1.relations)(exports.coupons, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.coupons.tenantId], references: [exports.tenants.id] }),
+    uses: many(exports.couponUses),
+}));
+exports.couponUsesRelations = (0, drizzle_orm_1.relations)(exports.couponUses, ({ one }) => ({
+    coupon: one(exports.coupons, { fields: [exports.couponUses.couponId], references: [exports.coupons.id] }),
+    tenant: one(exports.tenants, { fields: [exports.couponUses.tenantId], references: [exports.tenants.id] }),
+}));
+exports.menuCategoriesRelations = (0, drizzle_orm_1.relations)(exports.menuCategories, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.menuCategories.tenantId], references: [exports.tenants.id] }),
+    items: many(exports.menuItems),
+}));
+exports.menuItemsRelations = (0, drizzle_orm_1.relations)(exports.menuItems, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.menuItems.tenantId], references: [exports.tenants.id] }),
+    category: one(exports.menuCategories, { fields: [exports.menuItems.categoryId], references: [exports.menuCategories.id] }),
+    modifierGroups: many(exports.menuModifierGroups),
+}));
+exports.menuModifierGroupsRelations = (0, drizzle_orm_1.relations)(exports.menuModifierGroups, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.menuModifierGroups.tenantId], references: [exports.tenants.id] }),
+    menuItem: one(exports.menuItems, { fields: [exports.menuModifierGroups.menuItemId], references: [exports.menuItems.id] }),
+    modifiers: many(exports.menuModifiers),
+}));
+exports.menuModifiersRelations = (0, drizzle_orm_1.relations)(exports.menuModifiers, ({ one }) => ({
+    tenant: one(exports.tenants, { fields: [exports.menuModifiers.tenantId], references: [exports.tenants.id] }),
+    group: one(exports.menuModifierGroups, { fields: [exports.menuModifiers.groupId], references: [exports.menuModifierGroups.id] }),
+}));
+exports.restaurantTablesRelations = (0, drizzle_orm_1.relations)(exports.restaurantTables, ({ one }) => ({
+    tenant: one(exports.tenants, { fields: [exports.restaurantTables.tenantId], references: [exports.tenants.id] }),
+}));
+exports.foodOrdersRelations = (0, drizzle_orm_1.relations)(exports.foodOrders, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.foodOrders.tenantId], references: [exports.tenants.id] }),
+    table: one(exports.restaurantTables, { fields: [exports.foodOrders.tableId], references: [exports.restaurantTables.id] }),
+    items: many(exports.foodOrderItems),
+    statusHistory: many(exports.foodOrderStatusHistory),
+}));
+exports.foodOrderItemsRelations = (0, drizzle_orm_1.relations)(exports.foodOrderItems, ({ one }) => ({
+    foodOrder: one(exports.foodOrders, { fields: [exports.foodOrderItems.foodOrderId], references: [exports.foodOrders.id] }),
+    menuItem: one(exports.menuItems, { fields: [exports.foodOrderItems.menuItemId], references: [exports.menuItems.id] }),
+}));
+exports.foodOrderStatusHistoryRelations = (0, drizzle_orm_1.relations)(exports.foodOrderStatusHistory, ({ one }) => ({
+    foodOrder: one(exports.foodOrders, { fields: [exports.foodOrderStatusHistory.foodOrderId], references: [exports.foodOrders.id] }),
+    tenant: one(exports.tenants, { fields: [exports.foodOrderStatusHistory.tenantId], references: [exports.tenants.id] }),
+}));
+exports.localProductsRelations = (0, drizzle_orm_1.relations)(exports.localProducts, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.localProducts.tenantId], references: [exports.tenants.id] }),
+    deals: many(exports.localDeals),
+}));
+exports.localDealsRelations = (0, drizzle_orm_1.relations)(exports.localDeals, ({ one }) => ({
+    tenant: one(exports.tenants, { fields: [exports.localDeals.tenantId], references: [exports.tenants.id] }),
+    localProduct: one(exports.localProducts, { fields: [exports.localDeals.localProductId], references: [exports.localProducts.id] }),
+}));
+exports.localPickupSlotsRelations = (0, drizzle_orm_1.relations)(exports.localPickupSlots, ({ one }) => ({
+    tenant: one(exports.tenants, { fields: [exports.localPickupSlots.tenantId], references: [exports.tenants.id] }),
+}));
+exports.localOrdersRelations = (0, drizzle_orm_1.relations)(exports.localOrders, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.localOrders.tenantId], references: [exports.tenants.id] }),
+    pickupSlot: one(exports.localPickupSlots, { fields: [exports.localOrders.pickupSlotId], references: [exports.localPickupSlots.id] }),
+    confirmedByUser: one(exports.users, { fields: [exports.localOrders.pickupConfirmedBy], references: [exports.users.id] }),
+    items: many(exports.localOrderItems),
+}));
+exports.localOrderItemsRelations = (0, drizzle_orm_1.relations)(exports.localOrderItems, ({ one }) => ({
+    localOrder: one(exports.localOrders, { fields: [exports.localOrderItems.localOrderId], references: [exports.localOrders.id] }),
+    localProduct: one(exports.localProducts, { fields: [exports.localOrderItems.localProductId], references: [exports.localProducts.id] }),
+}));
+exports.funnelsRelations = (0, drizzle_orm_1.relations)(exports.funnels, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.funnels.tenantId], references: [exports.tenants.id] }),
+    steps: many(exports.funnelSteps),
+    submissions: many(exports.funnelSubmissions),
+}));
+exports.funnelStepsRelations = (0, drizzle_orm_1.relations)(exports.funnelSteps, ({ one, many }) => ({
+    funnel: one(exports.funnels, { fields: [exports.funnelSteps.funnelId], references: [exports.funnels.id] }),
+    tenant: one(exports.tenants, { fields: [exports.funnelSteps.tenantId], references: [exports.tenants.id] }),
+    submissions: many(exports.funnelSubmissions),
+}));
+exports.funnelSubmissionsRelations = (0, drizzle_orm_1.relations)(exports.funnelSubmissions, ({ one }) => ({
+    funnel: one(exports.funnels, { fields: [exports.funnelSubmissions.funnelId], references: [exports.funnels.id] }),
+    step: one(exports.funnelSteps, { fields: [exports.funnelSubmissions.stepId], references: [exports.funnelSteps.id] }),
+    tenant: one(exports.tenants, { fields: [exports.funnelSubmissions.tenantId], references: [exports.tenants.id] }),
+}));
+exports.membershipPlansRelations = (0, drizzle_orm_1.relations)(exports.membershipPlans, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.membershipPlans.tenantId], references: [exports.tenants.id] }),
+    memberships: many(exports.memberships),
+    courses: many(exports.courses),
+}));
+exports.membershipsRelations = (0, drizzle_orm_1.relations)(exports.memberships, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.memberships.tenantId], references: [exports.tenants.id] }),
+    plan: one(exports.membershipPlans, { fields: [exports.memberships.planId], references: [exports.membershipPlans.id] }),
+    grantedByUser: one(exports.users, { fields: [exports.memberships.grantedBy], references: [exports.users.id] }),
+    enrollments: many(exports.courseEnrollments),
+}));
+exports.coursesRelations = (0, drizzle_orm_1.relations)(exports.courses, ({ one, many }) => ({
+    tenant: one(exports.tenants, { fields: [exports.courses.tenantId], references: [exports.tenants.id] }),
+    requiredPlan: one(exports.membershipPlans, { fields: [exports.courses.requiresMembershipPlanId], references: [exports.membershipPlans.id] }),
+    chapters: many(exports.courseChapters),
+    enrollments: many(exports.courseEnrollments),
+}));
+exports.courseChaptersRelations = (0, drizzle_orm_1.relations)(exports.courseChapters, ({ one, many }) => ({
+    course: one(exports.courses, { fields: [exports.courseChapters.courseId], references: [exports.courses.id] }),
+    tenant: one(exports.tenants, { fields: [exports.courseChapters.tenantId], references: [exports.tenants.id] }),
+    lessons: many(exports.courseLessons),
+}));
+exports.courseLessonsRelations = (0, drizzle_orm_1.relations)(exports.courseLessons, ({ one, many }) => ({
+    chapter: one(exports.courseChapters, { fields: [exports.courseLessons.chapterId], references: [exports.courseChapters.id] }),
+    course: one(exports.courses, { fields: [exports.courseLessons.courseId], references: [exports.courses.id] }),
+    tenant: one(exports.tenants, { fields: [exports.courseLessons.tenantId], references: [exports.tenants.id] }),
+    progress: many(exports.lessonProgress),
+}));
+exports.courseEnrollmentsRelations = (0, drizzle_orm_1.relations)(exports.courseEnrollments, ({ one, many }) => ({
+    course: one(exports.courses, { fields: [exports.courseEnrollments.courseId], references: [exports.courses.id] }),
+    tenant: one(exports.tenants, { fields: [exports.courseEnrollments.tenantId], references: [exports.tenants.id] }),
+    membership: one(exports.memberships, { fields: [exports.courseEnrollments.membershipId], references: [exports.memberships.id] }),
+    lessonProgress: many(exports.lessonProgress),
+}));
+exports.lessonProgressRelations = (0, drizzle_orm_1.relations)(exports.lessonProgress, ({ one }) => ({
+    enrollment: one(exports.courseEnrollments, { fields: [exports.lessonProgress.enrollmentId], references: [exports.courseEnrollments.id] }),
+    lesson: one(exports.courseLessons, { fields: [exports.lessonProgress.lessonId], references: [exports.courseLessons.id] }),
+    tenant: one(exports.tenants, { fields: [exports.lessonProgress.tenantId], references: [exports.tenants.id] }),
 }));
 exports.tenantCustomers = (0, pg_core_1.pgTable)('tenant_customers', {
     id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),

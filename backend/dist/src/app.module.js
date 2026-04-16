@@ -41,6 +41,9 @@ const white_label_module_1 = require("./modules/white-label/white-label.module")
 const support_module_1 = require("./modules/support/support.module");
 const domain_module_1 = require("./modules/domain/domain.module");
 const customer_auth_module_1 = require("./modules/customer-auth/customer-auth.module");
+const restaurant_module_1 = require("./modules/restaurant/restaurant.module");
+const local_store_module_1 = require("./modules/local-store/local-store.module");
+const funnels_module_1 = require("./modules/funnels/funnels.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -92,6 +95,9 @@ exports.AppModule = AppModule = __decorate([
             white_label_module_1.WhiteLabelModule,
             support_module_1.SupportModule,
             customer_auth_module_1.CustomerAuthModule,
+            restaurant_module_1.RestaurantModule,
+            funnels_module_1.FunnelsModule,
+            local_store_module_1.LocalStoreModule,
         ],
         providers: [
             {

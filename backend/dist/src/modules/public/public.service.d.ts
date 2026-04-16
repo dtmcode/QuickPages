@@ -69,7 +69,7 @@ export declare class PublicService {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "features" | "map" | "hero" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
             order: number;
             isActive: boolean;
             content: {
@@ -194,7 +194,7 @@ export declare class PublicService {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "features" | "map" | "hero" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
             order: number;
             isActive: boolean;
             content: {
@@ -319,7 +319,7 @@ export declare class PublicService {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "features" | "map" | "hero" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
             order: number;
             isActive: boolean;
             content: {
@@ -500,6 +500,11 @@ export declare class PublicService {
         images: string | null;
         isActive: boolean;
         isFeatured: boolean;
+        hasVariants: boolean;
+        sku: string | null;
+        weight: number | null;
+        isDigital: boolean;
+        downloadUrl: string | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }[]>;
@@ -532,6 +537,11 @@ export declare class PublicService {
         images: string | null;
         isActive: boolean;
         isFeatured: boolean;
+        hasVariants: boolean;
+        sku: string | null;
+        weight: number | null;
+        isDigital: boolean;
+        downloadUrl: string | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }>;
@@ -642,6 +652,19 @@ export declare class PublicService {
         shipping: number;
         total: number;
         notes: string | null;
+        orderType: string;
+        trackingNumber: string | null;
+        carrier: string | null;
+        shippedAt: Date | null;
+        deliveredAt: Date | null;
+        pickupCode: string | null;
+        pickupCodeUsed: boolean;
+        pickupSlot: Date | null;
+        pickupConfirmedAt: Date | null;
+        stripePaymentIntentId: string | null;
+        paidAt: Date | null;
+        couponId: string | null;
+        discountAmount: number;
         createdAt: Date | null;
         updatedAt: Date | null;
     }[]>;

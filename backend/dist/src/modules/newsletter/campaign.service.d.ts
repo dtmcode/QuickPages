@@ -38,6 +38,7 @@ export declare class CampaignService {
         updatedAt: Date;
         tenantId: string;
         status: "draft" | "scheduled" | "sending" | "sent" | "paused" | "failed";
+        completedAt: Date | null;
         subject: string;
         fromEmail: string | null;
         fromName: string | null;
@@ -49,7 +50,6 @@ export declare class CampaignService {
         plainTextContent: string | null;
         scheduledAt: Date | null;
         sendAt: Date | null;
-        completedAt: Date | null;
         filterTags: string[] | null;
         excludeTags: string[] | null;
         totalRecipients: number;
@@ -199,6 +199,7 @@ export declare class CampaignService {
         updatedAt: Date;
         tenantId: string;
         status: "draft" | "scheduled" | "sending" | "sent" | "paused" | "failed";
+        completedAt: Date | null;
         subject: string;
         fromEmail: string | null;
         fromName: string | null;
@@ -210,7 +211,6 @@ export declare class CampaignService {
         plainTextContent: string | null;
         scheduledAt: Date | null;
         sendAt: Date | null;
-        completedAt: Date | null;
         filterTags: string[] | null;
         excludeTags: string[] | null;
         totalRecipients: number;

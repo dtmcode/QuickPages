@@ -2,7 +2,6 @@
  * 🎨 WEBSITE BUILDER SCHEMA
  * Separates Schema für Website Builder Modul
  */
-
 import {
   pgTable,
   uuid,
@@ -17,7 +16,8 @@ import {
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { tenants, users } from './schema'; // Import from core schema
+import { membershipPlans, courses, tenants, users } from './schema';
+
 
 // ==================== ENUMS ====================
 
@@ -426,6 +426,34 @@ export const wbSections = pgTable(
     typeIdx: index('wb_sections_type_idx').on(table.type),
   }),
 );
+export const protectedPages = pgTable(
+  'protected_pages',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .references(() => tenants.id, { onDelete: 'cascade' })
+      .notNull(),
+    pageId: uuid('page_id')
+      .references(() => wbPages.id, { onDelete: 'cascade' })
+      .notNull(),
+
+    requiresMembershipPlanId: uuid('requires_membership_plan_id').references(
+      () => membershipPlans.id,
+      { onDelete: 'set null' },
+    ),
+
+    requiresCourseId: uuid('requires_course_id').references(() => courses.id, {
+      onDelete: 'set null',
+    }),
+    createdAt: timestamp('created_at').defaultNow(),
+  },
+  (table) => ({
+    tenantPageIdx: uniqueIndex('pp_tenant_page_idx').on(
+      table.tenantId,
+      table.pageId,
+    ),
+  }),
+);
 
 // ==================== RELATIONS ====================
 
@@ -491,4 +519,11 @@ export const wbSectionsRelations = relations(wbSections, ({ one }) => ({
     fields: [wbSections.pageId],
     references: [wbPages.id],
   }),
+}));
+
+export const protectedPagesRelations = relations(protectedPages, ({ one }) => ({
+  tenant: one(tenants, { fields: [protectedPages.tenantId], references: [tenants.id] }),
+  page: one(wbPages, { fields: [protectedPages.pageId], references: [wbPages.id] }),
+  requiredPlan: one(membershipPlans, { fields: [protectedPages.requiresMembershipPlanId], references: [membershipPlans.id] }),
+  requiredCourse: one(courses, { fields: [protectedPages.requiresCourseId], references: [courses.id] }),
 }));

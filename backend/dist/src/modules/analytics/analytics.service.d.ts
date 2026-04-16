@@ -21,35 +21,22 @@ export declare class AnalyticsService {
         ordersCount: number;
         revenue: number;
     }>;
-    getDailyStats(tenantId: string, startDate: string, endDate: string): Promise<Array<{
-        date: string;
-        pageViews: number;
-        uniqueVisitors: number;
-        sessions: number;
-        revenue: number;
-    }>>;
-    getTopPages(tenantId: string, startDate: string, endDate: string, limit?: number): Promise<Array<{
-        path: string;
-        views: number;
-        uniqueViews: number;
-    }>>;
-    getTopReferrers(tenantId: string, startDate: string, endDate: string, limit?: number): Promise<Array<{
-        referrer: string;
-        visits: number;
-    }>>;
+    getDailyStats(tenantId: string, startDate: string, endDate: string): Promise<any>;
+    getTopPages(tenantId: string, startDate: string, endDate: string, limit?: number): Promise<any>;
+    getTopReferrers(tenantId: string, startDate: string, endDate: string, limit?: number): Promise<any>;
     getBreakdowns(tenantId: string, startDate: string, endDate: string): Promise<{
-        devices: Array<{
-            name: string;
+        devices: {
+            name: any;
             count: number;
-        }>;
-        browsers: Array<{
-            name: string;
+        }[];
+        browsers: {
+            name: any;
             count: number;
-        }>;
-        countries: Array<{
-            name: string;
+        }[];
+        countries: {
+            name: any;
             count: number;
-        }>;
+        }[];
     }>;
     getRealtimeVisitors(tenantId: string): Promise<number>;
     aggregateDailyStats(): Promise<void>;

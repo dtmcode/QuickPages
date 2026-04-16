@@ -63,7 +63,12 @@ function DashboardNav({ onClose }: { onClose?: () => void }) {
     { name: 'Newsletter',      href: '/dashboard/newsletter/campaigns',  emoji: '📧', visible: true },
     { name: 'Formulare',       href: '/dashboard/forms',                 emoji: '📋', visible: true },
     { name: 'Kommentare',      href: '/dashboard/comments',              emoji: '💬', visible: true },
-    { name: 'Analytics',       href: '/dashboard/analytics',             emoji: '📊', visible: true },
+    { name: 'Analytics', href: '/dashboard/analytics', emoji: '📊', visible: true },
+    { name: 'Restaurant',       href: '/dashboard/restaurant',   emoji: '🍽️', visible: true },
+{ name: 'Lokaler Handel',   href: '/dashboard/local-store',  emoji: '🏪', visible: true },
+{ name: 'Funnels',          href: '/dashboard/funnels',      emoji: '🎯', visible: true },
+{ name: 'Kurse',            href: '/dashboard/courses',      emoji: '🎓', visible: true },
+{ name: 'Gutscheine',       href: '/dashboard/coupons',      emoji: '🎟️', visible: true },
     { name: 'AI Content',      href: '/dashboard/ai',                    emoji: '🤖', visible: true },
     { name: 'Benutzer',        href: '/dashboard/users',                 emoji: '👥', visible: true },
   ];

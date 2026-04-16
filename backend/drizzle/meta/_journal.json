@@ -169,6 +169,13 @@
       "when": 1776068081475,
       "tag": "0023_violet_dark_phoenix",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1776329613827,
+      "tag": "0024_unique_purifiers",
+      "breakpoints": true
     }
   ]
 }

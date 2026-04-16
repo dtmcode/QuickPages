@@ -1,0 +1,33 @@
+import { RestaurantService } from './restaurant.service';
+import { RestaurantSettings, RestaurantTable, RestaurantTablesResponse, MenuCategory, MenuCategoriesResponse, MenuItem, MenuItemsResponse, MenuModifierGroup, MenuModifier, FoodOrder, FoodOrdersResponse } from './dto/restaurant.types';
+import { UpdateRestaurantSettingsInput, CreateRestaurantTableInput, UpdateRestaurantTableInput, CreateMenuCategoryInput, UpdateMenuCategoryInput, CreateMenuItemInput, UpdateMenuItemInput, CreateModifierGroupInput, UpdateModifierGroupInput, CreateModifierInput, UpdateModifierInput, CreateFoodOrderInput, UpdateFoodOrderStatusInput } from './dto/restaurant.input';
+export declare class RestaurantResolver {
+    private readonly restaurantService;
+    constructor(restaurantService: RestaurantService);
+    restaurantSettings(tenantId: string): Promise<RestaurantSettings>;
+    updateRestaurantSettings(tenantId: string, input: UpdateRestaurantSettingsInput): Promise<RestaurantSettings>;
+    restaurantTables(tenantId: string): Promise<RestaurantTablesResponse>;
+    createRestaurantTable(tenantId: string, input: CreateRestaurantTableInput): Promise<RestaurantTable>;
+    updateRestaurantTable(tenantId: string, id: string, input: UpdateRestaurantTableInput): Promise<RestaurantTable>;
+    deleteRestaurantTable(tenantId: string, id: string): Promise<boolean>;
+    menuCategories(tenantId: string): Promise<MenuCategoriesResponse>;
+    createMenuCategory(tenantId: string, input: CreateMenuCategoryInput): Promise<MenuCategory>;
+    updateMenuCategory(tenantId: string, id: string, input: UpdateMenuCategoryInput): Promise<MenuCategory>;
+    deleteMenuCategory(tenantId: string, id: string): Promise<boolean>;
+    menuItems(tenantId: string, categoryId?: string): Promise<MenuItemsResponse>;
+    menuItem(tenantId: string, id: string): Promise<MenuItem>;
+    createMenuItem(tenantId: string, input: CreateMenuItemInput): Promise<MenuItem>;
+    updateMenuItem(tenantId: string, id: string, input: UpdateMenuItemInput): Promise<MenuItem>;
+    deleteMenuItem(tenantId: string, id: string): Promise<boolean>;
+    createModifierGroup(tenantId: string, input: CreateModifierGroupInput): Promise<MenuModifierGroup>;
+    updateModifierGroup(tenantId: string, id: string, input: UpdateModifierGroupInput): Promise<MenuModifierGroup>;
+    deleteModifierGroup(tenantId: string, id: string): Promise<boolean>;
+    createModifier(tenantId: string, input: CreateModifierInput): Promise<MenuModifier>;
+    updateModifier(tenantId: string, id: string, input: UpdateModifierInput): Promise<MenuModifier>;
+    deleteModifier(tenantId: string, id: string): Promise<boolean>;
+    foodOrders(tenantId: string, status?: string): Promise<FoodOrdersResponse>;
+    foodOrder(tenantId: string, id: string): Promise<FoodOrder>;
+    createFoodOrder(tenantId: string, input: CreateFoodOrderInput): Promise<FoodOrder>;
+    updateFoodOrderStatus(tenantId: string, id: string, input: UpdateFoodOrderStatusInput): Promise<FoodOrder>;
+    confirmFoodOrderPickup(tenantId: string, orderId: string, pickupCode: string): Promise<boolean>;
+}

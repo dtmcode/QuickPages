@@ -77,15 +77,17 @@ let AnalyticsService = AnalyticsService_1 = class AnalyticsService {
                         .digest('hex')
                         .slice(0, 32)
                     : crypto.randomUUID().replace(/-/g, '').slice(0, 32));
-            const existingSession = await this.db.execute((0, drizzle_orm_1.sql) `SELECT id FROM page_views 
-            WHERE tenant_id = ${data.tenantId} 
+            const existingSession = await this.db.execute((0, drizzle_orm_1.sql) `SELECT id FROM page_views
+            WHERE tenant_id = ${data.tenantId}
             AND session_id = ${sessionId}
             AND created_at >= CURRENT_DATE
             LIMIT 1`);
             const isUnique = existingSession.rows?.length === 0;
-            await this.db.execute((0, drizzle_orm_1.sql) `INSERT INTO page_views (tenant_id, path, referrer, user_agent, ip_hash, device_type, browser, os, session_id, is_unique)
-            VALUES (${data.tenantId}, ${data.path}, ${data.referrer || null}, ${data.userAgent || null}, 
-                    ${ipHash}, ${ua.deviceType}, ${ua.browser}, ${ua.os}, ${sessionId}, ${isUnique})`);
+            await this.db.execute((0, drizzle_orm_1.sql) `INSERT INTO page_views
+              (tenant_id, path, referrer, user_agent, ip_hash, device_type, browser, os, session_id, is_unique)
+            VALUES
+              (${data.tenantId}, ${data.path}, ${data.referrer || null}, ${data.userAgent || null},
+               ${ipHash}, ${ua.deviceType}, ${ua.browser}, ${ua.os}, ${sessionId}, ${isUnique})`);
         }
         catch (error) {
             this.logger.error(`Tracking-Fehler: ${error.message}`);
@@ -93,10 +95,11 @@ let AnalyticsService = AnalyticsService_1 = class AnalyticsService {
     }
     async updateDuration(sessionId, path, durationSeconds) {
         try {
-            await this.db.execute((0, drizzle_orm_1.sql) `UPDATE page_views 
+            await this.db.execute((0, drizzle_orm_1.sql) `UPDATE page_views
             SET duration_seconds = ${Math.min(durationSeconds, 3600)}
-            WHERE session_id = ${sessionId} AND path = ${path}
-            AND created_at >= CURRENT_DATE
+            WHERE session_id = ${sessionId}
+              AND path = ${path}
+              AND created_at >= CURRENT_DATE
             ORDER BY created_at DESC LIMIT 1`);
         }
         catch (error) {
@@ -104,18 +107,18 @@ let AnalyticsService = AnalyticsService_1 = class AnalyticsService {
         }
     }
     async getOverview(tenantId, startDate, endDate) {
-        const result = await this.db.execute((0, drizzle_orm_1.sql) `SELECT 
-            COALESCE(SUM(page_views), 0) as total_page_views,
-            COALESCE(SUM(unique_visitors), 0) as unique_visitors,
-            COALESCE(SUM(sessions), 0) as total_sessions,
-            COALESCE(AVG(avg_duration), 0) as avg_duration,
-            COALESCE(AVG(bounce_rate), 0) as bounce_rate,
-            COALESCE(SUM(orders_count), 0) as orders_count,
-            COALESCE(SUM(revenue), 0) as revenue
+        const result = await this.db.execute((0, drizzle_orm_1.sql) `SELECT
+            COALESCE(SUM(page_views), 0)       AS total_page_views,
+            COALESCE(SUM(unique_visitors), 0)  AS unique_visitors,
+            COALESCE(SUM(sessions), 0)         AS total_sessions,
+            COALESCE(AVG(avg_duration), 0)     AS avg_duration,
+            COALESCE(AVG(bounce_rate), 0)      AS bounce_rate,
+            COALESCE(SUM(orders_count), 0)     AS orders_count,
+            COALESCE(SUM(revenue), 0)          AS revenue
           FROM analytics_daily
           WHERE tenant_id = ${tenantId}
-            AND date >= ${startDate}::date
-            AND date <= ${endDate}::date`);
+            AND date >= ${startDate}
+            AND date <= ${endDate}`);
         const row = result.rows?.[0] || {};
         return {
             totalPageViews: parseInt(row.total_page_views) || 0,
@@ -131,8 +134,8 @@ let AnalyticsService = AnalyticsService_1 = class AnalyticsService {
         const result = await this.db.execute((0, drizzle_orm_1.sql) `SELECT date, page_views, unique_visitors, sessions, revenue
           FROM analytics_daily
           WHERE tenant_id = ${tenantId}
-            AND date >= ${startDate}::date
-            AND date <= ${endDate}::date
+            AND date >= ${startDate}
+            AND date <= ${endDate}
           ORDER BY date ASC`);
         return (result.rows || []).map((row) => ({
             date: row.date,
@@ -143,9 +146,9 @@ let AnalyticsService = AnalyticsService_1 = class AnalyticsService {
         }));
     }
     async getTopPages(tenantId, startDate, endDate, limit = 10) {
-        const result = await this.db.execute((0, drizzle_orm_1.sql) `SELECT path, 
-            COUNT(*) as views,
-            COUNT(DISTINCT session_id) as unique_views
+        const result = await this.db.execute((0, drizzle_orm_1.sql) `SELECT path,
+              COUNT(*) AS views,
+              COUNT(DISTINCT session_id) AS unique_views
           FROM page_views
           WHERE tenant_id = ${tenantId}
             AND created_at >= ${startDate}::date
@@ -160,9 +163,7 @@ let AnalyticsService = AnalyticsService_1 = class AnalyticsService {
         }));
     }
     async getTopReferrers(tenantId, startDate, endDate, limit = 10) {
-        const result = await this.db.execute((0, drizzle_orm_1.sql) `SELECT 
-            COALESCE(referrer, 'Direkt') as referrer,
-            COUNT(*) as visits
+        const result = await this.db.execute((0, drizzle_orm_1.sql) `SELECT COALESCE(referrer, 'Direkt') AS referrer, COUNT(*) AS visits
           FROM page_views
           WHERE tenant_id = ${tenantId}
             AND created_at >= ${startDate}::date
@@ -176,32 +177,35 @@ let AnalyticsService = AnalyticsService_1 = class AnalyticsService {
         }));
     }
     async getBreakdowns(tenantId, startDate, endDate) {
-        const [devicesResult, browsersResult, countriesResult] = await Promise.all([
-            this.db.execute((0, drizzle_orm_1.sql) `SELECT COALESCE(device_type, 'unknown') as name, COUNT(*) as count
-            FROM page_views WHERE tenant_id = ${tenantId}
-            AND created_at >= ${startDate}::date AND created_at < (${endDate}::date + INTERVAL '1 day')
+        const [devResult, brResult, coResult] = await Promise.all([
+            this.db.execute((0, drizzle_orm_1.sql) `SELECT COALESCE(device_type, 'Unbekannt') AS name, COUNT(*) AS count
+            FROM page_views
+            WHERE tenant_id = ${tenantId}
+              AND created_at >= ${startDate}::date
+              AND created_at < (${endDate}::date + INTERVAL '1 day')
             GROUP BY device_type ORDER BY count DESC LIMIT 5`),
-            this.db.execute((0, drizzle_orm_1.sql) `SELECT COALESCE(browser, 'unknown') as name, COUNT(*) as count
-            FROM page_views WHERE tenant_id = ${tenantId}
-            AND created_at >= ${startDate}::date AND created_at < (${endDate}::date + INTERVAL '1 day')
+            this.db.execute((0, drizzle_orm_1.sql) `SELECT COALESCE(browser, 'Unbekannt') AS name, COUNT(*) AS count
+            FROM page_views
+            WHERE tenant_id = ${tenantId}
+              AND created_at >= ${startDate}::date
+              AND created_at < (${endDate}::date + INTERVAL '1 day')
             GROUP BY browser ORDER BY count DESC LIMIT 5`),
-            this.db.execute((0, drizzle_orm_1.sql) `SELECT COALESCE(country, 'unknown') as name, COUNT(*) as count
-            FROM page_views WHERE tenant_id = ${tenantId}
-            AND created_at >= ${startDate}::date AND created_at < (${endDate}::date + INTERVAL '1 day')
+            this.db.execute((0, drizzle_orm_1.sql) `SELECT COALESCE(country, 'Unbekannt') AS name, COUNT(*) AS count
+            FROM page_views
+            WHERE tenant_id = ${tenantId}
+              AND created_at >= ${startDate}::date
+              AND created_at < (${endDate}::date + INTERVAL '1 day')
             GROUP BY country ORDER BY count DESC LIMIT 10`),
         ]);
-        const mapRows = (rows) => rows.map((r) => ({
-            name: r.name || 'Unbekannt',
-            count: parseInt(r.count) || 0,
-        }));
+        const mapRows = (rows) => rows.map((r) => ({ name: r.name || 'Unbekannt', count: parseInt(r.count) || 0 }));
         return {
-            devices: mapRows(devicesResult.rows || []),
-            browsers: mapRows(browsersResult.rows || []),
-            countries: mapRows(countriesResult.rows || []),
+            devices: mapRows(devResult.rows || []),
+            browsers: mapRows(brResult.rows || []),
+            countries: mapRows(coResult.rows || []),
         };
     }
     async getRealtimeVisitors(tenantId) {
-        const result = await this.db.execute((0, drizzle_orm_1.sql) `SELECT COUNT(DISTINCT session_id) as active
+        const result = await this.db.execute((0, drizzle_orm_1.sql) `SELECT COUNT(DISTINCT session_id) AS active
           FROM page_views
           WHERE tenant_id = ${tenantId}
             AND created_at >= NOW() - INTERVAL '5 minutes'`);
@@ -211,11 +215,11 @@ let AnalyticsService = AnalyticsService_1 = class AnalyticsService {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         const dateStr = yesterday.toISOString().slice(0, 10);
-        this.logger.log(`📊 Starte Aggregation für ${dateStr}...`);
+        this.logger.log(`📊 Aggregation für ${dateStr}...`);
         try {
             const tenantsWithViews = await this.db.execute((0, drizzle_orm_1.sql) `SELECT DISTINCT tenant_id FROM page_views
             WHERE created_at >= ${dateStr}::date
-            AND created_at < (${dateStr}::date + INTERVAL '1 day')`);
+              AND created_at < (${dateStr}::date + INTERVAL '1 day')`);
             for (const row of tenantsWithViews.rows || []) {
                 await this.aggregateForTenant(row.tenant_id, dateStr);
             }
@@ -226,112 +230,119 @@ let AnalyticsService = AnalyticsService_1 = class AnalyticsService {
         }
     }
     async aggregateForTenant(tenantId, dateStr) {
-        const statsResult = await this.db.execute((0, drizzle_orm_1.sql) `SELECT 
-            COUNT(*) as page_views,
-            COUNT(DISTINCT session_id) as unique_visitors,
-            COUNT(DISTINCT session_id) as sessions,
-            COALESCE(AVG(NULLIF(duration_seconds, 0)), 0) as avg_duration
-          FROM page_views
-          WHERE tenant_id = ${tenantId}
-            AND created_at >= ${dateStr}::date
-            AND created_at < (${dateStr}::date + INTERVAL '1 day')`);
-        const stats = statsResult.rows?.[0] || {};
-        const bounceResult = await this.db.execute((0, drizzle_orm_1.sql) `SELECT 
-            COUNT(*) FILTER (WHERE view_count = 1) as bounced,
-            COUNT(*) as total
-          FROM (
-            SELECT session_id, COUNT(*) as view_count
-            FROM page_views
-            WHERE tenant_id = ${tenantId}
-              AND created_at >= ${dateStr}::date
-              AND created_at < (${dateStr}::date + INTERVAL '1 day')
-            GROUP BY session_id
-          ) sessions`);
-        const bounceData = bounceResult.rows?.[0] || {};
-        const bounceRate = bounceData.total > 0
-            ? (parseInt(bounceData.bounced) / parseInt(bounceData.total)) * 100
+        const [statsRes, bounceRes, topPagesRes, topRefRes, devicesRes, revenueRes] = await Promise.all([
+            this.db.execute((0, drizzle_orm_1.sql) `SELECT
+                COUNT(*) AS page_views,
+                COUNT(DISTINCT session_id) AS unique_visitors,
+                COUNT(DISTINCT session_id) AS sessions,
+                COALESCE(AVG(NULLIF(duration_seconds, 0)), 0) AS avg_duration
+              FROM page_views
+              WHERE tenant_id = ${tenantId}
+                AND created_at >= ${dateStr}::date
+                AND created_at < (${dateStr}::date + INTERVAL '1 day')`),
+            this.db.execute((0, drizzle_orm_1.sql) `SELECT
+                COUNT(*) FILTER (WHERE view_count = 1) AS bounced,
+                COUNT(*) AS total
+              FROM (
+                SELECT session_id, COUNT(*) AS view_count
+                FROM page_views
+                WHERE tenant_id = ${tenantId}
+                  AND created_at >= ${dateStr}::date
+                  AND created_at < (${dateStr}::date + INTERVAL '1 day')
+                GROUP BY session_id
+              ) s`),
+            this.db.execute((0, drizzle_orm_1.sql) `SELECT path, COUNT(*) AS views
+              FROM page_views
+              WHERE tenant_id = ${tenantId}
+                AND created_at >= ${dateStr}::date
+                AND created_at < (${dateStr}::date + INTERVAL '1 day')
+              GROUP BY path ORDER BY views DESC LIMIT 10`),
+            this.db.execute((0, drizzle_orm_1.sql) `SELECT COALESCE(referrer, 'Direkt') AS referrer, COUNT(*) AS visits
+              FROM page_views
+              WHERE tenant_id = ${tenantId}
+                AND created_at >= ${dateStr}::date
+                AND created_at < (${dateStr}::date + INTERVAL '1 day')
+              GROUP BY referrer ORDER BY visits DESC LIMIT 10`),
+            this.db.execute((0, drizzle_orm_1.sql) `SELECT COALESCE(device_type, 'unknown') AS device, COUNT(*) AS count
+              FROM page_views
+              WHERE tenant_id = ${tenantId}
+                AND created_at >= ${dateStr}::date
+                AND created_at < (${dateStr}::date + INTERVAL '1 day')
+              GROUP BY device_type`),
+            this.db.execute((0, drizzle_orm_1.sql) `SELECT COUNT(*) AS orders_count, COALESCE(SUM(total), 0) AS revenue
+              FROM orders
+              WHERE tenant_id = ${tenantId}
+                AND created_at >= ${dateStr}::date
+                AND created_at < (${dateStr}::date + INTERVAL '1 day')
+                AND status != 'cancelled'`),
+        ]);
+        const stats = statsRes.rows?.[0] || {};
+        const bounce = bounceRes.rows?.[0] || {};
+        const revData = revenueRes.rows?.[0] || {};
+        const bounceRate = bounce.total > 0
+            ? (parseInt(bounce.bounced) / parseInt(bounce.total)) * 100
             : 0;
-        const topPagesResult = await this.db.execute((0, drizzle_orm_1.sql) `SELECT path, COUNT(*) as views
-          FROM page_views
-          WHERE tenant_id = ${tenantId}
-            AND created_at >= ${dateStr}::date
-            AND created_at < (${dateStr}::date + INTERVAL '1 day')
-          GROUP BY path ORDER BY views DESC LIMIT 10`);
-        const topRefResult = await this.db.execute((0, drizzle_orm_1.sql) `SELECT COALESCE(referrer, 'Direkt') as referrer, COUNT(*) as visits
-          FROM page_views
-          WHERE tenant_id = ${tenantId}
-            AND created_at >= ${dateStr}::date
-            AND created_at < (${dateStr}::date + INTERVAL '1 day')
-          GROUP BY referrer ORDER BY visits DESC LIMIT 10`);
-        const devicesResult = await this.db.execute((0, drizzle_orm_1.sql) `SELECT COALESCE(device_type, 'unknown') as device, COUNT(*) as count
-          FROM page_views WHERE tenant_id = ${tenantId}
-          AND created_at >= ${dateStr}::date AND created_at < (${dateStr}::date + INTERVAL '1 day')
-          GROUP BY device_type`);
-        const revenueResult = await this.db.execute((0, drizzle_orm_1.sql) `SELECT COUNT(*) as orders_count, COALESCE(SUM(total), 0) as revenue
-          FROM orders
-          WHERE tenant_id = ${tenantId}
-            AND created_at >= ${dateStr}::date
-            AND created_at < (${dateStr}::date + INTERVAL '1 day')
-            AND status != 'cancelled'`);
-        const revData = revenueResult.rows?.[0] || {};
-        await this.db.execute((0, drizzle_orm_1.sql) `INSERT INTO analytics_daily (tenant_id, date, page_views, unique_visitors, sessions, 
-            avg_duration, bounce_rate, top_pages, top_referrers, devices, orders_count, revenue)
+        const devices = Object.fromEntries((devicesRes.rows || []).map((r) => [r.device, parseInt(r.count)]));
+        await this.db.execute((0, drizzle_orm_1.sql) `INSERT INTO analytics_daily
+            (tenant_id, date, page_views, unique_visitors, sessions, avg_duration,
+             bounce_rate, top_pages, top_referrers, devices, orders_count, revenue)
           VALUES (
-            ${tenantId}, ${dateStr}::date, 
+            ${tenantId}, ${dateStr}::date,
             ${parseInt(stats.page_views) || 0},
             ${parseInt(stats.unique_visitors) || 0},
             ${parseInt(stats.sessions) || 0},
             ${Math.round(parseFloat(stats.avg_duration)) || 0},
             ${Math.round(bounceRate * 10) / 10},
-            ${JSON.stringify(topPagesResult.rows || [])},
-            ${JSON.stringify(topRefResult.rows || [])},
-            ${JSON.stringify(Object.fromEntries((devicesResult.rows || []).map((r) => [r.device, parseInt(r.count)])))},
+            ${JSON.stringify(topPagesRes.rows || [])}::jsonb,
+            ${JSON.stringify(topRefRes.rows || [])}::jsonb,
+            ${JSON.stringify(devices)}::jsonb,
             ${parseInt(revData.orders_count) || 0},
             ${parseInt(revData.revenue) || 0}
           )
           ON CONFLICT (tenant_id, date) DO UPDATE SET
-            page_views = EXCLUDED.page_views,
+            page_views      = EXCLUDED.page_views,
             unique_visitors = EXCLUDED.unique_visitors,
-            sessions = EXCLUDED.sessions,
-            avg_duration = EXCLUDED.avg_duration,
-            bounce_rate = EXCLUDED.bounce_rate,
-            top_pages = EXCLUDED.top_pages,
-            top_referrers = EXCLUDED.top_referrers,
-            devices = EXCLUDED.devices,
-            orders_count = EXCLUDED.orders_count,
-            revenue = EXCLUDED.revenue`);
+            sessions        = EXCLUDED.sessions,
+            avg_duration    = EXCLUDED.avg_duration,
+            bounce_rate     = EXCLUDED.bounce_rate,
+            top_pages       = EXCLUDED.top_pages,
+            top_referrers   = EXCLUDED.top_referrers,
+            devices         = EXCLUDED.devices,
+            orders_count    = EXCLUDED.orders_count,
+            revenue         = EXCLUDED.revenue,
+            updated_at      = NOW()`);
     }
     getDailySalt() {
         return `analytics-salt-${new Date().toISOString().slice(0, 10)}`;
     }
     parseUserAgent(ua) {
-        const uaLower = ua.toLowerCase();
+        const low = ua.toLowerCase();
         let deviceType = 'desktop';
-        if (/mobile|android.*mobile|iphone|ipod/.test(uaLower))
+        if (/mobile|android.*mobile|iphone|ipod/.test(low))
             deviceType = 'mobile';
-        else if (/tablet|ipad|android(?!.*mobile)/.test(uaLower))
+        else if (/tablet|ipad|android(?!.*mobile)/.test(low))
             deviceType = 'tablet';
         let browser = 'other';
-        if (uaLower.includes('firefox'))
+        if (low.includes('firefox'))
             browser = 'Firefox';
-        else if (uaLower.includes('edg'))
+        else if (low.includes('edg'))
             browser = 'Edge';
-        else if (uaLower.includes('chrome') && !uaLower.includes('edg'))
+        else if (low.includes('chrome') && !low.includes('edg'))
             browser = 'Chrome';
-        else if (uaLower.includes('safari') && !uaLower.includes('chrome'))
+        else if (low.includes('safari') && !low.includes('chrome'))
             browser = 'Safari';
-        else if (uaLower.includes('opera') || uaLower.includes('opr'))
+        else if (low.includes('opera') || low.includes('opr'))
             browser = 'Opera';
         let os = 'other';
-        if (uaLower.includes('windows'))
+        if (low.includes('windows'))
             os = 'Windows';
-        else if (uaLower.includes('mac os'))
+        else if (low.includes('mac os'))
             os = 'macOS';
-        else if (uaLower.includes('linux'))
+        else if (low.includes('linux'))
             os = 'Linux';
-        else if (uaLower.includes('android'))
+        else if (low.includes('android'))
             os = 'Android';
-        else if (uaLower.includes('iphone') || uaLower.includes('ipad'))
+        else if (low.includes('iphone') || low.includes('ipad'))
             os = 'iOS';
         return { deviceType, browser, os };
     }

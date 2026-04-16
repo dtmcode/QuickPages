@@ -200,6 +200,11 @@ export declare class PublicService {
         images: string | null;
         isActive: boolean;
         isFeatured: boolean;
+        hasVariants: boolean;
+        sku: string | null;
+        weight: number | null;
+        isDigital: boolean;
+        downloadUrl: string | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }[]>;
@@ -232,6 +237,11 @@ export declare class PublicService {
         images: string | null;
         isActive: boolean;
         isFeatured: boolean;
+        hasVariants: boolean;
+        sku: string | null;
+        weight: number | null;
+        isDigital: boolean;
+        downloadUrl: string | null;
         createdAt: Date | null;
         updatedAt: Date | null;
     }>;

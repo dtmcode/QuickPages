@@ -5997,7 +5997,7 @@ export declare const sections: import("drizzle-orm/pg-core").PgTableWithColumns<
             tableName: "sections";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "newsletter" | "contact" | "custom" | "products" | "hero" | "features" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "footer";
+            data: "newsletter" | "contact" | "custom" | "products" | "features" | "hero" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "footer";
             driverParam: string;
             notNull: true;
             hasDefault: false;

@@ -467,7 +467,7 @@ export declare const wbGlobalTemplateSections: import("drizzle-orm/pg-core").PgT
             tableName: "wb_global_template_sections";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+            data: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "features" | "map" | "hero" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
             driverParam: string;
             notNull: true;
             hasDefault: false;
@@ -1156,7 +1156,7 @@ export declare const wbSections: import("drizzle-orm/pg-core").PgTableWithColumn
             tableName: "wb_sections";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "map" | "hero" | "features" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+            data: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "features" | "map" | "hero" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
             driverParam: string;
             notNull: true;
             hasDefault: false;
@@ -1455,6 +1455,115 @@ export declare const wbSections: import("drizzle-orm/pg-core").PgTableWithColumn
     };
     dialect: "pg";
 }>;
+export declare const protectedPages: import("drizzle-orm/pg-core").PgTableWithColumns<{
+    name: "protected_pages";
+    schema: undefined;
+    columns: {
+        id: import("drizzle-orm/pg-core").PgColumn<{
+            name: "id";
+            tableName: "protected_pages";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: true;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        tenantId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "tenant_id";
+            tableName: "protected_pages";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        pageId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "page_id";
+            tableName: "protected_pages";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        requiresMembershipPlanId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "requires_membership_plan_id";
+            tableName: "protected_pages";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        requiresCourseId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "requires_course_id";
+            tableName: "protected_pages";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        createdAt: import("drizzle-orm/pg-core").PgColumn<{
+            name: "created_at";
+            tableName: "protected_pages";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: false;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
 export declare const wbGlobalTemplatesRelations: import("drizzle-orm").Relations<"wb_global_templates", {
     pages: import("drizzle-orm").Many<"wb_global_template_pages">;
     tenantInstances: import("drizzle-orm").Many<"wb_templates">;
@@ -1479,4 +1588,10 @@ export declare const wbPagesRelations: import("drizzle-orm").Relations<"wb_pages
 export declare const wbSectionsRelations: import("drizzle-orm").Relations<"wb_sections", {
     tenant: import("drizzle-orm").One<"tenants", true>;
     page: import("drizzle-orm").One<"wb_pages", true>;
+}>;
+export declare const protectedPagesRelations: import("drizzle-orm").Relations<"protected_pages", {
+    tenant: import("drizzle-orm").One<"tenants", true>;
+    page: import("drizzle-orm").One<"wb_pages", true>;
+    requiredPlan: import("drizzle-orm").One<"membership_plans", false>;
+    requiredCourse: import("drizzle-orm").One<"courses", false>;
 }>;

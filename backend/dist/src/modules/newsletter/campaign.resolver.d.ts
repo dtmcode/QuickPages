@@ -81,6 +81,7 @@ export declare class CampaignResolver {
         updatedAt: Date;
         tenantId: string;
         status: "draft" | "scheduled" | "sending" | "sent" | "paused" | "failed";
+        completedAt: Date | null;
         subject: string;
         fromEmail: string | null;
         fromName: string | null;
@@ -92,7 +93,6 @@ export declare class CampaignResolver {
         plainTextContent: string | null;
         scheduledAt: Date | null;
         sendAt: Date | null;
-        completedAt: Date | null;
         filterTags: string[] | null;
         excludeTags: string[] | null;
         totalRecipients: number;
@@ -146,6 +146,7 @@ export declare class CampaignResolver {
         updatedAt: Date;
         tenantId: string;
         status: "draft" | "scheduled" | "sending" | "sent" | "paused" | "failed";
+        completedAt: Date | null;
         subject: string;
         fromEmail: string | null;
         fromName: string | null;
@@ -157,7 +158,6 @@ export declare class CampaignResolver {
         plainTextContent: string | null;
         scheduledAt: Date | null;
         sendAt: Date | null;
-        completedAt: Date | null;
         filterTags: string[] | null;
         excludeTags: string[] | null;
         totalRecipients: number;

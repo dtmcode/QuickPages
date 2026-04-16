@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wbSectionsRelations = exports.wbPagesRelations = exports.wbTemplatesRelations = exports.wbGlobalTemplateSectionsRelations = exports.wbGlobalTemplatePagesRelations = exports.wbGlobalTemplatesRelations = exports.wbSections = exports.wbPages = exports.wbTemplates = exports.wbGlobalTemplateSections = exports.wbGlobalTemplatePages = exports.wbGlobalTemplates = exports.pageStatusEnum = exports.sectionTypeEnum = void 0;
+exports.protectedPagesRelations = exports.wbSectionsRelations = exports.wbPagesRelations = exports.wbTemplatesRelations = exports.wbGlobalTemplateSectionsRelations = exports.wbGlobalTemplatePagesRelations = exports.wbGlobalTemplatesRelations = exports.protectedPages = exports.wbSections = exports.wbPages = exports.wbTemplates = exports.wbGlobalTemplateSections = exports.wbGlobalTemplatePages = exports.wbGlobalTemplates = exports.pageStatusEnum = exports.sectionTypeEnum = void 0;
 const pg_core_1 = require("drizzle-orm/pg-core");
 const drizzle_orm_1 = require("drizzle-orm");
 const schema_1 = require("./schema");
@@ -163,6 +163,22 @@ exports.wbSections = (0, pg_core_1.pgTable)('wb_sections', {
     orderIdx: (0, pg_core_1.index)('wb_sections_order_idx').on(table.order),
     typeIdx: (0, pg_core_1.index)('wb_sections_type_idx').on(table.type),
 }));
+exports.protectedPages = (0, pg_core_1.pgTable)('protected_pages', {
+    id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
+    tenantId: (0, pg_core_1.uuid)('tenant_id')
+        .references(() => schema_1.tenants.id, { onDelete: 'cascade' })
+        .notNull(),
+    pageId: (0, pg_core_1.uuid)('page_id')
+        .references(() => exports.wbPages.id, { onDelete: 'cascade' })
+        .notNull(),
+    requiresMembershipPlanId: (0, pg_core_1.uuid)('requires_membership_plan_id').references(() => schema_1.membershipPlans.id, { onDelete: 'set null' }),
+    requiresCourseId: (0, pg_core_1.uuid)('requires_course_id').references(() => schema_1.courses.id, {
+        onDelete: 'set null',
+    }),
+    createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow(),
+}, (table) => ({
+    tenantPageIdx: (0, pg_core_1.uniqueIndex)('pp_tenant_page_idx').on(table.tenantId, table.pageId),
+}));
 exports.wbGlobalTemplatesRelations = (0, drizzle_orm_1.relations)(exports.wbGlobalTemplates, ({ many }) => ({
     pages: many(exports.wbGlobalTemplatePages),
     tenantInstances: many(exports.wbTemplates),
@@ -211,5 +227,11 @@ exports.wbSectionsRelations = (0, drizzle_orm_1.relations)(exports.wbSections, (
         fields: [exports.wbSections.pageId],
         references: [exports.wbPages.id],
     }),
+}));
+exports.protectedPagesRelations = (0, drizzle_orm_1.relations)(exports.protectedPages, ({ one }) => ({
+    tenant: one(schema_1.tenants, { fields: [exports.protectedPages.tenantId], references: [schema_1.tenants.id] }),
+    page: one(exports.wbPages, { fields: [exports.protectedPages.pageId], references: [exports.wbPages.id] }),
+    requiredPlan: one(schema_1.membershipPlans, { fields: [exports.protectedPages.requiresMembershipPlanId], references: [schema_1.membershipPlans.id] }),
+    requiredCourse: one(schema_1.courses, { fields: [exports.protectedPages.requiresCourseId], references: [schema_1.courses.id] }),
 }));
 //# sourceMappingURL=website-builder.schema.js.map

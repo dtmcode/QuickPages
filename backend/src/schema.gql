@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AddDomainResponse {
+  dnsInstructions: [DnsInstructionType!]!
+  domain: String!
+  verificationToken: String!
+}
+
 type AddonDefinitionType {
   description: String!
   limits: PackageLimitsType!
@@ -82,6 +88,15 @@ type AvailablePackagesResponse {
   packages: [PackageDefinitionType!]!
 }
 
+type AvailablePickupSlot {
+  available: Int!
+  date: String!
+  endTime: String!
+  maxOrders: Int!
+  slotId: ID!
+  startTime: String!
+}
+
 type BookingAvailabilityType {
   dayOfWeek: Int!
   endTime: String!
@@ -125,6 +140,11 @@ type BookingSettingsType {
   reminderEmailHours: Int!
   slotIntervalMinutes: Int!
   timezone: String!
+}
+
+type BrandingResult {
+  logoUrl: String
+  primaryColor: String
 }
 
 type BrandingSettingsType {
@@ -224,6 +244,19 @@ input CreateCategoryInput {
   name: String!
 }
 
+input CreateFoodOrderInput {
+  couponCode: String
+  customerEmail: String
+  customerName: String!
+  customerPhone: String
+  deliveryAddress: String
+  items: [FoodOrderItemInput!]!
+  notes: String
+  orderType: String!
+  paymentMethod: String
+  tableId: String
+}
+
 input CreateFormInput {
   description: String
   fields: JSON!
@@ -233,6 +266,115 @@ input CreateFormInput {
   settings: JSON
   submitButtonText: String
   successMessage: String
+}
+
+input CreateFunnelInput {
+  conversionGoal: String
+  description: String
+  name: String!
+  utmCampaign: String
+  utmMedium: String
+  utmSource: String
+}
+
+input CreateFunnelStepInput {
+  funnelId: String!
+  nextStepId: String
+  position: Int
+  stepType: String!
+  title: String!
+}
+
+input CreateFunnelSubmissionInput {
+  customerEmail: String
+  customerName: String
+  data: JSON
+  funnelId: String!
+  stepId: String
+  utmCampaign: String
+  utmMedium: String
+  utmSource: String
+}
+
+input CreateLocalDealInput {
+  description: String
+  discountType: String!
+  discountValue: Int!
+  endsAt: DateTime!
+  image: String
+  localProductId: String
+  startsAt: DateTime!
+  title: String!
+}
+
+input CreateLocalOrderInput {
+  couponCode: String
+  customerEmail: String
+  customerName: String!
+  customerPhone: String
+  deliveryAddress: String
+  items: [LocalOrderItemInput!]!
+  notes: String
+  orderType: String!
+  paymentMethod: String
+  pickupDate: String
+  pickupSlotId: String
+}
+
+input CreateLocalProductInput {
+  categoryId: String
+  compareAtPrice: Int
+  description: String
+  images: [String!]
+  isOrganic: Boolean
+  isRegional: Boolean
+  isUnlimited: Boolean
+  name: String!
+  origin: String
+  price: Int!
+  stock: Int
+  unit: String
+}
+
+input CreateMenuCategoryInput {
+  availableFrom: String
+  availableTo: String
+  description: String
+  image: String
+  name: String!
+  position: Int
+}
+
+input CreateMenuItemInput {
+  allergens: [String!]
+  categoryId: String
+  description: String
+  images: [String!]
+  isPopular: Boolean
+  isSpicy: Boolean
+  isVegan: Boolean
+  isVegetarian: Boolean
+  name: String!
+  position: Int
+  preparationTime: Int
+  price: Int!
+}
+
+input CreateModifierGroupInput {
+  isRequired: Boolean
+  maxSelections: Int
+  menuItemId: String!
+  minSelections: Int
+  name: String!
+  position: Int
+}
+
+input CreateModifierInput {
+  groupId: String!
+  isDefault: Boolean
+  name: String!
+  position: Int
+  priceModifier: Int
 }
 
 input CreateNavigationInput {
@@ -279,6 +421,13 @@ input CreatePageInput {
   title: String!
 }
 
+input CreatePickupSlotInput {
+  dayOfWeek: Int!
+  endTime: String!
+  maxOrders: Int
+  startTime: String!
+}
+
 input CreatePostInput {
   categoryId: String
   content: String!
@@ -302,6 +451,12 @@ input CreateProductInput {
   name: String!
   price: Int!
   stock: Int! = 0
+}
+
+input CreateRestaurantTableInput {
+  capacity: Int
+  name: String
+  number: String!
 }
 
 input CreateSectionInput {
@@ -342,6 +497,25 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type DnsInstructionType {
+  name: String!
+  purpose: String!
+  required: Boolean!
+  type: String!
+  value: String!
+}
+
+type DomainStatusResponse {
+  customDomain: String
+  dnsInstructions: [DnsInstructionType!]!
+  dnsValid: Boolean!
+  lastDnsCheck: DateTime
+  sslExpiresAt: DateTime
+  sslStatus: String!
+  verificationToken: String
+  verified: Boolean!
+}
+
 type EmailSettings {
   fromEmail: String!
   fromName: String
@@ -367,6 +541,62 @@ input EmailSettingsInput {
   smtpPort: Float
   smtpSecure: Boolean
   smtpUser: String
+}
+
+type FoodOrder {
+  createdAt: DateTime
+  customerEmail: String
+  customerName: String!
+  customerPhone: String
+  deliveryAddress: String
+  deliveryFee: Int!
+  discountAmount: Int!
+  estimatedReadyAt: DateTime
+  id: ID!
+  items: [FoodOrderItem!]
+  notes: String
+  orderNumber: String!
+  orderType: String!
+  paidAt: DateTime
+  paymentMethod: String!
+  pickupCode: String
+  pickupCodeUsed: Boolean!
+  status: String!
+  statusHistory: [FoodOrderStatusEntry!]
+  subtotal: Int!
+  tableId: String
+  tax: Int!
+  total: Int!
+  updatedAt: DateTime
+}
+
+type FoodOrderItem {
+  id: ID!
+  menuItemId: String
+  menuItemName: String!
+  menuItemPrice: Int!
+  notes: String
+  quantity: Int!
+  total: Int!
+}
+
+input FoodOrderItemInput {
+  menuItemId: String!
+  notes: String
+  quantity: Int!
+  selectedModifiers: [SelectedModifierInput!]
+}
+
+type FoodOrderStatusEntry {
+  createdAt: DateTime
+  id: ID!
+  note: String
+  status: String!
+}
+
+type FoodOrdersResponse {
+  orders: [FoodOrder!]!
+  total: Int!
 }
 
 input ForgotPasswordInput {
@@ -399,6 +629,82 @@ type FormType {
   successMessage: String!
 }
 
+type Funnel {
+  conversionGoal: String!
+  createdAt: DateTime
+  description: String
+  id: ID!
+  isActive: Boolean!
+  isPublished: Boolean!
+  name: String!
+  slug: String!
+  steps: [FunnelStep!]
+  totalConversions: Int!
+  totalViews: Int!
+  updatedAt: DateTime
+  utmCampaign: String
+  utmMedium: String
+  utmSource: String
+}
+
+type FunnelAnalytics {
+  funnelId: ID!
+  funnelName: String!
+  overallConversionRate: String!
+  steps: [FunnelStepAnalytics!]!
+  totalConversions: Int!
+  totalViews: Int!
+}
+
+type FunnelStep {
+  conversions: Int!
+  createdAt: DateTime
+  funnelId: String!
+  id: ID!
+  isActive: Boolean!
+  nextStepId: String
+  position: Int!
+  slug: String!
+  stepType: String!
+  title: String!
+  updatedAt: DateTime
+  views: Int!
+}
+
+type FunnelStepAnalytics {
+  conversionRate: String!
+  conversions: Int!
+  dropOffRate: String!
+  position: Int!
+  stepId: ID!
+  stepTitle: String!
+  stepType: String!
+  views: Int!
+}
+
+type FunnelSubmission {
+  convertedAt: DateTime
+  createdAt: DateTime
+  customerEmail: String
+  customerName: String
+  funnelId: String!
+  id: ID!
+  stepId: String
+  utmCampaign: String
+  utmMedium: String
+  utmSource: String
+}
+
+type FunnelSubmissionsResponse {
+  submissions: [FunnelSubmission!]!
+  total: Int!
+}
+
+type FunnelsResponse {
+  funnels: [Funnel!]!
+  total: Int!
+}
+
 input ItemOrderInput {
   id: String!
   order: Int!
@@ -413,6 +719,126 @@ scalar JSON
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
 scalar JSONObject
+
+type LocalDeal {
+  createdAt: DateTime
+  description: String
+  discountType: String!
+  discountValue: Int!
+  endsAt: DateTime!
+  id: ID!
+  image: String
+  isActive: Boolean!
+  localProductId: String
+  product: LocalProduct
+  startsAt: DateTime!
+  title: String!
+}
+
+type LocalDealsResponse {
+  deals: [LocalDeal!]!
+  total: Int!
+}
+
+type LocalOrder {
+  createdAt: DateTime
+  customerEmail: String
+  customerName: String!
+  customerPhone: String
+  deliveryAddress: String
+  discountAmount: Int!
+  id: ID!
+  items: [LocalOrderItem!]
+  notes: String
+  orderNumber: String!
+  orderType: String!
+  paidAt: DateTime
+  paymentMethod: String!
+  pickupCode: String
+  pickupCodeUsed: Boolean!
+  pickupConfirmedAt: DateTime
+  pickupDate: String
+  pickupSlotId: String
+  status: String!
+  subtotal: Int!
+  total: Int!
+  updatedAt: DateTime
+}
+
+type LocalOrderItem {
+  id: ID!
+  localProductId: String
+  productName: String!
+  productPrice: Int!
+  quantity: Int!
+  total: Int!
+  unit: String!
+}
+
+input LocalOrderItemInput {
+  localProductId: String!
+  quantity: Int!
+}
+
+type LocalOrdersResponse {
+  orders: [LocalOrder!]!
+  total: Int!
+}
+
+type LocalPickupSlot {
+  dayOfWeek: Int!
+  endTime: String!
+  id: ID!
+  isActive: Boolean!
+  maxOrders: Int!
+  startTime: String!
+}
+
+type LocalPickupSlotsResponse {
+  slots: [LocalPickupSlot!]!
+  total: Int!
+}
+
+type LocalProduct {
+  categoryId: String
+  compareAtPrice: Int
+  createdAt: DateTime
+  description: String
+  id: ID!
+  isAvailable: Boolean!
+  isFeatured: Boolean!
+  isOrganic: Boolean!
+  isRegional: Boolean!
+  isUnlimited: Boolean!
+  name: String!
+  origin: String
+  price: Int!
+  slug: String!
+  stock: Int
+  unit: String!
+  updatedAt: DateTime
+}
+
+type LocalProductsResponse {
+  products: [LocalProduct!]!
+  total: Int!
+}
+
+type LocalStoreSettings {
+  cardOnPickupEnabled: Boolean!
+  cashOnPickupEnabled: Boolean!
+  createdAt: DateTime
+  deliveryEnabled: Boolean!
+  id: ID!
+  maxOrdersPerSlot: Int
+  minOrderAmount: Int
+  onlinePaymentEnabled: Boolean!
+  pickupEnabled: Boolean!
+  pickupSlotDuration: Int
+  storeType: String!
+  tenantId: String!
+  updatedAt: DateTime
+}
 
 type LocaleSettingsType {
   defaultLocale: String!
@@ -444,9 +870,76 @@ type MediaFile {
   width: Int
 }
 
+type MenuCategoriesResponse {
+  categories: [MenuCategory!]!
+  total: Int!
+}
+
+type MenuCategory {
+  availableFrom: String
+  availableTo: String
+  createdAt: DateTime
+  description: String
+  id: ID!
+  image: String
+  isActive: Boolean!
+  items: [MenuItem!]
+  name: String!
+  position: Int!
+  slug: String!
+  updatedAt: DateTime
+}
+
+type MenuItem {
+  allergens: [String!]
+  categoryId: String
+  createdAt: DateTime
+  description: String
+  id: ID!
+  isAvailable: Boolean!
+  isPopular: Boolean!
+  isSpicy: Boolean!
+  isVegan: Boolean!
+  isVegetarian: Boolean!
+  modifierGroups: [MenuModifierGroup!]
+  name: String!
+  position: Int!
+  preparationTime: Int
+  price: Int!
+  slug: String!
+  updatedAt: DateTime
+}
+
+type MenuItemsResponse {
+  items: [MenuItem!]!
+  total: Int!
+}
+
+type MenuModifier {
+  createdAt: DateTime
+  id: ID!
+  isAvailable: Boolean!
+  isDefault: Boolean!
+  name: String!
+  position: Int!
+  priceModifier: Int!
+}
+
+type MenuModifierGroup {
+  createdAt: DateTime
+  id: ID!
+  isRequired: Boolean!
+  maxSelections: Int!
+  minSelections: Int!
+  modifiers: [MenuModifier!]
+  name: String!
+  position: Int!
+}
+
 type Mutation {
   activateAddon(addonType: String!, quantity: Float = 1): Boolean!
   addBookingBlockedDate(date: String!, reason: String): Boolean!
+  addCustomDomain(domain: String!): AddDomainResponse!
   aiGenerate(input: AiGenerateInput!): AiResultType!
   aiImprove(content: String!, instruction: String!): String!
   aiSuggest(count: Float! = 5, input: String!, type: String!): [String!]!
@@ -458,16 +951,30 @@ type Mutation {
   cloneGlobalSection(globalSectionId: String!, pageId: String!, tenantId: String!): Section!
   cloneGlobalTemplate(globalTemplateId: String!, tenantId: String!): Template!
   cloneTemplate(id: String!, newName: String, tenantId: String!): Template!
+  confirmFoodOrderPickup(orderId: ID!, pickupCode: String!): Boolean!
+  confirmLocalOrderPickup(orderId: ID!, pickupCode: String!): Boolean!
   createBookingService(input: CreateBookingServiceInput!): BookingServiceType!
   createCampaign(input: CreateCampaignInput!): NewsletterCampaign!
   createCategory(input: CreateCategoryInput!): Category!
+  createFoodOrder(input: CreateFoodOrderInput!): FoodOrder!
   createForm(input: CreateFormInput!): FormType!
+  createFunnel(input: CreateFunnelInput!): Funnel!
+  createFunnelStep(input: CreateFunnelStepInput!): FunnelStep!
+  createLocalDeal(input: CreateLocalDealInput!): LocalDeal!
+  createLocalOrder(input: CreateLocalOrderInput!): LocalOrder!
+  createLocalPickupSlot(input: CreatePickupSlotInput!): LocalPickupSlot!
+  createLocalProduct(input: CreateLocalProductInput!): LocalProduct!
+  createMenuCategory(input: CreateMenuCategoryInput!): MenuCategory!
+  createMenuItem(input: CreateMenuItemInput!): MenuItem!
+  createModifier(input: CreateModifierInput!): MenuModifier!
+  createModifierGroup(input: CreateModifierGroupInput!): MenuModifierGroup!
   createNavigation(input: CreateNavigationInput!): Navigation!
   createNavigationItem(input: CreateNavigationItemInput!, navigationId: String!): NavigationItem!
   createOrder(input: CreateOrderInput!): Order!
   createPage(input: CreatePageInput!): Page!
   createPost(input: CreatePostInput!): Post!
   createProduct(input: CreateProductInput!): Product!
+  createRestaurantTable(input: CreateRestaurantTableInput!): RestaurantTable!
   createSection(input: CreateSectionInput!, tenantId: String!): Section!
   createSubscriber(input: CreateSubscriberInput!): NewsletterSubscriber!
   createTemplate(input: CreateTemplateInput!, tenantId: String!): Template!
@@ -478,12 +985,22 @@ type Mutation {
   deleteComment(id: String!): Boolean!
   deleteEmailSettings: Boolean!
   deleteForm(id: String!): Boolean!
+  deleteFunnel(id: ID!): Boolean!
+  deleteFunnelStep(id: ID!): Boolean!
+  deleteLocalDeal(id: ID!): Boolean!
+  deleteLocalPickupSlot(id: ID!): Boolean!
+  deleteLocalProduct(id: ID!): Boolean!
   deleteMedia(id: String!): Boolean!
+  deleteMenuCategory(id: ID!): Boolean!
+  deleteMenuItem(id: ID!): Boolean!
+  deleteModifier(id: ID!): Boolean!
+  deleteModifierGroup(id: ID!): Boolean!
   deleteNavigation(id: String!): Boolean!
   deleteNavigationItem(itemId: String!): Boolean!
   deletePage(id: String!): Boolean!
   deletePost(id: String!): Boolean!
   deleteProduct(id: String!): Boolean!
+  deleteRestaurantTable(id: ID!): Boolean!
   deleteSection(id: String!, tenantId: String!): Boolean!
   deleteSubmission(id: String!): Boolean!
   deleteSubscriber(id: String!): Boolean!
@@ -491,6 +1008,7 @@ type Mutation {
   deleteTemplate(id: String!, tenantId: String!): Boolean!
   deleteTranslations(entityId: String!, entityType: String!, locale: String): Boolean!
   duplicateCampaign(id: String!): NewsletterCampaign!
+  duplicateFunnel(id: ID!): Funnel!
   duplicatePage(id: String!): Page!
   duplicateSection(id: String!, tenantId: String!): Section!
   forgotPassword(input: ForgotPasswordInput!): SuccessResponse!
@@ -503,6 +1021,8 @@ type Mutation {
   register(input: RegisterInput!): AuthResponse!
   rejectComment(id: String!): Boolean!
   removeBookingBlockedDate(id: String!): Boolean!
+  removeCustomDomain: Boolean!
+  reorderFunnelSteps(funnelId: ID!, stepIds: [ID!]!): Funnel!
   reorderNavigationItems(itemOrders: [ItemOrderInput!]!, navigationId: String!): Boolean!
   reorderSections(pageId: String!, sectionIds: [String!]!, tenantId: String!): WbPage!
   replyToTicket(content: String!, isInternal: Boolean! = false, ticketId: String!): SupportMessageType!
@@ -514,23 +1034,40 @@ type Mutation {
   setTranslation(entityId: String!, entityType: String!, field: String!, locale: String!, value: String!): Boolean!
   setTranslationsBatch(entityId: String!, entityType: String!, locale: String!, translations: JSON!): Boolean!
   setUiTranslation(key: String!, locale: String!, value: String!): Boolean!
+  submitFunnel(input: CreateFunnelSubmissionInput!): FunnelSubmission!
   testEmailSettings(testTo: String!): TestEmailResult!
   toggleSectionVisibility(id: String!, tenantId: String!): Section!
+  trackFunnelEvent(input: TrackFunnelEventInput!): Boolean!
   updateAppointmentStatus(id: String!, status: String!): Boolean!
   updateBookingSettings(input: BookingSettingsInput!): Boolean!
   updateBranding(input: UpdateBrandingInput!): BrandingSettingsType!
   updateCampaign(id: String!, input: UpdateCampaignInput!): NewsletterCampaign!
   updateCategory(id: String!, input: UpdateCategoryInput!): Category!
   updateEmailSettings(input: EmailSettingsInput!): EmailSettings!
+  updateFoodOrderStatus(id: ID!, input: UpdateFoodOrderStatusInput!): FoodOrder!
   updateForm(id: String!, input: CreateFormInput!): FormType!
+  updateFunnel(id: ID!, input: UpdateFunnelInput!): Funnel!
+  updateFunnelStep(id: ID!, input: UpdateFunnelStepInput!): FunnelStep!
+  updateFunnelStepContent(id: ID!, input: UpdateFunnelStepContentInput!): FunnelStep!
+  updateLocalDeal(id: ID!, input: UpdateLocalDealInput!): LocalDeal!
+  updateLocalOrderStatus(id: ID!, input: UpdateLocalOrderStatusInput!): LocalOrder!
+  updateLocalPickupSlot(id: ID!, input: UpdatePickupSlotInput!): LocalPickupSlot!
+  updateLocalProduct(id: ID!, input: UpdateLocalProductInput!): LocalProduct!
+  updateLocalStoreSettings(input: UpdateLocalStoreSettingsInput!): LocalStoreSettings!
   updateLocaleSettings(defaultLocale: String!, enabledLocales: [String!]!): Boolean!
   updateMedia(id: String!, input: UpdateMediaInput!): MediaFile!
+  updateMenuCategory(id: ID!, input: UpdateMenuCategoryInput!): MenuCategory!
+  updateMenuItem(id: ID!, input: UpdateMenuItemInput!): MenuItem!
+  updateModifier(id: ID!, input: UpdateModifierInput!): MenuModifier!
+  updateModifierGroup(id: ID!, input: UpdateModifierGroupInput!): MenuModifierGroup!
   updateNavigation(id: String!, input: UpdateNavigationInput!): Navigation!
   updateNavigationItem(input: UpdateNavigationItemInput!, itemId: String!): NavigationItem!
   updateOrderStatus(id: String!, status: String!): Order!
   updatePage(id: String!, input: UpdatePageInput!): Page!
   updatePost(id: String!, input: UpdatePostInput!): Post!
   updateProduct(id: String!, input: UpdateProductInput!): Product!
+  updateRestaurantSettings(input: UpdateRestaurantSettingsInput!): RestaurantSettings!
+  updateRestaurantTable(id: ID!, input: UpdateRestaurantTableInput!): RestaurantTable!
   updateSection(id: String!, input: UpdateSectionInput!, tenantId: String!): Section!
   updateSeoMeta(entityId: String!, entityType: String!, input: SeoMetaInput!): SeoMeta!
   updateShopTemplate(template: String!): CurrentUserResponse!
@@ -538,6 +1075,7 @@ type Mutation {
   updateSupportTicket(id: String!, input: UpdateTicketInput!): SupportTicketType!
   updateTemplate(id: String!, input: UpdateTemplateInput!, tenantId: String!): Template!
   uploadMedia(alt: String, file: Upload!, folder: String, title: String): MediaFile!
+  verifyDomain: VerifyDomainResponse!
   verifyEmail(input: VerifyEmailInput!): SuccessResponse!
 }
 
@@ -549,6 +1087,7 @@ type Navigation {
   items: [NavigationItem!]
   location: String!
   name: String!
+  settings: JSON
   tenantId: String!
   updatedAt: DateTime!
 }
@@ -765,6 +1304,7 @@ type ProductsResponse {
 type Query {
   allUiTranslations: JSON!
   availablePackages: AvailablePackagesResponse!
+  availablePickupSlots(days: Float): [AvailablePickupSlot!]!
   bookingAppointments(endDate: String, startDate: String, status: String): [AppointmentType!]!
   bookingAvailability: [BookingAvailabilityType!]!
   bookingServices: [BookingServiceType!]!
@@ -775,16 +1315,32 @@ type Query {
   commentCounts: CommentCountsType!
   comments(postId: String, status: String): [CommentType!]!
   currentTenant: CurrentUserResponse!
+  domainStatus: DomainStatusResponse!
   emailSettings: EmailSettings
+  foodOrder(id: ID!): FoodOrder!
+  foodOrders(status: String): FoodOrdersResponse!
   form(id: String!): FormType
   formSubmissions(formId: String!): [FormSubmissionType!]!
   forms: [FormType!]!
+  funnel(id: ID!): Funnel!
+  funnelAnalytics(funnelId: ID!): FunnelAnalytics!
+  funnelSubmissions(funnelId: ID!): FunnelSubmissionsResponse!
+  funnels: FunnelsResponse!
   hello: String!
+  localDeals: LocalDealsResponse!
+  localOrder(id: ID!): LocalOrder!
+  localOrders(status: String): LocalOrdersResponse!
+  localPickupSlots: LocalPickupSlotsResponse!
+  localProducts: LocalProductsResponse!
+  localStoreSettings: LocalStoreSettings!
   localeSettings: LocaleSettingsType!
   me: CurrentUserResponse!
   mediaFile(id: String!): MediaFile
   mediaFiles(folder: String, limit: Int, offset: Int, search: String, type: String): [MediaFile!]!
   mediaFolders: [String!]!
+  menuCategories: MenuCategoriesResponse!
+  menuItem(id: ID!): MenuItem!
+  menuItems(categoryId: ID): MenuItemsResponse!
   navigation(id: String!): Navigation!
   navigationByLocation(location: String!): Navigation
   navigationItems(navigationId: String!): [NavigationItem!]!
@@ -802,7 +1358,10 @@ type Query {
   posts(limit: Int, offset: Int, search: String, status: String): PostsResponse!
   products: ProductsResponse!
   publicCategories: [Category!]!
+  publicFunnel(slug: String!): Funnel!
   publicProducts: [Product!]!
+  restaurantSettings: RestaurantSettings!
+  restaurantTables: RestaurantTablesResponse!
   seoMeta(entityId: String!, entityType: String!): SeoMeta
   subscriberStats: SubscriberStats!
   subscriberTags: [String!]!
@@ -845,6 +1404,40 @@ input ResetPasswordInput {
   token: String!
 }
 
+type RestaurantSettings {
+  cardOnPickupEnabled: Boolean!
+  cashEnabled: Boolean!
+  createdAt: DateTime
+  deliveryEnabled: Boolean!
+  deliveryFee: Int
+  deliveryRadius: Int
+  dineInEnabled: Boolean!
+  estimatedDeliveryTime: Int
+  estimatedPickupTime: Int
+  freeDeliveryFrom: Int
+  id: ID!
+  minOrderAmount: Int
+  onlinePaymentEnabled: Boolean!
+  pickupEnabled: Boolean!
+  tenantId: String!
+  updatedAt: DateTime
+}
+
+type RestaurantTable {
+  capacity: Int!
+  createdAt: DateTime
+  id: ID!
+  isActive: Boolean!
+  name: String
+  number: String!
+  qrCode: String
+}
+
+type RestaurantTablesResponse {
+  tables: [RestaurantTable!]!
+  total: Int!
+}
+
 type Section {
   content: JSON!
   createdAt: DateTime!
@@ -863,22 +1456,37 @@ type Section {
 """Type of section"""
 enum SectionType {
   about
+  before_after
   blog
+  booking
   contact
+  countdown
   cta
   custom
   faq
   features
+  freestyle
   gallery
   hero
   html
+  map
+  newsletter
   pricing
   services
+  social
+  spacer
   stats
   team
   testimonials
   text
   video
+  whatsapp
+}
+
+input SelectedModifierInput {
+  groupName: String!
+  modifierName: String!
+  priceModifier: Int!
 }
 
 type SendCampaignResult {
@@ -979,6 +1587,7 @@ type SupportTicketType {
 type Template {
   createdAt: DateTime!
   description: String
+  globalTemplateId: String
   id: ID!
   isActive: Boolean!
   isDefault: Boolean!
@@ -1024,6 +1633,12 @@ type TestEmailResult {
   success: Boolean!
 }
 
+input TrackFunnelEventInput {
+  eventType: String!
+  funnelId: String!
+  stepId: String
+}
+
 type TranslationType {
   entityId: String!
   entityType: String!
@@ -1063,6 +1678,79 @@ input UpdateCategoryInput {
   name: String
 }
 
+input UpdateFoodOrderStatusInput {
+  note: String
+  status: String!
+}
+
+input UpdateFunnelInput {
+  conversionGoal: String
+  description: String
+  isActive: Boolean
+  isPublished: Boolean
+  name: String
+  utmCampaign: String
+  utmMedium: String
+  utmSource: String
+}
+
+input UpdateFunnelStepContentInput {
+  content: JSON!
+}
+
+input UpdateFunnelStepInput {
+  isActive: Boolean
+  nextStepId: String
+  position: Int
+  stepType: String
+  title: String
+}
+
+input UpdateLocalDealInput {
+  description: String
+  discountType: String
+  discountValue: Int
+  endsAt: DateTime
+  image: String
+  isActive: Boolean
+  startsAt: DateTime
+  title: String
+}
+
+input UpdateLocalOrderStatusInput {
+  note: String
+  status: String!
+}
+
+input UpdateLocalProductInput {
+  categoryId: String
+  compareAtPrice: Int
+  description: String
+  images: [String!]
+  isAvailable: Boolean
+  isFeatured: Boolean
+  isOrganic: Boolean
+  isRegional: Boolean
+  isUnlimited: Boolean
+  name: String
+  origin: String
+  price: Int
+  stock: Int
+  unit: String
+}
+
+input UpdateLocalStoreSettingsInput {
+  cardOnPickupEnabled: Boolean
+  cashOnPickupEnabled: Boolean
+  deliveryEnabled: Boolean
+  maxOrdersPerSlot: Int
+  minOrderAmount: Int
+  onlinePaymentEnabled: Boolean
+  pickupEnabled: Boolean
+  pickupSlotDuration: Int
+  storeType: String
+}
+
 input UpdateMediaInput {
   alt: String
   description: String
@@ -1071,11 +1759,54 @@ input UpdateMediaInput {
   title: String
 }
 
+input UpdateMenuCategoryInput {
+  availableFrom: String
+  availableTo: String
+  description: String
+  image: String
+  isActive: Boolean
+  name: String
+  position: Int
+}
+
+input UpdateMenuItemInput {
+  allergens: [String!]
+  categoryId: String
+  description: String
+  images: [String!]
+  isAvailable: Boolean
+  isPopular: Boolean
+  isSpicy: Boolean
+  isVegan: Boolean
+  isVegetarian: Boolean
+  name: String
+  position: Int
+  preparationTime: Int
+  price: Int
+}
+
+input UpdateModifierGroupInput {
+  isRequired: Boolean
+  maxSelections: Int
+  minSelections: Int
+  name: String
+  position: Int
+}
+
+input UpdateModifierInput {
+  isAvailable: Boolean
+  isDefault: Boolean
+  name: String
+  position: Int
+  priceModifier: Int
+}
+
 input UpdateNavigationInput {
   description: String
   isActive: Boolean
   location: String
   name: String
+  settings: JSON
 }
 
 input UpdateNavigationItemInput {
@@ -1103,6 +1834,14 @@ input UpdatePageInput {
   title: String
 }
 
+input UpdatePickupSlotInput {
+  dayOfWeek: Int
+  endTime: String
+  isActive: Boolean
+  maxOrders: Int
+  startTime: String
+}
+
 input UpdatePostInput {
   categoryId: String
   content: String
@@ -1126,6 +1865,28 @@ input UpdateProductInput {
   name: String
   price: Int
   stock: Int
+}
+
+input UpdateRestaurantSettingsInput {
+  cardOnPickupEnabled: Boolean
+  cashEnabled: Boolean
+  deliveryEnabled: Boolean
+  deliveryFee: Int
+  deliveryRadius: Int
+  dineInEnabled: Boolean
+  estimatedDeliveryTime: Int
+  estimatedPickupTime: Int
+  freeDeliveryFrom: Int
+  minOrderAmount: Int
+  onlinePaymentEnabled: Boolean
+  pickupEnabled: Boolean
+}
+
+input UpdateRestaurantTableInput {
+  capacity: Int
+  isActive: Boolean
+  name: String
+  number: String
 }
 
 input UpdateSectionInput {
@@ -1205,6 +1966,14 @@ enum UserRole {
 type UsersResponse {
   total: Float!
   users: [UserListItem!]!
+}
+
+type VerifyDomainResponse {
+  aValid: Boolean!
+  cnameValid: Boolean!
+  errors: [String!]!
+  txtValid: Boolean!
+  verified: Boolean!
 }
 
 input VerifyEmailInput {

@@ -65,13 +65,13 @@ export declare class MediaResolver {
         tenantId: string;
         title: string | null;
         description: string | null;
+        type: "image" | "video" | "audio" | "document" | "other";
         lastUsedAt: Date | null;
         tags: string[] | null;
         filename: string;
         originalFilename: string;
         mimeType: string;
         fileSize: number;
-        type: "image" | "video" | "audio" | "document" | "other";
         thumbnailUrl: string | null;
         path: string;
         width: number | null;
