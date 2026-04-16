@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Cookies from 'js-cookie';
 
 // ==================== TYPES ====================
 interface LocaleSettings {
@@ -14,12 +15,11 @@ interface Toast {
   type: 'success' | 'error';
 }
 
-// ==================== GRAPHQL HELPER ====================
-// ✅ FIX: 'token' → 'accessToken' (so heißt er überall im Rest der App)
+// ==================== GRAPHQL HELPER — COOKIES FIX ====================
 const API_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3000/graphql';
 
 async function gqlRequest<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+  const token = typeof window !== 'undefined' ? Cookies.get('accessToken') : null;
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: {
@@ -34,62 +34,65 @@ async function gqlRequest<T>(query: string, variables?: Record<string, unknown>)
 }
 
 // ==================== LOCALE META ====================
-const LOCALE_META: Record<string, { name: string; flag: string }> = {
-  de: { name: 'Deutsch',    flag: '🇩🇪' },
-  en: { name: 'English',    flag: '🇬🇧' },
-  fr: { name: 'Français',   flag: '🇫🇷' },
-  es: { name: 'Español',    flag: '🇪🇸' },
-  it: { name: 'Italiano',   flag: '🇮🇹' },
-  nl: { name: 'Nederlands', flag: '🇳🇱' },
-  pl: { name: 'Polski',     flag: '🇵🇱' },
-  tr: { name: 'Türkçe',     flag: '🇹🇷' },
-  pt: { name: 'Português',  flag: '🇵🇹' },
-  ru: { name: 'Русский',    flag: '🇷🇺' },
-  ar: { name: 'العربية',    flag: '🇸🇦' },
-  ja: { name: '日本語',      flag: '🇯🇵' },
-  zh: { name: '中文',        flag: '🇨🇳' },
+const LOCALE_META: Record<string, { name: string; nativeName: string; flag: string; region: string }> = {
+  de: { name: 'Deutsch',     nativeName: 'Deutsch',     flag: '🇩🇪', region: 'Europa' },
+  en: { name: 'Englisch',    nativeName: 'English',     flag: '🇬🇧', region: 'Europa' },
+  fr: { name: 'Französisch', nativeName: 'Français',    flag: '🇫🇷', region: 'Europa' },
+  es: { name: 'Spanisch',    nativeName: 'Español',     flag: '🇪🇸', region: 'Europa' },
+  it: { name: 'Italienisch', nativeName: 'Italiano',    flag: '🇮🇹', region: 'Europa' },
+  nl: { name: 'Niederländisch', nativeName: 'Nederlands', flag: '🇳🇱', region: 'Europa' },
+  pl: { name: 'Polnisch',    nativeName: 'Polski',      flag: '🇵🇱', region: 'Europa' },
+  tr: { name: 'Türkisch',    nativeName: 'Türkçe',      flag: '🇹🇷', region: 'Asien' },
+  pt: { name: 'Portugiesisch', nativeName: 'Português', flag: '🇵🇹', region: 'Europa' },
+  ru: { name: 'Russisch',    nativeName: 'Русский',     flag: '🇷🇺', region: 'Europa' },
+  ar: { name: 'Arabisch',    nativeName: 'العربية',     flag: '🇸🇦', region: 'Nahost' },
+  ja: { name: 'Japanisch',   nativeName: '日本語',       flag: '🇯🇵', region: 'Asien' },
+  zh: { name: 'Chinesisch',  nativeName: '中文',         flag: '🇨🇳', region: 'Asien' },
 };
 
 // ==================== DEFAULT UI KEYS ====================
-// Entspricht exakt den Keys aus i18n.service.ts DEFAULT_UI_TRANSLATIONS
 const DEFAULT_UI_KEYS: Record<string, Record<string, string>> = {
-  'common.home':                 { de: 'Startseite',            en: 'Home' },
-  'common.about':                { de: 'Über uns',              en: 'About' },
-  'common.contact':              { de: 'Kontakt',               en: 'Contact' },
-  'common.search':               { de: 'Suchen',                en: 'Search' },
-  'common.back':                 { de: 'Zurück',                en: 'Back' },
-  'common.loading':              { de: 'Wird geladen...',       en: 'Loading...' },
-  'common.read_more':            { de: 'Weiterlesen',           en: 'Read more' },
-  'common.show_more':            { de: 'Mehr anzeigen',         en: 'Show more' },
-  'shop.add_to_cart':            { de: 'In den Warenkorb',      en: 'Add to cart' },
-  'shop.cart':                   { de: 'Warenkorb',             en: 'Cart' },
-  'shop.checkout':               { de: 'Zur Kasse',             en: 'Checkout' },
-  'shop.price':                  { de: 'Preis',                 en: 'Price' },
-  'shop.quantity':               { de: 'Menge',                 en: 'Quantity' },
-  'shop.total':                  { de: 'Gesamt',                en: 'Total' },
-  'shop.empty_cart':             { de: 'Warenkorb ist leer',    en: 'Cart is empty' },
-  'blog.posted_on':              { de: 'Veröffentlicht am',     en: 'Posted on' },
-  'blog.by':                     { de: 'von',                   en: 'by' },
-  'blog.comments':               { de: 'Kommentare',            en: 'Comments' },
-  'blog.no_posts':               { de: 'Keine Beiträge',        en: 'No posts found' },
-  'booking.book_now':            { de: 'Jetzt buchen',          en: 'Book now' },
-  'booking.select_service':      { de: 'Service wählen',        en: 'Select service' },
-  'booking.select_date':         { de: 'Datum wählen',          en: 'Select date' },
-  'booking.select_time':         { de: 'Uhrzeit wählen',        en: 'Select time' },
-  'newsletter.subscribe':        { de: 'Newsletter abonnieren', en: 'Subscribe' },
-  'newsletter.email_placeholder':{ de: 'Deine E-Mail-Adresse',  en: 'Your email address' },
-  'footer.privacy':              { de: 'Datenschutz',           en: 'Privacy' },
-  'footer.imprint':              { de: 'Impressum',             en: 'Imprint' },
-  'footer.terms':                { de: 'AGB',                   en: 'Terms' },
+  'common.home':                  { de: 'Startseite',            en: 'Home' },
+  'common.about':                 { de: 'Über uns',              en: 'About' },
+  'common.contact':               { de: 'Kontakt',               en: 'Contact' },
+  'common.search':                { de: 'Suchen',                en: 'Search' },
+  'common.back':                  { de: 'Zurück',                en: 'Back' },
+  'common.loading':               { de: 'Wird geladen...',       en: 'Loading...' },
+  'common.read_more':             { de: 'Weiterlesen',           en: 'Read more' },
+  'common.show_more':             { de: 'Mehr anzeigen',         en: 'Show more' },
+  'shop.add_to_cart':             { de: 'In den Warenkorb',      en: 'Add to cart' },
+  'shop.cart':                    { de: 'Warenkorb',             en: 'Cart' },
+  'shop.checkout':                { de: 'Zur Kasse',             en: 'Checkout' },
+  'shop.price':                   { de: 'Preis',                 en: 'Price' },
+  'shop.quantity':                { de: 'Menge',                 en: 'Quantity' },
+  'shop.total':                   { de: 'Gesamt',                en: 'Total' },
+  'shop.empty_cart':              { de: 'Warenkorb ist leer',    en: 'Cart is empty' },
+  'blog.posted_on':               { de: 'Veröffentlicht am',     en: 'Posted on' },
+  'blog.by':                      { de: 'von',                   en: 'by' },
+  'blog.comments':                { de: 'Kommentare',            en: 'Comments' },
+  'blog.no_posts':                { de: 'Keine Beiträge',        en: 'No posts found' },
+  'booking.book_now':             { de: 'Jetzt buchen',          en: 'Book now' },
+  'booking.select_service':       { de: 'Service wählen',        en: 'Select service' },
+  'booking.select_date':          { de: 'Datum wählen',          en: 'Select date' },
+  'booking.select_time':          { de: 'Uhrzeit wählen',        en: 'Select time' },
+  'newsletter.subscribe':         { de: 'Newsletter abonnieren', en: 'Subscribe' },
+  'newsletter.email_placeholder': { de: 'Deine E-Mail-Adresse',  en: 'Your email address' },
+  'footer.privacy':               { de: 'Datenschutz',           en: 'Privacy' },
+  'footer.imprint':               { de: 'Impressum',             en: 'Imprint' },
+  'footer.terms':                 { de: 'AGB',                   en: 'Terms' },
 };
 
 const GROUPS = ['all', 'common', 'shop', 'blog', 'booking', 'newsletter', 'footer'] as const;
+
+const GROUP_LABELS: Record<string, string> = {
+  all: 'Alle', common: 'Allgemein', shop: 'Shop',
+  blog: 'Blog', booking: 'Buchung', newsletter: 'Newsletter', footer: 'Footer',
+};
 
 // ==================== COMPONENT ====================
 export default function I18nDashboardPage() {
   const [tab, setTab] = useState<'languages' | 'translations'>('languages');
   const [settings, setSettings] = useState<LocaleSettings | null>(null);
-  // uiValues: locale → key → value (custom overrides vom Backend)
   const [uiValues, setUiValues] = useState<Record<string, string>>({});
   const [selectedLocale, setSelectedLocale] = useState('de');
   const [loading, setLoading] = useState(true);
@@ -102,13 +105,11 @@ export default function I18nDashboardPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // ── Resolver: localeSettings ───────────────────────────────────────────────
   const loadSettings = useCallback(async () => {
     const data = await gqlRequest<{ localeSettings: LocaleSettings }>(`
       query { localeSettings { defaultLocale enabledLocales supportedLocales } }
     `);
     setSettings(data.localeSettings);
-    // selectedLocale auf defaultLocale setzen falls noch nicht gesetzt
     setSelectedLocale((prev) =>
       data.localeSettings.enabledLocales.includes(prev)
         ? prev
@@ -116,7 +117,6 @@ export default function I18nDashboardPage() {
     );
   }, []);
 
-  // ── Resolver: uiTranslations(locale) ─────────────────────────────────────
   const loadUiTranslations = useCallback(async (locale: string) => {
     const data = await gqlRequest<{ uiTranslations: Record<string, string> }>(`
       query($locale: String!) { uiTranslations(locale: $locale) }
@@ -127,24 +127,17 @@ export default function I18nDashboardPage() {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      try {
-        await loadSettings();
-      } catch {
-        showToast('Spracheinstellungen konnten nicht geladen werden', 'error');
-      } finally {
-        setLoading(false);
-      }
+      try { await loadSettings(); }
+      catch { showToast('Spracheinstellungen konnten nicht geladen werden', 'error'); }
+      finally { setLoading(false); }
     };
     init();
   }, [loadSettings]);
 
   useEffect(() => {
-    if (tab === 'translations') {
-      loadUiTranslations(selectedLocale);
-    }
+    if (tab === 'translations') loadUiTranslations(selectedLocale);
   }, [selectedLocale, tab, loadUiTranslations]);
 
-  // ── Resolver: updateLocaleSettings(defaultLocale, enabledLocales) ─────────
   const saveLocaleSettings = async (newDefault: string, newEnabled: string[]) => {
     setSaving(true);
     try {
@@ -153,10 +146,8 @@ export default function I18nDashboardPage() {
           updateLocaleSettings(defaultLocale: $defaultLocale, enabledLocales: $enabledLocales)
         }
       `, { defaultLocale: newDefault, enabledLocales: newEnabled });
-      setSettings((prev) =>
-        prev ? { ...prev, defaultLocale: newDefault, enabledLocales: newEnabled } : prev,
-      );
-      showToast('Spracheinstellungen gespeichert');
+      setSettings((prev) => prev ? { ...prev, defaultLocale: newDefault, enabledLocales: newEnabled } : prev);
+      showToast('Gespeichert');
     } catch {
       showToast('Fehler beim Speichern', 'error');
     } finally {
@@ -167,7 +158,6 @@ export default function I18nDashboardPage() {
   const toggleLocale = (code: string) => {
     if (!settings) return;
     const isEnabled = settings.enabledLocales.includes(code);
-    // Standardsprache kann nicht deaktiviert werden
     if (isEnabled && code === settings.defaultLocale) {
       showToast('Standardsprache kann nicht deaktiviert werden', 'error');
       return;
@@ -180,14 +170,12 @@ export default function I18nDashboardPage() {
 
   const setDefaultLocale = (code: string) => {
     if (!settings) return;
-    // Standard aktiviert automatisch die Sprache
     const newEnabled = settings.enabledLocales.includes(code)
       ? settings.enabledLocales
       : [...settings.enabledLocales, code];
     saveLocaleSettings(code, newEnabled);
   };
 
-  // ── Resolver: setUiTranslation(locale, key, value) ────────────────────────
   const saveTranslation = async (key: string, value: string) => {
     try {
       await gqlRequest(`
@@ -196,17 +184,15 @@ export default function I18nDashboardPage() {
         }
       `, { locale: selectedLocale, key, value });
     } catch {
-      showToast('Fehler beim Speichern der Übersetzung', 'error');
+      showToast('Fehler beim Speichern', 'error');
     }
   };
 
-  // Lokalen State + Backend aktualisieren
   const handleTranslationChange = (key: string, value: string) => {
     setUiValues((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleTranslationBlur = (key: string, value: string) => {
-    // Nur speichern wenn der Wert vom Default abweicht oder schon gespeichert war
     const defaultValue = DEFAULT_UI_KEYS[key]?.[selectedLocale] || '';
     if (value !== defaultValue || uiValues[key] !== undefined) {
       saveTranslation(key, value);
@@ -217,14 +203,12 @@ export default function I18nDashboardPage() {
   const getPlaceholder = (key: string) =>
     DEFAULT_UI_KEYS[key]?.[selectedLocale] ||
     DEFAULT_UI_KEYS[key]?.['de'] ||
-    DEFAULT_UI_KEYS[key]?.['en'] ||
-    key;
+    DEFAULT_UI_KEYS[key]?.['en'] || key;
 
   const filteredKeys = Object.keys(DEFAULT_UI_KEYS).filter(
     (k) => filterGroup === 'all' || k.startsWith(`${filterGroup}.`),
   );
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -234,55 +218,54 @@ export default function I18nDashboardPage() {
   }
 
   const allLocales = Object.entries(LOCALE_META).map(([code, meta]) => ({
-    code,
-    ...meta,
+    code, ...meta,
     enabled: settings?.enabledLocales.includes(code) ?? false,
     isDefault: settings?.defaultLocale === code,
   }));
 
+  const enabledCount = allLocales.filter(l => l.enabled).length;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-1">
       {/* Toast */}
       {toast && (
-        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white transition-all ${
-          toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'
+        <div className={`fixed top-5 right-5 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium transition-all ${
+          toast.type === 'success' ? 'bg-emerald-600' : 'bg-red-600'
         }`}>
-          {toast.message}
+          {toast.type === 'success' ? '✓' : '✕'} {toast.message}
         </div>
       )}
 
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">🌐 Mehrsprachigkeit (i18n)</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            🌐 Mehrsprachigkeit
+          </h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {enabledCount} {enabledCount === 1 ? 'Sprache' : 'Sprachen'} aktiv
+            {settings && ` · Standard: ${LOCALE_META[settings.defaultLocale]?.flag} ${LOCALE_META[settings.defaultLocale]?.nativeName}`}
+          </p>
+        </div>
         {saving && (
-          <span className="text-sm text-muted-foreground animate-pulse">Speichert...</span>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary" />
+            Speichert...
+          </div>
         )}
       </div>
 
-      {/* Standard-Sprache Info */}
-      {settings && (
-        <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg text-sm">
-          <span className="text-muted-foreground">Standardsprache: </span>
-          <span className="font-semibold text-foreground">
-            {LOCALE_META[settings.defaultLocale]?.flag} {LOCALE_META[settings.defaultLocale]?.name}
-          </span>
-          <span className="text-muted-foreground ml-4">Aktive Sprachen: </span>
-          <span className="font-semibold text-foreground">
-            {settings.enabledLocales.join(', ')}
-          </span>
-        </div>
-      )}
-
       {/* Tabs */}
       <div className="border-b border-border">
-        <nav className="flex gap-6">
+        <nav className="flex gap-1">
           {([['languages', '🗺️ Sprachen'], ['translations', '✏️ UI-Texte']] as const).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors rounded-t-lg ${
                 tab === key
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
+                  ? 'border-primary text-primary bg-primary/5'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
             >
               {label}
@@ -291,53 +274,82 @@ export default function I18nDashboardPage() {
         </nav>
       </div>
 
-      {/* ── SPRACHEN TAB ─────────────────────────────────────────────────────── */}
+      {/* ── SPRACHEN TAB ────────────────────────────────────────────────────── */}
       {tab === 'languages' && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {allLocales.map((locale) => (
-            <div
-              key={locale.code}
-              className={`rounded-xl border p-4 text-center transition-all ${
-                locale.enabled
-                  ? 'bg-card border-primary/20 shadow-sm'
-                  : 'bg-muted border-border opacity-60'
-              }`}
-            >
-              <div className="text-3xl mb-2">{locale.flag}</div>
-              <p className="font-medium text-sm text-foreground">{locale.name}</p>
-              <p className="text-xs text-muted-foreground uppercase">{locale.code}</p>
-
-              {locale.isDefault && (
-                <span className="inline-block mt-2 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20">
-                  Standard
-                </span>
-              )}
-
-              <div className="mt-3 space-y-1">
-                <button
-                  onClick={() => toggleLocale(locale.code)}
-                  disabled={locale.isDefault || saving}
-                  className={`w-full text-xs py-1.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                    locale.enabled
-                      ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400'
-                      : 'bg-muted text-muted-foreground hover:bg-border'
-                  }`}
-                >
-                  {locale.enabled ? '✓ Aktiv' : 'Aktivieren'}
-                </button>
-
-                {locale.enabled && !locale.isDefault && (
-                  <button
-                    onClick={() => setDefaultLocale(locale.code)}
-                    disabled={saving}
-                    className="w-full text-xs py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50"
-                  >
-                    Als Standard
-                  </button>
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Aktiviere Sprachen für deine Website. Die Standardsprache wird immer angezeigt.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
+            {allLocales.map((locale) => (
+              <div
+                key={locale.code}
+                className={`relative rounded-2xl border-2 p-4 text-center transition-all duration-200 ${
+                  locale.isDefault
+                    ? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
+                    : locale.enabled
+                    ? 'border-emerald-500/40 bg-emerald-50/50 dark:bg-emerald-950/20 shadow-sm'
+                    : 'border-border bg-card opacity-60 hover:opacity-80'
+                }`}
+              >
+                {/* Default Badge */}
+                {locale.isDefault && (
+                  <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                    Standard
+                  </div>
                 )}
+
+                {/* Flag */}
+                <div className="text-4xl mb-2 leading-none">{locale.flag}</div>
+
+                {/* Names */}
+                <p className="font-semibold text-sm text-foreground leading-tight">{locale.nativeName}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{locale.name}</p>
+                <p className="text-[10px] text-muted-foreground/60 font-mono uppercase mt-0.5">{locale.code}</p>
+
+                {/* Status dot */}
+                <div className="flex justify-center mt-2">
+                  <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full ${
+                    locale.isDefault
+                      ? 'bg-primary/15 text-primary'
+                      : locale.enabled
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                      : 'bg-muted text-muted-foreground'
+                  }`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${
+                      locale.isDefault ? 'bg-primary' : locale.enabled ? 'bg-emerald-500' : 'bg-muted-foreground/40'
+                    }`} />
+                    {locale.isDefault ? 'Standard' : locale.enabled ? 'Aktiv' : 'Inaktiv'}
+                  </span>
+                </div>
+
+                {/* Actions */}
+                <div className="mt-3 space-y-1.5">
+                  <button
+                    onClick={() => toggleLocale(locale.code)}
+                    disabled={locale.isDefault || saving}
+                    className={`w-full text-xs py-1.5 px-3 rounded-xl font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                      locale.enabled
+                        ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400'
+                        : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400'
+                    }`}
+                  >
+                    {locale.enabled ? '− Deaktivieren' : '+ Aktivieren'}
+                  </button>
+
+                  {locale.enabled && !locale.isDefault && (
+                    <button
+                      onClick={() => setDefaultLocale(locale.code)}
+                      disabled={saving}
+                      className="w-full text-xs py-1.5 px-3 rounded-xl font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-all disabled:opacity-40"
+                    >
+                      Als Standard
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
@@ -345,75 +357,89 @@ export default function I18nDashboardPage() {
       {tab === 'translations' && (
         <div className="space-y-4">
           {/* Sprach-Selector */}
-          <div className="flex items-center gap-4 flex-wrap">
-            <label className="text-sm font-medium text-muted-foreground">Sprache:</label>
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-sm font-medium text-muted-foreground">Sprache:</span>
             <div className="flex gap-2 flex-wrap">
               {allLocales.filter((l) => l.enabled).map((l) => (
                 <button
                   key={l.code}
                   onClick={() => setSelectedLocale(l.code)}
-                  className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1.5 transition-colors ${
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
                     selectedLocale === l.code
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
                       : 'bg-muted text-muted-foreground hover:bg-border'
                   }`}
                 >
-                  {l.flag} {l.code.toUpperCase()}
-                  {l.isDefault && <span className="text-xs opacity-70">(Standard)</span>}
+                  <span>{l.flag}</span>
+                  <span>{l.nativeName}</span>
+                  {l.isDefault && <span className="text-[10px] opacity-70 bg-white/20 px-1 rounded">(Standard)</span>}
                 </button>
               ))}
             </div>
           </div>
 
           {/* Gruppen-Filter */}
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-1.5 flex-wrap">
             {GROUPS.map((g) => (
               <button
                 key={g}
                 onClick={() => setFilterGroup(g)}
-                className={`px-3 py-1 rounded-lg text-xs transition-colors ${
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
                   filterGroup === g
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-muted-foreground hover:bg-border'
                 }`}
               >
-                {g === 'all' ? 'Alle' : g}
+                {GROUP_LABELS[g]}
               </button>
             ))}
           </div>
 
-          {/* Translation-Editor */}
-          <div className="rounded-lg border border-border divide-y divide-border bg-card">
-            {filteredKeys.map((key) => {
-              const value = getDisplayValue(key);
-              const placeholder = getPlaceholder(key);
-              const hasCustom = uiValues[key] !== undefined && uiValues[key] !== '';
+          {/* Translation Table */}
+          <div className="rounded-xl border border-border overflow-hidden bg-card">
+            <div className="grid grid-cols-[200px_1fr] text-xs font-semibold text-muted-foreground bg-muted/50 px-4 py-2.5 border-b border-border">
+              <span>Schlüssel</span>
+              <span>Übersetzung ({LOCALE_META[selectedLocale]?.nativeName ?? selectedLocale})</span>
+            </div>
+            <div className="divide-y divide-border">
+              {filteredKeys.map((key) => {
+                const value = getDisplayValue(key);
+                const placeholder = getPlaceholder(key);
+                const hasCustom = uiValues[key] !== undefined && uiValues[key] !== '';
+                const [group, ...rest] = key.split('.');
 
-              return (
-                <div key={key} className="flex items-center gap-4 px-4 py-3">
-                  <div className="w-52 shrink-0">
-                    <span className="text-xs font-mono text-muted-foreground">{key}</span>
-                    {hasCustom && (
-                      <span className="ml-2 text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded">
-                        angepasst
-                      </span>
-                    )}
+                return (
+                  <div key={key} className="grid grid-cols-[200px_1fr] items-center px-4 py-2.5 hover:bg-muted/30 transition-colors">
+                    <div className="pr-4">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-mono bg-muted text-muted-foreground px-1.5 py-0.5 rounded">
+                          {group}
+                        </span>
+                        <span className="text-xs text-foreground font-medium">.{rest.join('.')}</span>
+                      </div>
+                      {hasCustom && (
+                        <span className="text-[10px] text-primary mt-0.5 block">● Angepasst</span>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={value}
+                      placeholder={placeholder}
+                      onChange={(e) => handleTranslationChange(key, e.target.value)}
+                      onBlur={(e) => handleTranslationBlur(key, e.target.value)}
+                      className="w-full border border-border rounded-lg px-3 py-1.5 text-sm bg-background text-foreground 
+                                 placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-primary/20 focus:border-primary 
+                                 outline-none transition-all"
+                    />
                   </div>
-                  <input
-                    type="text"
-                    value={value}
-                    placeholder={placeholder}
-                    onChange={(e) => handleTranslationChange(key, e.target.value)}
-                    onBlur={(e) => handleTranslationBlur(key, e.target.value)}
-                    className="flex-1 border border-border rounded-lg px-3 py-1.5 text-sm bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors"
-                  />
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
-          <p className="text-xs text-muted-foreground">
-            💡 Platzhaltertext = Standardwert aus dem System. Eigene Werte werden sofort beim Verlassen des Feldes gespeichert.
+          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+            <span className="text-primary">💡</span>
+            Platzhaltertext = Systemstandard. Änderungen werden automatisch beim Verlassen des Feldes gespeichert.
           </p>
         </div>
       )}
