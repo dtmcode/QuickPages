@@ -26,20 +26,6 @@ interface SectionStyling {
   containerWidth?: string;
 }
 
-interface ContentItem {
-  icon?: string;
-  title: string;
-  subtitle?: string;
-  description: string;
-  price?: string;
-  value?: string;
-  image?: string;
-  name?: string;
-  role?: string;
-  quote?: string;
-  buttonText?: string;
-  features?: string[];
-}
 
 interface SectionContent {
   heading?: string;
@@ -65,6 +51,13 @@ interface SectionContent {
   stats?: Record<string, unknown>[];
   images?: Array<{ url: string; alt?: string }>;
   links?: Array<{ platform: string; url: string; icon?: string }>;
+  funnelSlug?: string;
+showName?: boolean;
+successMessage?: string;
+beforeImage?: string;
+afterImage?: string;
+beforeLabel?: string;
+afterLabel?: string;
 }
 interface SectionData {
   id: string;
@@ -98,6 +91,397 @@ interface SectionComponentProps {
 interface Props {
   page: PageData;
   tenantSlug?: string;
+}
+
+// ─── 1. RESTAURANT MENU SECTION ──────────────────────────────────────────────
+ 
+function RestaurantMenuSection({
+  containerStyle, headingStyle, buttonStyle, apiUrl, tenant, content,
+}: SectionComponentProps) {
+  const [menu, setMenu] = useState<Array<{ id: string; name: string; items: Array<{ id: string; name: string; description: string | null; price: number; isVegan: boolean; isVegetarian: boolean; isSpicy: boolean }> }>>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+ 
+  useEffect(() => {
+    fetch(`${apiUrl}/api/public/${tenant}/restaurant/menu`)
+      .then(r => r.ok ? r.json() : [])
+      .then((data: typeof menu) => {
+        setMenu(data);
+        if (data.length > 0) setActiveCategory(data[0].id);
+      })
+      .catch(() => setMenu([]))
+      .finally(() => setLoading(false));
+  }, [apiUrl, tenant]);
+ 
+  const fmt = (cents: number) => `${(cents / 100).toFixed(2)} €`;
+  const h = (content as { heading?: string; title?: string }).heading || (content as { heading?: string; title?: string }).title || '';
+ 
+  const currentItems = menu.find(c => c.id === activeCategory)?.items ?? [];
+ 
+  return (
+    <section style={containerStyle}>
+      <div className="max-w-4xl mx-auto">
+        {h && <h2 className="text-3xl font-bold text-center mb-8" style={headingStyle}>{h}</h2>}
+ 
+        {loading ? (
+          <div className="text-center py-12 opacity-50">Lädt Speisekarte…</div>
+        ) : menu.length === 0 ? (
+          <div className="text-center py-12 opacity-50">
+            <p className="text-4xl mb-3">🍽️</p>
+            <p>Speisekarte wird bald verfügbar sein</p>
+          </div>
+        ) : (
+          <>
+            {/* Kategorie-Tabs */}
+            <div className="flex gap-2 overflow-x-auto pb-2 mb-6">
+              {menu.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors"
+                  style={activeCategory === cat.id
+                    ? { backgroundColor: buttonStyle.backgroundColor, color: buttonStyle.color }
+                    : { backgroundColor: 'rgba(0,0,0,0.06)', color: 'inherit' }
+                  }
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+ 
+            {/* Gerichte */}
+            <div className="space-y-3">
+              {currentItems.map(item => (
+                <div key={item.id} className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{item.name}</span>
+                      {item.isVegan && <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">🌱 Vegan</span>}
+                      {item.isVegetarian && !item.isVegan && <span className="text-xs bg-green-50 text-green-600 px-1.5 py-0.5 rounded">🥬 Vegetarisch</span>}
+                      {item.isSpicy && <span className="text-xs">🌶️</span>}
+                    </div>
+                    {item.description && <p className="text-sm opacity-60 mt-0.5">{item.description}</p>}
+                  </div>
+                  <span className="font-bold ml-4 whitespace-nowrap">{fmt(item.price)}</span>
+                </div>
+              ))}
+            </div>
+ 
+            {/* Bestell-Button */}
+            {(content as { buttonText?: string; buttonLink?: string }).buttonText && (
+              <div className="text-center mt-8">
+                <a
+                  href={(content as { buttonLink?: string }).buttonLink || '/restaurant'}
+                  className="inline-block px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition"
+                  style={buttonStyle}
+                >
+                  {(content as { buttonText?: string }).buttonText}
+                </a>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+ 
+// ─── 2. LOCAL PRODUCTS SECTION ────────────────────────────────────────────────
+ 
+function LocalProductsSection({
+  containerStyle, headingStyle, buttonStyle, apiUrl, tenant, content,
+}: SectionComponentProps) {
+  const [products, setProducts] = useState<Array<{
+    id: string; name: string; price: number; unit: string;
+    description: string | null; isOrganic: boolean; isRegional: boolean; stock: number | null; isUnlimited: boolean;
+  }>>([]);
+  const [loading, setLoading] = useState(true);
+ 
+  useEffect(() => {
+    fetch(`${apiUrl}/api/public/${tenant}/local-store/products`)
+      .then(r => r.ok ? r.json() : [])
+      .then((data: typeof products) => setProducts(data))
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
+  }, [apiUrl, tenant]);
+ 
+  const fmt = (cents: number) => `${(cents / 100).toFixed(2)} €`;
+  const h = (content as { heading?: string; title?: string }).heading || (content as { heading?: string; title?: string }).title || '';
+  const maxItems = (content as { count?: number }).count || 6;
+ 
+  return (
+    <section style={containerStyle}>
+      <div className="max-w-5xl mx-auto">
+        {h && <h2 className="text-3xl font-bold text-center mb-8" style={headingStyle}>{h}</h2>}
+ 
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {Array(6).fill(null).map((_, i) => (
+              <div key={i} className="bg-gray-100 rounded-xl h-32 animate-pulse" />
+            ))}
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-12 opacity-50">
+            <p className="text-4xl mb-3">📦</p>
+            <p>Keine Produkte verfügbar</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {products.slice(0, maxItems).map(p => (
+                <div key={p.id} className="bg-white rounded-xl p-4 shadow-sm flex flex-col">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-1 flex-wrap">
+                        <span className="font-medium text-sm">{p.name}</span>
+                        {p.isOrganic && <span className="text-xs bg-green-100 text-green-700 px-1 rounded">🌿</span>}
+                        {p.isRegional && <span className="text-xs bg-yellow-100 text-yellow-700 px-1 rounded">📍</span>}
+                      </div>
+                      {p.description && <p className="text-xs opacity-60 mt-0.5 line-clamp-2">{p.description}</p>}
+                    </div>
+                  </div>
+                  <div className="mt-auto pt-2 flex items-center justify-between">
+                    <div>
+                      <span className="font-bold">{fmt(p.price)}</span>
+                      <span className="text-xs opacity-60 ml-1">/ {p.unit}</span>
+                    </div>
+                    {!p.isUnlimited && p.stock !== null && p.stock <= 5 && (
+                      <span className="text-xs text-orange-500">Noch {p.stock}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {(content as { buttonText?: string; buttonLink?: string }).buttonText && (
+              <div className="text-center mt-8">
+                <a href={(content as { buttonLink?: string }).buttonLink || '/local-store'}
+                  className="inline-block px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition"
+                  style={buttonStyle}>
+                  {(content as { buttonText?: string }).buttonText}
+                </a>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+ 
+// ─── 3. COURSE LIST SECTION ───────────────────────────────────────────────────
+ 
+function CourseListSection({
+  containerStyle, headingStyle, buttonStyle, apiUrl, tenant, content,
+}: SectionComponentProps) {
+  const [courses, setCourses] = useState<Array<{
+    id: string; title: string; slug: string; shortDescription: string | null;
+    thumbnail: string | null; price: number; isFree: boolean; level: string; totalDuration: number | null;
+  }>>([]);
+  const [loading, setLoading] = useState(true);
+ 
+  useEffect(() => {
+    fetch(`${apiUrl}/api/public/${tenant}/courses`)
+      .then(r => r.ok ? r.json() : [])
+      .then((data: typeof courses) => setCourses(data))
+      .catch(() => setCourses([]))
+      .finally(() => setLoading(false));
+  }, [apiUrl, tenant]);
+ 
+  const fmt = (cents: number) => `${(cents / 100).toFixed(2)} €`;
+  const fmtDur = (min: number) => min >= 60 ? `${Math.floor(min / 60)}h ${min % 60}m` : `${min}m`;
+  const LEVELS: Record<string, string> = { beginner: 'Anfänger', intermediate: 'Fortgeschritten', advanced: 'Experte' };
+  const h = (content as { heading?: string; title?: string }).heading || (content as { heading?: string; title?: string }).title || '';
+  const maxItems = (content as { count?: number }).count || 3;
+ 
+  return (
+    <section style={containerStyle}>
+      <div className="max-w-5xl mx-auto">
+        {h && <h2 className="text-3xl font-bold text-center mb-8" style={headingStyle}>{h}</h2>}
+ 
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {Array(3).fill(null).map((_, i) => <div key={i} className="bg-gray-100 rounded-xl h-64 animate-pulse" />)}
+          </div>
+        ) : courses.length === 0 ? (
+          <div className="text-center py-12 opacity-50">
+            <p className="text-4xl mb-3">🎓</p>
+            <p>Noch keine Kurse verfügbar</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {courses.slice(0, maxItems).map(course => (
+                <a key={course.id} href={`/courses/${course.slug}`}
+                  className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow no-underline text-inherit block">
+                  {course.thumbnail
+                    ? <img src={course.thumbnail} alt={course.title} className="w-full h-40 object-cover" />
+                    : <div className="w-full h-40 flex items-center justify-center text-5xl" style={{ backgroundColor: `${buttonStyle.backgroundColor}20` }}>🎓</div>
+                  }
+                  <div className="p-4">
+                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{LEVELS[course.level] ?? course.level}</span>
+                    <h3 className="font-bold mt-2 mb-1 line-clamp-2">{course.title}</h3>
+                    {course.shortDescription && <p className="text-sm opacity-60 line-clamp-2 mb-3">{course.shortDescription}</p>}
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold">{course.isFree ? <span style={{ color: '#16a34a' }}>Kostenlos</span> : fmt(course.price)}</span>
+                      {course.totalDuration && <span className="text-xs opacity-50">{fmtDur(course.totalDuration)}</span>}
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+            {(content as { buttonText?: string; buttonLink?: string }).buttonText && (
+              <div className="text-center mt-8">
+                <a href={(content as { buttonLink?: string }).buttonLink || '/courses'}
+                  className="inline-block px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition"
+                  style={buttonStyle}>
+                  {(content as { buttonText?: string }).buttonText}
+                </a>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+ 
+// ─── 4. MEMBERSHIP PLANS SECTION ─────────────────────────────────────────────
+ 
+function MembershipPlansSection({
+  containerStyle, headingStyle, buttonStyle, apiUrl, tenant, content,
+}: SectionComponentProps) {
+  const [plans, setPlans] = useState<Array<{
+    id: string; name: string; price: number; interval: string;
+    description: string | null; features: string[] | null;
+  }>>([]);
+  const [loading, setLoading] = useState(true);
+ 
+  useEffect(() => {
+    fetch(`${apiUrl}/api/public/${tenant}/membership/plans`)
+      .then(r => r.ok ? r.json() : [])
+      .then((data: typeof plans) => setPlans(data))
+      .catch(() => setPlans([]))
+      .finally(() => setLoading(false));
+  }, [apiUrl, tenant]);
+ 
+  const fmt = (cents: number) => `${(cents / 100).toFixed(2)} €`;
+  const INTERVAL: Record<string, string> = { monthly: 'Monat', yearly: 'Jahr', lifetime: 'einmalig' };
+  const h = (content as { heading?: string; title?: string }).heading || (content as { heading?: string; title?: string }).title || '';
+ 
+  return (
+    <section style={containerStyle}>
+      <div className="max-w-4xl mx-auto">
+        {h && <h2 className="text-3xl font-bold text-center mb-8" style={headingStyle}>{h}</h2>}
+ 
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {Array(3).fill(null).map((_, i) => <div key={i} className="bg-gray-100 rounded-xl h-48 animate-pulse" />)}
+          </div>
+        ) : plans.length === 0 ? (
+          <div className="text-center py-12 opacity-50">
+            <p className="text-4xl mb-3">👑</p>
+            <p>Noch keine Pläne verfügbar</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {plans.map(plan => (
+              <div key={plan.id} className="bg-white rounded-2xl shadow-sm p-6 flex flex-col border-2 border-transparent hover:border-primary transition-colors">
+                <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                <div className="mb-4">
+                  <span className="text-3xl font-bold">{fmt(plan.price)}</span>
+                  <span className="text-sm opacity-60 ml-1">/ {INTERVAL[plan.interval] ?? plan.interval}</span>
+                </div>
+                {plan.description && <p className="text-sm opacity-70 mb-4">{plan.description}</p>}
+                {(plan.features ?? []).length > 0 && (
+                  <ul className="space-y-2 mb-6 flex-1">
+                    {(plan.features ?? []).map((f, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm">
+                        <span style={{ color: buttonStyle.backgroundColor }} className="font-bold mt-0.5">✓</span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <a href={(content as { buttonLink?: string }).buttonLink || '/membership'}
+                  className="mt-auto block text-center py-2.5 rounded-xl font-semibold hover:opacity-90 transition"
+                  style={buttonStyle}>
+                  {(content as { buttonText?: string }).buttonText || 'Mitglied werden'}
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+ 
+// ─── 5. FUNNEL OPTIN SECTION ──────────────────────────────────────────────────
+ 
+function FunnelOptinSection({
+  containerStyle, headingStyle, buttonStyle, apiUrl, tenant, content,
+}: SectionComponentProps) {
+  const [form, setForm] = useState({ email: '', name: '' });
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+ 
+  const funnelSlug = (content as { funnelSlug?: string }).funnelSlug;
+  const showName = (content as { showName?: boolean }).showName ?? false;
+  const h = (content as { heading?: string; title?: string }).heading || (content as { heading?: string; title?: string }).title || '';
+ 
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!funnelSlug) return;
+    setStatus('loading');
+    try {
+      // Erst Funnel laden um erste Step-ID zu bekommen
+      const funnelRes = await fetch(`${apiUrl}/api/public/${tenant}/funnel/${funnelSlug}`);
+      if (!funnelRes.ok) throw new Error();
+      const funnel = await funnelRes.json() as { id: string; steps: Array<{ id: string }> };
+      const stepId = funnel.steps[0]?.id;
+ 
+      await fetch(`${apiUrl}/api/public/${tenant}/funnel/${funnel.id}/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stepId, customerEmail: form.email, customerName: form.name || undefined }),
+      });
+      setStatus('success');
+    } catch {
+      setStatus('error');
+    }
+  };
+ 
+  return (
+    <section style={containerStyle}>
+      <div className="max-w-md mx-auto text-center">
+        {h && <h2 className="text-3xl font-bold mb-3" style={headingStyle}>{h}</h2>}
+        {(content as { subheading?: string }).subheading && (
+          <p className="opacity-80 mb-6">{(content as { subheading?: string }).subheading}</p>
+        )}
+ 
+        {status === 'success' ? (
+          <div className="bg-white rounded-2xl p-8 shadow">
+            <div className="text-5xl mb-3">🎉</div>
+            <p className="font-bold text-lg">{(content as { successMessage?: string }).successMessage || 'Vielen Dank!'}</p>
+          </div>
+        ) : (
+          <form onSubmit={submit} className="bg-white rounded-2xl p-6 shadow space-y-3">
+            {showName && (
+              <input className="w-full border rounded-xl px-4 py-3" placeholder="Dein Name"
+                value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+            )}
+            <input type="email" className="w-full border rounded-xl px-4 py-3" placeholder="Deine E-Mail *" required
+              value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+            <button type="submit" disabled={status === 'loading'}
+              className="w-full py-3 rounded-xl font-bold hover:opacity-90 transition disabled:opacity-50"
+              style={buttonStyle}>
+              {status === 'loading' ? '…' : (content as { buttonText?: string }).buttonText || 'Jetzt anmelden'}
+            </button>
+            {status === 'error' && <p className="text-red-500 text-sm">Fehler. Bitte erneut versuchen.</p>}
+          </form>
+        )}
+      </div>
+    </section>
+  );
 }
 
 export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
@@ -792,7 +1176,21 @@ case 'whatsapp-btn':
         💬 {block.label || 'WhatsApp schreiben'}
       </a>
     </div>
-  );
+        );
+      case 'restaurant_menu':
+  return <RestaurantMenuSection content={content} styling={styling} containerStyle={containerStyle} headingStyle={headingStyle} buttonStyle={buttonStyle} apiUrl={API_URL} tenant={resolvedTenant} />;
+
+case 'local_products':
+  return <LocalProductsSection content={content} styling={styling} containerStyle={containerStyle} headingStyle={headingStyle} buttonStyle={buttonStyle} apiUrl={API_URL} tenant={resolvedTenant} />;
+
+case 'course_list':
+  return <CourseListSection content={content} styling={styling} containerStyle={containerStyle} headingStyle={headingStyle} buttonStyle={buttonStyle} apiUrl={API_URL} tenant={resolvedTenant} />;
+
+case 'membership_plans':
+  return <MembershipPlansSection content={content} styling={styling} containerStyle={containerStyle} headingStyle={headingStyle} buttonStyle={buttonStyle} apiUrl={API_URL} tenant={resolvedTenant} />;
+
+case 'funnel_optin':
+  return <FunnelOptinSection content={content} styling={styling} containerStyle={containerStyle} headingStyle={headingStyle} buttonStyle={buttonStyle} apiUrl={API_URL} tenant={resolvedTenant} />;
       default: return null;
     }
   };
