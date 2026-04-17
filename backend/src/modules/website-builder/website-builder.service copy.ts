@@ -668,43 +668,25 @@ export class WebsiteBuilderService {
    * creator       → 3 Seiten (Home, About, Kontakt)
    * business+     → 5 Seiten (Home, About, Services, Blog, Kontakt)
    */
-async createDefaultTemplate(
-  tenantId: string,
-  tenantName: string,
-  packageType: string,
-): Promise<typeof wbTemplates.$inferSelect> {
- 
-  // ─── Package → Kategorie Mapping ────────────────────────────────────────────
-  const getPackageCategory = (pkg: string): 'website' | 'blog' | 'business' | 'shop' | 'members' => {
-    if (pkg.startsWith('website_'))  return 'website';
-    if (pkg.startsWith('blog_'))     return 'blog';
-    if (pkg.startsWith('business_')) return 'business';
-    if (pkg.startsWith('shop_'))     return 'shop';
-    if (pkg.startsWith('members_'))  return 'members';
-    // Fallback für alte Paketnamen
-    if (['starter', 'landing', 'page', 'website_micro'].includes(pkg)) return 'website';
-    if (['creator', 'business_starter'].includes(pkg)) return 'business';
-    if (['shop', 'shop_mini'].includes(pkg)) return 'shop';
-    if (['professional', 'enterprise'].includes(pkg)) return 'business';
-    return 'website';
-  };
- 
-  const category = getPackageCategory(packageType);
- 
-  // ─── Seiten-Konfiguration nach Kategorie ────────────────────────────────────
- 
-  type PageConfig = {
-    name: string;
-    slug: string;
-    isHomepage: boolean;
-    order: number;
-    sections: Array<{ name: string; type: string; content: Record<string, unknown> }>;
-  };
- 
-  const pageConfigs: PageConfig[] = [];
- 
-  // ── WEBSITE: Visitenkarte / Professioneller Auftritt ─────────────────────
-  if (category === 'website') {
+  async createDefaultTemplate(
+    tenantId: string,
+    tenantName: string,
+    packageType: string,
+  ) {
+    // Paket-basierte Seitenstruktur
+    const pageConfigs: Array<{
+      name: string;
+      slug: string;
+      isHomepage: boolean;
+      order: number;
+      sections: Array<{
+        name: string;
+        type: string;
+        content: Record<string, any>;
+      }>;
+    }> = [];
+
+    // Homepage — alle Pakete bekommen sie
     pageConfigs.push({
       name: 'Startseite',
       slug: 'home',
@@ -716,132 +698,66 @@ async createDefaultTemplate(
           type: 'hero',
           content: {
             heading: `Willkommen bei ${tenantName}`,
-            subheading: 'Ihr professioneller Webauftritt — modern, schnell und DSGVO-konform.',
+            subheading: 'Ihre professionelle Online-Präsenz',
             buttonText: 'Mehr erfahren',
-            buttonLink: '#kontakt',
-          },
-        },
-        {
-          name: 'Features',
-          type: 'features',
-          content: {
-            title: 'Warum wir?',
-            subtitle: 'Das zeichnet uns aus',
-            items: [
-              { title: 'Qualität', description: 'Höchste Standards bei allem was wir tun.', icon: '⭐' },
-              { title: 'Erfahrung', description: 'Jahrelange Expertise in unserem Bereich.', icon: '🏆' },
-              { title: 'Service', description: 'Persönliche Betreuung und schnelle Reaktion.', icon: '💬' },
-            ],
+            buttonLink: '#',
           },
         },
       ],
     });
- 
-    // Standard + Pro: mehr Seiten
-    if (['website_standard', 'website_pro'].includes(packageType)) {
+
+    // creator+ bekommt About + Kontakt
+    if (
+      ['creator', 'business', 'shop', 'professional', 'enterprise'].includes(
+        packageType,
+      )
+    ) {
       pageConfigs.push(
         {
           name: 'Über uns',
           slug: 'ueber-uns',
           isHomepage: false,
           order: 1,
-          sections: [{
-            name: 'Über uns',
-            type: 'about',
-            content: {
-              title: `Über ${tenantName}`,
-              description: 'Hier erzählen wir unsere Geschichte und was uns antreibt.',
+          sections: [
+            {
+              name: 'About',
+              type: 'about',
+              content: {
+                title: `Über ${tenantName}`,
+                description: 'Hier können Sie Ihre Geschichte erzählen.',
+              },
             },
-          }],
+          ],
         },
         {
           name: 'Kontakt',
           slug: 'kontakt',
           isHomepage: false,
           order: 2,
-          sections: [{
-            name: 'Kontakt',
-            type: 'contact',
-            content: { title: 'Kontakt aufnehmen', subtitle: 'Wir freuen uns von Ihnen zu hören.' },
-          }],
+          sections: [
+            {
+              name: 'Kontakt',
+              type: 'contact',
+              content: {
+                title: 'Kontakt aufnehmen',
+                subtitle: 'Wir freuen uns von Ihnen zu hören.',
+              },
+            },
+          ],
         },
       );
     }
-  }
- 
-  // ── BLOG: Publishing / Creator ───────────────────────────────────────────
-  else if (category === 'blog') {
-    pageConfigs.push(
-      {
-        name: 'Startseite',
-        slug: 'home',
-        isHomepage: true,
-        order: 0,
-        sections: [
-          {
-            name: 'Hero',
-            type: 'hero',
-            content: {
-              heading: tenantName,
-              subheading: 'Aktuelle Beiträge, Insights und mehr.',
-              buttonText: 'Zum Blog',
-              buttonLink: '/blog',
-            },
-          },
-          {
-            name: 'Blog Feed',
-            type: 'blog',
-            content: { title: 'Neueste Beiträge', showCount: 6 },
-          },
-        ],
-      },
-      {
-        name: 'Über mich',
-        slug: 'ueber-mich',
+
+    // business+ bekommt zusätzlich Services
+    if (
+      ['business', 'shop', 'professional', 'enterprise'].includes(packageType)
+    ) {
+      pageConfigs.push({
+        name: 'Leistungen',
+        slug: 'leistungen',
         isHomepage: false,
-        order: 1,
-        sections: [{
-          name: 'Über mich',
-          type: 'about',
-          content: {
-            title: `Hallo, ich bin ${tenantName}`,
-            description: 'Hier erzählst du etwas über dich und dein Blog-Thema.',
-          },
-        }],
-      },
-      {
-        name: 'Kontakt',
-        slug: 'kontakt',
-        isHomepage: false,
-        order: 2,
-        sections: [{
-          name: 'Kontakt',
-          type: 'contact',
-          content: { title: 'Schreib mir', subtitle: 'Fragen, Kooperationen oder einfach Hallo.' },
-        }],
-      },
-    );
-  }
- 
-  // ── BUSINESS: Dienstleister / Termine / Kunden ───────────────────────────
-  else if (category === 'business') {
-    pageConfigs.push(
-      {
-        name: 'Startseite',
-        slug: 'home',
-        isHomepage: true,
-        order: 0,
+        order: 3,
         sections: [
-          {
-            name: 'Hero',
-            type: 'hero',
-            content: {
-              heading: `${tenantName}`,
-              subheading: 'Professionelle Dienstleistungen — Termine online buchen.',
-              buttonText: 'Termin buchen',
-              buttonLink: '/booking',
-            },
-          },
           {
             name: 'Leistungen',
             type: 'features',
@@ -849,279 +765,72 @@ async createDefaultTemplate(
               title: 'Unsere Leistungen',
               subtitle: 'Was wir für Sie tun können',
               items: [
-                { title: 'Leistung 1', description: 'Beschreibung Ihrer ersten Dienstleistung.', icon: '✅' },
-                { title: 'Leistung 2', description: 'Beschreibung Ihrer zweiten Dienstleistung.', icon: '🎯' },
-                { title: 'Leistung 3', description: 'Beschreibung Ihrer dritten Dienstleistung.', icon: '⚡' },
+                {
+                  title: 'Leistung 1',
+                  description: 'Beschreibung',
+                  icon: '⭐',
+                },
+                {
+                  title: 'Leistung 2',
+                  description: 'Beschreibung',
+                  icon: '🚀',
+                },
+                {
+                  title: 'Leistung 3',
+                  description: 'Beschreibung',
+                  icon: '💡',
+                },
               ],
             },
           },
-          {
-            name: 'Booking CTA',
-            type: 'cta',
-            content: {
-              title: 'Bereit für einen Termin?',
-              subtitle: 'Einfach online buchen — in weniger als 2 Minuten.',
-              buttonText: 'Jetzt buchen',
-              buttonLink: '/booking',
-            },
-          },
         ],
-      },
-      {
-        name: 'Über uns',
-        slug: 'ueber-uns',
-        isHomepage: false,
-        order: 1,
-        sections: [{
-          name: 'Über uns',
-          type: 'about',
-          content: {
-            title: `Über ${tenantName}`,
-            description: 'Unser Team und unsere Geschichte.',
-          },
-        }],
-      },
-      {
-        name: 'Kontakt',
-        slug: 'kontakt',
-        isHomepage: false,
-        order: 2,
-        sections: [{
-          name: 'Kontakt',
-          type: 'contact',
-          content: { title: 'Kontakt aufnehmen', subtitle: 'Wir antworten innerhalb von 24 Stunden.' },
-        }],
-      },
-    );
-  }
- 
-  // ── SHOP: Online-Handel ──────────────────────────────────────────────────
-  else if (category === 'shop') {
-    pageConfigs.push(
-      {
-        name: 'Startseite',
-        slug: 'home',
-        isHomepage: true,
-        order: 0,
-        sections: [
-          {
-            name: 'Hero',
-            type: 'hero',
-            content: {
-              heading: `Willkommen im ${tenantName} Shop`,
-              subheading: 'Entdecke unsere Produkte — sicher & bequem bestellen.',
-              buttonText: 'Jetzt shoppen',
-              buttonLink: '/shop',
-            },
-          },
-          {
-            name: 'Produkte',
-            type: 'features',
-            content: {
-              title: 'Unsere Bestseller',
-              subtitle: 'Die beliebtesten Produkte',
-              items: [
-                { title: 'Produkt 1', description: 'Kurze Produktbeschreibung.', icon: '📦' },
-                { title: 'Produkt 2', description: 'Kurze Produktbeschreibung.', icon: '🎁' },
-                { title: 'Produkt 3', description: 'Kurze Produktbeschreibung.', icon: '⭐' },
-              ],
-            },
-          },
-          {
-            name: 'Shop CTA',
-            type: 'cta',
-            content: {
-              title: 'Alle Produkte entdecken',
-              subtitle: 'Versandkostenfrei ab 50€ · Sichere Zahlung · 30 Tage Rückgabe',
-              buttonText: 'Zum Shop',
-              buttonLink: '/shop',
-            },
-          },
-        ],
-      },
-      {
-        name: 'Über uns',
-        slug: 'ueber-uns',
-        isHomepage: false,
-        order: 1,
-        sections: [{
-          name: 'Über uns',
-          type: 'about',
-          content: {
-            title: `Über ${tenantName}`,
-            description: 'Unser Unternehmen und unsere Geschichte.',
-          },
-        }],
-      },
-      {
-        name: 'Kontakt',
-        slug: 'kontakt',
-        isHomepage: false,
-        order: 2,
-        sections: [{
-          name: 'Kontakt',
-          type: 'contact',
-          content: { title: 'Kontakt & Support', subtitle: 'Bei Fragen zu Ihrer Bestellung helfen wir gern.' },
-        }],
-      },
-    );
-  }
- 
-  // ── MEMBERS: Community / Kurse / Membership ──────────────────────────────
-  else if (category === 'members') {
-    pageConfigs.push(
-      {
-        name: 'Startseite',
-        slug: 'home',
-        isHomepage: true,
-        order: 0,
-        sections: [
-          {
-            name: 'Hero',
-            type: 'hero',
-            content: {
-              heading: `Willkommen bei ${tenantName}`,
-              subheading: 'Exklusive Inhalte, Community und Kurse — alles an einem Ort.',
-              buttonText: 'Mitglied werden',
-              buttonLink: '#mitgliedschaft',
-            },
-          },
-          {
-            name: 'Features',
-            type: 'features',
-            content: {
-              title: 'Was du bekommst',
-              subtitle: 'Deine Mitgliedschaft beinhaltet',
-              items: [
-                { title: 'Exklusive Inhalte', description: 'Zugang zu allen Kursen und Materialien.', icon: '🔐' },
-                { title: 'Community', description: 'Vernetze dich mit Gleichgesinnten.', icon: '👥' },
-                { title: 'Live-Sessions', description: 'Regelmäßige Q&A und Workshops.', icon: '🎥' },
-              ],
-            },
-          },
-          {
-            name: 'CTA',
-            type: 'cta',
-            content: {
-              title: 'Bereit einzusteigen?',
-              subtitle: 'Wähle dein Mitgliedschaftsmodell und starte heute.',
-              buttonText: 'Jetzt Mitglied werden',
-              buttonLink: '#mitgliedschaft',
-            },
-          },
-        ],
-      },
-      {
-        name: 'Über uns',
-        slug: 'ueber-uns',
-        isHomepage: false,
-        order: 1,
-        sections: [{
-          name: 'Über uns',
-          type: 'about',
-          content: {
-            title: `Über ${tenantName}`,
-            description: 'Unsere Mission und was uns antreibt.',
-          },
-        }],
-      },
-      {
-        name: 'Kontakt',
-        slug: 'kontakt',
-        isHomepage: false,
-        order: 2,
-        sections: [{
-          name: 'Kontakt',
-          type: 'contact',
-          content: { title: 'Fragen zur Mitgliedschaft?', subtitle: 'Wir helfen dir gern weiter.' },
-        }],
-      },
-    );
-  }
- 
-  // ─── Legal Pages (immer für alle Pakete) ────────────────────────────────────
-  pageConfigs.push(
-    {
-      name: 'Impressum',
-      slug: 'impressum',
-      isHomepage: false,
-      order: 100,
-      sections: [{
-        name: 'Impressum',
-        type: 'text',
-        content: {
-          text: `# Impressum\n\n**${tenantName}**\n\n> ⚠️ Bitte ergänze deine vollständigen Angaben (Adresse, Telefon, E-Mail, ggf. Handelsregisternummer und USt-IdNr.) im Website Builder.`,
-        },
-      }],
-    },
-    {
-      name: 'Datenschutz',
-      slug: 'datenschutz',
-      isHomepage: false,
-      order: 101,
-      sections: [{
-        name: 'Datenschutz',
-        type: 'text',
-        content: {
-          text: `# Datenschutzerklärung\n\n**Verantwortlicher:** ${tenantName}\n\n> ⚠️ Bitte ergänze deine vollständigen Kontaktdaten und passe diese Datenschutzerklärung an deine tatsächliche Datenverarbeitung an. Im Onboarding-Wizard werden deine Daten automatisch eingetragen.`,
-        },
-      }],
-    },
-  );
- 
-  // ─── Template anlegen ────────────────────────────────────────────────────────
- 
-  const templateName =
-    category === 'website'  ? 'Meine Website' :
-    category === 'blog'     ? 'Mein Blog' :
-    category === 'business' ? 'Mein Business' :
-    category === 'shop'     ? 'Mein Shop' :
-    category === 'members'  ? 'Meine Community' :
-    'Meine Website';
- 
-  const [template] = await this.db
-    .insert(wbTemplates)
-    .values({
-      tenantId,
-      name: templateName,
-      description: `Standard-Template für ${packageType}`,
-      isActive: true,
-      isDefault: true,
-      settings: {},
-    })
-    .returning();
- 
-  // ─── Seiten + Sections erstellen ────────────────────────────────────────────
- 
-  for (const pageConfig of pageConfigs) {
-    const [page] = await this.db
-      .insert(wbPages)
+      });
+    }
+
+    // 1. Template erstellen
+    const [template] = await this.db
+      .insert(wbTemplates)
       .values({
         tenantId,
-        templateId: template.id,
-        name: pageConfig.name,
-        slug: pageConfig.slug,
+        name: 'Meine Website',
+        description: 'Standard-Template',
         isActive: true,
-        isHomepage: pageConfig.isHomepage,
-        order: pageConfig.order,
+        isDefault: true,
         settings: {},
       })
       .returning();
- 
-    for (let i = 0; i < pageConfig.sections.length; i++) {
-      const s = pageConfig.sections[i];
-      await this.db.insert(wbSections).values({
-        tenantId,
-        pageId: page.id,
-        name: s.name,
-        type: s.type as any,
-        order: i,
-        isActive: true,
-        content: s.content,
-        styling: null,
-      });
+
+    // 2. Seiten + Sections erstellen
+    for (const pageConfig of pageConfigs) {
+      const [page] = await this.db
+        .insert(wbPages)
+        .values({
+          tenantId,
+          templateId: template.id,
+          name: pageConfig.name,
+          slug: pageConfig.slug,
+          isActive: true,
+          isHomepage: pageConfig.isHomepage,
+          order: pageConfig.order,
+          settings: {},
+        })
+        .returning();
+
+      for (let i = 0; i < pageConfig.sections.length; i++) {
+        const s = pageConfig.sections[i];
+        await this.db.insert(wbSections).values({
+          tenantId,
+          pageId: page.id,
+          name: s.name,
+          type: s.type as any,
+          order: i,
+          isActive: true,
+          content: s.content,
+          styling: null,
+        });
+      }
     }
+
+    return template;
   }
- 
-  return template;
 }

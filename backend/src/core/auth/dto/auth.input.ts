@@ -27,6 +27,9 @@ export class RegisterInput {
   @IsNotEmpty({ message: 'Nachname ist erforderlich' })
   @MaxLength(100)
   lastName: string;
+
+  @Field({ nullable: true })
+  package?: string;
 }
 
 @InputType()

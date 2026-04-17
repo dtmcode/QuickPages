@@ -81,7 +81,7 @@ export class AuthService {
         .values({
           name: input.companyName,
           slug: baseSlug,
-          package: 'page',
+          package: input.package ?? 'website_micro',
         })
         .returning();
 
