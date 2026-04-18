@@ -51,6 +51,14 @@ let PackageGuard = class PackageGuard {
         const settings = tenant.settings;
         if (settings?.isSuperAdmin === true || settings?.platformAdmin === true)
             return true;
+        if (requiredFeature === 'restaurant')
+            return tenant.restaurant === true;
+        if (requiredFeature === 'localStore')
+            return tenant.localStore === true;
+        if (requiredFeature === 'funnels') {
+            return (tenant.funnels === true ||
+                (0, package_helper_1.hasFeature)(tenant.package, 'funnels'));
+        }
         if (requiredFeature === 'coupons') {
             const f = tenant.package;
             const implicitCoupons = (0, package_helper_1.hasFeature)(f, 'shop') ||

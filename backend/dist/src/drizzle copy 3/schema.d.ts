@@ -6325,7 +6325,7 @@ export declare const websiteTemplates: import("drizzle-orm/pg-core").PgTableWith
             tableName: "website_templates";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "landing" | "custom" | "blog" | "shop" | "business" | "restaurant" | "portfolio" | "agency" | "saas";
+            data: "landing" | "custom" | "restaurant" | "blog" | "shop" | "business" | "portfolio" | "saas" | "agency";
             driverParam: string;
             notNull: true;
             hasDefault: false;

@@ -18,6 +18,7 @@ let RegisterInput = class RegisterInput {
     password;
     firstName;
     lastName;
+    package;
 };
 exports.RegisterInput = RegisterInput;
 __decorate([
@@ -48,6 +49,10 @@ __decorate([
     (0, class_validator_1.MaxLength)(100),
     __metadata("design:type", String)
 ], RegisterInput.prototype, "lastName", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], RegisterInput.prototype, "package", void 0);
 exports.RegisterInput = RegisterInput = __decorate([
     (0, graphql_1.InputType)()
 ], RegisterInput);

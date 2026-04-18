@@ -191,19 +191,19 @@ export declare class FunnelsResolver {
     }>;
     createFunnelStep(tenantId: string, input: CreateFunnelStepInput): Promise<{
         id: string;
-        funnelId: string;
-        title: string;
         slug: string;
-        stepType: string;
-        position: number;
         isActive: boolean;
-        nextStepId: string | null;
-        views: number;
-        conversions: number;
         createdAt: Date | null;
         updatedAt: Date | null;
         tenantId: string;
+        title: string;
         content: unknown;
+        position: number;
+        funnelId: string;
+        stepType: string;
+        nextStepId: string | null;
+        views: number;
+        conversions: number;
     }>;
     updateFunnelStep(tenantId: string, id: string, input: UpdateFunnelStepInput): Promise<{
         id: string;
@@ -273,19 +273,19 @@ export declare class FunnelsResolver {
     }>;
     submitFunnel(tenantId: string, input: CreateFunnelSubmissionInput): Promise<{
         id: string;
-        funnelId: string;
-        createdAt: Date | null;
-        utmSource: string | null;
-        utmMedium: string | null;
-        utmCampaign: string | null;
-        stepId: string | null;
-        customerEmail: string | null;
-        customerName: string | null;
-        convertedAt: Date | null;
         data: unknown;
+        createdAt: Date | null;
         tenantId: string;
         ipAddress: string | null;
         userAgent: string | null;
+        customerEmail: string | null;
+        customerName: string | null;
+        utmSource: string | null;
+        utmMedium: string | null;
+        utmCampaign: string | null;
+        funnelId: string;
+        stepId: string | null;
+        convertedAt: Date | null;
     }>;
     funnelSubmissions(tenantId: string, funnelId: string): Promise<{
         submissions: {

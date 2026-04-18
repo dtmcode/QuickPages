@@ -9,7 +9,7 @@ const common_1 = require("@nestjs/common");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const graphql_upload_ts_1 = require("graphql-upload-ts");
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, { rawBody: true });
     const allowedOrigins = [
         'http://localhost:3001',
         'http://localhost:3002',
@@ -35,9 +35,10 @@ async function bootstrap() {
         credentials: true,
     });
     app.use((0, cookie_parser_1.default)());
+    app.use('/payments/webhook', require('express').raw({ type: 'application/json' }));
     app.use((0, graphql_upload_ts_1.graphqlUploadExpress)({ maxFileSize: 10_000_000, maxFiles: 10 }));
     app.useGlobalPipes(new common_1.ValidationPipe({
-        whitelist: true,
+        whitelist: false,
         forbidNonWhitelisted: false,
         transform: true,
     }));

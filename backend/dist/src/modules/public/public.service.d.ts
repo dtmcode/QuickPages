@@ -591,7 +591,7 @@ export declare class PublicService {
         description: string | null;
         location: string;
         items: {
-            id: string;
+            [x: string]: any;
         }[];
     } | null>;
     subscribeToNewsletter(tenantSlug: string, data: {

@@ -23,9 +23,14 @@ let FunnelsService = class FunnelsService {
         this.db = db;
     }
     toSlug(name) {
+        if (!name)
+            return `funnel-${Date.now()}`;
         return name
             .toLowerCase()
-            .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+            .replace(/ä/g, 'ae')
+            .replace(/ö/g, 'oe')
+            .replace(/ü/g, 'ue')
+            .replace(/ß/g, 'ss')
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-|-$/g, '');
     }

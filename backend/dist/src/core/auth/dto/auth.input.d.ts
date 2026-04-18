@@ -4,6 +4,7 @@ export declare class RegisterInput {
     password: string;
     firstName: string;
     lastName: string;
+    package?: string;
 }
 export declare class LoginInput {
     email: string;

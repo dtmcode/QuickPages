@@ -171,12 +171,30 @@ let SubscriptionService = class SubscriptionService {
                 isActive: true,
             });
         }
+        if (addonType === 'restaurant_module') {
+            await this.db.update(schema_1.tenants).set({ restaurant: true, updatedAt: new Date() }).where((0, drizzle_orm_1.eq)(schema_1.tenants.id, tenantId));
+        }
+        else if (addonType === 'local_store_module') {
+            await this.db.update(schema_1.tenants).set({ localStore: true, updatedAt: new Date() }).where((0, drizzle_orm_1.eq)(schema_1.tenants.id, tenantId));
+        }
+        else if (addonType === 'funnels_module') {
+            await this.db.update(schema_1.tenants).set({ funnels: true, maxFunnels: 10 * quantity, updatedAt: new Date() }).where((0, drizzle_orm_1.eq)(schema_1.tenants.id, tenantId));
+        }
     }
     async deactivateAddon(tenantId, addonType) {
         await this.db
             .update(schema_1.tenantAddons)
             .set({ isActive: false })
             .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.tenantAddons.tenantId, tenantId), (0, drizzle_orm_1.eq)(schema_1.tenantAddons.addonType, addonType)));
+        if (addonType === 'restaurant_module') {
+            await this.db.update(schema_1.tenants).set({ restaurant: false, updatedAt: new Date() }).where((0, drizzle_orm_1.eq)(schema_1.tenants.id, tenantId));
+        }
+        else if (addonType === 'local_store_module') {
+            await this.db.update(schema_1.tenants).set({ localStore: false, updatedAt: new Date() }).where((0, drizzle_orm_1.eq)(schema_1.tenants.id, tenantId));
+        }
+        else if (addonType === 'funnels_module') {
+            await this.db.update(schema_1.tenants).set({ funnels: false, maxFunnels: 0, updatedAt: new Date() }).where((0, drizzle_orm_1.eq)(schema_1.tenants.id, tenantId));
+        }
     }
     async changePackage(tenantId, targetPackage) {
         const [tenant] = await this.db

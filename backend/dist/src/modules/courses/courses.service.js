@@ -23,6 +23,8 @@ let CoursesService = class CoursesService {
         this.db = db;
     }
     toSlug(name) {
+        if (!name)
+            return `course-${Date.now()}`;
         return name
             .toLowerCase()
             .replace(/ä/g, 'ae')
@@ -82,7 +84,10 @@ let CoursesService = class CoursesService {
         return { ...plan, features: plan.features ?? [] };
     }
     async updateMembershipPlan(tenantId, id, input) {
-        const updateData = { ...input, updatedAt: new Date() };
+        const updateData = {
+            ...input,
+            updatedAt: new Date(),
+        };
         if (input.name)
             updateData.slug = this.toSlug(input.name);
         if (input.features !== undefined)
@@ -169,7 +174,10 @@ let CoursesService = class CoursesService {
         const valid = ['active', 'cancelled', 'expired', 'trial', 'paused'];
         if (!valid.includes(input.status))
             throw new common_1.BadRequestException('Ungültiger Status');
-        const updateData = { status: input.status, updatedAt: new Date() };
+        const updateData = {
+            status: input.status,
+            updatedAt: new Date(),
+        };
         if (input.status === 'cancelled')
             updateData.cancelledAt = new Date();
         const [updated] = await this.db
@@ -291,7 +299,10 @@ let CoursesService = class CoursesService {
         return course;
     }
     async updateCourse(tenantId, id, input) {
-        const updateData = { ...input, updatedAt: new Date() };
+        const updateData = {
+            ...input,
+            updatedAt: new Date(),
+        };
         if (input.title)
             updateData.slug = this.toSlug(input.title);
         const [updated] = await this.db
@@ -539,7 +550,11 @@ let CoursesService = class CoursesService {
         const progressPercent = Number(totalLessons) > 0
             ? Math.round((completedLessons / Number(totalLessons)) * 100)
             : 0;
-        return { ...enrollment, lessonProgress: progress, progress: progressPercent };
+        return {
+            ...enrollment,
+            lessonProgress: progress,
+            progress: progressPercent,
+        };
     }
     async trackLessonProgress(tenantId, input) {
         const [existing] = await this.db

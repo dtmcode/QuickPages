@@ -114,7 +114,7 @@ export interface PackageFeatures {
 
 export interface PackageDefinition {
   type: PackageType;
-  category: 'website' | 'blog' | 'business' | 'shop' | 'members';
+  category: 'website' | 'blog' | 'business' | 'shop' | 'members' | 'restaurant' | 'local' | 'funnels';
   tier: 1 | 2 | 3;
   name: string;
   tagline: string;

@@ -1,4 +1,4 @@
-export type PackageType = 'website_micro' | 'website_standard' | 'website_pro' | 'blog_personal' | 'blog_publisher' | 'blog_magazine' | 'business_starter' | 'business_professional' | 'business_agency' | 'shop_mini' | 'shop_wachstum' | 'shop_premium' | 'members_community' | 'members_kurse' | 'members_academy';
+export type PackageType = 'website_micro' | 'website_standard' | 'website_pro' | 'blog_personal' | 'blog_publisher' | 'blog_magazine' | 'business_starter' | 'business_professional' | 'business_agency' | 'shop_mini' | 'shop_wachstum' | 'shop_premium' | 'members_community' | 'members_kurse' | 'members_academy' | 'restaurant_starter' | 'restaurant_pro' | 'restaurant_premium' | 'local_starter' | 'local_pro' | 'local_premium' | 'funnels_starter' | 'funnels_pro' | 'funnels_premium';
 export type AddonType = 'shop_module' | 'shop_extra' | 'booking_module' | 'blog_module' | 'newsletter_extra' | 'members_module' | 'ai_content' | 'extra_pages' | 'extra_users' | 'i18n' | 'custom_domain' | 'restaurant_module' | 'local_store_module' | 'funnels_module';
 export interface PackageFeatures {
     websiteBuilder: boolean;
@@ -38,7 +38,7 @@ export interface PackageFeatures {
 }
 export interface PackageDefinition {
     type: PackageType;
-    category: 'website' | 'blog' | 'business' | 'shop' | 'members';
+    category: 'website' | 'blog' | 'business' | 'shop' | 'members' | 'restaurant' | 'local' | 'funnels';
     tier: 1 | 2 | 3;
     name: string;
     tagline: string;
@@ -97,6 +97,33 @@ export declare const PACKAGE_CATEGORIES: ({
     tiers: PackageType[];
 } | {
     id: "members";
+    label: string;
+    icon: string;
+    tagline: string;
+    description: string;
+    color: string;
+    examples: string;
+    tiers: PackageType[];
+} | {
+    id: "restaurant";
+    label: string;
+    icon: string;
+    tagline: string;
+    description: string;
+    color: string;
+    examples: string;
+    tiers: PackageType[];
+} | {
+    id: "local";
+    label: string;
+    icon: string;
+    tagline: string;
+    description: string;
+    color: string;
+    examples: string;
+    tiers: PackageType[];
+} | {
+    id: "funnels";
     label: string;
     icon: string;
     tagline: string;

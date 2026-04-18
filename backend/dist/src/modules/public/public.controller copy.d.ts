@@ -76,7 +76,7 @@ export declare class PublicController {
         description: string | null;
         location: string;
         items: {
-            id: string;
+            [x: string]: any;
         }[];
     } | null>;
     getProducts(tenantSlug: string): Promise<{

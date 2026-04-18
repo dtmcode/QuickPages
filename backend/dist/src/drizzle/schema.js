@@ -34,6 +34,9 @@ exports.addonTypeEnum = (0, pg_core_1.pgEnum)('addon_type', [
     'extra_pages',
     'members_module',
     'custom_domain',
+    'restaurant_module',
+    'local_store_module',
+    'funnels_module',
 ]);
 exports.subscriptionStatusEnum = (0, pg_core_1.pgEnum)('subscription_status', [
     'active',
@@ -135,6 +138,10 @@ exports.tenants = (0, pg_core_1.pgTable)('tenants', {
             emails: 1000,
         },
     }),
+    restaurant: (0, pg_core_1.boolean)('restaurant').default(false).notNull(),
+    localStore: (0, pg_core_1.boolean)('local_store').default(false).notNull(),
+    funnels: (0, pg_core_1.boolean)('funnels').default(false).notNull(),
+    maxFunnels: (0, pg_core_1.integer)('max_funnels').default(0).notNull(),
     isActive: (0, pg_core_1.boolean)('is_active').default(true),
     activeTemplateId: (0, pg_core_1.uuid)('active_template_id'),
     templateCustomizations: (0, pg_core_1.jsonb)('template_customizations').default({}),

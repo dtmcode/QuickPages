@@ -1,4 +1,5 @@
 import type { DrizzleDB } from '../../core/database/drizzle.module';
+import { wbTemplates } from '../../drizzle/website-builder.schema';
 import { CreateTemplateInput } from './dto/create-template.input';
 import { UpdateTemplateInput } from './dto/update-template.input';
 import { CreatePageInput } from './dto/create-page.input';
@@ -1331,32 +1332,5 @@ export declare class WebsiteBuilderService {
             backgroundOverlay?: string;
         } | null;
     }>;
-    createDefaultTemplate(tenantId: string, tenantName: string, packageType: string): Promise<{
-        id: string;
-        name: string;
-        settings: {
-            colors?: {
-                primary?: string;
-                secondary?: string;
-                accent?: string;
-                background?: string;
-                text?: string;
-            };
-            fonts?: {
-                heading?: string;
-                body?: string;
-            };
-            spacing?: {
-                default?: string;
-            };
-        } | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        tenantId: string;
-        description: string | null;
-        isDefault: boolean;
-        thumbnailUrl: string | null;
-        globalTemplateId: string | null;
-    }>;
+    createDefaultTemplate(tenantId: string, tenantName: string, packageType: string): Promise<typeof wbTemplates.$inferSelect>;
 }
