@@ -1,8 +1,10 @@
+//backend\src\core\package\guards\package.guard.ts
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { REQUIRE_FEATURE_KEY } from '../decorators/require-feature.decorator';
 import { hasFeature, PackageType } from '../package.helper';
+
 import { DRIZZLE } from '../../database/drizzle.module';
 import { Inject } from '@nestjs/common';
 import type { DrizzleDB } from '../../database/drizzle.module';
@@ -42,24 +44,26 @@ export class PackageGuard implements CanActivate {
 
     // ===== SUPER-ADMIN BYPASS =====
     if (SUPERADMIN_SLUGS.includes(tenant.slug)) return true;
+
     const settings = tenant.settings as Record<string, unknown> | null;
     if (settings?.isSuperAdmin === true || settings?.platformAdmin === true)
       return true;
     // ===== END BYPASS =====
+    // ← NEU: Addon-Features direkt aus Tenant-Spalten prüfen
+if (requiredFeature === 'restaurant') return tenant.restaurant === true;
+if (requiredFeature === 'localStore') return tenant.localStore === true;
+if (requiredFeature === 'funnels') {
+  return tenant.funnels === true || hasFeature(tenant.package as PackageType, 'funnels');
+}
 
-    // Addon-Features direkt aus Tenant-Spalten prüfen
-    if (requiredFeature === 'restaurant') return tenant.restaurant === true;
-    if (requiredFeature === 'localStore') return tenant.localStore === true;
-    if (requiredFeature === 'funnels') {
-      return (
-        tenant.funnels === true ||
-        hasFeature(tenant.package as PackageType, 'funnels')
-      );
-    }
+// dann bestehender hasFeature() Check
+const hasAccess = hasFeature(tenant.package as PackageType, requiredFeature as any);
+
 
     // Coupons implizit erlauben wenn transaktionale Module aktiv sind
     if (requiredFeature === 'coupons') {
       const f = tenant.package as PackageType;
+      
       const implicitCoupons =
         hasFeature(f, 'shop') ||
         hasFeature(f, 'restaurant') ||
@@ -67,8 +71,10 @@ export class PackageGuard implements CanActivate {
         hasFeature(f, 'courses');
       if (implicitCoupons) return true;
     }
+    
 
-    const hasAccess = hasFeature(
+    const hasFeatureAccess = hasFeature(
+
       tenant.package as PackageType,
       requiredFeature as any,
     );
