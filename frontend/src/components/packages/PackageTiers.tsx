@@ -11,7 +11,7 @@ import Link from 'next/link';
 
 // ==================== TYPES ====================
 
-export type PackageCategoryId = 'website' | 'blog' | 'business' | 'shop' | 'members';
+export type PackageCategoryId = 'website' | 'blog' | 'business' | 'shop' | 'members' | 'restaurant' | 'local' | 'funnels';
 
 export interface TierLimit {
   pages: number;
@@ -249,7 +249,7 @@ export const PACKAGE_CATEGORIES: CategoryDef[] = [
         features: ['500 Mitglieder', '5 Kurse', '100 Downloads', 'Newsletter (500)', '50 Seiten'],
         limits: { pages: 50, members: 500, courses: 5, subscribers: 500, forms: 10, users: 3, storageMb: 30000 },
       },
-      {
+  {
         type: 'members_academy',
         name: 'Academy',
         tagline: 'Vollständige Lernplattform',
@@ -259,8 +259,115 @@ export const PACKAGE_CATEGORIES: CategoryDef[] = [
       },
     ],
   },
+  {
+    id: 'restaurant' as const,
+    icon: '🍽️',
+    label: 'Restaurant',
+    tagline: 'Gastronomie digitalisieren',
+    description: 'Speisekarte, Bestellungen und Reservierungen — alles für dein Restaurant.',
+    examples: 'Restaurant, Café, Burger, Pizzeria, Food Truck',
+    gradient: 'from-orange-600 to-red-600',
+    tiers: [
+      {
+        type: 'restaurant_starter',
+        name: 'Starter',
+        tagline: 'Dein Restaurant online',
+        priceMonthly: 2900,
+        features: ['Digitale Speisekarte', 'Tischbestellungen', 'Reservierungen (3)', 'Newsletter (500)'],
+        limits: { pages: 10, bookingServices: 3, subscribers: 500, forms: 3, users: 2, storageMb: 5000 },
+      },
+      {
+        type: 'restaurant_pro',
+        name: 'Pro',
+        tagline: 'Mehr Bestellungen, mehr Umsatz',
+        priceMonthly: 5900,
+        highlight: true,
+        features: ['Lieferung & Abholung', 'Online-Zahlung', 'Gutscheine', 'Newsletter (2.000)'],
+        limits: { pages: 30, bookingServices: 10, subscribers: 2000, forms: 10, users: 5, storageMb: 20000 },
+      },
+      {
+        type: 'restaurant_premium',
+        name: 'Premium',
+        tagline: 'Für Ketten und Gastro-Profis',
+        priceMonthly: 9900,
+        features: ['Mehrere Standorte', 'AI Content (200)', 'Mehrsprachig', 'Newsletter (10.000)'],
+        limits: { pages: 80, bookingServices: 30, subscribers: 10000, forms: 20, users: 15, storageMb: 50000 },
+      },
+    ],
+  },
+  {
+    id: 'local' as const,
+    icon: '🏪',
+    label: 'Lokaler Handel',
+    tagline: 'Vor-Ort Handel online bringen',
+    description: 'Click & Collect, Abholslots und lokale Produkte für stationäre Händler.',
+    examples: 'Apotheke, Bäckerei, Blumenladen, Metzger, Supermarkt',
+    gradient: 'from-teal-500 to-green-600',
+    tiers: [
+      {
+        type: 'local_starter',
+        name: 'Starter',
+        tagline: 'Dein Laden online',
+        priceMonthly: 2900,
+        features: ['Click & Collect', 'Abholslots', 'Lokale Produkte', 'Newsletter (500)'],
+        limits: { pages: 10, subscribers: 500, forms: 3, users: 2, storageMb: 5000 },
+      },
+      {
+        type: 'local_pro',
+        name: 'Pro',
+        tagline: 'Mehr Reichweite für deinen Laden',
+        priceMonthly: 4900,
+        highlight: true,
+        features: ['Online-Zahlung', 'Lieferung & Abholung', 'Angebote & Aktionen', 'Newsletter (2.000)'],
+        limits: { pages: 30, subscribers: 2000, forms: 10, users: 5, storageMb: 15000 },
+      },
+      {
+        type: 'local_premium',
+        name: 'Premium',
+        tagline: 'Der komplette lokale Marktplatz',
+        priceMonthly: 7900,
+        features: ['Mehrere Standorte', 'AI Content (100)', 'Mehrsprachig', 'Newsletter (10.000)'],
+        limits: { pages: 60, subscribers: 10000, forms: 20, users: 10, storageMb: 50000 },
+      },
+    ],
+  },
+  {
+    id: 'funnels' as const,
+    icon: '🎯',
+    label: 'Funnels',
+    tagline: 'ClickFunnels-Ersatz',
+    description: 'Lead-Generierung, Sales Funnels und Marketing-Automation.',
+    examples: 'Lead-Generierung, Webinar, Produkt-Launch, Affiliate-Marketing',
+    gradient: 'from-purple-500 to-indigo-600',
+    tiers: [
+      {
+        type: 'funnels_starter',
+        name: 'Starter',
+        tagline: 'Dein erster Funnel',
+        priceMonthly: 1900,
+        features: ['5 Funnels', 'Opt-in Seiten', 'Newsletter (500)', 'Conversion-Tracking'],
+        limits: { pages: 10, subscribers: 500, forms: 5, users: 1, storageMb: 2000 },
+      },
+      {
+        type: 'funnels_pro',
+        name: 'Pro',
+        tagline: 'Mehr Conversions, mehr Umsatz',
+        priceMonthly: 4900,
+        highlight: true,
+        features: ['20 Funnels', 'Sales & Upsell Seiten', 'Newsletter (5.000)', 'A/B-Testing'],
+        limits: { pages: 30, subscribers: 5000, forms: 20, users: 3, storageMb: 10000 },
+      },
+      {
+        type: 'funnels_premium',
+        name: 'Premium',
+        tagline: 'ClickFunnels-Ersatz komplett',
+        priceMonthly: 9900,
+        features: ['Unbegrenzte Funnels', 'AI Content (500)', 'Marketing-Automation', 'Newsletter (20.000)'],
+        limits: { pages: 100, subscribers: 20000, forms: 50, users: 5, storageMb: 50000 },
+      },
+    ],
+  },
 ];
-
 // ==================== HELPERS ====================
 
 function fmt(cents: number) {
@@ -313,7 +420,7 @@ export function PackageTiers({
       )}
 
       {/* Category Selector */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
         {PACKAGE_CATEGORIES.map(cat => (
           <button
             key={cat.id}

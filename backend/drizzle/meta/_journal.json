@@ -176,6 +176,13 @@
       "when": 1776329613827,
       "tag": "0024_unique_purifiers",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1776522046724,
+      "tag": "0025_acoustic_chronomancer",
+      "breakpoints": true
     }
   ]
 }

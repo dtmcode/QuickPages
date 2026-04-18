@@ -213,7 +213,14 @@ export class SubscriptionService {
         isActive: true,
       });
     }
+     if (addonType === 'restaurant_module') {
+    await this.db.update(tenants).set({ restaurant: true, updatedAt: new Date() }).where(eq(tenants.id, tenantId));
+  } else if (addonType === 'local_store_module') {
+    await this.db.update(tenants).set({ localStore: true, updatedAt: new Date() }).where(eq(tenants.id, tenantId));
+  } else if (addonType === 'funnels_module') {
+    await this.db.update(tenants).set({ funnels: true, maxFunnels: 10 * quantity, updatedAt: new Date() }).where(eq(tenants.id, tenantId));
   }
+}
 
   async deactivateAddon(tenantId: string, addonType: string) {
     await this.db
@@ -225,7 +232,14 @@ export class SubscriptionService {
           eq(tenantAddons.addonType, addonType as any),
         ),
       );
+ if (addonType === 'restaurant_module') {
+    await this.db.update(tenants).set({ restaurant: false, updatedAt: new Date() }).where(eq(tenants.id, tenantId));
+  } else if (addonType === 'local_store_module') {
+    await this.db.update(tenants).set({ localStore: false, updatedAt: new Date() }).where(eq(tenants.id, tenantId));
+  } else if (addonType === 'funnels_module') {
+    await this.db.update(tenants).set({ funnels: false, maxFunnels: 0, updatedAt: new Date() }).where(eq(tenants.id, tenantId));
   }
+}
 
   // ← UMBENENNT & VEREINFACHT!
   async changePackage(tenantId: string, targetPackage: string) {

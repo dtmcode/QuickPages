@@ -50,6 +50,9 @@ export const addonTypeEnum = pgEnum('addon_type', [
   'extra_pages',
   'members_module',
   'custom_domain',
+   'restaurant_module', 
+  'local_store_module', 
+  'funnels_module',  
 ]);
 
 export const subscriptionStatusEnum = pgEnum('subscription_status', [
@@ -162,6 +165,10 @@ export const tenants = pgTable(
         emails: 1000,
       },
     }),
+    restaurant: boolean('restaurant').default(false).notNull(),
+localStore: boolean('local_store').default(false).notNull(),
+funnels: boolean('funnels').default(false).notNull(),
+maxFunnels: integer('max_funnels').default(0).notNull(),
     isActive: boolean('is_active').default(true),
     activeTemplateId: uuid('active_template_id'),
     templateCustomizations: jsonb('template_customizations').default({}),
