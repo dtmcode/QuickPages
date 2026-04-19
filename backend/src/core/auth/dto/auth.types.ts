@@ -15,14 +15,7 @@ export enum UserRole {
   USER = 'user',
 }
 
-export enum PackageType {
-  STARTER = 'starter',
-  BUSINESS = 'business',
-  ENTERPRISE = 'enterprise',
-}
-
 registerEnumType(UserRole, { name: 'UserRole' });
-registerEnumType(PackageType, { name: 'PackageType' });
 
 // User Type
 @ObjectType()
@@ -70,8 +63,8 @@ export class Tenant {
   @Field({ nullable: true })
   domain?: string;
 
-  @Field(() => PackageType)
-  package: PackageType;
+  @Field()
+  package: string;
 
   @Field({ nullable: true })
   shopTemplate?: string;

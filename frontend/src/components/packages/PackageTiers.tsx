@@ -572,7 +572,7 @@ export function PackageTiers({
                 ) : (
                   // Homepage CTA
                   <Link
-                    href={ctaHref}
+                    href={`${ctaHref}?package=${tier.type}`}
                     className={`w-full py-3 rounded-xl font-bold text-sm text-center transition-all block ${
                       tier.highlight
                         ? `bg-gradient-to-r ${selectedCategory.gradient} text-white hover:opacity-90 shadow-md`

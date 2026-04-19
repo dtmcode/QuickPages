@@ -2,8 +2,10 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+
 import Image from 'next/image';
+import { useI18n } from '@/components/I18nProvider';
 
 // ==================== TYPES ====================
 interface SectionStyling {
@@ -99,6 +101,7 @@ function RestaurantMenuSection({
   containerStyle, headingStyle, buttonStyle, apiUrl, tenant, content,
 }: SectionComponentProps) {
   const [menu, setMenu] = useState<Array<{ id: string; name: string; items: Array<{ id: string; name: string; description: string | null; price: number; isVegan: boolean; isVegetarian: boolean; isSpicy: boolean }> }>>([]);
+  const { t } = useI18n();
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
  
@@ -124,11 +127,11 @@ function RestaurantMenuSection({
         {h && <h2 className="text-3xl font-bold text-center mb-8" style={headingStyle}>{h}</h2>}
  
         {loading ? (
-          <div className="text-center py-12 opacity-50">Lädt Speisekarte…</div>
+           <div className="text-center py-12 opacity-50">{t('common.loading', 'Lädt Speisekarte…')}</div>
         ) : menu.length === 0 ? (
           <div className="text-center py-12 opacity-50">
             <p className="text-4xl mb-3">🍽️</p>
-            <p>Speisekarte wird bald verfügbar sein</p>
+           <p>{t('restaurant.menu_empty', 'Speisekarte wird bald verfügbar sein')}</p>
           </div>
         ) : (
           <>
@@ -273,6 +276,7 @@ function LocalProductsSection({
 function CourseListSection({
   containerStyle, headingStyle, buttonStyle, apiUrl, tenant, content,
 }: SectionComponentProps) {
+  const { t } = useI18n();
   const [courses, setCourses] = useState<Array<{
     id: string; title: string; slug: string; shortDescription: string | null;
     thumbnail: string | null; price: number; isFree: boolean; level: string; totalDuration: number | null;
@@ -322,7 +326,7 @@ function CourseListSection({
                     <h3 className="font-bold mt-2 mb-1 line-clamp-2">{course.title}</h3>
                     {course.shortDescription && <p className="text-sm opacity-60 line-clamp-2 mb-3">{course.shortDescription}</p>}
                     <div className="flex items-center justify-between">
-                      <span className="font-bold">{course.isFree ? <span style={{ color: '#16a34a' }}>Kostenlos</span> : fmt(course.price)}</span>
+                      <span className="font-bold">{course.isFree ? <span style={{ color: '#16a34a' }}>{t('common.free', 'Kostenlos')}</span>: fmt(course.price)}</span>
                       {course.totalDuration && <span className="text-xs opacity-50">{fmtDur(course.totalDuration)}</span>}
                     </div>
                   </div>
@@ -493,11 +497,33 @@ export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
   // Sort sections by order
-  const sections = page.sections?.sort((a, b) => a.order - b.order) || [];
-  const activeSections = sections.filter((s) => s.isActive);
+const activeSections = useMemo(
+  () => (page.sections || []).filter(s => s.isActive).sort((a, b) => a.order - b.order),
+  [page.sections]
+);
+  const { locale, defaultLocale, t } = useI18n();
+const [sectionTranslations, setSectionTranslations] = useState<Record<string, Record<string, string>>>({});
+ 
+useEffect(() => {
+  // Wenn Default-Locale → keine Übersetzungen nötig
+  if (!locale || locale === defaultLocale) {
+    setSectionTranslations({});
+    return;
+  }
+  const ids = activeSections.map(s => s.id).join(',');
+  if (!ids) return;
+ 
+  fetch(`${API_URL}/api/public/${resolvedTenant}/i18n/sections?locale=${locale}&ids=${ids}`)
+    .then(r => r.ok ? r.json() : {})
+    .then(data => setSectionTranslations(data as Record<string, Record<string, string>>))
+    .catch(() => setSectionTranslations({}));
+}, [locale, defaultLocale, resolvedTenant, API_URL, activeSections]);
 
   const renderSection = (section: SectionData) => {
-    const { content, type } = section;
+const { type } = section;
+    const content = sectionTranslations[section.id]
+  ? { ...section.content, ...sectionTranslations[section.id] }
+  : section.content;
     const styling: SectionStyling = section.styling || {};
 
     // Default styles
@@ -1315,6 +1341,7 @@ function BeforeAfterSlider({ beforeImage, afterImage, beforeLabel, afterLabel }:
 // NEWSLETTER SECTION COMPONENT (mit Submit)
 // =====================================================
 function NewsletterSection({ content, styling, containerStyle, headingStyle, buttonStyle, apiUrl, tenant }: SectionComponentProps) {
+  const { t } = useI18n(); 
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -1368,7 +1395,8 @@ function NewsletterSection({ content, styling, containerStyle, headingStyle, but
           <form onSubmit={handleSubmit} className="flex gap-3 max-w-md mx-auto">
             <input
               type="email"
-              placeholder="ihre@email.de"
+              placeholder={t('newsletter.email_placeholder', 'ihre@email.de')}
+
               className="flex-1 px-4 py-3 rounded text-gray-900"
               required
               value={email}
@@ -1381,7 +1409,8 @@ function NewsletterSection({ content, styling, containerStyle, headingStyle, but
               style={buttonStyle}
               disabled={status === 'loading'}
             >
-              {status === 'loading' ? '...' : 'Abonnieren'}
+              {status === 'loading' ? '...' : t('newsletter.subscribe', 'Abonnieren')}
+
             </button>
           </form>
         )}
@@ -1399,6 +1428,7 @@ function NewsletterSection({ content, styling, containerStyle, headingStyle, but
 // =====================================================
 function ContactSection({ content, containerStyle, headingStyle, buttonStyle, apiUrl, tenant }: SectionComponentProps) {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+    const { t } = useI18n();
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [resultMessage, setResultMessage] = useState('');
 
@@ -1443,7 +1473,8 @@ function ContactSection({ content, containerStyle, headingStyle, buttonStyle, ap
               onClick={() => setStatus('idle')}
               className="text-sm text-green-600 hover:text-green-700 underline mt-2"
             >
-              Weitere Nachricht senden
+               {t('contact.retry', 'Weitere Nachricht senden')}
+
             </button>
           </div>
         ) : (
@@ -1498,7 +1529,7 @@ function ContactSection({ content, containerStyle, headingStyle, buttonStyle, ap
                 style={buttonStyle}
                 disabled={status === 'loading'}
               >
-                {status === 'loading' ? 'Wird gesendet...' : (content?.buttonText || 'Senden')}
+                 {status === 'loading' ? t('contact.sending', 'Wird gesendet...') : (content?.buttonText || t('contact.send', 'Senden'))}
               </button>
             </div>
           </form>
