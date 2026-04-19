@@ -16,6 +16,7 @@ export enum UserRole {
 }
 
 registerEnumType(UserRole, { name: 'UserRole' });
+export type PackageType = string;
 
 // User Type
 @ObjectType()

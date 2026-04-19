@@ -22,11 +22,11 @@ export class I18nPublicController {
    * Response: { [sectionId]: { heading: "...", text: "...", buttonText: "..." } }
    */
   @Get('sections')
-  async getSectionTranslations(
+   getSectionTranslations(
     @Param('tenant') slug: string,
     @Query('locale') locale: string,
-    @Query('ids') ids: string,
-  ) {
+     @Query('ids') ids: string,
+    ): Promise<Record<string, Record<string, string>>> {
     const sectionIds = (ids || '').split(',').map(s => s.trim()).filter(Boolean);
     if (!sectionIds.length) return {};
     return this.i18nService.getPublicSectionTranslations(slug, locale || 'de', sectionIds);
