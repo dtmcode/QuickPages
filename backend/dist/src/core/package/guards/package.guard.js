@@ -56,8 +56,7 @@ let PackageGuard = class PackageGuard {
         if (requiredFeature === 'localStore')
             return tenant.localStore === true;
         if (requiredFeature === 'funnels') {
-            return (tenant.funnels === true ||
-                (0, package_helper_1.hasFeature)(tenant.package, 'funnels'));
+            return tenant.funnels === true || (0, package_helper_1.hasFeature)(tenant.package, 'funnels');
         }
         if (requiredFeature === 'coupons') {
             const f = tenant.package;

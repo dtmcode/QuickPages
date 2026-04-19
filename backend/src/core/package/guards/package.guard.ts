@@ -1,4 +1,4 @@
-//backend\src\core\package\guards\package.guard.ts
+// backend\src\core\package\guards\package.guard.ts
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
@@ -49,21 +49,17 @@ export class PackageGuard implements CanActivate {
     if (settings?.isSuperAdmin === true || settings?.platformAdmin === true)
       return true;
     // ===== END BYPASS =====
-    // ← NEU: Addon-Features direkt aus Tenant-Spalten prüfen
-if (requiredFeature === 'restaurant') return tenant.restaurant === true;
-if (requiredFeature === 'localStore') return tenant.localStore === true;
-if (requiredFeature === 'funnels') {
-  return tenant.funnels === true || hasFeature(tenant.package as PackageType, 'funnels');
-}
 
-// dann bestehender hasFeature() Check
-const hasAccess = hasFeature(tenant.package as PackageType, requiredFeature as any);
-
+    // Addon-Features direkt aus Tenant-Spalten prüfen
+    if (requiredFeature === 'restaurant') return tenant.restaurant === true;
+    if (requiredFeature === 'localStore') return tenant.localStore === true;
+    if (requiredFeature === 'funnels') {
+      return tenant.funnels === true || hasFeature(tenant.package as PackageType, 'funnels');
+    }
 
     // Coupons implizit erlauben wenn transaktionale Module aktiv sind
     if (requiredFeature === 'coupons') {
       const f = tenant.package as PackageType;
-      
       const implicitCoupons =
         hasFeature(f, 'shop') ||
         hasFeature(f, 'restaurant') ||
@@ -71,13 +67,9 @@ const hasAccess = hasFeature(tenant.package as PackageType, requiredFeature as a
         hasFeature(f, 'courses');
       if (implicitCoupons) return true;
     }
-    
 
-    const hasFeatureAccess = hasFeature(
-
-      tenant.package as PackageType,
-      requiredFeature as any,
-    );
+    // Standard Feature-Check
+    const hasAccess = hasFeature(tenant.package as PackageType, requiredFeature as any);
 
     if (!hasAccess) {
       throw new Error(

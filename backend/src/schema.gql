@@ -1692,6 +1692,7 @@ input RegisterInput {
   email: String!
   firstName: String!
   lastName: String!
+  package: String
   password: String!
 }
 
