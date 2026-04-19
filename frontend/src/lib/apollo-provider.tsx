@@ -3,6 +3,8 @@
 import { ApolloClient, InMemoryCache, ApolloProvider, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
+// @ts-expect-error — apollo-upload-client hat keine eigenen Types für den Subpfad
+
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { ReactNode, useMemo } from 'react';
 import Cookies from 'js-cookie';
