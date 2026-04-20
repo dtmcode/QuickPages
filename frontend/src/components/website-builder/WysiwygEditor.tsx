@@ -204,208 +204,248 @@ function loadGoogleFont(googleParam: string | null) {
 
 // ==================== BLOCK DEFINITIONS ====================
 
-const BLOCK_CATEGORIES = [
+const BLOCK_CATEGORIES: Array<{
+  label: string;
+  icon: string;
+  blocks: Array<{ type: string; label: string; icon: string; description: string }>;
+}> = [
   {
-    label: 'Grundlagen', icon: '⬛',
+    label: 'Grundlagen', icon: '🧱',
     blocks: [
-      { type: 'hero', label: 'Hero', icon: '🌟', description: 'Großer Einstiegsbereich' },
-      { type: 'cta', label: 'Call to Action', icon: '📢', description: 'Conversion-Bereich' },
-      { type: 'text', label: 'Text', icon: '📝', description: 'Freier Textbereich' },
-      { type: 'spacer', label: 'Spacer / Divider', icon: '↕️', description: 'Abstand oder Trennlinie' },
+      { type: 'hero',    label: 'Hero',            icon: '🌟', description: 'Großer Einstiegsbereich' },
+      { type: 'cta',     label: 'Call to Action',  icon: '📣', description: 'Conversion-Bereich' },
+      { type: 'text',    label: 'Text',            icon: '📝', description: 'Freier Textbereich' },
+      { type: 'spacer',  label: 'Spacer / Divider', icon: '⎯',  description: 'Abstand oder Trennlinie' },
     ],
   },
   {
-    label: 'Inhalt', icon: '📦',
+    label: 'Inhalt', icon: '📄',
     blocks: [
-      { type: 'about', label: 'Über uns', icon: '👋', description: 'Über-uns-Bereich' },
-      { type: 'features', label: 'Features', icon: '✨', description: 'Feature-Liste' },
-      { type: 'services', label: 'Leistungen', icon: '⚙️', description: 'Services/Angebote' },
-      { type: 'stats', label: 'Statistiken', icon: '📊', description: 'Zahlen & Fakten' },
+      { type: 'about',    label: 'Über uns',  icon: '👥', description: 'Unternehmensvorstellung' },
+      { type: 'features', label: 'Features',  icon: '⭐', description: 'Feature-Grid' },
+      { type: 'services', label: 'Services',  icon: '🎯', description: 'Leistungen' },
+      { type: 'faq',      label: 'FAQ',       icon: '❓', description: 'Häufige Fragen' },
     ],
   },
   {
     label: 'Social Proof', icon: '⭐',
     blocks: [
-      { type: 'testimonials', label: 'Bewertungen', icon: '💬', description: 'Kundenstimmen' },
-      { type: 'team', label: 'Team', icon: '👥', description: 'Team-Mitglieder' },
-      { type: 'gallery', label: 'Galerie', icon: '🖼️', description: 'Bildergalerie' },
+      { type: 'testimonials', label: 'Testimonials', icon: '💬', description: 'Kundenstimmen' },
+      { type: 'team',         label: 'Team',         icon: '👥', description: 'Teamvorstellung' },
+      { type: 'stats',        label: 'Stats',        icon: '📊', description: 'Zahlen-Showcase' },
     ],
   },
   {
     label: 'Conversion', icon: '🎯',
     blocks: [
-      { type: 'pricing', label: 'Preise', icon: '💰', description: 'Preis-Pakete' },
-      { type: 'contact', label: 'Kontakt', icon: '📬', description: 'Kontaktformular' },
-      { type: 'faq', label: 'FAQ', icon: '❓', description: 'Häufige Fragen' },
+      { type: 'pricing',    label: 'Pricing',    icon: '💰', description: 'Preistabellen' },
+      { type: 'contact',    label: 'Kontakt',    icon: '✉️', description: 'Kontaktformular' },
+      { type: 'newsletter', label: 'Newsletter', icon: '📧', description: 'E-Mail-Anmeldung' },
+      { type: 'booking',    label: 'Booking',    icon: '📅', description: 'Termin buchen' },
     ],
   },
   {
     label: 'Medien', icon: '🎬',
     blocks: [
-      { type: 'video', label: 'Video', icon: '▶️', description: 'Video-Einbettung' },
-      { type: 'before_after', label: 'Before / After', icon: '↔️', description: 'Bildvergleich mit Slider' },
-      { type: 'blog', label: 'Blog Feed', icon: '📰', description: 'Letzte Blog-Posts' },
-      { type: 'html', label: 'HTML', icon: '⌨️', description: 'Freies HTML' },
+      { type: 'video',        label: 'Video',          icon: '🎥', description: 'YouTube / Vimeo' },
+      { type: 'gallery',      label: 'Galerie',        icon: '🖼️', description: 'Bildergalerie' },
+      { type: 'before_after', label: 'Vorher/Nachher', icon: '🔄', description: 'Bild-Slider' },
     ],
   },
   {
     label: 'Marketing', icon: '📣',
     blocks: [
-      { type: 'newsletter', label: 'Newsletter', icon: '📬', description: 'Newsletter-Anmeldung' },
-      { type: 'booking', label: 'Buchung', icon: '📅', description: 'Terminbuchungs-Widget' },
-      { type: 'social', label: 'Social Media', icon: '🌐', description: 'Social Media Links' },
-      { type: 'map', label: 'Karte', icon: '🗺️', description: 'Google Maps Einbettung' },
-      { type: 'countdown', label: 'Countdown', icon: '⏱️', description: 'Countdown-Timer' },
-      { type: 'whatsapp', label: 'WhatsApp Button', icon: '💬', description: 'Floating WhatsApp Button' },
+      { type: 'countdown', label: 'Countdown', icon: '⏳', description: 'Countdown-Timer' },
+      { type: 'whatsapp',  label: 'WhatsApp',  icon: '💬', description: 'Floating Button' },
+      { type: 'social',    label: 'Social',    icon: '🔗', description: 'Social-Media Links' },
+      { type: 'map',       label: 'Karte',     icon: '🗺️', description: 'Standort-Karte' },
+      { type: 'blog',      label: 'Blog Feed', icon: '📰', description: 'Aktuelle Beiträge' },
     ],
   },
   {
-  label: 'Freestyle', icon: '✦',
-  blocks: [
-    { type: 'freestyle', label: 'Freestyle Block', icon: '✦', description: 'Freie Element-Komposition — alles selbst anordnen' },
-  ],
-},
+    label: 'Code', icon: '⌨️',
+    blocks: [
+      { type: 'custom', label: 'Custom HTML/CSS/JS', icon: '⌨️', description: 'Eigener Code im sandboxed iframe' },
+    ],
+  },
 ];
 
-const DEFAULT_CONTENT: Record<string, SectionContent> = {
-  hero: { blocks: [
-    { id: 'b1', type: 'badge', text: '🔥 Neu', align: 'center', order: 0 },
-    { id: 'b2', type: 'heading', text: 'Deine Überschrift hier', level: 'h1', align: 'center', order: 1 },
-    { id: 'b3', type: 'text', html: '<p>Eine überzeugende Unterüberschrift die deine Besucher begeistert.</p>', align: 'center', order: 2 },
-    { id: 'b4', type: 'button', text: 'Jetzt starten', link: '#', style: 'primary', align: 'center', order: 3 },
-  ]},
-  cta: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Bereit loszulegen?', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Starte noch heute kostenlos — kein Risiko.</p>', align: 'center', order: 1 },
-    { id: 'b3', type: 'button', text: 'Jetzt starten', link: '#', style: 'primary', align: 'center', order: 2 },
-  ]},
-  text: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Überschrift', level: 'h2', align: 'left', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Dein Text hier.</p>', align: 'left', order: 1 },
-  ]},
-  spacer: { blocks: [
-    { id: 'b1', type: 'spacer', height: '80px', order: 0 },
-  ]},
-  about: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Über uns', level: 'h2', align: 'left', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Hier steht eine kurze Beschreibung über euch.</p>', align: 'left', order: 1 },
-    { id: 'b3', type: 'button', text: 'Mehr erfahren', link: '#', style: 'outline', align: 'left', order: 2 },
-  ]},
-  features: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Unsere Features', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Was uns besonders macht.</p>', align: 'center', order: 1 },
-    { id: 'b3', type: 'feature-grid', columns: 3, items: [
-      { icon: '⚡', title: 'Feature 1', description: 'Kurze Beschreibung.' },
-      { icon: '🎯', title: 'Feature 2', description: 'Kurze Beschreibung.' },
-      { icon: '🔥', title: 'Feature 3', description: 'Kurze Beschreibung.' },
-    ], order: 2 },
-  ]},
-  services: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Unsere Leistungen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'feature-grid', columns: 3, items: [
-      { icon: '🛠️', title: 'Service 1', description: 'Beschreibung', price: 'ab €99' },
-      { icon: '💡', title: 'Service 2', description: 'Beschreibung', price: 'ab €149' },
-      { icon: '🚀', title: 'Service 3', description: 'Beschreibung', price: 'ab €199' },
-    ], order: 1 },
-  ]},
-  stats: { blocks: [
-    { id: 'b1', type: 'heading', text: 'In Zahlen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'stat-grid', columns: 4, items: [
-      { value: '1.000+', label: 'Kunden', description: 'Weltweit' },
-      { value: '99%', label: 'Zufriedenheit', description: 'Bewertung' },
-      { value: '24/7', label: 'Support', description: 'Erreichbar' },
-      { value: '5+', label: 'Jahre', description: 'Erfahrung' },
-    ], order: 1 },
-  ]},
-  testimonials: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Was unsere Kunden sagen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'testimonial-grid', columns: 2, items: [
-      { name: 'Max Müller', role: 'CEO', text: 'Absolut empfehlenswert!', image: '' },
-      { name: 'Anna Schmidt', role: 'Designerin', text: 'Super einfach zu bedienen.', image: '' },
-    ], order: 1 },
-  ]},
-  team: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Unser Team', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'team-grid', columns: 3, items: [
-      { name: 'Max Müller', role: 'CEO', bio: 'Gründer & Visionär', image: '' },
-      { name: 'Anna Schmidt', role: 'CTO', bio: 'Technik-Expertin', image: '' },
-    ], order: 1 },
-  ]},
-  gallery: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Galerie', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'image-grid', columns: 3, images: [
-      { url: '', alt: 'Bild 1' },
-      { url: '', alt: 'Bild 2' },
-      { url: '', alt: 'Bild 3' },
-    ], order: 1 },
-  ]},
-  pricing: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Unsere Preise', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'pricing-grid', columns: 2, items: [
-      { title: 'Starter', price: '€9', interval: 'Monat', features: ['Feature 1', 'Feature 2'], buttonText: 'Jetzt starten', highlighted: false },
-      { title: 'Pro', price: '€29', interval: 'Monat', features: ['Feature 1', 'Feature 2', 'Feature 3'], buttonText: 'Jetzt starten', highlighted: true },
-    ], order: 1 },
-  ]},
-  contact: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Kontakt aufnehmen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Wir freuen uns auf deine Nachricht.</p>', align: 'center', order: 1 },
-    { id: 'b3', type: 'contact-form', buttonText: 'Senden', order: 2 },
-  ]},
-  faq: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Häufige Fragen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'faq-list', items: [
-      { question: 'Wie funktioniert das?', answer: 'Ganz einfach...' },
-      { question: 'Was kostet es?', answer: 'Ab €9 pro Monat.' },
-    ], order: 1 },
-  ]},
-  video: { blocks: [
-    { id: 'b1', type: 'heading', text: '', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'video', url: '', align: 'center', order: 1 },
-  ]},
-  html: { blocks: [
-    { id: 'b1', type: 'text', html: '<div style="padding:2rem;text-align:center"><h2>Dein HTML hier</h2></div>', align: 'left', order: 0 },
-  ]},
-  blog: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Neueste Beiträge', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'blog-feed', count: 3, order: 1 },
-  ]},
-  newsletter: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Newsletter abonnieren', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Erhalte die neuesten Updates direkt in dein Postfach.</p>', align: 'center', order: 1 },
-    { id: 'b3', type: 'newsletter-form', buttonText: 'Abonnieren', placeholder: 'deine@email.de', order: 2 },
-  ]},
-  whatsapp: { blocks: [
-    { id: 'b1', type: 'whatsapp-btn', phone: '+49 151 12345678', message: 'Hallo, ich hätte eine Frage...', position: 'right', label: 'WhatsApp schreiben', order: 0 },
-  ]},
-  before_after: { blocks: [
-    { id: 'b1', type: 'before-after', beforeImage: '', afterImage: '', beforeLabel: 'Vorher', afterLabel: 'Nachher', order: 0 },
-  ]},
-  booking: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Termin buchen', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Buche jetzt deinen Wunschtermin.</p>', align: 'center', order: 1 },
-    { id: 'b3', type: 'button', text: 'Termin buchen', link: '/booking', style: 'primary', align: 'center', order: 2 },
-  ]},
-  social: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Folge uns', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'social-links', links: [
-      { platform: 'Instagram', url: 'https://instagram.com/', icon: '📷' },
-      { platform: 'Facebook', url: 'https://facebook.com/', icon: '👍' },
-      { platform: 'LinkedIn', url: 'https://linkedin.com/', icon: '💼' },
-    ], order: 1 },
-  ]},
-  map: { blocks: [
-    { id: 'b1', type: 'heading', text: 'So findest du uns', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'map-embed', address: 'Musterstraße 1, 12345 Musterstadt', embedUrl: '', order: 1 },
-  ]},
-  countdown: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Nur noch bis...', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'countdown-timer', targetDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], text: 'Verpasse nicht unser Angebot!', order: 1 },
-  ]},
-  freestyle: { blocks: [
-    { id: 'b1', type: 'heading', text: 'Deine Überschrift', level: 'h2', align: 'center', order: 0 },
-    { id: 'b2', type: 'text', html: '<p>Dein Text hier.</p>', align: 'center', order: 1 },
-    { id: 'b3', type: 'button', text: 'Jetzt starten', link: '#', style: 'primary', align: 'center', order: 2 },
-  ]},
+const DEFAULT_CONTENT: Record<string, any> = {
+  hero: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Deine Überschrift', level: 'h1', align: 'center', fontSize: '3rem', order: 0 },
+      { id: 'b2', type: 'text', html: '<p>Beschreibe kurz, was dein Angebot besonders macht.</p>', align: 'center', fontSize: '1.25rem', order: 1 },
+      { id: 'b3', type: 'button', text: 'Jetzt starten', link: '#', style: 'primary', align: 'center', size: 'lg', order: 2 },
+    ],
+  },
+  cta: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Bereit loszulegen?', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'text', html: '<p>Starte jetzt — es dauert nur 2 Minuten.</p>', align: 'center', order: 1 },
+      { id: 'b3', type: 'button', text: 'Jetzt starten', link: '#', style: 'primary', align: 'center', size: 'lg', order: 2 },
+    ],
+  },
+  text: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Überschrift', level: 'h2', align: 'left', order: 0 },
+      { id: 'b2', type: 'text', html: '<p>Dein Textinhalt hier.</p>', align: 'left', order: 1 },
+    ],
+  },
+  spacer: {
+    blocks: [
+      { id: 'b1', type: 'spacer', height: '4rem', order: 0 },
+    ],
+  },
+  about: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Über uns', level: 'h2', align: 'left', order: 0 },
+      { id: 'b2', type: 'text', html: '<p>Hier erzählst du deine Geschichte — wer ihr seid und was euch antreibt.</p>', align: 'left', order: 1 },
+    ],
+  },
+  features: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Unsere Features', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'feature-grid', items: [
+        { icon: '⭐', title: 'Feature 1', description: 'Beschreibung.' },
+        { icon: '🎯', title: 'Feature 2', description: 'Beschreibung.' },
+        { icon: '⚡', title: 'Feature 3', description: 'Beschreibung.' },
+      ], order: 1 },
+    ],
+  },
+  services: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Unsere Leistungen', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'feature-grid', items: [
+        { icon: '✅', title: 'Leistung 1', description: 'Was du anbietest.' },
+        { icon: '🎯', title: 'Leistung 2', description: 'Was du anbietest.' },
+        { icon: '⭐', title: 'Leistung 3', description: 'Was du anbietest.' },
+      ], order: 1 },
+    ],
+  },
+  faq: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Häufige Fragen', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'faq-list', items: [
+        { question: 'Erste Frage?', answer: 'Antwort.' },
+        { question: 'Zweite Frage?', answer: 'Antwort.' },
+      ], order: 1 },
+    ],
+  },
+  testimonials: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Was Kunden sagen', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'testimonial-grid', items: [
+        { name: 'Max M.', role: 'Kunde', text: 'Tolles Produkt!', image: '' },
+        { name: 'Lisa K.', role: 'Kundin', text: 'Klare Empfehlung.', image: '' },
+      ], order: 1 },
+    ],
+  },
+  team: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Unser Team', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'team-grid', items: [
+        { name: 'Max Mustermann', role: 'Geschäftsführer', bio: 'Kurze Vorstellung.', image: '' },
+        { name: 'Erika Musterfrau', role: 'Projektleitung', bio: 'Kurze Vorstellung.', image: '' },
+      ], order: 1 },
+    ],
+  },
+  stats: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Unsere Zahlen', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'stat-grid', items: [
+        { value: '100+', label: 'Kunden', description: '' },
+        { value: '5★',   label: 'Rating',  description: '' },
+        { value: '24/7', label: 'Support', description: '' },
+        { value: '99%',  label: 'Zufrieden', description: '' },
+      ], order: 1 },
+    ],
+  },
+  pricing: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Preise', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'pricing-grid', items: [
+        { title: 'Basic', price: '29€', interval: 'Monat', features: ['Feature A','Feature B'], buttonText: 'Wählen', highlighted: false },
+        { title: 'Pro',   price: '79€', interval: 'Monat', features: ['Alles aus Basic','Feature C','Feature D'], buttonText: 'Wählen', highlighted: true },
+        { title: 'Pro+',  price: '149€', interval: 'Monat', features: ['Alles aus Pro','Support'], buttonText: 'Wählen', highlighted: false },
+      ], order: 1 },
+    ],
+  },
+  contact: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Kontakt', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'text', html: '<p>Wir freuen uns von dir zu hören.</p>', align: 'center', order: 1 },
+      { id: 'b3', type: 'contact-form', buttonText: 'Senden', gdprText: 'Deine Daten werden vertraulich behandelt.', order: 2 },
+    ],
+  },
+  newsletter: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Newsletter', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'text', html: '<p>Verpasse keine News.</p>', align: 'center', order: 1 },
+      { id: 'b3', type: 'newsletter-form', buttonText: 'Abonnieren', placeholder: 'deine@email.de', order: 2 },
+    ],
+  },
+  booking: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Termin buchen', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'text', html: '<p>Wähle einen passenden Termin aus.</p>', align: 'center', order: 1 },
+      { id: 'b3', type: 'button', text: 'Termin wählen', link: '/booking', style: 'primary', align: 'center', size: 'lg', order: 2 },
+    ],
+  },
+  video: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Video', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'video', url: '', order: 1 },
+    ],
+  },
+  gallery: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Galerie', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'image-grid', columns: 3, images: [{ url: '' }, { url: '' }, { url: '' }], order: 1 },
+    ],
+  },
+  before_after: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Vorher / Nachher', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'before-after', beforeImage: '', afterImage: '', beforeLabel: 'Vorher', afterLabel: 'Nachher', order: 1 },
+    ],
+  },
+  countdown: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Nur noch kurze Zeit!', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'countdown-timer', text: 'Angebot endet bald', order: 1 },
+    ],
+  },
+  whatsapp: {
+    blocks: [
+      { id: 'b1', type: 'whatsapp-btn', phone: '', message: 'Hallo, ich habe eine Frage', label: 'WhatsApp schreiben', position: 'right', order: 0 },
+    ],
+  },
+  social: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Folge uns', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'social-links', links: [
+        { platform: 'Instagram', url: '', icon: '📷' },
+        { platform: 'Facebook',  url: '', icon: '📘' },
+      ], order: 1 },
+    ],
+  },
+  map: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'So findest du uns', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'map-embed', address: 'Musterstraße 1, 10115 Berlin', embedUrl: '', order: 1 },
+    ],
+  },
+  blog: {
+    blocks: [
+      { id: 'b1', type: 'heading', text: 'Neueste Beiträge', level: 'h2', align: 'center', order: 0 },
+      { id: 'b2', type: 'blog-feed', count: 3, order: 1 },
+    ],
+  },
+  custom: {
+    html: '<div style="padding: 2rem; text-align: center;">\n  <h2>Dein Custom Code</h2>\n  <p>HTML, CSS und JavaScript — volle Kontrolle.</p>\n</div>',
+    css: '/* CSS hier */\nh2 { color: #3b82f6; font-size: 2rem; }',
+    js: '// JavaScript hier\nconsole.log("Custom section loaded");',
+  },
 };
 const BG_PRESETS = [
   { label: 'Weiß', bg: '#ffffff', text: '#1f2937' },
@@ -2352,6 +2392,37 @@ case 'faq-list':
 };
 
 const renderContent = () => {
+  // ✅ Custom Section — sandboxed iframe
+  if (section.type === 'custom') {
+    const html = (content as any).html || '';
+    const css = (content as any).css || '';
+    const js = (content as any).js || '';
+    const srcDoc = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>body { margin: 0; font-family: system-ui, sans-serif; } ${css}</style>
+</head>
+<body>
+${html}
+<script>${js}<\/script>
+</body>
+</html>`;
+    return (
+      <div style={{ ...innerWidth, position: 'relative' }}>
+        <iframe
+          srcDoc={srcDoc}
+          sandbox="allow-scripts"
+          style={{ width: '100%', minHeight: 400, border: '1px dashed rgba(88,166,255,0.3)', borderRadius: '0.5rem', background: '#fff' }}
+          title={`custom-${section.id}`}
+        />
+        <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(88,166,255,0.9)', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '2px 8px', borderRadius: 4, zIndex: 5 }}>
+          ⌨️ CUSTOM CODE
+        </div>
+      </div>
+    );
+  }
+
   const blocks = [...(content.blocks || [])].sort((a: any, b: any) => a.order - b.order);
 
   // ── Neues Format mit blocks ──
@@ -2648,6 +2719,119 @@ function ListEditor({ field, schema, content, update, inputStyle, labelStyle, wr
     </div>
   );
 }
+// ==================== CUSTOM SECTION EDITOR ====================
+
+function CustomSectionEditor({ section, onChange }: {
+  section: Section;
+  onChange: (c: SectionContent) => void;
+}) {
+  const [activeTab, setActiveTab] = useState<'html' | 'css' | 'js'>('html');
+  const [html, setHtml] = useState(section.content.html || '');
+  const [css, setCss] = useState(section.content.css || '');
+  const [js, setJs] = useState(section.content.js || '');
+
+  useEffect(() => {
+    setHtml(section.content.html || '');
+    setCss(section.content.css || '');
+    setJs(section.content.js || '');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section.id]);
+
+  const save = () => {
+    onChange({ html, css, js });
+  };
+
+  const textareaStyle: React.CSSProperties = {
+    width: '100%',
+    minHeight: 360,
+    background: '#0d1117',
+    border: '1px solid #30363d',
+    borderRadius: 6,
+    color: '#79c0ff',
+    padding: '10px',
+    fontSize: '0.75rem',
+    fontFamily: '"SF Mono", "Fira Code", Monaco, monospace',
+    resize: 'vertical',
+    boxSizing: 'border-box',
+    outline: 'none',
+    lineHeight: 1.6,
+  };
+
+  return (
+    <div>
+      <div style={{ background: 'rgba(88,166,255,0.08)', border: '1px solid rgba(88,166,255,0.2)', borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
+        <p style={{ fontSize: '0.72rem', color: '#58a6ff', fontWeight: 600, margin: '0 0 2px' }}>⌨️ Custom Code Section</p>
+        <p style={{ fontSize: '0.7rem', color: '#8b949e', margin: 0, lineHeight: 1.5 }}>
+          HTML, CSS &amp; JS laufen in einem <strong>sandboxed iframe</strong>. Isoliert von der Hauptseite.
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: 4, marginBottom: 12, background: '#0d1117', borderRadius: 6, padding: 3, border: '1px solid #21262d' }}>
+        {[
+          { id: 'html', label: 'HTML' },
+          { id: 'css', label: 'CSS' },
+          { id: 'js', label: 'JS' },
+        ].map(t => (
+          <button key={t.id} onClick={() => setActiveTab(t.id as any)}
+            style={{ flex: 1, padding: '6px', borderRadius: 4, fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+              background: activeTab === t.id ? '#1f6feb' : 'transparent',
+              border: 'none',
+              color: activeTab === t.id ? '#fff' : '#6e7681',
+              letterSpacing: '0.05em',
+            }}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Code Editor */}
+      {activeTab === 'html' && (
+        <textarea
+          value={html}
+          onChange={e => setHtml(e.target.value)}
+          onBlur={save}
+          spellCheck={false}
+          placeholder="<div>\n  <h2>Hallo</h2>\n</div>"
+          style={textareaStyle}
+        />
+      )}
+      {activeTab === 'css' && (
+        <textarea
+          value={css}
+          onChange={e => setCss(e.target.value)}
+          onBlur={save}
+          spellCheck={false}
+          placeholder="/* CSS hier */\nh2 { color: #3b82f6; }"
+          style={textareaStyle}
+        />
+      )}
+      {activeTab === 'js' && (
+        <textarea
+          value={js}
+          onChange={e => setJs(e.target.value)}
+          onBlur={save}
+          spellCheck={false}
+          placeholder="// JavaScript hier\nconsole.log('Hello');"
+          style={textareaStyle}
+        />
+      )}
+
+      <p style={{ fontSize: '0.68rem', color: '#6e7681', marginTop: 6 }}>
+        ↑ Wird beim Verlassen des Feldes gespeichert (Blur).
+      </p>
+
+      {/* Warnhinweis */}
+      <div style={{ marginTop: 14, padding: '8px 10px', background: 'rgba(240,136,62,0.08)', border: '1px solid rgba(240,136,62,0.2)', borderRadius: 6 }}>
+        <p style={{ fontSize: '0.68rem', color: '#f0883e', fontWeight: 600, margin: '0 0 2px' }}>⚠️ Hinweis</p>
+        <p style={{ fontSize: '0.68rem', color: '#8b949e', margin: 0, lineHeight: 1.5 }}>
+          JavaScript läuft im Browser der Besucher. Keine externen APIs aufrufen die sensible Daten preisgeben.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // ==================== CONTENT EDITOR ====================
 function ContentEditor({ section, onChange, availableForms, availableBookingServices, externalSelectedBlockId, onPickMedia }: {
   section: Section;
@@ -2657,6 +2841,11 @@ function ContentEditor({ section, onChange, availableForms, availableBookingServ
   externalSelectedBlockId?: string | null;
   onPickMedia?: (cb: (url: string) => void) => void;
 }) {
+  // ✅ Custom Section — HTML/CSS/JS Tabs statt Block-Editor
+  if (section.type === 'custom') {
+    return <CustomSectionEditor section={section} onChange={onChange} />;
+  }
+
   const hasBlocks = Array.isArray(section.content.blocks) && section.content.blocks.length > 0;
   const hasOldContent = !hasBlocks && (
     section.content.heading || section.content.title ||
@@ -3912,52 +4101,87 @@ useEffect(() => {
   return () => clearTimeout(timer);
 }, [isDirty, sections]);
   
-const handleAddBlock = async (type: string) => {
-    if (!tenant?.id) {
-      setError('Kein Tenant gefunden — bitte Seite neu laden.');
-      return;
-    }
-    const label = BLOCK_CATEGORIES.flatMap(c => c.blocks).find(b => b.type === type)?.label || type;
-    setError(null);
-    try {
-      // ✅ UNIFIED: 'hero', 'features' etc. sind NUR UI-Labels.
-      // Backend speichert alles als 'freestyle' mit vorgefülltem Block-Content.
-      const backendType = type === 'custom' ? 'custom' : 'freestyle';
-      const defaultContent = DEFAULT_CONTENT[type] ?? { blocks: [] };
+const handleAddBlock = async (uiType: string) => {
+  if (!tenant?.id || !currentPageId) return;
 
-      const res = await createSectionMut({
-        variables: {
-          input: {
-            pageId: currentPageId,
-            name: label,
-            type: backendType,
-            order: sections.length,
-            isActive: true,
-            content: defaultContent,
-          },
-          tenantId: tenant.id,
+  // ✅ UI-Typ → Backend-Typ ('freestyle' oder 'custom')
+  const backendType = uiType === 'custom' ? 'custom' : 'freestyle';
+  const content = DEFAULT_CONTENT[uiType] || { blocks: [] };
+  const label =
+    BLOCK_CATEGORIES.flatMap(c => c.blocks).find(b => b.type === uiType)?.label
+    || uiType;
+
+  pushUndo(sections);
+
+  try {
+    const res = await createSectionMut({
+      variables: {
+        input: {
+          pageId: currentPageId,
+          name: label,
+          type: backendType,
+          order: sections.length,
+          isActive: true,
+          content,
         },
+        tenantId: tenant.id,
+      },
+    });
+    if (res.data?.createSection) {
+      setSections(prev => [...prev, res.data.createSection]);
+      setSelectedId(res.data.createSection.id);
+      setIsDirty(true);
+      setRecentBlocks(prev => [uiType, ...prev.filter(t => t !== uiType)].slice(0, 5));
+    }
+  } catch (err: any) {
+    console.error(err);
+    setError(`Fehler beim Erstellen von '${label}': ${err.message || 'Unbekannter Fehler'}`);
+  }
+};
+
+const handleInsertSectionAfter = async (afterSectionId: string, uiType: string) => {
+  if (!tenant?.id || !currentPageId) return;
+
+  const backendType = uiType === 'custom' ? 'custom' : 'freestyle';
+  const content = DEFAULT_CONTENT[uiType] || { blocks: [] };
+  const label =
+    BLOCK_CATEGORIES.flatMap(c => c.blocks).find(b => b.type === uiType)?.label
+    || uiType;
+
+  const afterIdx = sections.findIndex(s => s.id === afterSectionId);
+  const newOrder = afterIdx >= 0 ? afterIdx + 1 : sections.length;
+
+  pushUndo(sections);
+
+  try {
+    const res = await createSectionMut({
+      variables: {
+        input: {
+          pageId: currentPageId,
+          name: label,
+          type: backendType,
+          order: newOrder,
+          isActive: true,
+          content,
+        },
+        tenantId: tenant.id,
+      },
+    });
+    if (res.data?.createSection) {
+      setSections(prev => {
+        const next = [...prev];
+        next.splice(afterIdx + 1, 0, res.data.createSection);
+        return next;
       });
-      if (res.data?.createSection) {
-        pushUndo(sections);
-        setSections(prev => [...prev, res.data.createSection]);
-        setSelectedId(res.data.createSection.id);
-        setRecentBlocks(prev => [type, ...prev.filter(t => t !== type)].slice(0, 3));
-        setRightTab('content');
-        setLeftPanel('layers'); // Ebenen zeigen damit User die neue Section sieht
-      } else if (res.errors?.length) {
-        setError(`Section konnte nicht erstellt werden: ${res.errors[0].message}`);
-      }
-   } catch (err: unknown) {
-  const apolloErr = err as any;
-  // GraphQL Validation-Fehler sind in graphQLErrors[0].extensions.response.message
-  const detail = apolloErr?.graphQLErrors?.[0]?.extensions?.response?.message;
-  const msg = Array.isArray(detail)
-    ? detail.join(' | ')
-    : (detail ?? apolloErr?.message ?? String(err));
-  setError(`Fehler beim Erstellen von "${label}": ${msg}`);
-}
-  };
+      setSelectedId(res.data.createSection.id);
+      setIsDirty(true);
+      setRecentBlocks(prev => [uiType, ...prev.filter(t => t !== uiType)].slice(0, 5));
+    }
+  } catch (err: any) {
+    console.error(err);
+    setError(`Fehler: ${err.message || 'Unbekannter Fehler'}`);
+  }
+};
 
   const handleDelete = async (id: string) => {
     if (!tenant?.id) return;
@@ -4091,26 +4315,36 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
   setIsDirty(true);
   };
 
-const handleInsertSectionAfter = async (type: string, afterIndex: number) => {
-  if (!tenant?.id) return;
-  const label = BLOCK_CATEGORIES.flatMap(c => c.blocks).find(b => b.type === type)?.label || type;
-  const backendType = type === 'custom' ? 'custom' : 'freestyle';
-  const defaultContent = DEFAULT_CONTENT[type] ?? { blocks: [] };
+const handleInsertSectionAfter = async (afterSectionId: string, uiType: string) => {
+  if (!activePage) return;
+
+  const backendType = uiType === 'custom' ? 'custom' : 'freestyle';
+  const content = DEFAULT_CONTENT[uiType] || { blocks: [] };
+  const label =
+    BLOCK_CATEGORIES.flatMap(c => c.blocks).find(b => b.type === uiType)?.label
+    || uiType;
+
+  const afterIdx = (activePage.sections || []).findIndex(s => s.id === afterSectionId);
+  const newOrder = afterIdx >= 0 ? afterIdx + 1 : (activePage.sections?.length || 0);
+
   try {
-    const res = await createSectionMut({
+    await createSectionMut({
       variables: {
-        input: { pageId: currentPageId, name: label, type: backendType, order: afterIndex + 1, isActive: true, content: defaultContent },
-        tenantId: tenant.id,
+        input: {
+          pageId: activePage.id,
+          name: label,
+          type: backendType,
+          order: newOrder,
+          isActive: true,
+          content,
+        },
       },
     });
-
-    if (res.data?.createSection) {
-      pushUndo(sections);
-      setSections(prev => [...prev, res.data.createSection].sort((a, b) => a.order - b.order));
-      setSelectedId(res.data.createSection.id);
-      setRightTab('content');
-    }
-  } catch (err) { console.error(err); }
+    await refetch();
+    toast.success(`${label} eingefügt`);
+  } catch (err: any) {
+    toast.error(`Fehler: ${err.message}`);
+  }
 };
   const handleSave = async () => {
     if (!tenant?.id || isSaving) return;

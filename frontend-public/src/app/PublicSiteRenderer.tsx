@@ -910,6 +910,38 @@ case 'whatsapp':
       </a>
     </>
         );
+      case 'custom': {
+        const html = (content as any).html || '';
+        const css = (content as any).css || '';
+        const js = (content as any).js || '';
+        const srcDoc = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body { margin: 0; font-family: system-ui, sans-serif; } ${css}</style>
+</head>
+<body>
+${html}
+<script>${js}<\/script>
+</body>
+</html>`;
+        return (
+          <section style={containerStyle}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+              <iframe
+                srcDoc={srcDoc}
+                sandbox="allow-scripts"
+                style={{ width: '100%', minHeight: 400, border: 'none', display: 'block' }}
+                title={`custom-${section.id}`}
+              />
+            </div>
+          </section>
+        );
+      }
+
+      case 'freestyle': {
+  const blocks: any[] = ((content as any)?.blocks || []).sort((a: any, b: any) => a.order - b.order);
       case 'freestyle': {
   const blocks: any[] = ((content as any)?.blocks || []).sort((a: any, b: any) => a.order - b.order);
   const cw = styling?.containerWidth;
