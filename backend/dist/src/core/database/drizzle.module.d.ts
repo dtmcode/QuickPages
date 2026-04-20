@@ -1210,79 +1210,7 @@ declare const fullSchema: {
                 tableName: "wb_sections";
                 dataType: "json";
                 columnType: "PgJsonb";
-                data: {
-                    heading?: string;
-                    subheading?: string;
-                    buttonText?: string;
-                    buttonLink?: string;
-                    backgroundImage?: string;
-                    backgroundVideo?: string;
-                    title?: string;
-                    subtitle?: string;
-                    description?: string;
-                    alignment?: "left" | "center" | "right";
-                    items?: Array<{
-                        id?: string;
-                        title?: string;
-                        description?: string;
-                        icon?: string;
-                        image?: string;
-                        link?: string;
-                    }>;
-                    images?: Array<{
-                        url: string;
-                        alt?: string;
-                        title?: string;
-                        description?: string;
-                    }>;
-                    testimonials?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        company?: string;
-                        text?: string;
-                        avatar?: string;
-                        rating?: number;
-                    }>;
-                    members?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        bio?: string;
-                        image?: string;
-                        social?: {
-                            linkedin?: string;
-                            twitter?: string;
-                            github?: string;
-                        };
-                    }>;
-                    plans?: Array<{
-                        id?: string;
-                        name?: string;
-                        price?: string;
-                        currency?: string;
-                        interval?: string;
-                        features?: string[];
-                        highlighted?: boolean;
-                        buttonText?: string;
-                        buttonLink?: string;
-                    }>;
-                    faqs?: Array<{
-                        id?: string;
-                        question?: string;
-                        answer?: string;
-                    }>;
-                    stats?: Array<{
-                        id?: string;
-                        value?: string;
-                        label?: string;
-                        icon?: string;
-                    }>;
-                    videoUrl?: string;
-                    videoPoster?: string;
-                    text?: string;
-                    html?: string;
-                };
+                data: Record<string, any>;
                 driverParam: unknown;
                 notNull: true;
                 hasDefault: true;
@@ -1294,103 +1222,14 @@ declare const fullSchema: {
                 identity: undefined;
                 generated: undefined;
             }, {}, {
-                $type: {
-                    heading?: string;
-                    subheading?: string;
-                    buttonText?: string;
-                    buttonLink?: string;
-                    backgroundImage?: string;
-                    backgroundVideo?: string;
-                    title?: string;
-                    subtitle?: string;
-                    description?: string;
-                    alignment?: "left" | "center" | "right";
-                    items?: Array<{
-                        id?: string;
-                        title?: string;
-                        description?: string;
-                        icon?: string;
-                        image?: string;
-                        link?: string;
-                    }>;
-                    images?: Array<{
-                        url: string;
-                        alt?: string;
-                        title?: string;
-                        description?: string;
-                    }>;
-                    testimonials?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        company?: string;
-                        text?: string;
-                        avatar?: string;
-                        rating?: number;
-                    }>;
-                    members?: Array<{
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        bio?: string;
-                        image?: string;
-                        social?: {
-                            linkedin?: string;
-                            twitter?: string;
-                            github?: string;
-                        };
-                    }>;
-                    plans?: Array<{
-                        id?: string;
-                        name?: string;
-                        price?: string;
-                        currency?: string;
-                        interval?: string;
-                        features?: string[];
-                        highlighted?: boolean;
-                        buttonText?: string;
-                        buttonLink?: string;
-                    }>;
-                    faqs?: Array<{
-                        id?: string;
-                        question?: string;
-                        answer?: string;
-                    }>;
-                    stats?: Array<{
-                        id?: string;
-                        value?: string;
-                        label?: string;
-                        icon?: string;
-                    }>;
-                    videoUrl?: string;
-                    videoPoster?: string;
-                    text?: string;
-                    html?: string;
-                };
+                $type: Record<string, any>;
             }>;
             styling: import("drizzle-orm/pg-core").PgColumn<{
                 name: "styling";
                 tableName: "wb_sections";
                 dataType: "json";
                 columnType: "PgJsonb";
-                data: {
-                    backgroundColor?: string;
-                    textColor?: string;
-                    padding?: {
-                        top?: string;
-                        bottom?: string;
-                        left?: string;
-                        right?: string;
-                    };
-                    margin?: {
-                        top?: string;
-                        bottom?: string;
-                    };
-                    customCss?: string;
-                    containerWidth?: "full" | "contained" | "narrow";
-                    backgroundImage?: string;
-                    backgroundOverlay?: string;
-                };
+                data: Record<string, any>;
                 driverParam: unknown;
                 notNull: false;
                 hasDefault: false;
@@ -1402,24 +1241,7 @@ declare const fullSchema: {
                 identity: undefined;
                 generated: undefined;
             }, {}, {
-                $type: {
-                    backgroundColor?: string;
-                    textColor?: string;
-                    padding?: {
-                        top?: string;
-                        bottom?: string;
-                        left?: string;
-                        right?: string;
-                    };
-                    margin?: {
-                        top?: string;
-                        bottom?: string;
-                    };
-                    customCss?: string;
-                    containerWidth?: "full" | "contained" | "narrow";
-                    backgroundImage?: string;
-                    backgroundOverlay?: string;
-                };
+                $type: Record<string, any>;
             }>;
             createdAt: import("drizzle-orm/pg-core").PgColumn<{
                 name: "created_at";

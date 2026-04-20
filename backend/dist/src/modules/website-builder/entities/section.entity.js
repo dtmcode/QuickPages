@@ -18,36 +18,12 @@ const graphql_type_json_1 = __importDefault(require("graphql-type-json"));
 const page_entity_1 = require("./page.entity");
 var SectionType;
 (function (SectionType) {
-    SectionType["hero"] = "hero";
-    SectionType["features"] = "features";
-    SectionType["about"] = "about";
-    SectionType["services"] = "services";
-    SectionType["gallery"] = "gallery";
-    SectionType["testimonials"] = "testimonials";
-    SectionType["team"] = "team";
-    SectionType["pricing"] = "pricing";
-    SectionType["cta"] = "cta";
-    SectionType["contact"] = "contact";
-    SectionType["faq"] = "faq";
-    SectionType["blog"] = "blog";
-    SectionType["stats"] = "stats";
-    SectionType["video"] = "video";
-    SectionType["text"] = "text";
-    SectionType["html"] = "html";
-    SectionType["custom"] = "custom";
-    SectionType["newsletter"] = "newsletter";
-    SectionType["booking"] = "booking";
-    SectionType["map"] = "map";
-    SectionType["countdown"] = "countdown";
-    SectionType["social"] = "social";
-    SectionType["spacer"] = "spacer";
-    SectionType["before_after"] = "before_after";
-    SectionType["whatsapp"] = "whatsapp";
     SectionType["freestyle"] = "freestyle";
+    SectionType["custom"] = "custom";
 })(SectionType || (exports.SectionType = SectionType = {}));
 (0, graphql_1.registerEnumType)(SectionType, {
     name: 'SectionType',
-    description: 'Type of section',
+    description: 'freestyle (block-based) or custom (raw HTML/CSS/JS)',
 });
 let Section = class Section {
     id;

@@ -273,123 +273,13 @@ export const wbSections = pgTable(
     isActive: boolean('is_active').default(true).notNull(),
 
     // Content (Flexible JSON)
+// Content (Flexible JSON — kann beliebige Struktur haben je nach Preset/Block-Typ)
     content: jsonb('content')
-      .$type<{
-        // Hero/CTA
-        heading?: string;
-        subheading?: string;
-        buttonText?: string;
-        buttonLink?: string;
-        backgroundImage?: string;
-        backgroundVideo?: string;
-
-        // Universal
-        title?: string;
-        subtitle?: string;
-        description?: string;
-        alignment?: 'left' | 'center' | 'right';
-
-        // Features/Services
-        items?: Array<{
-          id?: string;
-          title?: string;
-          description?: string;
-          icon?: string;
-          image?: string;
-          link?: string;
-        }>;
-
-        // Gallery
-        images?: Array<{
-          url: string;
-          alt?: string;
-          title?: string;
-          description?: string;
-        }>;
-
-        // Testimonials
-        testimonials?: Array<{
-          id?: string;
-          name?: string;
-          role?: string;
-          company?: string;
-          text?: string;
-          avatar?: string;
-          rating?: number;
-        }>;
-
-        // Team
-        members?: Array<{
-          id?: string;
-          name?: string;
-          role?: string;
-          bio?: string;
-          image?: string;
-          social?: {
-            linkedin?: string;
-            twitter?: string;
-            github?: string;
-          };
-        }>;
-
-        // Pricing
-        plans?: Array<{
-          id?: string;
-          name?: string;
-          price?: string;
-          currency?: string;
-          interval?: string;
-          features?: string[];
-          highlighted?: boolean;
-          buttonText?: string;
-          buttonLink?: string;
-        }>;
-
-        // FAQ
-        faqs?: Array<{
-          id?: string;
-          question?: string;
-          answer?: string;
-        }>;
-
-        // Stats
-        stats?: Array<{
-          id?: string;
-          value?: string;
-          label?: string;
-          icon?: string;
-        }>;
-
-        // Video
-        videoUrl?: string;
-        videoPoster?: string;
-
-        // Text/HTML
-        text?: string;
-        html?: string;
-      }>()
+      .$type<Record<string, any>>()
       .notNull()
       .default({}),
-
-    // Styling
-    styling: jsonb('styling').$type<{
-      backgroundColor?: string;
-      textColor?: string;
-      padding?: {
-        top?: string;
-        bottom?: string;
-        left?: string;
-        right?: string;
-      };
-      margin?: {
-        top?: string;
-        bottom?: string;
-      };
-      customCss?: string;
-      containerWidth?: 'full' | 'contained' | 'narrow';
-      backgroundImage?: string;
-      backgroundOverlay?: string;
-    }>(),
+    // Styling (Flexible JSON)
+    styling: jsonb('styling').$type<Record<string, any>>(),
 
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),

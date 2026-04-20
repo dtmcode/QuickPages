@@ -8,38 +8,21 @@ import GraphQLJSON from 'graphql-type-json';
 import { Page } from './page.entity';
 
 // Section Type Enum
+/**
+ * ✅ UNIFIED SECTION TYPES
+ * Nur noch 2 Typen:
+ * - freestyle: Block-basiert (Editor inline-editierbar). UI zeigt "Hero", "Features"
+ *   etc. als Preset-Labels in der Sidebar, intern sind es immer freestyle-Blocks.
+ * - custom: Raw HTML/CSS/JS (wird im Public-Renderer in iframe-sandbox gerendert).
+ */
 export enum SectionType {
-  hero = 'hero',
-  features = 'features',
-  about = 'about',
-  services = 'services',
-  gallery = 'gallery',
-  testimonials = 'testimonials',
-  team = 'team',
-  pricing = 'pricing',
-  cta = 'cta',
-  contact = 'contact',
-  faq = 'faq',
-  blog = 'blog',
-  stats = 'stats',
-  video = 'video',
-  text = 'text',
-  html = 'html',
-  custom = 'custom',
-  newsletter = 'newsletter',
-  booking = 'booking',
-  map = 'map',
-  countdown = 'countdown',
-  social = 'social',
-  spacer = 'spacer',
-  before_after = 'before_after',
-  whatsapp = 'whatsapp',
   freestyle = 'freestyle',
+  custom = 'custom',
 }
 
 registerEnumType(SectionType, {
   name: 'SectionType',
-  description: 'Type of section',
+  description: 'freestyle (block-based) or custom (raw HTML/CSS/JS)',
 });
 
 @ObjectType()

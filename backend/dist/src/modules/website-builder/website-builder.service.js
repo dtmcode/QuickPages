@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const drizzle_module_1 = require("../../core/database/drizzle.module");
 const website_builder_schema_1 = require("../../drizzle/website-builder.schema");
 const drizzle_orm_1 = require("drizzle-orm");
+const preset_library_1 = require("./helpers/preset-library");
 let WebsiteBuilderService = class WebsiteBuilderService {
     db;
     constructor(db) {
@@ -82,14 +83,14 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 .orderBy((0, drizzle_orm_1.asc)(website_builder_schema_1.wbGlobalTemplateSections.order));
             for (const globalSection of globalSections) {
                 await this.db.insert(website_builder_schema_1.wbSections).values({
-                    tenantId: tenantId,
+                    tenantId,
                     pageId: newPage.id,
                     name: globalSection.name,
                     type: globalSection.type,
                     order: globalSection.order,
                     isActive: true,
-                    content: globalSection.content || {},
-                    styling: globalSection.styling || null,
+                    content: (globalSection.content || {}),
+                    styling: (globalSection.styling || null),
                 });
             }
         }
@@ -530,42 +531,45 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Hero',
-                        type: 'hero',
-                        content: {
+                        preset: preset_library_1.PRESETS.hero({
                             heading: `Willkommen bei ${tenantName}`,
                             subheading: 'Ihr professioneller Webauftritt — modern, schnell und DSGVO-konform.',
                             buttonText: 'Mehr erfahren',
                             buttonLink: '#kontakt',
-                        },
+                        }),
                     },
                     {
                         name: 'Features',
-                        type: 'features',
-                        content: {
-                            title: 'Warum wir?',
-                            subtitle: 'Das zeichnet uns aus',
+                        preset: preset_library_1.PRESETS.features({
+                            heading: 'Warum wir?',
+                            subheading: 'Das zeichnet uns aus',
                             items: [
                                 {
+                                    icon: '⭐',
                                     title: 'Qualität',
                                     description: 'Höchste Standards bei allem was wir tun.',
-                                    icon: '⭐',
                                 },
                                 {
+                                    icon: '🏆',
                                     title: 'Erfahrung',
                                     description: 'Jahrelange Expertise in unserem Bereich.',
-                                    icon: '🏆',
                                 },
                                 {
+                                    icon: '💬',
                                     title: 'Service',
                                     description: 'Persönliche Betreuung und schnelle Reaktion.',
-                                    icon: '💬',
                                 },
                             ],
-                        },
+                        }),
                     },
                 ],
             });
-            if (['website_standard', 'website_pro'].includes(packageType)) {
+            if ([
+                'website_standard',
+                'website_pro',
+                'website_mini',
+                'website_wachstum',
+            ].includes(packageType)) {
                 pageConfigs.push({
                     name: 'Über uns',
                     slug: 'ueber-uns',
@@ -574,11 +578,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                     sections: [
                         {
                             name: 'Über uns',
-                            type: 'about',
-                            content: {
-                                title: `Über ${tenantName}`,
+                            preset: preset_library_1.PRESETS.about({
+                                heading: `Über ${tenantName}`,
                                 description: 'Hier erzählen wir unsere Geschichte und was uns antreibt.',
-                            },
+                            }),
                         },
                     ],
                 }, {
@@ -589,11 +592,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                     sections: [
                         {
                             name: 'Kontakt',
-                            type: 'contact',
-                            content: {
-                                title: 'Kontakt aufnehmen',
-                                subtitle: 'Wir freuen uns von Ihnen zu hören.',
-                            },
+                            preset: preset_library_1.PRESETS.contact({
+                                heading: 'Kontakt aufnehmen',
+                                subheading: 'Wir freuen uns von Ihnen zu hören.',
+                            }),
                         },
                     ],
                 });
@@ -608,18 +610,19 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Hero',
-                        type: 'hero',
-                        content: {
+                        preset: preset_library_1.PRESETS.hero({
                             heading: tenantName,
                             subheading: 'Aktuelle Beiträge, Insights und mehr.',
                             buttonText: 'Zum Blog',
                             buttonLink: '/blog',
-                        },
+                        }),
                     },
                     {
                         name: 'Blog Feed',
-                        type: 'blog',
-                        content: { title: 'Neueste Beiträge', showCount: 6 },
+                        preset: preset_library_1.PRESETS.blogFeed({
+                            heading: 'Neueste Beiträge',
+                            count: 6,
+                        }),
                     },
                 ],
             }, {
@@ -630,11 +633,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Über mich',
-                        type: 'about',
-                        content: {
-                            title: `Hallo, ich bin ${tenantName}`,
+                        preset: preset_library_1.PRESETS.about({
+                            heading: `Hallo, ich bin ${tenantName}`,
                             description: 'Hier erzählst du etwas über dich und dein Blog-Thema.',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -645,11 +647,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Kontakt',
-                        type: 'contact',
-                        content: {
-                            title: 'Schreib mir',
-                            subtitle: 'Fragen, Kooperationen oder einfach Hallo.',
-                        },
+                        preset: preset_library_1.PRESETS.contact({
+                            heading: 'Schreib mir',
+                            subheading: 'Fragen, Kooperationen oder einfach Hallo.',
+                        }),
                     },
                 ],
             });
@@ -663,48 +664,45 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Hero',
-                        type: 'hero',
-                        content: {
-                            heading: `${tenantName}`,
+                        preset: preset_library_1.PRESETS.hero({
+                            heading: tenantName,
                             subheading: 'Professionelle Dienstleistungen — Termine online buchen.',
                             buttonText: 'Termin buchen',
                             buttonLink: '/booking',
-                        },
+                        }),
                     },
                     {
                         name: 'Leistungen',
-                        type: 'features',
-                        content: {
-                            title: 'Unsere Leistungen',
-                            subtitle: 'Was wir für Sie tun können',
+                        preset: preset_library_1.PRESETS.features({
+                            heading: 'Unsere Leistungen',
+                            subheading: 'Was wir für Sie tun können',
                             items: [
                                 {
+                                    icon: '✅',
                                     title: 'Leistung 1',
                                     description: 'Beschreibung Ihrer ersten Dienstleistung.',
-                                    icon: '✅',
                                 },
                                 {
+                                    icon: '🎯',
                                     title: 'Leistung 2',
                                     description: 'Beschreibung Ihrer zweiten Dienstleistung.',
-                                    icon: '🎯',
                                 },
                                 {
+                                    icon: '⚡',
                                     title: 'Leistung 3',
                                     description: 'Beschreibung Ihrer dritten Dienstleistung.',
-                                    icon: '⚡',
                                 },
                             ],
-                        },
+                        }),
                     },
                     {
                         name: 'Booking CTA',
-                        type: 'cta',
-                        content: {
-                            title: 'Bereit für einen Termin?',
-                            subtitle: 'Einfach online buchen — in weniger als 2 Minuten.',
+                        preset: preset_library_1.PRESETS.cta({
+                            heading: 'Bereit für einen Termin?',
+                            subheading: 'Einfach online buchen — in weniger als 2 Minuten.',
                             buttonText: 'Jetzt buchen',
                             buttonLink: '/booking',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -715,11 +713,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Über uns',
-                        type: 'about',
-                        content: {
-                            title: `Über ${tenantName}`,
+                        preset: preset_library_1.PRESETS.about({
+                            heading: `Über ${tenantName}`,
                             description: 'Unser Team und unsere Geschichte.',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -730,11 +727,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Kontakt',
-                        type: 'contact',
-                        content: {
-                            title: 'Kontakt aufnehmen',
-                            subtitle: 'Wir antworten innerhalb von 24 Stunden.',
-                        },
+                        preset: preset_library_1.PRESETS.contact({
+                            heading: 'Kontakt aufnehmen',
+                            subheading: 'Wir antworten innerhalb von 24 Stunden.',
+                        }),
                     },
                 ],
             });
@@ -748,48 +744,45 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Hero',
-                        type: 'hero',
-                        content: {
+                        preset: preset_library_1.PRESETS.hero({
                             heading: `Willkommen im ${tenantName} Shop`,
                             subheading: 'Entdecke unsere Produkte — sicher & bequem bestellen.',
                             buttonText: 'Jetzt shoppen',
                             buttonLink: '/shop',
-                        },
+                        }),
                     },
                     {
                         name: 'Produkte',
-                        type: 'features',
-                        content: {
-                            title: 'Unsere Bestseller',
-                            subtitle: 'Die beliebtesten Produkte',
+                        preset: preset_library_1.PRESETS.features({
+                            heading: 'Unsere Bestseller',
+                            subheading: 'Die beliebtesten Produkte',
                             items: [
                                 {
+                                    icon: '📦',
                                     title: 'Produkt 1',
                                     description: 'Kurze Produktbeschreibung.',
-                                    icon: '📦',
                                 },
                                 {
+                                    icon: '🎁',
                                     title: 'Produkt 2',
                                     description: 'Kurze Produktbeschreibung.',
-                                    icon: '🎁',
                                 },
                                 {
+                                    icon: '⭐',
                                     title: 'Produkt 3',
                                     description: 'Kurze Produktbeschreibung.',
-                                    icon: '⭐',
                                 },
                             ],
-                        },
+                        }),
                     },
                     {
                         name: 'Shop CTA',
-                        type: 'cta',
-                        content: {
-                            title: 'Alle Produkte entdecken',
-                            subtitle: 'Versandkostenfrei ab 50€ · Sichere Zahlung · 30 Tage Rückgabe',
+                        preset: preset_library_1.PRESETS.cta({
+                            heading: 'Alle Produkte entdecken',
+                            subheading: 'Versandkostenfrei ab 50€ · Sichere Zahlung · 30 Tage Rückgabe',
                             buttonText: 'Zum Shop',
                             buttonLink: '/shop',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -800,11 +793,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Über uns',
-                        type: 'about',
-                        content: {
-                            title: `Über ${tenantName}`,
+                        preset: preset_library_1.PRESETS.about({
+                            heading: `Über ${tenantName}`,
                             description: 'Unser Unternehmen und unsere Geschichte.',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -815,11 +807,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Kontakt',
-                        type: 'contact',
-                        content: {
-                            title: 'Kontakt & Support',
-                            subtitle: 'Bei Fragen zu Ihrer Bestellung helfen wir gern.',
-                        },
+                        preset: preset_library_1.PRESETS.contact({
+                            heading: 'Kontakt & Support',
+                            subheading: 'Bei Fragen zu Ihrer Bestellung helfen wir gern.',
+                        }),
                     },
                 ],
             });
@@ -833,48 +824,45 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Hero',
-                        type: 'hero',
-                        content: {
+                        preset: preset_library_1.PRESETS.hero({
                             heading: `Willkommen bei ${tenantName}`,
                             subheading: 'Exklusive Inhalte, Community und Kurse — alles an einem Ort.',
                             buttonText: 'Mitglied werden',
                             buttonLink: '#mitgliedschaft',
-                        },
+                        }),
                     },
                     {
                         name: 'Features',
-                        type: 'features',
-                        content: {
-                            title: 'Was du bekommst',
-                            subtitle: 'Deine Mitgliedschaft beinhaltet',
+                        preset: preset_library_1.PRESETS.features({
+                            heading: 'Was du bekommst',
+                            subheading: 'Deine Mitgliedschaft beinhaltet',
                             items: [
                                 {
+                                    icon: '🔐',
                                     title: 'Exklusive Inhalte',
                                     description: 'Zugang zu allen Kursen und Materialien.',
-                                    icon: '🔐',
                                 },
                                 {
+                                    icon: '👥',
                                     title: 'Community',
                                     description: 'Vernetze dich mit Gleichgesinnten.',
-                                    icon: '👥',
                                 },
                                 {
+                                    icon: '🎥',
                                     title: 'Live-Sessions',
                                     description: 'Regelmäßige Q&A und Workshops.',
-                                    icon: '🎥',
                                 },
                             ],
-                        },
+                        }),
                     },
                     {
                         name: 'CTA',
-                        type: 'cta',
-                        content: {
-                            title: 'Bereit einzusteigen?',
-                            subtitle: 'Wähle dein Mitgliedschaftsmodell und starte heute.',
+                        preset: preset_library_1.PRESETS.cta({
+                            heading: 'Bereit einzusteigen?',
+                            subheading: 'Wähle dein Mitgliedschaftsmodell und starte heute.',
                             buttonText: 'Jetzt Mitglied werden',
                             buttonLink: '#mitgliedschaft',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -885,11 +873,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Über uns',
-                        type: 'about',
-                        content: {
-                            title: `Über ${tenantName}`,
+                        preset: preset_library_1.PRESETS.about({
+                            heading: `Über ${tenantName}`,
                             description: 'Unsere Mission und was uns antreibt.',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -900,11 +887,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Kontakt',
-                        type: 'contact',
-                        content: {
-                            title: 'Fragen zur Mitgliedschaft?',
-                            subtitle: 'Wir helfen dir gern weiter.',
-                        },
+                        preset: preset_library_1.PRESETS.contact({
+                            heading: 'Fragen zur Mitgliedschaft?',
+                            subheading: 'Wir helfen dir gern weiter.',
+                        }),
                     },
                 ],
             });
@@ -918,48 +904,45 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Hero',
-                        type: 'hero',
-                        content: {
+                        preset: preset_library_1.PRESETS.hero({
                             heading: `Willkommen bei ${tenantName}`,
                             subheading: 'Frische Küche, einfach bestellen — Tisch reservieren oder direkt online bestellen.',
                             buttonText: 'Jetzt bestellen',
                             buttonLink: '/bestellen',
-                        },
+                        }),
                     },
                     {
                         name: 'Speisekarte',
-                        type: 'features',
-                        content: {
-                            title: 'Unsere Speisekarte',
-                            subtitle: 'Frische Zutaten, ehrliche Küche',
+                        preset: preset_library_1.PRESETS.features({
+                            heading: 'Unsere Speisekarte',
+                            subheading: 'Frische Zutaten, ehrliche Küche',
                             items: [
                                 {
+                                    icon: '🥗',
                                     title: 'Vorspeisen',
                                     description: 'Leichte Starters für den perfekten Einstieg.',
-                                    icon: '🥗',
                                 },
                                 {
+                                    icon: '🍽️',
                                     title: 'Hauptgerichte',
                                     description: 'Sorgfältig zubereitete Hauptspeisen.',
-                                    icon: '🍽️',
                                 },
                                 {
+                                    icon: '🍰',
                                     title: 'Desserts',
                                     description: 'Süße Abschlüsse für jeden Geschmack.',
-                                    icon: '🍰',
                                 },
                             ],
-                        },
+                        }),
                     },
                     {
                         name: 'Reservierung CTA',
-                        type: 'cta',
-                        content: {
-                            title: 'Tisch reservieren',
-                            subtitle: 'Online buchen — schnell, einfach, verbindlich.',
+                        preset: preset_library_1.PRESETS.cta({
+                            heading: 'Tisch reservieren',
+                            subheading: 'Online buchen — schnell, einfach, verbindlich.',
                             buttonText: 'Jetzt reservieren',
                             buttonLink: '/reservierung',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -970,11 +953,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Über uns',
-                        type: 'about',
-                        content: {
-                            title: `Über ${tenantName}`,
+                        preset: preset_library_1.PRESETS.about({
+                            heading: `Über ${tenantName}`,
                             description: 'Unsere Geschichte, unsere Küche, unser Team.',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -985,11 +967,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Kontakt',
-                        type: 'contact',
-                        content: {
-                            title: 'Kontakt & Öffnungszeiten',
-                            subtitle: 'Wir freuen uns auf Ihren Besuch.',
-                        },
+                        preset: preset_library_1.PRESETS.contact({
+                            heading: 'Kontakt & Öffnungszeiten',
+                            subheading: 'Wir freuen uns auf Ihren Besuch.',
+                        }),
                     },
                 ],
             });
@@ -1003,48 +984,45 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Hero',
-                        type: 'hero',
-                        content: {
+                        preset: preset_library_1.PRESETS.hero({
                             heading: `${tenantName} — jetzt online bestellen`,
-                            subheading: 'Bequem vorbestellen, wunschtermin wählen und abholen — ohne Warteschlange.',
+                            subheading: 'Bequem vorbestellen, Wunschtermin wählen und abholen — ohne Warteschlange.',
                             buttonText: 'Jetzt vorbestellen',
                             buttonLink: '/bestellen',
-                        },
+                        }),
                     },
                     {
                         name: 'Sortiment',
-                        type: 'features',
-                        content: {
-                            title: 'Unser Sortiment',
-                            subtitle: 'Regional, frisch, für Sie',
+                        preset: preset_library_1.PRESETS.features({
+                            heading: 'Unser Sortiment',
+                            subheading: 'Regional, frisch, für Sie',
                             items: [
                                 {
+                                    icon: '🛒',
                                     title: 'Kategorie 1',
                                     description: 'Beschreibung Ihrer ersten Produktkategorie.',
-                                    icon: '🛒',
                                 },
                                 {
+                                    icon: '📦',
                                     title: 'Kategorie 2',
                                     description: 'Beschreibung Ihrer zweiten Produktkategorie.',
-                                    icon: '📦',
                                 },
                                 {
+                                    icon: '⭐',
                                     title: 'Kategorie 3',
                                     description: 'Beschreibung Ihrer dritten Produktkategorie.',
-                                    icon: '⭐',
                                 },
                             ],
-                        },
+                        }),
                     },
                     {
                         name: 'Click & Collect CTA',
-                        type: 'cta',
-                        content: {
-                            title: "Click & Collect — so einfach geht's",
-                            subtitle: 'Online bestellen → Abholtermin wählen → fertig. Kein Warten, keine Schlange.',
+                        preset: preset_library_1.PRESETS.cta({
+                            heading: "Click & Collect — so einfach geht's",
+                            subheading: 'Online bestellen → Abholtermin wählen → fertig. Kein Warten, keine Schlange.',
                             buttonText: 'Abholtermin buchen',
                             buttonLink: '/bestellen',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -1055,11 +1033,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Über uns',
-                        type: 'about',
-                        content: {
-                            title: `Über ${tenantName}`,
+                        preset: preset_library_1.PRESETS.about({
+                            heading: `Über ${tenantName}`,
                             description: 'Unser Geschäft, unsere Geschichte, unsere Werte.',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -1070,11 +1047,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Kontakt',
-                        type: 'contact',
-                        content: {
-                            title: 'Kontakt & Öffnungszeiten',
-                            subtitle: 'Wir sind für Sie da.',
-                        },
+                        preset: preset_library_1.PRESETS.contact({
+                            heading: 'Kontakt & Öffnungszeiten',
+                            subheading: 'Wir sind für Sie da.',
+                        }),
                     },
                 ],
             });
@@ -1088,48 +1064,45 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Hero',
-                        type: 'hero',
-                        content: {
-                            heading: `${tenantName}`,
+                        preset: preset_library_1.PRESETS.hero({
+                            heading: tenantName,
                             subheading: 'Generiere qualifizierte Leads und wandle Besucher in Kunden um.',
                             buttonText: 'Jetzt kostenlos starten',
                             buttonLink: '#optin',
-                        },
+                        }),
                     },
                     {
                         name: 'Benefits',
-                        type: 'features',
-                        content: {
-                            title: 'Was du bekommst',
-                            subtitle: 'Alles was du für mehr Conversions brauchst',
+                        preset: preset_library_1.PRESETS.features({
+                            heading: 'Was du bekommst',
+                            subheading: 'Alles was du für mehr Conversions brauchst',
                             items: [
                                 {
+                                    icon: '🎯',
                                     title: 'Mehr Leads',
                                     description: 'Optimierte Opt-in Seiten die konvertieren.',
-                                    icon: '🎯',
                                 },
                                 {
+                                    icon: '⚡',
                                     title: 'Automatisierung',
                                     description: 'Follow-up Sequenzen die automatisch laufen.',
-                                    icon: '⚡',
                                 },
                                 {
+                                    icon: '📊',
                                     title: 'Analytics',
                                     description: 'Verstehe wo deine Leads herkommen.',
-                                    icon: '📊',
                                 },
                             ],
-                        },
+                        }),
                     },
                     {
                         name: 'Opt-in CTA',
-                        type: 'cta',
-                        content: {
-                            title: 'Bereit für mehr Kunden?',
-                            subtitle: 'Starte jetzt und sieh wie dein Business wächst.',
+                        preset: preset_library_1.PRESETS.cta({
+                            heading: 'Bereit für mehr Kunden?',
+                            subheading: 'Starte jetzt und sieh wie dein Business wächst.',
                             buttonText: 'Kostenlos testen',
                             buttonLink: '#optin',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -1140,11 +1113,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Über uns',
-                        type: 'about',
-                        content: {
-                            title: `Über ${tenantName}`,
+                        preset: preset_library_1.PRESETS.about({
+                            heading: `Über ${tenantName}`,
                             description: 'Wer wir sind und warum wir dir helfen können.',
-                        },
+                        }),
                     },
                 ],
             }, {
@@ -1155,11 +1127,10 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                 sections: [
                     {
                         name: 'Kontakt',
-                        type: 'contact',
-                        content: {
-                            title: 'Kontakt aufnehmen',
-                            subtitle: 'Fragen? Wir antworten innerhalb von 24 Stunden.',
-                        },
+                        preset: preset_library_1.PRESETS.contact({
+                            heading: 'Kontakt aufnehmen',
+                            subheading: 'Fragen? Wir antworten innerhalb von 24 Stunden.',
+                        }),
                     },
                 ],
             });
@@ -1169,28 +1140,14 @@ let WebsiteBuilderService = class WebsiteBuilderService {
             slug: 'impressum',
             isHomepage: false,
             order: 100,
-            sections: [
-                {
-                    name: 'Impressum',
-                    type: 'text',
-                    content: {
-                        text: `# Impressum\n\n**${tenantName}**\n\n> ⚠️ Bitte ergänze deine vollständigen Angaben (Adresse, Telefon, E-Mail, ggf. Handelsregisternummer und USt-IdNr.) im Website Builder.`,
-                    },
-                },
-            ],
+            sections: [{ name: 'Impressum', preset: (0, preset_library_1.impressumPreset)(tenantName) }],
         }, {
             name: 'Datenschutz',
             slug: 'datenschutz',
             isHomepage: false,
             order: 101,
             sections: [
-                {
-                    name: 'Datenschutz',
-                    type: 'text',
-                    content: {
-                        text: `# Datenschutzerklärung\n\n**Verantwortlicher:** ${tenantName}\n\n> ⚠️ Bitte ergänze deine vollständigen Kontaktdaten und passe diese Datenschutzerklärung an deine tatsächliche Datenverarbeitung an. Im Onboarding-Wizard werden deine Daten automatisch eingetragen.`,
-                    },
-                },
+                { name: 'Datenschutz', preset: (0, preset_library_1.datenschutzPreset)(tenantName) },
             ],
         });
         const templateName = category === 'website'
@@ -1241,11 +1198,11 @@ let WebsiteBuilderService = class WebsiteBuilderService {
                     tenantId,
                     pageId: page.id,
                     name: s.name,
-                    type: s.type,
+                    type: s.preset.type,
                     order: i,
                     isActive: true,
-                    content: s.content,
-                    styling: null,
+                    content: s.preset.content,
+                    styling: s.preset.styling || null,
                 });
             }
         }

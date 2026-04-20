@@ -205,9 +205,21 @@ exports.wbSectionsRelations = (0, drizzle_orm_1.relations)(exports.wbSections, (
     }),
 }));
 exports.protectedPagesRelations = (0, drizzle_orm_1.relations)(exports.protectedPages, ({ one }) => ({
-    tenant: one(schema_1.tenants, { fields: [exports.protectedPages.tenantId], references: [schema_1.tenants.id] }),
-    page: one(exports.wbPages, { fields: [exports.protectedPages.pageId], references: [exports.wbPages.id] }),
-    requiredPlan: one(schema_1.membershipPlans, { fields: [exports.protectedPages.requiresMembershipPlanId], references: [schema_1.membershipPlans.id] }),
-    requiredCourse: one(schema_1.courses, { fields: [exports.protectedPages.requiresCourseId], references: [schema_1.courses.id] }),
+    tenant: one(schema_1.tenants, {
+        fields: [exports.protectedPages.tenantId],
+        references: [schema_1.tenants.id],
+    }),
+    page: one(exports.wbPages, {
+        fields: [exports.protectedPages.pageId],
+        references: [exports.wbPages.id],
+    }),
+    requiredPlan: one(schema_1.membershipPlans, {
+        fields: [exports.protectedPages.requiresMembershipPlanId],
+        references: [schema_1.membershipPlans.id],
+    }),
+    requiredCourse: one(schema_1.courses, {
+        fields: [exports.protectedPages.requiresCourseId],
+        references: [schema_1.courses.id],
+    }),
 }));
 //# sourceMappingURL=website-builder.schema.js.map
