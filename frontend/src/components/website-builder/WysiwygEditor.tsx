@@ -2106,6 +2106,11 @@ function AddItemBtn({ onClick, label }: { onClick: () => void; label: string }) 
     </div>
   );
 }
+function updateItemField(items: any[], i: number, field: string, value: any) {
+  const next = [...items];
+  next[i] = { ...next[i], [field]: value };
+  return next;
+}
 // ==================== CANVAS SECTION PREVIEW ====================
 
 function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMode, selectedBlockId, onBlockClick, onBlockUpdate, onAddBlock }: {
@@ -3883,50 +3888,33 @@ function InlineAddSection({ onAdd, index }: { onAdd: (type: string, afterIndex: 
         style={{ opacity: 0, transition: 'opacity 0.15s', background: '#238636', border: 'none', borderRadius: '50%', width: 24, height: 24, color: '#fff', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, zIndex: 11, position: 'relative', boxShadow: '0 2px 8px rgba(35,134,54,0.5)' }}>
         +
       </button>
-     {open && typeof document !== 'undefined' && createPortal(
-  <div
-    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-    onClick={e => { if (e.target === e.currentTarget) setOpen(false); }}
-  >
-    <div onClick={e => e.stopPropagation()} style={{ background: '#161b22', border: '1px solid #238636', borderRadius: 10, padding: 14, width: 360, maxWidth: '95vw', boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-        <div>
-          <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#2ea043', margin: 0 }}>⊞ Section einfügen</p>
-          <p style={{ fontSize: '0.65rem', color: '#8b949e', margin: '2px 0 0' }}>Kompletter Bereich mit mehreren Elementen</p>
-        </div>
-        <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5, maxHeight: 360, overflowY: 'auto' }}>
-        {BLOCK_CATEGORIES.flatMap(c => c.blocks).map(block => (
-          <button key={block.type} onClick={() => { onAdd(block.type, index); setOpen(false); }}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '9px 4px', borderRadius: 6, cursor: 'pointer', background: '#0d1117', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.65rem', fontWeight: 600 }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#238636'; e.currentTarget.style.background = '#0f2318'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#21262d'; e.currentTarget.style.background = '#0d1117'; }}>
-            <span style={{ fontSize: '1rem' }}>{block.icon}</span>
-            <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{block.label}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  </div>,
-  document.body
-)}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontSize: '0.72rem', color: '#2ea043', fontWeight: 700 }}>⊞ Section einfügen</span>
-            <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
+      {open && typeof document !== 'undefined' && createPortal(
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={e => { if (e.target === e.currentTarget) setOpen(false); }}
+        >
+          <div onClick={e => e.stopPropagation()} style={{ background: '#161b22', border: '1px solid #238636', borderRadius: 10, padding: 14, width: 360, maxWidth: '95vw', boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+              <div>
+                <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#2ea043', margin: 0 }}>⊞ Section einfügen</p>
+                <p style={{ fontSize: '0.65rem', color: '#8b949e', margin: '2px 0 0' }}>Kompletter Bereich mit mehreren Elementen</p>
+              </div>
+              <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5, maxHeight: 360, overflowY: 'auto' }}>
+              {BLOCK_CATEGORIES.flatMap(c => c.blocks).map(block => (
+                <button key={block.type} onClick={() => { onAdd(block.type, index); setOpen(false); }}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '9px 4px', borderRadius: 6, cursor: 'pointer', background: '#0d1117', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.65rem', fontWeight: 600 }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#238636'; e.currentTarget.style.background = '#0f2318'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#21262d'; e.currentTarget.style.background = '#0d1117'; }}>
+                  <span style={{ fontSize: '1rem' }}>{block.icon}</span>
+                  <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{block.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5, maxHeight: 280, overflowY: 'auto' }}>
-            {BLOCK_CATEGORIES.flatMap(c => c.blocks).map(block => (
-              <button key={block.type} onClick={() => { onAdd(block.type, index); setOpen(false); }}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '7px 4px', borderRadius: 6, cursor: 'pointer', background: '#0d1117', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.65rem', fontWeight: 600 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#238636'; e.currentTarget.style.background = '#0f2318'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#21262d'; e.currentTarget.style.background = '#0d1117'; }}>
-                <span style={{ fontSize: '0.9rem' }}>{block.icon}</span>
-                <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{block.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
