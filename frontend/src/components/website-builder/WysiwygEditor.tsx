@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { NavigationEditor } from './NavigationEditor';
 import { MediaPicker } from './MediaPicker';
+import { createPortal } from 'react-dom';
 
 // ==================== GRAPHQL ====================
 
@@ -1836,9 +1837,71 @@ function FloatingBlockToolbar({ block, onUpdate, onDelete, onDuplicate }: {
 function InlineAddBlock({ sectionId, onAdd }: { sectionId: string; onAdd: (sectionId: string, type: string) => void }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const filtered = FREESTYLE_BLOCK_TYPES.filter(b =>
-    !search || b.label.toLowerCase().includes(search.toLowerCase())
-  );
+  const basisBlocks = FREESTYLE_BLOCK_TYPES.filter(b => b.category === 'basis');
+  const filtered = search
+    ? basisBlocks.filter(b => b.label.toLowerCase().includes(search.toLowerCase()))
+    : basisBlocks;
+
+  const modal = open ? (
+    <div
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)',
+        zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
+      onClick={e => { if (e.target === e.currentTarget) { setOpen(false); setSearch(''); } }}
+    >
+      <div style={{
+        background: '#1c2128', border: '1px solid #30363d', borderRadius: 12,
+        padding: 16, width: 460, maxWidth: '95vw', maxHeight: '80vh',
+        display: 'flex', flexDirection: 'column', boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
+          <div>
+            <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#e6edf3', margin: 0 }}>Element hinzufügen</p>
+            <p style={{ fontSize: '0.68rem', color: '#8b949e', margin: '2px 0 0' }}>Einzelne Bausteine — Text, Button, Bild, Badge, ...</p>
+          </div>
+          <button onClick={() => { setOpen(false); setSearch(''); }}
+            style={{ background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: '1.2rem', lineHeight: 1 }}>✕</button>
+        </div>
+
+        <input
+          autoFocus
+          type="text"
+          placeholder="🔍 Suchen..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{
+            width: '100%', background: '#0d1117', border: '1px solid #30363d',
+            borderRadius: 6, color: '#c9d1d9', padding: '8px 12px', fontSize: '0.8rem',
+            outline: 'none', marginBottom: 12, boxSizing: 'border-box',
+          }}
+        />
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, overflowY: 'auto' }}>
+          {filtered.map(bt => (
+            <button key={bt.type}
+              onClick={() => { onAdd(sectionId, bt.type); setOpen(false); setSearch(''); }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, cursor: 'pointer', background: '#0d1117', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.7rem', fontWeight: 600 }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#58a6ff'; e.currentTarget.style.background = '#161b22'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#21262d'; e.currentTarget.style.background = '#0d1117'; }}>
+              <span style={{ fontSize: '1.25rem' }}>{bt.icon}</span>
+              <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{bt.label}</span>
+            </button>
+          ))}
+          {filtered.length === 0 && (
+            <p style={{ color: '#6e7681', fontSize: '0.75rem', gridColumn: 'span 4', textAlign: 'center', padding: '1rem 0' }}>Nichts gefunden</p>
+          )}
+        </div>
+
+        {/* Hinweis: komplette Sections → grünes + */}
+        <div style={{ marginTop: 12, padding: '8px 10px', background: 'rgba(35,134,54,0.1)', border: '1px solid rgba(35,134,54,0.3)', borderRadius: 6 }}>
+          <p style={{ fontSize: '0.7rem', color: '#2ea043', margin: 0, lineHeight: 1.5 }}>
+            💡 <strong>Komplette Bereiche</strong> (Features, Team, Pricing, Newsletter …) fügst du über das <strong>grüne +</strong> zwischen den Sections ein.
+          </p>
+        </div>
+      </div>
+    </div>
+  ) : null;
 
   return (
     <>
@@ -1850,91 +1913,14 @@ function InlineAddBlock({ sectionId, onAdd }: { sectionId: string; onAdd: (secti
             borderRadius: 8, color: '#58a6ff', padding: '6px 20px', fontSize: '0.75rem',
             fontWeight: 600, cursor: 'pointer', width: '100%',
           }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(88,166,255,0.15)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(88,166,255,0.08)'}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(88,166,255,0.15)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(88,166,255,0.08)')}
         >
           + Element hinzufügen
         </button>
       </div>
 
-      {open && (
-        <div
-          style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)',
-            zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-          onClick={e => { if (e.target === e.currentTarget) { setOpen(false); setSearch(''); } }}
-        >
-          <div style={{
-            background: '#1c2128', border: '1px solid #30363d', borderRadius: 12,
-            padding: 16, width: 480, maxWidth: '95vw', maxHeight: '80vh',
-            display: 'flex', flexDirection: 'column', boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#e6edf3', margin: 0 }}>Element hinzufügen</p>
-              <button onClick={() => { setOpen(false); setSearch(''); }}
-                style={{ background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: '1.2rem', lineHeight: 1 }}>✕</button>
-            </div>
-            <input
-              autoFocus
-              type="text"
-              placeholder="🔍 Suchen..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{
-                width: '100%', background: '#0d1117', border: '1px solid #30363d',
-                borderRadius: 6, color: '#c9d1d9', padding: '8px 12px', fontSize: '0.8rem',
-                outline: 'none', marginBottom: 12, boxSizing: 'border-box',
-              }}
-            />
-            {!search && (
-              <>
-                <p style={{ fontSize: '0.65rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Basis</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 12 }}>
-                  {FREESTYLE_BLOCK_TYPES.filter(bt => bt.category === 'basis').map(bt => (
-                    <button key={bt.type}
-                      onClick={() => { onAdd(sectionId, bt.type); setOpen(false); setSearch(''); }}
-                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, cursor: 'pointer', background: '#0d1117', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.7rem', fontWeight: 600 }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#58a6ff'; e.currentTarget.style.background = '#161b22'; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#21262d'; e.currentTarget.style.background = '#0d1117'; }}>
-                      <span style={{ fontSize: '1.25rem' }}>{bt.icon}</span>
-                      <span>{bt.label}</span>
-                    </button>
-                  ))}
-                </div>
-                <p style={{ fontSize: '0.65rem', color: '#6e7681', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Komplex</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, overflowY: 'auto' }}>
-                  {FREESTYLE_BLOCK_TYPES.filter(bt => bt.category === 'komplex').map(bt => (
-                    <button key={bt.type}
-                      onClick={() => { onAdd(sectionId, bt.type); setOpen(false); setSearch(''); }}
-                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, cursor: 'pointer', background: 'rgba(88,166,255,0.04)', border: '1px solid rgba(88,166,255,0.15)', color: '#c9d1d9', fontSize: '0.7rem', fontWeight: 600 }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#58a6ff'; e.currentTarget.style.background = 'rgba(88,166,255,0.12)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(88,166,255,0.15)'; e.currentTarget.style.background = 'rgba(88,166,255,0.04)'; }}>
-                      <span style={{ fontSize: '1.25rem' }}>{bt.icon}</span>
-                      <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{bt.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-            {search && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, overflowY: 'auto' }}>
-                {filtered.map(bt => (
-                  <button key={bt.type}
-                    onClick={() => { onAdd(sectionId, bt.type); setOpen(false); setSearch(''); }}
-                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, cursor: 'pointer', background: '#0d1117', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.7rem', fontWeight: 600 }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#58a6ff'; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#21262d'; }}>
-                    <span style={{ fontSize: '1.25rem' }}>{bt.icon}</span>
-                    <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{bt.label}</span>
-                  </button>
-                ))}
-                {filtered.length === 0 && <p style={{ color: '#6e7681', fontSize: '0.75rem', gridColumn: 'span 4', textAlign: 'center', padding: '1rem 0' }}>Nichts gefunden</p>}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {typeof document !== 'undefined' && createPortal(modal, document.body)}
     </>
   );
 }
@@ -2287,24 +2273,26 @@ case 'columns': {
 case 'feature-grid': {
   const isBlockSelected = selectedBlockId === block.id;
   const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
+  const updField = (i: number, f: string, v: string) => updateItems(updateItemField(block.items || [], i, f, v));
   return (
     <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 3}, 1fr)`, gap: '1rem' }}>
         {(block.items || []).map((item: any, i: number) => (
           <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
-            onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+            onClick={() => setSelectedItemIdx(i)}
             onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
             <div style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', textAlign: 'center' }}>
-              {item.icon && <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>}
-              <h3 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.95rem' }}>{item.title}</h3>
-              <p style={{ fontSize: '0.8rem', opacity: 0.7, margin: 0 }}>{item.description}</p>
-              {item.price && <p style={{ fontWeight: 700, color: primary, marginTop: '0.5rem', fontSize: '0.9rem' }}>{item.price}</p>}
+              <InlineEditable as="div" value={item.icon || ''} placeholder="⭐" onSave={v => updField(i, 'icon', v)}
+                style={{ fontSize: '2rem', marginBottom: '0.5rem', outline: 'none', cursor: 'text' }} />
+              <InlineEditable as="h3" value={item.title || ''} placeholder="Titel" onSave={v => updField(i, 'title', v)}
+                style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.95rem', outline: 'none', cursor: 'text' }} />
+              <InlineEditable as="p" value={item.description || ''} placeholder="Beschreibung" onSave={v => updField(i, 'description', v)}
+                style={{ fontSize: '0.8rem', opacity: 0.7, margin: 0, outline: 'none', cursor: 'text' }} />
+              {(item.price || isBlockSelected) && (
+                <InlineEditable as="p" value={item.price || ''} placeholder="Preis (optional)" onSave={v => updField(i, 'price', v)}
+                  style={{ fontWeight: 700, color: primary, marginTop: '0.5rem', fontSize: '0.9rem', outline: 'none', cursor: 'text' }} />
+              )}
             </div>
-            {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
-              <FloatingItemEditor block={block} itemIndex={i}
-                onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
-                onClose={() => setSelectedItemIdx(null)} />
-            )}
           </ItemOverlay>
         ))}
       </div>
@@ -2319,21 +2307,20 @@ case 'feature-grid': {
 case 'stat-grid': {
   const isBlockSelected = selectedBlockId === block.id;
   const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
+  const updField = (i: number, f: string, v: string) => updateItems(updateItemField(block.items || [], i, f, v));
   return (
     <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 4}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
         {(block.items || []).map((item: any, i: number) => (
           <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
-            onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+            onClick={() => setSelectedItemIdx(i)}
             onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
-            <div style={{ fontSize: isMobile ? '1.75rem' : '2.25rem', fontWeight: 800, color: primary }}>{item.value}</div>
-            <div style={{ fontWeight: 600, margin: '0.2rem 0 0.1rem', fontSize: '0.9rem' }}>{item.label}</div>
-            {item.description && <div style={{ opacity: 0.6, fontSize: '0.75rem' }}>{item.description}</div>}
-            {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
-              <FloatingItemEditor block={block} itemIndex={i}
-                onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
-                onClose={() => setSelectedItemIdx(null)} />
-            )}
+            <InlineEditable as="div" value={item.value || ''} placeholder="0" onSave={v => updField(i, 'value', v)}
+              style={{ fontSize: isMobile ? '1.75rem' : '2.25rem', fontWeight: 800, color: primary, outline: 'none', cursor: 'text' }} />
+            <InlineEditable as="div" value={item.label || ''} placeholder="Label" onSave={v => updField(i, 'label', v)}
+              style={{ fontWeight: 600, margin: '0.2rem 0 0.1rem', fontSize: '0.9rem', outline: 'none', cursor: 'text' }} />
+            <InlineEditable as="div" value={item.description || ''} placeholder="Beschreibung (optional)" onSave={v => updField(i, 'description', v)}
+              style={{ opacity: 0.6, fontSize: '0.75rem', outline: 'none', cursor: 'text' }} />
           </ItemOverlay>
         ))}
       </div>
@@ -2348,28 +2335,35 @@ case 'stat-grid': {
 case 'testimonial-grid': {
   const isBlockSelected = selectedBlockId === block.id;
   const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
+  const updField = (i: number, f: string, v: string) => updateItems(updateItemField(block.items || [], i, f, v));
   return (
     <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 2}, 1fr)`, gap: '1rem' }}>
         {(block.items || []).map((item: any, i: number) => (
           <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
-            onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+            onClick={() => setSelectedItemIdx(i)}
             onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
             <div style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', fontStyle: 'italic' }}>
-              <p style={{ margin: '0 0 0.75rem', fontSize: '0.875rem' }}>„{item.text}"</p>
+              <InlineEditable as="p" value={item.text || ''} placeholder="Bewertung..." onSave={v => updField(i, 'text', v)}
+                style={{ margin: '0 0 0.75rem', fontSize: '0.875rem', outline: 'none', cursor: 'text' }} />
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                {item.image && <div style={{ width: 36, height: 36, borderRadius: '50%', background: primary, overflow: 'hidden', flexShrink: 0 }}><img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
-                <div>
-                  <p style={{ fontWeight: 600, fontStyle: 'normal', margin: 0, fontSize: '0.85rem' }}>{item.name}</p>
-                  {item.role && <p style={{ opacity: 0.6, fontStyle: 'normal', margin: 0, fontSize: '0.75rem' }}>{item.role}</p>}
+                <div onClick={e => {
+                  e.stopPropagation();
+                  const url = prompt('Bild-URL:', item.image || '');
+                  if (url !== null) updField(i, 'image', url);
+                }}
+                  style={{ width: 36, height: 36, borderRadius: '50%', background: primary, overflow: 'hidden', flexShrink: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.9rem' }}
+                  title="Klick → Bild-URL setzen">
+                  {item.image ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '🖼'}
+                </div>
+                <div style={{ fontStyle: 'normal' }}>
+                  <InlineEditable as="p" value={item.name || ''} placeholder="Name" onSave={v => updField(i, 'name', v)}
+                    style={{ fontWeight: 600, margin: 0, fontSize: '0.85rem', outline: 'none', cursor: 'text' }} />
+                  <InlineEditable as="p" value={item.role || ''} placeholder="Rolle" onSave={v => updField(i, 'role', v)}
+                    style={{ opacity: 0.6, margin: 0, fontSize: '0.75rem', outline: 'none', cursor: 'text' }} />
                 </div>
               </div>
             </div>
-            {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
-              <FloatingItemEditor block={block} itemIndex={i}
-                onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
-                onClose={() => setSelectedItemIdx(null)} />
-            )}
           </ItemOverlay>
         ))}
       </div>
@@ -2384,23 +2378,27 @@ case 'testimonial-grid': {
 case 'team-grid': {
   const isBlockSelected = selectedBlockId === block.id;
   const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
+  const updField = (i: number, f: string, v: string) => updateItems(updateItemField(block.items || [], i, f, v));
   return (
     <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 3}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
         {(block.items || []).map((item: any, i: number) => (
           <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
-            onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+            onClick={() => setSelectedItemIdx(i)}
             onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
-            <div style={{ width: 64, height: 64, borderRadius: '50%', background: primary, margin: '0 auto 0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.5rem', overflow: 'hidden' }}>
+            <div onClick={e => {
+              e.stopPropagation();
+              const url = prompt('Bild-URL:', item.image || '');
+              if (url !== null) updField(i, 'image', url);
+            }}
+              style={{ width: 64, height: 64, borderRadius: '50%', background: primary, margin: '0 auto 0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.5rem', overflow: 'hidden', cursor: 'pointer' }}
+              title="Klick → Bild-URL setzen">
               {item.image ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
             </div>
-            <h3 style={{ fontWeight: 600, margin: '0 0 0.15rem', fontSize: '0.9rem' }}>{item.name}</h3>
-            <p style={{ opacity: 0.6, fontSize: '0.8rem', margin: 0 }}>{item.role}</p>
-            {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
-              <FloatingItemEditor block={block} itemIndex={i}
-                onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
-                onClose={() => setSelectedItemIdx(null)} />
-            )}
+            <InlineEditable as="h3" value={item.name || ''} placeholder="Name" onSave={v => updField(i, 'name', v)}
+              style={{ fontWeight: 600, margin: '0 0 0.15rem', fontSize: '0.9rem', outline: 'none', cursor: 'text' }} />
+            <InlineEditable as="p" value={item.role || ''} placeholder="Rolle" onSave={v => updField(i, 'role', v)}
+              style={{ opacity: 0.6, fontSize: '0.8rem', margin: 0, outline: 'none', cursor: 'text' }} />
           </ItemOverlay>
         ))}
       </div>
@@ -2415,21 +2413,19 @@ case 'team-grid': {
 case 'faq-list': {
   const isBlockSelected = selectedBlockId === block.id;
   const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
+  const updField = (i: number, f: string, v: string) => updateItems(updateItemField(block.items || [], i, f, v));
   return (
     <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
       {(block.items || []).map((item: any, i: number) => (
         <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
-          onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+          onClick={() => setSelectedItemIdx(i)}
           onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
           <div style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', padding: '0.875rem 0' }}>
-            <h4 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.9rem' }}>{item.question}</h4>
-            <p style={{ fontSize: '0.82rem', opacity: 0.7, margin: 0 }}>{item.answer}</p>
+            <InlineEditable as="h4" value={item.question || ''} placeholder="Frage?" onSave={v => updField(i, 'question', v)}
+              style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.9rem', outline: 'none', cursor: 'text' }} />
+            <InlineEditable as="p" value={item.answer || ''} placeholder="Antwort" onSave={v => updField(i, 'answer', v)}
+              style={{ fontSize: '0.82rem', opacity: 0.7, margin: 0, outline: 'none', cursor: 'text' }} />
           </div>
-          {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
-            <FloatingItemEditor block={block} itemIndex={i}
-              onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
-              onClose={() => setSelectedItemIdx(null)} />
-          )}
         </ItemOverlay>
       ))}
       {isBlockSelected && onBlockUpdate && (
@@ -2440,30 +2436,63 @@ case 'faq-list': {
   );
 }
 
-// pricing-grid fehlt noch im Code → jetzt hinzufügen (war vorher in 'items: content.plans' Fallback)
 case 'pricing-grid': {
   const isBlockSelected = selectedBlockId === block.id;
   const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
+  const updField = (i: number, f: string, v: any) => updateItems(updateItemField(block.items || [], i, f, v));
   return (
     <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 2}, 1fr)`, gap: '1rem' }}>
         {(block.items || []).map((item: any, i: number) => (
           <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
-            onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+            onClick={() => setSelectedItemIdx(i)}
             onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
-            <div style={{ padding: '1.5rem', borderRadius: '0.75rem', background: item.highlighted ? primary : 'rgba(0,0,0,0.05)', color: item.highlighted ? '#fff' : 'inherit', textAlign: 'center', border: item.highlighted ? `2px solid ${primary}` : '2px solid transparent' }}>
-              <h3 style={{ fontWeight: 700, fontSize: '1.1rem', margin: '0 0 0.5rem' }}>{item.title}</h3>
-              <div style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0.5rem 0' }}>{item.price}<span style={{ fontSize: '0.8rem', fontWeight: 400, opacity: 0.7 }}>/{item.interval}</span></div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '1rem 0', fontSize: '0.82rem', textAlign: 'left' }}>
-                {(item.features || []).map((f: string, k: number) => <li key={k} style={{ margin: '0.35rem 0' }}>✓ {f}</li>)}
-              </ul>
-              <div style={{ display: 'inline-block', padding: '0.5rem 1.25rem', background: item.highlighted ? '#fff' : btnBg, color: item.highlighted ? primary : btnText, borderRadius: '0.5rem', fontWeight: 600, fontSize: '0.85rem' }}>{item.buttonText || 'Wählen'}</div>
+            <div style={{ padding: '1.5rem', borderRadius: '0.75rem', background: item.highlighted ? primary : 'rgba(0,0,0,0.05)', color: item.highlighted ? '#fff' : 'inherit', textAlign: 'center', border: item.highlighted ? `2px solid ${primary}` : '2px solid transparent', position: 'relative' }}>
+              {isBlockSelected && selectedItemIdx === i && (
+                <button onClick={e => { e.stopPropagation(); updField(i, 'highlighted', !item.highlighted); }}
+                  style={{ position: 'absolute', top: 8, left: 8, fontSize: '0.6rem', fontWeight: 700, padding: '2px 7px', borderRadius: 4, border: 'none', background: item.highlighted ? '#fff' : '#1f6feb', color: item.highlighted ? primary : '#fff', cursor: 'pointer' }}>
+                  {item.highlighted ? '⭐ Highlighted' : '☆ Highlighten'}
+                </button>
+              )}
+              <InlineEditable as="h3" value={item.title || ''} placeholder="Paket" onSave={v => updField(i, 'title', v)}
+                style={{ fontWeight: 700, fontSize: '1.1rem', margin: '0 0 0.5rem', outline: 'none', cursor: 'text' }} />
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0.5rem 0' }}>
+                <InlineEditable as="span" value={item.price || ''} placeholder="€0" onSave={v => updField(i, 'price', v)}
+                  style={{ outline: 'none', cursor: 'text' }} />
+                <span style={{ fontSize: '0.8rem', fontWeight: 400, opacity: 0.7 }}>/
+                  <InlineEditable as="span" value={item.interval || ''} placeholder="Monat" onSave={v => updField(i, 'interval', v)}
+                    style={{ outline: 'none', cursor: 'text' }} />
+                </span>
+              </div>
+              <div style={{ margin: '1rem 0', fontSize: '0.82rem', textAlign: 'left' }}>
+                {(item.features || []).map((f: string, k: number) => (
+                  <div key={k} style={{ margin: '0.35rem 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>✓</span>
+                    <InlineEditable as="span" value={f} placeholder="Feature" onSave={v => {
+                      const newFeatures = [...(item.features || [])];
+                      newFeatures[k] = v;
+                      updField(i, 'features', newFeatures);
+                    }}
+                      style={{ flex: 1, outline: 'none', cursor: 'text' }} />
+                    {isBlockSelected && (
+                      <button onClick={e => {
+                        e.stopPropagation();
+                        updField(i, 'features', (item.features || []).filter((_: any, j: number) => j !== k));
+                      }}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f85149', fontSize: '0.7rem', padding: 0 }}>✕</button>
+                    )}
+                  </div>
+                ))}
+                {isBlockSelected && (
+                  <button onClick={e => { e.stopPropagation(); updField(i, 'features', [...(item.features || []), 'Neues Feature']); }}
+                    style={{ background: 'transparent', border: '1px dashed rgba(0,0,0,0.2)', borderRadius: 4, color: 'inherit', opacity: 0.6, padding: '2px 8px', fontSize: '0.7rem', cursor: 'pointer', marginTop: 4 }}>
+                    + Feature
+                  </button>
+                )}
+              </div>
+              <InlineEditable as="span" value={item.buttonText || ''} placeholder="Wählen" onSave={v => updField(i, 'buttonText', v)}
+                style={{ display: 'inline-block', padding: '0.5rem 1.25rem', background: item.highlighted ? '#fff' : btnBg, color: item.highlighted ? primary : btnText, borderRadius: '0.5rem', fontWeight: 600, fontSize: '0.85rem', outline: 'none', cursor: 'text' }} />
             </div>
-            {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
-              <FloatingItemEditor block={block} itemIndex={i}
-                onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
-                onClose={() => setSelectedItemIdx(null)} />
-            )}
           </ItemOverlay>
         ))}
       </div>
@@ -2474,7 +2503,6 @@ case 'pricing-grid': {
     </div>
   );
 }
-
 case 'image-grid': {
   const isBlockSelected = selectedBlockId === block.id;
   const updateImages = (images: any[]) => onBlockUpdate?.(section.id, block.id, { images });
@@ -3855,8 +3883,34 @@ function InlineAddSection({ onAdd, index }: { onAdd: (type: string, afterIndex: 
         style={{ opacity: 0, transition: 'opacity 0.15s', background: '#238636', border: 'none', borderRadius: '50%', width: 24, height: 24, color: '#fff', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, zIndex: 11, position: 'relative', boxShadow: '0 2px 8px rgba(35,134,54,0.5)' }}>
         +
       </button>
-      {open && (
-        <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 30, left: '50%', transform: 'translateX(-50%)', background: '#161b22', border: '1px solid #238636', borderRadius: 10, padding: 10, zIndex: 500, width: 320, boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
+     {open && typeof document !== 'undefined' && createPortal(
+  <div
+    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+    onClick={e => { if (e.target === e.currentTarget) setOpen(false); }}
+  >
+    <div onClick={e => e.stopPropagation()} style={{ background: '#161b22', border: '1px solid #238636', borderRadius: 10, padding: 14, width: 360, maxWidth: '95vw', boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+        <div>
+          <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#2ea043', margin: 0 }}>⊞ Section einfügen</p>
+          <p style={{ fontSize: '0.65rem', color: '#8b949e', margin: '2px 0 0' }}>Kompletter Bereich mit mehreren Elementen</p>
+        </div>
+        <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5, maxHeight: 360, overflowY: 'auto' }}>
+        {BLOCK_CATEGORIES.flatMap(c => c.blocks).map(block => (
+          <button key={block.type} onClick={() => { onAdd(block.type, index); setOpen(false); }}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '9px 4px', borderRadius: 6, cursor: 'pointer', background: '#0d1117', border: '1px solid #21262d', color: '#c9d1d9', fontSize: '0.65rem', fontWeight: 600 }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#238636'; e.currentTarget.style.background = '#0f2318'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#21262d'; e.currentTarget.style.background = '#0d1117'; }}>
+            <span style={{ fontSize: '1rem' }}>{block.icon}</span>
+            <span style={{ textAlign: 'center', lineHeight: 1.2 }}>{block.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>,
+  document.body
+)}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <span style={{ fontSize: '0.72rem', color: '#2ea043', fontWeight: 700 }}>⊞ Section einfügen</span>
             <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
