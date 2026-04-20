@@ -439,6 +439,7 @@ export declare class PublicService {
         updatedAt: Date;
     } | null>;
     getDefaultTemplateId(tenantSlug: string): Promise<string | null>;
+    getWbTemplateSettings(tenantSlug: string, templateId: string): Promise<Record<string, unknown>>;
     getPublishedPosts(tenantSlug: string): Promise<{
         id: string;
         tenantId: string;
@@ -591,7 +592,7 @@ export declare class PublicService {
         description: string | null;
         location: string;
         items: {
-            [x: string]: any;
+            id: string;
         }[];
     } | null>;
     subscribeToNewsletter(tenantSlug: string, data: {

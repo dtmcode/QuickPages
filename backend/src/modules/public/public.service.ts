@@ -288,7 +288,25 @@ export class PublicService {
 
     return defaultTemplate?.id ?? null;
   }
+async getWbTemplateSettings(
+    tenantSlug: string,
+    templateId: string,
+  ): Promise<Record<string, unknown>> {
+    const tenantId = await this.getTenantId(tenantSlug);
 
+    const [template] = await this.db
+      .select({ settings: wbTemplates.settings })
+      .from(wbTemplates)
+      .where(
+        and(
+          eq(wbTemplates.id, templateId),
+          eq(wbTemplates.tenantId, tenantId),
+        ),
+      )
+      .limit(1);
+
+    return (template?.settings as Record<string, unknown>) ?? {};
+  }
   // ==================== POSTS ====================
 
   async getPublishedPosts(tenantSlug: string) {

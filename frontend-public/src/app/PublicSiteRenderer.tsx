@@ -90,9 +90,17 @@ interface SectionComponentProps {
   tenant: string;
 }
 
+interface TemplateSettings {
+  colors?: { primary?: string; secondary?: string; accent?: string; background?: string; text?: string };
+  fonts?: { heading?: string; body?: string };
+  button?: { style?: string; radius?: string; size?: string };
+  logo?: { url?: string; text?: string };
+}
+
 interface Props {
   page: PageData;
   tenantSlug?: string;
+  templateSettings?: TemplateSettings;
 }
 
 // ─── 1. RESTAURANT MENU SECTION ──────────────────────────────────────────────
@@ -488,7 +496,9 @@ function FunnelOptinSection({
   );
 }
 
-export default function PublicSiteRenderer({ page, tenantSlug }: Props) {
+export default function PublicSiteRenderer({ page, tenantSlug, templateSettings }: Props) {
+
+
   // Resolve tenant slug from prop or from hostname
   const resolvedTenant = tenantSlug || (typeof window !== 'undefined'
     ? window.location.hostname.split('.')[0]
@@ -556,10 +566,11 @@ const containerStyle: React.CSSProperties = {
       color: styling.headingColor || 'inherit',
     };
 
-    const buttonStyle: React.CSSProperties = {
-      backgroundColor: styling.buttonColor || '#3b82f6',
-      color: styling.buttonTextColor || '#ffffff',
-    };
+   const buttonStyle: React.CSSProperties = {
+  backgroundColor: styling.buttonColor || templateSettings?.colors?.primary || '#3b82f6',
+  color: styling.buttonTextColor || '#ffffff',
+  borderRadius: templateSettings?.button?.radius || undefined,
+};
 
   const h = content?.heading || content?.title || '';
     const getItems = (): any[] => content?.items || content?.plans || content?.members || content?.testimonials || content?.faqs || content?.stats || [];
@@ -1245,8 +1256,12 @@ case 'funnel_optin':
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {activeSections.length > 0 ? (
+  <div className="min-h-screen" style={{
+    backgroundColor: templateSettings?.colors?.background || '#ffffff',
+    color: templateSettings?.colors?.text || '#1f2937',
+    fontFamily: templateSettings?.fonts?.body || 'system-ui, sans-serif',
+  }}>
+    {activeSections.length > 0 ? (
         activeSections.map((section) => (
           <div key={section.id}>{renderSection(section)}</div>
         ))

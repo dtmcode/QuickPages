@@ -174,6 +174,15 @@ export class PublicController {
       pageSlug,
     );
   }
+  @Get('wb/template-settings')
+  async getWbTemplateSettings(@Param('tenant') tenantSlug: string) {
+    const templateId = await this.getDefaultTemplateId(tenantSlug);
+    if (!templateId) return {};
+    return await this.publicService.getWbTemplateSettings(
+      tenantSlug,
+      templateId,
+    );
+  }
 
   @Post('newsletter/subscribe')
   async subscribe(
@@ -229,73 +238,73 @@ export class PublicController {
       return null;
     }
   }
-   // ==================== RESTAURANT ====================
+  // ==================== RESTAURANT ====================
 
-@Get('restaurant/settings')
-async getRestaurantSettings(@Param('tenant') tenant: string) {
-  return this.publicService.getRestaurantSettings(tenant);
-}
+  @Get('restaurant/settings')
+  async getRestaurantSettings(@Param('tenant') tenant: string) {
+    return this.publicService.getRestaurantSettings(tenant);
+  }
 
-@Get('restaurant/menu')
-async getRestaurantMenu(@Param('tenant') tenant: string) {
-  return this.publicService.getRestaurantMenu(tenant);
-}
+  @Get('restaurant/menu')
+  async getRestaurantMenu(@Param('tenant') tenant: string) {
+    return this.publicService.getRestaurantMenu(tenant);
+  }
 
-@Post('restaurant/order')
-async createRestaurantOrder(
-  @Param('tenant') tenant: string,
-  @Body() body: Record<string, unknown>,
-) {
-  // direkt an RestaurantService weiterleiten (über injection oder sql)
-  return { message: 'Order received' }; // Platzhalter — RestaurantService injecten
-}
+  @Post('restaurant/order')
+  async createRestaurantOrder(
+    @Param('tenant') tenant: string,
+    @Body() body: Record<string, unknown>,
+  ) {
+    // direkt an RestaurantService weiterleiten (über injection oder sql)
+    return { message: 'Order received' }; // Platzhalter — RestaurantService injecten
+  }
 
-// ==================== LOCAL STORE ====================
+  // ==================== LOCAL STORE ====================
 
-@Get('local-store/settings')
-async getLocalStoreSettings(@Param('tenant') tenant: string) {
-  return this.publicService.getLocalStoreSettings(tenant);
-}
+  @Get('local-store/settings')
+  async getLocalStoreSettings(@Param('tenant') tenant: string) {
+    return this.publicService.getLocalStoreSettings(tenant);
+  }
 
-@Get('local-store/products')
-async getLocalStoreProducts(@Param('tenant') tenant: string) {
-  return this.publicService.getLocalStoreProducts(tenant);
-}
+  @Get('local-store/products')
+  async getLocalStoreProducts(@Param('tenant') tenant: string) {
+    return this.publicService.getLocalStoreProducts(tenant);
+  }
 
-@Get('local-store/slots')
-async getLocalStoreSlots(@Param('tenant') tenant: string) {
-  return this.publicService.getLocalStoreSlots(tenant);
-}
+  @Get('local-store/slots')
+  async getLocalStoreSlots(@Param('tenant') tenant: string) {
+    return this.publicService.getLocalStoreSlots(tenant);
+  }
 
-// ==================== COURSES ====================
+  // ==================== COURSES ====================
 
-@Get('courses')
-async getPublicCourses(@Param('tenant') tenant: string) {
-  return this.publicService.getPublicCourses(tenant);
-}
+  @Get('courses')
+  async getPublicCourses(@Param('tenant') tenant: string) {
+    return this.publicService.getPublicCourses(tenant);
+  }
 
-@Get('courses/:slug')
-async getPublicCourse(
-  @Param('tenant') tenant: string,
-  @Param('slug') slug: string,
-) {
-  return this.publicService.getPublicCourseBySlug(tenant, slug);
-}
+  @Get('courses/:slug')
+  async getPublicCourse(
+    @Param('tenant') tenant: string,
+    @Param('slug') slug: string,
+  ) {
+    return this.publicService.getPublicCourseBySlug(tenant, slug);
+  }
 
-// ==================== MEMBERSHIP ====================
+  // ==================== MEMBERSHIP ====================
 
-@Get('membership/plans')
-async getMembershipPlans(@Param('tenant') tenant: string) {
-  return this.publicService.getPublicMembershipPlans(tenant);
-}
+  @Get('membership/plans')
+  async getMembershipPlans(@Param('tenant') tenant: string) {
+    return this.publicService.getPublicMembershipPlans(tenant);
+  }
 
-// ==================== FUNNELS ====================
+  // ==================== FUNNELS ====================
 
-@Get('funnel/:slug')
-async getFunnel(
-  @Param('tenant') tenant: string,
-  @Param('slug') slug: string,
-) {
-  return this.publicService.getPublicFunnel(tenant, slug);
-}
+  @Get('funnel/:slug')
+  async getFunnel(
+    @Param('tenant') tenant: string,
+    @Param('slug') slug: string,
+  ) {
+    return this.publicService.getPublicFunnel(tenant, slug);
+  }
 }

@@ -114,7 +114,7 @@ export declare class PublicController {
         description: string | null;
         location: string;
         items: {
-            [x: string]: any;
+            id: string;
         }[];
     } | null>;
     getProducts(tenantSlug: string): Promise<{
@@ -615,6 +615,7 @@ export declare class PublicController {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    getWbTemplateSettings(tenantSlug: string): Promise<Record<string, unknown>>;
     subscribe(tenantSlug: string, body: NewsletterSubscribeBody): Promise<{
         success: boolean;
         message: string;

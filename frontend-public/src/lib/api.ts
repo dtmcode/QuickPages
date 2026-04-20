@@ -142,6 +142,13 @@ async getBranding(): Promise<TenantBranding> {
   async getWbPages(): Promise<WbPage[]> {
     return this.fetchWithCache<WbPage[]>('/wb/pages', 0);
   }
+  async getWbTemplateSettings(): Promise<Record<string, any>> {
+  try {
+    return await this.fetchWithCache<Record<string, any>>('/wb/template-settings', 0);
+  } catch {
+    return {};
+  }
+}
 }
 
 export function getAPI(tenant: string) {

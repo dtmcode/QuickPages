@@ -182,6 +182,15 @@ let PublicService = class PublicService {
             .limit(1);
         return defaultTemplate?.id ?? null;
     }
+    async getWbTemplateSettings(tenantSlug, templateId) {
+        const tenantId = await this.getTenantId(tenantSlug);
+        const [template] = await this.db
+            .select({ settings: website_builder_schema_1.wbTemplates.settings })
+            .from(website_builder_schema_1.wbTemplates)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(website_builder_schema_1.wbTemplates.id, templateId), (0, drizzle_orm_1.eq)(website_builder_schema_1.wbTemplates.tenantId, tenantId)))
+            .limit(1);
+        return template?.settings ?? {};
+    }
     async getPublishedPosts(tenantSlug) {
         const tenantId = await this.getTenantId(tenantSlug);
         return this.db

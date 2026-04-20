@@ -761,18 +761,36 @@ export default function OnboardingPage(): React.ReactElement {
       // 3. Template-Settings (Farbe & Font)
       if (newTemplateId) {
         try {
-          await updateTemplateMut({
-            variables: {
-              id: newTemplateId,
-              input: {
-                settings: {
-                  colors: { primary: data.primaryColor },
-                  fonts: { body: data.fontFamily, heading: data.fontFamily },
-                },
-              },
-              tenantId: tenant.id,
-            },
-          });
+       await updateTemplateMut({
+  variables: {
+    id: newTemplateId,
+    input: {
+      settings: {
+        colors: {
+          primary: data.primaryColor,
+          secondary: data.primaryColor,
+          accent: data.primaryColor,
+          background: '#ffffff',
+          text: '#1f2937',
+        },
+        fonts: {
+          body: data.fontFamily,
+          heading: data.fontFamily,
+        },
+        button: {
+          style: 'filled',
+          radius: '0.5rem',
+          size: 'md',
+        },
+        logo: {
+          url: data.logoUrl || '',
+          text: data.companyName || 'Site',
+        },
+      },
+    },
+    tenantId: tenant.id,
+  },
+});
         } catch {}
       }
 

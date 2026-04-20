@@ -77,6 +77,12 @@ let PublicController = class PublicController {
             throw new common_1.NotFoundException('No default template found');
         return await this.publicService.getWbPageBySlug(tenantSlug, templateId, pageSlug);
     }
+    async getWbTemplateSettings(tenantSlug) {
+        const templateId = await this.getDefaultTemplateId(tenantSlug);
+        if (!templateId)
+            return {};
+        return await this.publicService.getWbTemplateSettings(tenantSlug, templateId);
+    }
     async subscribe(tenantSlug, body) {
         return await this.publicService.subscribeToNewsletter(tenantSlug, body);
     }
@@ -257,6 +263,13 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], PublicController.prototype, "getWbPage", null);
+__decorate([
+    (0, common_1.Get)('wb/template-settings'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PublicController.prototype, "getWbTemplateSettings", null);
 __decorate([
     (0, common_1.Post)('newsletter/subscribe'),
     __param(0, (0, common_1.Param)('tenant')),

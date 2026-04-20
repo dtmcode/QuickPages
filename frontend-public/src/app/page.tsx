@@ -21,11 +21,18 @@ export default async function HomePage() {
     });
 
     // ✅ BESSERE PRÜFUNG: Wenn Homepage existiert UND Sections hat
-    if (wbHomepage?.sections && wbHomepage.sections.length > 0) {
-      console.log('✅ Rendering Website Builder Homepage');
-      return <PublicSiteRenderer page={wbHomepage} />;
-    }
-
+ if (wbHomepage?.sections && wbHomepage.sections.length > 0) {
+  console.log('✅ Rendering Website Builder Homepage');
+  
+  // Template-Settings laden (für Farben, Logo, Fonts)
+  const templateSettings = await api.getWbTemplateSettings?.().catch(() => ({})) || {};
+  
+  return <PublicSiteRenderer 
+    page={wbHomepage} 
+    tenantSlug={tenantSlug}
+    templateSettings={templateSettings}
+  />;
+}
     // ✅ FALLBACK: Wenn Homepage existiert aber KEINE Sections
     if (wbHomepage && (!wbHomepage.sections || wbHomepage.sections.length === 0)) {
       return (

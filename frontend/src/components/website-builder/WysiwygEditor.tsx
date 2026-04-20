@@ -153,6 +153,7 @@ interface TemplateSettings {
     size?: 'sm' | 'md' | 'lg';
     shadowColor?: string;
   };
+   logo?: { url?: string; text?: string }; 
 }
 interface NavItem {
   id: string; label: string; type: string; url?: string;
@@ -4415,19 +4416,28 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
     boxShadow: '0 0 0 1px #21262d, 0 24px 64px rgba(0,0,0,0.6)',
     borderRadius: 8, overflow: 'visible',
     fontFamily: templateSettings?.fonts?.body || 'system-ui, sans-serif'
-}}>{navigations.filter(n => n.location === 'header').length === 0 ? (
-      <div onClick={() => setShowNavEditor(true)} style={{
-        background: '#f9fafb', borderBottom: '1px solid rgba(0,0,0,0.1)',
-        padding: '0 1.5rem', height: 56, display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', cursor: 'pointer',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 6, background: templateSettings?.colors?.primary || '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.75rem', fontWeight: 700 }}>S</div>
-          <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1f2937' }}>Dein Logo</span>
-        </div>
-        <span style={{ fontSize: '0.72rem', color: '#9ca3af', fontStyle: 'italic' }}>+ Navigation erstellen (klicken)</span>
+}}>{navigations.filter(n => n.location === 'header').length === 0 ? (() => {
+  const logoUrl = templateSettings?.logo?.url || '';
+  const logoText = templateSettings?.logo?.text || tenant?.name || 'Site';
+  const logoInitial = logoText.charAt(0).toUpperCase() || 'S';
+  return (
+    <div onClick={() => setShowNavEditor(true)} style={{
+      background: '#f9fafb', borderBottom: '1px solid rgba(0,0,0,0.1)',
+      padding: '0 1.5rem', height: 56, display: 'flex', alignItems: 'center',
+      justifyContent: 'space-between', cursor: 'pointer',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {logoUrl ? (
+          <img src={logoUrl} alt={logoText} style={{ height: 28, objectFit: 'contain' }} />
+        ) : (
+          <div style={{ width: 28, height: 28, borderRadius: 6, background: templateSettings?.colors?.primary || '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.75rem', fontWeight: 700 }}>{logoInitial}</div>
+        )}
+        <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1f2937' }}>{logoText}</span>
       </div>
-    ) : navigations.filter(n => n.location === 'header').map(nav => (
+      <span style={{ fontSize: '0.72rem', color: '#9ca3af', fontStyle: 'italic' }}>+ Navigation erstellen (klicken)</span>
+    </div>
+   );
+})()  : navigations.filter(n => n.location === 'header').map(nav => (
   <NavBarPreview key={nav.id} nav={nav} isSelected={selectedNavId === nav.id}
     onClick={() => { setSelectedNavId(nav.id); setSelectedId(null); }}
     primary={templateSettings?.colors?.primary || '#3b82f6'} />
