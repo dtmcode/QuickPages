@@ -606,7 +606,8 @@ const DEFAULT_BLOCK: Record<string, any> = {
   icon: { emoji: '⭐', size: '3rem', align: 'center' },
   list: { items: ['Punkt 1', 'Punkt 2', 'Punkt 3'], style: 'check', align: 'left' },
   video: { url: '', align: 'center' },
-  columns: { left: [], right: [], split: '50/50' },
+  columns: { leftBlocks: [], rightBlocks: [], split: '50/50' },
+
   // Komplex
   'feature-grid': { columns: 3, items: [
     { icon: '⚡', title: 'Feature 1', description: 'Beschreibung' },
@@ -710,12 +711,13 @@ const dragBlockIdx = useRef<number | null>(null);
   const selectedBlock = blocks.find(b => b.id === selectedBlockId) || null;
 // Sync external selection (Canvas click → Panel)
 useEffect(() => {
-  if (externalSelectedBlockId !== undefined && externalSelectedBlockId !== null) {
+  if (externalSelectedBlockId !== undefined) {
     setSelectedBlockId(externalSelectedBlockId);
-    // Scroll to block in list
-    setTimeout(() => {
-      document.getElementById(`block-item-${externalSelectedBlockId}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 50);
+    if (externalSelectedBlockId) {
+      setTimeout(() => {
+        document.getElementById(`block-item-${externalSelectedBlockId}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
+    }
   }
 }, [externalSelectedBlockId]);
   const inputStyle: React.CSSProperties = {
@@ -1912,6 +1914,81 @@ function FloatingItemEditor({ block, itemIndex, onUpdate, onClose }: {
     </div>
   );
 }
+// ==================== INLINE EDITABLE ====================
+
+function InlineEditable({ as: Tag = 'div', value, isHtml, onSave, style, placeholder }: {
+  as?: any;
+  value: string;
+  isHtml?: boolean;
+  onSave: (v: string) => void;
+  style?: React.CSSProperties;
+  placeholder?: string;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const isShowingPlaceholder = useRef(false);
+
+  const renderValue = (el: HTMLElement, v: string) => {
+    if (v) {
+      isShowingPlaceholder.current = false;
+      if (isHtml) el.innerHTML = v;
+      else el.textContent = v;
+      el.style.opacity = '1';
+    } else {
+      isShowingPlaceholder.current = true;
+      if (isHtml) el.innerHTML = placeholder || '';
+      else el.textContent = placeholder || '';
+      el.style.opacity = '0.4';
+    }
+  };
+
+  // Initial mount
+  useEffect(() => {
+    if (!ref.current) return;
+    renderValue(ref.current, value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // External sync — nur wenn User nicht tippt
+  useEffect(() => {
+    if (!ref.current) return;
+    if (document.activeElement === ref.current) return;
+    renderValue(ref.current, value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, isHtml, placeholder]);
+
+  return (
+    <Tag
+      ref={ref}
+      contentEditable
+      suppressContentEditableWarning
+      onFocus={(e: React.FocusEvent<HTMLElement>) => {
+        if (isShowingPlaceholder.current) {
+          if (isHtml) e.currentTarget.innerHTML = '';
+          else e.currentTarget.textContent = '';
+          e.currentTarget.style.opacity = '1';
+          isShowingPlaceholder.current = false;
+        }
+      }}
+      onBlur={(e: React.FocusEvent<HTMLElement>) => {
+        const newVal = isHtml ? e.currentTarget.innerHTML : (e.currentTarget.textContent || '');
+        const stripped = newVal.replace(/<[^>]*>/g, '').trim();
+        if (!stripped) {
+          onSave('');
+          renderValue(e.currentTarget, '');
+        } else {
+          onSave(newVal);
+        }
+      }}
+      onKeyDown={(e: React.KeyboardEvent<HTMLElement>) => {
+        if (e.key === 'Enter' && !isHtml) {
+          e.preventDefault();
+          (e.currentTarget as HTMLElement).blur();
+        }
+      }}
+      style={style}
+    />
+  );
+}
 // ==================== CANVAS SECTION PREVIEW ====================
 
 function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMode, selectedBlockId, onBlockClick, onBlockUpdate, onAddBlock }: {
@@ -1983,24 +2060,24 @@ case 'text':
         }} />
     </div>
   );
-case 'button':
+case 'button': {
+  const sizeMap: Record<string, { p: string; f: string }> = {
+    sm: { p: '0.4rem 1rem', f: '0.8rem' },
+    md: { p: '0.6rem 1.5rem', f: '0.875rem' },
+    lg: { p: '0.85rem 2rem', f: '1rem' },
+  };
+  const sz = sizeMap[block.size || 'md'];
   return (
     <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
       <span style={{
-        display: 'inline-block', padding: '0.6rem 1.5rem', borderRadius: '0.5rem', fontWeight: 600, fontSize: '0.875rem',
-        background: block.bgColor
-          ? block.bgColor
-          : block.style === 'primary' ? btnBg
-          : block.style === 'outline' ? 'transparent'
-          : 'rgba(0,0,0,0.06)',
-        color: block.textColor
-          ? block.textColor
-          : block.style === 'primary' ? btnText
-          : primary,
+        display: 'inline-block', padding: sz.p, borderRadius: '0.5rem', fontWeight: 600, fontSize: sz.f,
+        background: block.bgColor ? block.bgColor : block.style === 'primary' ? btnBg : block.style === 'outline' ? 'transparent' : 'rgba(0,0,0,0.06)',
+        color: block.textColor ? block.textColor : block.style === 'primary' ? btnText : primary,
         border: block.style === 'outline' ? `2px solid ${block.bgColor || primary}` : 'none',
       }}>{block.text || 'Button'}</span>
     </div>
   );
+}
     case 'image':
       return (
         <div key={block.id} style={{ ...alignStyle, marginBottom: '0.75rem' }}>
@@ -2303,50 +2380,88 @@ const renderContent = () => {
                 onDuplicate={() => onBlockUpdate(section.id, block.id, { _action: 'duplicate' })}
               />
             )}
-            {/* Inline Text Editing für heading */}
+            {/* Inline Editing via uncontrolled ref (fixiert DOM-reset bug) */}
             {block.type === 'heading' && selectedBlockId === block.id ? (() => {
-              const Tag = (block.level || 'h2') as any;
               const sizes: Record<string, string> = { h1: headingSize, h2: '1.75rem', h3: '1.25rem', h4: '1rem' };
               return (
                 <div style={{ textAlign: (block.align || 'center') as any, marginBottom: '0.75rem' }}>
-                  <Tag
-                    contentEditable
-                    suppressContentEditableWarning
-                    onBlur={(e: React.FocusEvent<HTMLElement>) => onBlockUpdate?.(section.id, block.id, { text: e.currentTarget.textContent || '' })}
-                    style={{ fontSize: sizes[block.level || 'h2'], fontWeight: 700, margin: 0, outline: 'none', cursor: 'text', minWidth: 40, display: 'inline-block' }}
-                    dangerouslySetInnerHTML={{ __html: block.text || 'Überschrift' }}
+                  <InlineEditable
+                    key={`h-${block.id}-${block.level || 'h2'}`}
+                    as={block.level || 'h2'}
+                    value={block.text || ''}
+                    placeholder="Überschrift"
+                    onSave={(v) => onBlockUpdate?.(section.id, block.id, { text: v })}
+                    style={{
+                      fontSize: block.fontSize || sizes[block.level || 'h2'],
+                      fontWeight: 700,
+                      margin: 0,
+                      outline: 'none',
+                      cursor: 'text',
+                      minWidth: 40,
+                      display: 'inline-block',
+                      color: block.color || 'inherit',
+                    }}
                   />
                 </div>
               );
-            })(
-
-) : block.type === 'text' && selectedBlockId === block.id ? (
+            })() : block.type === 'text' && selectedBlockId === block.id ? (
               <div style={{ textAlign: (block.align || 'left') as any, marginBottom: '0.75rem' }}>
-                <div
-                  contentEditable
-                  suppressContentEditableWarning
-                  onBlur={(e: React.FocusEvent<HTMLElement>) => onBlockUpdate?.(section.id, block.id, { html: e.currentTarget.innerHTML })}
-                  style={{ lineHeight: 1.6, outline: 'none', cursor: 'text', minWidth: 40 }}
-                  dangerouslySetInnerHTML={{ __html: block.html || '<p>Text...</p>' }}
-                />
-              </div>
-            ) : block.type === 'button' && selectedBlockId === block.id ? (
-              <div style={{ textAlign: (block.align || 'center') as any, marginBottom: '0.75rem' }}>
-                <span
-                  contentEditable
-                  suppressContentEditableWarning
-                  onBlur={(e: React.FocusEvent<HTMLElement>) => onBlockUpdate?.(section.id, block.id, { text: e.currentTarget.textContent || '' })}
+                <InlineEditable
+                  key={`t-${block.id}`}
+                  as="div"
+                  value={block.html || ''}
+                  placeholder="<p>Text...</p>"
+                  isHtml
+                  onSave={(v) => onBlockUpdate?.(section.id, block.id, { html: v })}
                   style={{
-                    display: 'inline-block', padding: '0.6rem 1.5rem', borderRadius: '0.5rem',
-                    fontWeight: 600, fontSize: '0.875rem',
-                    background: block.bgColor || btnBg, color: block.textColor || btnText,
-                    outline: 'none', cursor: 'text', minWidth: 40,
+                    lineHeight: 1.6,
+                    outline: 'none',
+                    cursor: 'text',
+                    minWidth: 40,
+                    fontSize: block.fontSize || 'inherit',
+                    color: block.color || 'inherit',
                   }}
-                  dangerouslySetInnerHTML={{ __html: block.text || 'Button' }}
                 />
               </div>
-            ) : renderBlock(block)}
-
+           ) : block.type === 'button' && selectedBlockId === block.id ? (() => {
+  const sizeMap: Record<string, { p: string; f: string }> = {
+    sm: { p: '0.4rem 1rem', f: '0.8rem' },
+    md: { p: '0.6rem 1.5rem', f: '0.875rem' },
+    lg: { p: '0.85rem 2rem', f: '1rem' },
+  };
+  const sz = sizeMap[block.size || 'md'];
+  return (
+    <div style={{ textAlign: (block.align || 'center') as any, marginBottom: '0.75rem' }}>
+      <InlineEditable
+        key={`b-${block.id}`}
+        as="span"
+        value={block.text || ''}
+        placeholder="Button"
+        onSave={(v) => onBlockUpdate?.(section.id, block.id, { text: v })}
+        style={{
+          display: 'inline-block',
+          padding: sz.p,
+          borderRadius: '0.5rem',
+          fontWeight: 600,
+          fontSize: sz.f,
+          background: block.bgColor
+            ? block.bgColor
+            : block.style === 'primary' ? btnBg
+            : block.style === 'outline' ? 'transparent'
+            : 'rgba(0,0,0,0.06)',
+          color: block.textColor
+            ? block.textColor
+            : block.style === 'primary' ? btnText
+            : primary,
+          border: block.style === 'outline' ? `2px solid ${block.bgColor || primary}` : 'none',
+          outline: 'none',
+          cursor: 'text',
+          minWidth: 40,
+        }}
+      />
+    </div>
+  );
+})() : renderBlock(block)}
           </div>
         ))}
           {onAddBlock && <InlineAddBlock sectionId={section.id} onAdd={onAddBlock} />}
@@ -3774,26 +3889,28 @@ const { data: pagesData } = useQuery(GET_TEMPLATE_PAGES, {
     });
   }, []);
 
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); handleSave(); }
-      if (e.key === 'Escape') { setSelectedId(null); setSelectedBlockId(null); }
+  const handleSaveRef = useRef<() => Promise<void>>(async () => {});
+useEffect(() => { handleSaveRef.current = handleSave; });
 
-    };
-    window.addEventListener('keydown', h);
-    return () => window.removeEventListener('keydown', h);
-  }, [undo]);
+useEffect(() => {
+  const h = (e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); handleSaveRef.current(); }
+    if (e.key === 'Escape') { setSelectedId(null); setSelectedBlockId(null); }
+  };
+  window.addEventListener('keydown', h);
+  return () => window.removeEventListener('keydown', h);
+}, [undo]);
 
 useEffect(() => {
   if (!isDirty) return;
   const timer = setTimeout(() => {
-    handleSave().then(() => setSaveToast('Auto-gespeichert ✓'));
+    handleSaveRef.current().then(() => setSaveToast('Auto-gespeichert ✓'));
     setTimeout(() => setSaveToast(null), 2500);
   }, 30000);
   return () => clearTimeout(timer);
-// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [isDirty, sections]);
+  
   const handleAddBlock = async (type: string) => {
     if (!tenant?.id) {
       setError('Kein Tenant gefunden — bitte Seite neu laden.');
@@ -4310,11 +4427,11 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
         </div>
         <span style={{ fontSize: '0.72rem', color: '#9ca3af', fontStyle: 'italic' }}>+ Navigation erstellen (klicken)</span>
       </div>
-    ) : navigations.filter(n => n.location === 'header' && n.isActive).map(nav => (
-<NavBarPreview key={nav.id} nav={nav} isSelected={selectedNavId === nav.id}
-        onClick={() => { setSelectedNavId(nav.id); setSelectedId(null); }}
-        primary={templateSettings?.colors?.primary || '#3b82f6'} />
-         ))}
+    ) : navigations.filter(n => n.location === 'header').map(nav => (
+  <NavBarPreview key={nav.id} nav={nav} isSelected={selectedNavId === nav.id}
+    onClick={() => { setSelectedNavId(nav.id); setSelectedId(null); }}
+    primary={templateSettings?.colors?.primary || '#3b82f6'} />
+))}
               {sections.length === 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 520, color: '#9ca3af', padding: '3rem', textAlign: 'center' }}>
                   <div style={{ fontSize: '3.5rem', marginBottom: 16, opacity: 0.5 }}>✦</div>
@@ -4393,11 +4510,11 @@ onClick={() => {
                 }}>
                   <span style={{ fontSize: '0.72rem', color: '#6b7280', fontStyle: 'italic' }}>+ Footer Navigation erstellen (klicken)</span>
                 </div>
-              ) : navigations.filter(n => n.location === 'footer' && n.isActive).map(nav => (
-                <NavBarPreview key={nav.id} nav={nav} isSelected={selectedNavId === nav.id}
-                  onClick={() => { setSelectedNavId(nav.id); setSelectedId(null); }}
-                  primary={templateSettings?.colors?.primary || '#3b82f6'} />
-              ))}
+         ) : navigations.filter(n => n.location === 'footer').map(nav => (
+  <NavBarPreview key={nav.id} nav={nav} isSelected={selectedNavId === nav.id}
+    onClick={() => { setSelectedNavId(nav.id); setSelectedId(null); }}
+    primary={templateSettings?.colors?.primary || '#3b82f6'} />
+))}
             </div>
         </div>
           </>
