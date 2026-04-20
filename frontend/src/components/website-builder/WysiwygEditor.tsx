@@ -3879,14 +3879,33 @@ function CtrlBtn({ children, onClick, disabled = false, danger = false, title }:
 function InlineAddSection({ onAdd, index }: { onAdd: (type: string, afterIndex: number) => void; index: number }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ position: 'relative', height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}
+    <div style={{ position: 'relative', height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}
       onMouseEnter={e => { const btn = e.currentTarget.querySelector('button'); if (btn) (btn as HTMLElement).style.opacity = '1'; }}
       onMouseLeave={e => { const btn = e.currentTarget.querySelector('button'); if (btn && !open) (btn as HTMLElement).style.opacity = '0'; }}>
       <div style={{ position: 'absolute', left: 0, right: 0, height: 1, background: '#238636', opacity: 0.3 }} />
-      <button
+     <button
         onClick={e => { e.stopPropagation(); setOpen(v => !v); }}
-        style={{ opacity: 0, transition: 'opacity 0.15s', background: '#238636', border: 'none', borderRadius: '50%', width: 24, height: 24, color: '#fff', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, zIndex: 11, position: 'relative', boxShadow: '0 2px 8px rgba(35,134,54,0.5)' }}>
-        +
+        style={{
+          opacity: 0,
+          transition: 'opacity 0.15s',
+          background: '#238636',
+          border: 'none',
+          borderRadius: 999,
+          padding: '4px 14px',
+          color: '#fff',
+          fontSize: '0.72rem',
+          fontWeight: 700,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          zIndex: 11,
+          position: 'relative',
+          boxShadow: '0 2px 8px rgba(35,134,54,0.5)',
+          letterSpacing: '0.02em',
+          whiteSpace: 'nowrap',
+        }}>
+        ⊞ Neuer Bereich
       </button>
       {open && typeof document !== 'undefined' && createPortal(
         <div
