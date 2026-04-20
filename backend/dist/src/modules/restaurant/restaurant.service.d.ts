@@ -93,16 +93,16 @@ export declare class RestaurantService {
         total: number;
     }>;
     createMenuCategory(tenantId: string, input: CreateMenuCategoryInput): Promise<{
-        image: string | null;
         id: string;
         name: string;
-        slug: string;
+        description: string | null;
         isActive: boolean;
         createdAt: Date | null;
         updatedAt: Date | null;
+        slug: string;
         tenantId: string;
-        description: string | null;
         position: number;
+        image: string | null;
         availableFrom: string | null;
         availableTo: string | null;
     }>;
@@ -189,15 +189,15 @@ export declare class RestaurantService {
     createMenuItem(tenantId: string, input: CreateMenuItemInput): Promise<{
         id: string;
         name: string;
-        slug: string;
+        description: string | null;
         createdAt: Date | null;
         updatedAt: Date | null;
+        slug: string;
         tenantId: string;
-        description: string | null;
-        categoryId: string | null;
         price: number;
-        images: unknown;
         position: number;
+        categoryId: string | null;
+        images: unknown;
         allergens: string[] | null;
         isVegan: boolean;
         isVegetarian: boolean;
@@ -232,8 +232,8 @@ export declare class RestaurantService {
         name: string;
         createdAt: Date | null;
         tenantId: string;
-        isRequired: boolean;
         position: number;
+        isRequired: boolean;
         menuItemId: string;
         minSelections: number;
         maxSelections: number;
@@ -255,10 +255,10 @@ export declare class RestaurantService {
         name: string;
         createdAt: Date | null;
         tenantId: string;
+        isDefault: boolean;
         position: number;
         groupId: string;
         priceModifier: number;
-        isDefault: boolean;
         isAvailable: boolean;
     }>;
     updateModifier(tenantId: string, id: string, input: UpdateModifierInput): Promise<{

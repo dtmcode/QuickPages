@@ -25,14 +25,14 @@ export declare class CouponsResolver {
     }>;
     coupon(tenantId: string, id: string): Promise<{
         id: string;
+        description: string | null;
         isActive: boolean;
         createdAt: Date | null;
         updatedAt: Date | null;
+        type: string;
         tenantId: string;
         expiresAt: Date | null;
-        description: string | null;
         code: string;
-        type: string;
         value: number;
         minOrderAmount: number | null;
         maxUses: number | null;
@@ -68,14 +68,14 @@ export declare class CouponsResolver {
     }>;
     createCoupon(tenantId: string, input: CreateCouponInput): Promise<{
         id: string;
+        description: string | null;
         isActive: boolean;
         createdAt: Date | null;
         updatedAt: Date | null;
+        type: string;
         tenantId: string;
         expiresAt: Date | null;
-        description: string | null;
         code: string;
-        type: string;
         value: number;
         minOrderAmount: number | null;
         maxUses: number | null;
@@ -85,14 +85,14 @@ export declare class CouponsResolver {
     }>;
     updateCoupon(tenantId: string, id: string, input: UpdateCouponInput): Promise<{
         id: string;
+        description: string | null;
         isActive: boolean;
         createdAt: Date | null;
         updatedAt: Date | null;
+        type: string;
         tenantId: string;
         expiresAt: Date | null;
-        description: string | null;
         code: string;
-        type: string;
         value: number;
         minOrderAmount: number | null;
         maxUses: number | null;

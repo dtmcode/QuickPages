@@ -5,32 +5,8 @@ const pg_core_1 = require("drizzle-orm/pg-core");
 const drizzle_orm_1 = require("drizzle-orm");
 const schema_1 = require("./schema");
 exports.sectionTypeEnum = (0, pg_core_1.pgEnum)('wb_section_type', [
-    'hero',
-    'features',
-    'about',
-    'services',
-    'gallery',
-    'testimonials',
-    'team',
-    'pricing',
-    'cta',
-    'contact',
-    'faq',
-    'blog',
-    'stats',
-    'video',
-    'text',
-    'html',
-    'custom',
-    'newsletter',
-    'booking',
-    'map',
-    'countdown',
-    'social',
-    'spacer',
-    'before_after',
-    'whatsapp',
     'freestyle',
+    'custom',
 ]);
 exports.pageStatusEnum = (0, pg_core_1.pgEnum)('wb_page_status', [
     'draft',

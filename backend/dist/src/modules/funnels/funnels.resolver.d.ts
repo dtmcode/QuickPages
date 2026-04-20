@@ -191,14 +191,14 @@ export declare class FunnelsResolver {
     }>;
     createFunnelStep(tenantId: string, input: CreateFunnelStepInput): Promise<{
         id: string;
-        slug: string;
         isActive: boolean;
         createdAt: Date | null;
         updatedAt: Date | null;
-        tenantId: string;
-        title: string;
+        slug: string;
         content: unknown;
+        tenantId: string;
         position: number;
+        title: string;
         funnelId: string;
         stepType: string;
         nextStepId: string | null;

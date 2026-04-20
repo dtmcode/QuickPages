@@ -57,22 +57,22 @@ export declare class MediaResolver {
     }>;
     mediaFolders(tenantId: string): Promise<(string | null)[]>;
     uploadMedia(tenantId: string, user: JwtPayload, file: FileUpload, folder?: string, alt?: string, title?: string): Promise<{
-        url: string;
         duration: number | null;
         id: string;
+        description: string | null;
+        thumbnailUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
+        type: "image" | "video" | "audio" | "document" | "other";
         tenantId: string;
         title: string | null;
-        description: string | null;
-        type: "image" | "video" | "audio" | "document" | "other";
         lastUsedAt: Date | null;
         tags: string[] | null;
         filename: string;
         originalFilename: string;
         mimeType: string;
         fileSize: number;
-        thumbnailUrl: string | null;
+        url: string;
         path: string;
         width: number | null;
         height: number | null;

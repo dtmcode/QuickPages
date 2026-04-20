@@ -18,36 +18,11 @@ import {
 import { relations } from 'drizzle-orm';
 import { membershipPlans, courses, tenants, users } from './schema';
 
-
 // ==================== ENUMS ====================
 
 export const sectionTypeEnum = pgEnum('wb_section_type', [
-  'hero',
-  'features',
-  'about',
-  'services',
-  'gallery',
-  'testimonials',
-  'team',
-  'pricing',
-  'cta',
-  'contact',
-  'faq',
-  'blog',
-  'stats',
-  'video',
-  'text',
-  'html',
-  'custom',
-  'newsletter',
-  'booking',
-  'map',
-  'countdown',
-  'social',
-  'spacer',
-  'before_after',
-  'whatsapp',
   'freestyle',
+  'custom',
 ]);
 
 export const pageStatusEnum = pgEnum('wb_page_status', [
@@ -522,8 +497,20 @@ export const wbSectionsRelations = relations(wbSections, ({ one }) => ({
 }));
 
 export const protectedPagesRelations = relations(protectedPages, ({ one }) => ({
-  tenant: one(tenants, { fields: [protectedPages.tenantId], references: [tenants.id] }),
-  page: one(wbPages, { fields: [protectedPages.pageId], references: [wbPages.id] }),
-  requiredPlan: one(membershipPlans, { fields: [protectedPages.requiresMembershipPlanId], references: [membershipPlans.id] }),
-  requiredCourse: one(courses, { fields: [protectedPages.requiresCourseId], references: [courses.id] }),
+  tenant: one(tenants, {
+    fields: [protectedPages.tenantId],
+    references: [tenants.id],
+  }),
+  page: one(wbPages, {
+    fields: [protectedPages.pageId],
+    references: [wbPages.id],
+  }),
+  requiredPlan: one(membershipPlans, {
+    fields: [protectedPages.requiresMembershipPlanId],
+    references: [membershipPlans.id],
+  }),
+  requiredCourse: one(courses, {
+    fields: [protectedPages.requiresCourseId],
+    references: [courses.id],
+  }),
 }));

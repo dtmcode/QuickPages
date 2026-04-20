@@ -84,13 +84,13 @@ export declare class LocalStoreService {
     createProduct(tenantId: string, input: CreateLocalProductInput): Promise<{
         id: string;
         name: string;
-        slug: string;
+        description: string | null;
         createdAt: Date | null;
         updatedAt: Date | null;
+        slug: string;
         tenantId: string;
-        description: string | null;
-        categoryId: string | null;
         price: number;
+        categoryId: string | null;
         compareAtPrice: number | null;
         stock: number | null;
         images: unknown;
@@ -177,13 +177,13 @@ export declare class LocalStoreService {
         total: number;
     }>;
     createDeal(tenantId: string, input: CreateLocalDealInput): Promise<{
-        image: string | null;
         id: string;
+        description: string | null;
         isActive: boolean;
         createdAt: Date | null;
         tenantId: string;
         title: string;
-        description: string | null;
+        image: string | null;
         startsAt: Date;
         localProductId: string | null;
         discountType: string;

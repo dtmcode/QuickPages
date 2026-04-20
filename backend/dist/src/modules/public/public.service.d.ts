@@ -69,7 +69,7 @@ export declare class PublicService {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "features" | "map" | "hero" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+            type: "freestyle" | "custom";
             order: number;
             isActive: boolean;
             content: {
@@ -194,7 +194,7 @@ export declare class PublicService {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "features" | "map" | "hero" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+            type: "freestyle" | "custom";
             order: number;
             isActive: boolean;
             content: {
@@ -319,7 +319,7 @@ export declare class PublicService {
             tenantId: string;
             pageId: string;
             name: string;
-            type: "newsletter" | "booking" | "contact" | "about" | "video" | "custom" | "features" | "map" | "hero" | "services" | "gallery" | "testimonials" | "team" | "pricing" | "cta" | "faq" | "blog" | "stats" | "text" | "html" | "countdown" | "social" | "spacer" | "before_after" | "whatsapp" | "freestyle";
+            type: "freestyle" | "custom";
             order: number;
             isActive: boolean;
             content: {
@@ -578,6 +578,8 @@ export declare class PublicService {
     getNavigation(tenantSlug: string, location: string): Promise<{
         id: string;
         name: string;
+        description: string | null;
+        isActive: boolean;
         settings: {
             backgroundColor?: string;
             textColor?: string;
@@ -585,11 +587,9 @@ export declare class PublicService {
             itemsAlign?: "left" | "center" | "right";
             logoText?: string;
         } | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        description: string | null;
         location: string;
         items: {
             id: string;

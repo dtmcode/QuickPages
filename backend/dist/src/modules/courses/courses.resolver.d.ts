@@ -43,17 +43,17 @@ export declare class CoursesResolver {
         features: unknown[];
         id: string;
         name: string;
-        slug: string;
+        description: string | null;
         isActive: boolean;
         createdAt: Date | null;
         updatedAt: Date | null;
+        slug: string;
         tenantId: string;
-        description: string | null;
         price: number;
-        position: number;
         interval: string;
         isPublic: boolean;
         stripePriceId: string | null;
+        position: number;
     }>;
     updateMembershipPlan(tenantId: string, id: string, input: UpdateMembershipPlanInput): Promise<{
         features: unknown[];
@@ -77,18 +77,18 @@ export declare class CoursesResolver {
             plan: (Omit<{
                 id: string;
                 name: string;
-                slug: string;
+                description: string | null;
                 isActive: boolean;
                 createdAt: Date | null;
                 updatedAt: Date | null;
+                slug: string;
                 tenantId: string;
-                description: string | null;
                 price: number;
-                position: number;
                 interval: string;
                 features: unknown;
                 isPublic: boolean;
                 stripePriceId: string | null;
+                position: number;
             }, "features"> & {
                 features: unknown[];
             }) | null;
@@ -151,18 +151,18 @@ export declare class CoursesResolver {
             requiredPlan: (Omit<{
                 id: string;
                 name: string;
-                slug: string;
+                description: string | null;
                 isActive: boolean;
                 createdAt: Date | null;
                 updatedAt: Date | null;
+                slug: string;
                 tenantId: string;
-                description: string | null;
                 price: number;
-                position: number;
                 interval: string;
                 features: unknown;
                 isPublic: boolean;
                 stripePriceId: string | null;
+                position: number;
             }, "features"> & {
                 features: unknown[];
             }) | undefined;
@@ -237,18 +237,18 @@ export declare class CoursesResolver {
         requiredPlan: (Omit<{
             id: string;
             name: string;
-            slug: string;
+            description: string | null;
             isActive: boolean;
             createdAt: Date | null;
             updatedAt: Date | null;
+            slug: string;
             tenantId: string;
-            description: string | null;
             price: number;
-            position: number;
             interval: string;
             features: unknown;
             isPublic: boolean;
             stripePriceId: string | null;
+            position: number;
         }, "features"> & {
             features: unknown[];
         }) | undefined;
@@ -273,19 +273,19 @@ export declare class CoursesResolver {
     }>;
     createCourse(tenantId: string, input: CreateCourseInput): Promise<{
         id: string;
-        slug: string;
+        description: string | null;
         createdAt: Date | null;
         updatedAt: Date | null;
+        slug: string;
         tenantId: string;
-        title: string;
-        isPublished: boolean;
-        description: string | null;
         price: number;
         stripePriceId: string | null;
+        requiresMembershipPlanId: string | null;
+        title: string;
         shortDescription: string | null;
         thumbnail: string | null;
         isFree: boolean;
-        requiresMembershipPlanId: string | null;
+        isPublished: boolean;
         level: string;
         language: string;
         totalDuration: number | null;
@@ -362,18 +362,18 @@ export declare class CoursesResolver {
         requiredPlan: (Omit<{
             id: string;
             name: string;
-            slug: string;
+            description: string | null;
             isActive: boolean;
             createdAt: Date | null;
             updatedAt: Date | null;
+            slug: string;
             tenantId: string;
-            description: string | null;
             price: number;
-            position: number;
             interval: string;
             features: unknown;
             isPublic: boolean;
             stripePriceId: string | null;
+            position: number;
         }, "features"> & {
             features: unknown[];
         }) | undefined;
@@ -398,12 +398,12 @@ export declare class CoursesResolver {
     }>;
     createChapter(tenantId: string, input: CreateChapterInput): Promise<{
         id: string;
+        description: string | null;
         createdAt: Date | null;
         tenantId: string;
+        position: number;
         title: string;
         isPublished: boolean;
-        description: string | null;
-        position: number;
         courseId: string;
     }>;
     updateChapter(tenantId: string, id: string, input: UpdateChapterInput): Promise<{
@@ -467,18 +467,18 @@ export declare class CoursesResolver {
         requiredPlan: (Omit<{
             id: string;
             name: string;
-            slug: string;
+            description: string | null;
             isActive: boolean;
             createdAt: Date | null;
             updatedAt: Date | null;
+            slug: string;
             tenantId: string;
-            description: string | null;
             price: number;
-            position: number;
             interval: string;
             features: unknown;
             isPublic: boolean;
             stripePriceId: string | null;
+            position: number;
         }, "features"> & {
             features: unknown[];
         }) | undefined;
@@ -504,15 +504,15 @@ export declare class CoursesResolver {
     createLesson(tenantId: string, input: CreateLessonInput): Promise<{
         duration: number | null;
         id: string;
-        slug: string;
         createdAt: Date | null;
         updatedAt: Date | null;
-        tenantId: string;
-        title: string;
-        content: unknown;
-        isPublished: boolean;
-        position: number;
+        slug: string;
         type: string;
+        content: unknown;
+        tenantId: string;
+        position: number;
+        title: string;
+        isPublished: boolean;
         courseId: string;
         chapterId: string;
         videoUrl: string | null;
