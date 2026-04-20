@@ -1,4 +1,4 @@
-// 📂 PFAD: frontend/next.config.ts UND frontend-public/next.config.ts
+// 📂 PFAD: frontend/next.config.ts
 // Gleiche Config für beide Projekte
 
 import type { NextConfig } from "next";
