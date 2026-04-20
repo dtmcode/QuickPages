@@ -1744,34 +1744,10 @@ type Section {
   updatedAt: DateTime!
 }
 
-"""Type of section"""
+"""freestyle (block-based) or custom (raw HTML/CSS/JS)"""
 enum SectionType {
-  about
-  before_after
-  blog
-  booking
-  contact
-  countdown
-  cta
   custom
-  faq
-  features
   freestyle
-  gallery
-  hero
-  html
-  map
-  newsletter
-  pricing
-  services
-  social
-  spacer
-  stats
-  team
-  testimonials
-  text
-  video
-  whatsapp
 }
 
 input SelectedModifierInput {
