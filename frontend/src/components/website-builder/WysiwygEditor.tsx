@@ -3912,7 +3912,7 @@ useEffect(() => {
   return () => clearTimeout(timer);
 }, [isDirty, sections]);
   
-  const handleAddBlock = async (type: string) => {
+const handleAddBlock = async (type: string) => {
     if (!tenant?.id) {
       setError('Kein Tenant gefunden — bitte Seite neu laden.');
       return;
@@ -3920,16 +3920,20 @@ useEffect(() => {
     const label = BLOCK_CATEGORIES.flatMap(c => c.blocks).find(b => b.type === type)?.label || type;
     setError(null);
     try {
+      // ✅ UNIFIED: 'hero', 'features' etc. sind NUR UI-Labels.
+      // Backend speichert alles als 'freestyle' mit vorgefülltem Block-Content.
+      const backendType = type === 'custom' ? 'custom' : 'freestyle';
+      const defaultContent = DEFAULT_CONTENT[type] ?? { blocks: [] };
+
       const res = await createSectionMut({
         variables: {
           input: {
             pageId: currentPageId,
             name: label,
-            type,
+            type: backendType,
             order: sections.length,
             isActive: true,
-            content: DEFAULT_CONTENT[type] ?? {},
-            // styling weglassen — nullable im Backend, verhindert GraphQL-Typfehler
+            content: defaultContent,
           },
           tenantId: tenant.id,
         },
@@ -4086,16 +4090,20 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
   setRightTab('content');
   setIsDirty(true);
   };
-  const handleInsertSectionAfter = async (type: string, afterIndex: number) => {
+
+const handleInsertSectionAfter = async (type: string, afterIndex: number) => {
   if (!tenant?.id) return;
   const label = BLOCK_CATEGORIES.flatMap(c => c.blocks).find(b => b.type === type)?.label || type;
+  const backendType = type === 'custom' ? 'custom' : 'freestyle';
+  const defaultContent = DEFAULT_CONTENT[type] ?? { blocks: [] };
   try {
     const res = await createSectionMut({
       variables: {
-        input: { pageId: currentPageId, name: label, type, order: afterIndex + 1, isActive: true, content: DEFAULT_CONTENT[type] ?? {} },
+        input: { pageId: currentPageId, name: label, type: backendType, order: afterIndex + 1, isActive: true, content: defaultContent },
         tenantId: tenant.id,
       },
     });
+
     if (res.data?.createSection) {
       pushUndo(sections);
       setSections(prev => [...prev, res.data.createSection].sort((a, b) => a.order - b.order));
