@@ -4315,37 +4315,7 @@ const handleCanvasBlockUpdate = (sectionId: string, blockId: string, updates: an
   setIsDirty(true);
   };
 
-const handleInsertSectionAfter = async (afterSectionId: string, uiType: string) => {
-  if (!activePage) return;
 
-  const backendType = uiType === 'custom' ? 'custom' : 'freestyle';
-  const content = DEFAULT_CONTENT[uiType] || { blocks: [] };
-  const label =
-    BLOCK_CATEGORIES.flatMap(c => c.blocks).find(b => b.type === uiType)?.label
-    || uiType;
-
-  const afterIdx = (activePage.sections || []).findIndex(s => s.id === afterSectionId);
-  const newOrder = afterIdx >= 0 ? afterIdx + 1 : (activePage.sections?.length || 0);
-
-  try {
-    await createSectionMut({
-      variables: {
-        input: {
-          pageId: activePage.id,
-          name: label,
-          type: backendType,
-          order: newOrder,
-          isActive: true,
-          content,
-        },
-      },
-    });
-    await refetch();
-    toast.success(`${label} eingefügt`);
-  } catch (err: any) {
-    toast.error(`Fehler: ${err.message}`);
-  }
-};
   const handleSave = async () => {
     if (!tenant?.id || isSaving) return;
     setIsSaving(true);
