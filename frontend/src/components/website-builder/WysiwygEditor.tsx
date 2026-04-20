@@ -1624,24 +1624,37 @@ function FloatingBlockToolbar({ block, onUpdate, onDelete, onDuplicate }: {
     padding: '3px 7px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 600, lineHeight: 1,
   });
   const sep = <div style={{ width: 1, height: 16, background: '#30363d', margin: '0 2px' }} />;
-
   const SIZES = [
     { l: 'XS', v: '0.75rem' }, { l: 'S', v: '1rem' }, { l: 'M', v: '1.25rem' },
     { l: 'L', v: '1.5rem' }, { l: 'XL', v: '2rem' },
   ];
+  const RADII = [
+    { l: '▢', v: '0' }, { l: 'S', v: '0.25rem' }, { l: 'M', v: '0.5rem' },
+    { l: 'L', v: '0.75rem' }, { l: '●', v: '9999px' },
+  ];
+  const FONTS = [
+    { l: 'Sys', v: 'system-ui, sans-serif', g: null },
+    { l: 'Inter', v: "'Inter', sans-serif", g: 'Inter:wght@400;600;700' },
+    { l: 'Play', v: "'Playfair Display', serif", g: 'Playfair+Display:wght@400;700' },
+    { l: 'Mont', v: "'Montserrat', sans-serif", g: 'Montserrat:wght@400;700' },
+    { l: 'Pop', v: "'Poppins', sans-serif", g: 'Poppins:wght@400;700' },
+  ];
+  const WEIGHTS = [{ l: '400', v: '400' }, { l: '600', v: '600' }, { l: '700', v: '700' }, { l: '800', v: '800' }];
+
+  const GRID_TYPES = ['feature-grid', 'stat-grid', 'testimonial-grid', 'team-grid', 'image-grid', 'pricing-grid'];
+  const isGrid = GRID_TYPES.includes(block.type);
 
   return (
-    <div
-      onClick={e => e.stopPropagation()}
+    <div onClick={e => e.stopPropagation()}
       style={{
         position: 'absolute', top: -44, left: '50%', transform: 'translateX(-50%)',
         background: '#1c2128', border: '1px solid #30363d', borderRadius: 8,
         display: 'flex', alignItems: 'center', gap: 2, padding: '4px 8px',
         zIndex: 100, whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
-        flexWrap: 'wrap', maxWidth: 480,
-      }}
-    >
-      {/* Ausrichtung — für alle außer spacer/divider */}
+        flexWrap: 'wrap', maxWidth: 560,
+      }}>
+
+      {/* Ausrichtung */}
       {block.align !== undefined && (
         <>
           {['left', 'center', 'right'].map(a => (
@@ -1653,69 +1666,61 @@ function FloatingBlockToolbar({ block, onUpdate, onDelete, onDuplicate }: {
         </>
       )}
 
-      {/* HEADING spezifisch */}
+      {/* HEADING */}
       {block.type === 'heading' && (
         <>
           {['h1', 'h2', 'h3', 'h4'].map(l => (
-            <button key={l} onClick={() => onUpdate({ level: l })} style={btn(block.level === l)}>
-              {l.toUpperCase()}
-            </button>
+            <button key={l} onClick={() => onUpdate({ level: l })} style={btn(block.level === l)}>{l.toUpperCase()}</button>
           ))}
           {sep}
-          {SIZES.map(s => (
-            <button key={s.v} onClick={() => onUpdate({ fontSize: s.v })} style={btn(block.fontSize === s.v)} title={s.v}>
-              {s.l}
-            </button>
-          ))}
+          {SIZES.map(s => <button key={s.v} onClick={() => onUpdate({ fontSize: s.v })} style={btn(block.fontSize === s.v)} title={s.v}>{s.l}</button>)}
           {sep}
-          <input
-            type="color"
-            value={block.color || '#000000'}
-            onChange={e => onUpdate({ color: e.target.value })}
-            title="Textfarbe"
-            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }}
-          />
+          <select value={block.fontFamily || ''} onChange={e => {
+            const f = FONTS.find(x => x.v === e.target.value);
+            if (f?.g) loadGoogleFont(f.g);
+            onUpdate({ fontFamily: e.target.value });
+          }}
+            style={{ background: '#0d1117', border: '1px solid #30363d', borderRadius: 4, color: '#c9d1d9', padding: '2px 5px', fontSize: '0.68rem', outline: 'none' }}>
+            <option value="">Font</option>
+            {FONTS.map(f => <option key={f.v} value={f.v}>{f.l}</option>)}
+          </select>
+          {sep}
+          {WEIGHTS.map(w => <button key={w.v} onClick={() => onUpdate({ fontWeight: w.v })} style={btn(block.fontWeight === w.v)}>{w.l}</button>)}
+          {sep}
+          <input type="color" value={block.color || '#000000'} onChange={e => onUpdate({ color: e.target.value })} title="Textfarbe"
+            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }} />
           {sep}
         </>
       )}
 
-      {/* TEXT spezifisch */}
+      {/* TEXT */}
       {block.type === 'text' && (
         <>
-          {[
-            { cmd: 'bold', l: 'B', s: { fontWeight: 700 } },
-            { cmd: 'italic', l: 'I', s: { fontStyle: 'italic' } },
-            { cmd: 'underline', l: 'U', s: { textDecoration: 'underline' } },
-          ].map(f => (
-            <button key={f.cmd}
-              onClick={() => { document.execCommand(f.cmd); }}
-              style={{ ...btn(), ...f.s }}
-              title={f.cmd}>
-              {f.l}
-            </button>
+          {[{ cmd: 'bold', l: 'B', s: { fontWeight: 700 } }, { cmd: 'italic', l: 'I', s: { fontStyle: 'italic' } }, { cmd: 'underline', l: 'U', s: { textDecoration: 'underline' } }].map(f => (
+            <button key={f.cmd} onClick={() => document.execCommand(f.cmd)} style={{ ...btn(), ...f.s }} title={f.cmd}>{f.l}</button>
           ))}
           {sep}
-          <input
-            type="color"
-            value={block.color || '#000000'}
-            onChange={e => {
-              onUpdate({ color: e.target.value });
-              document.execCommand('foreColor', false, e.target.value);
-            }}
+          {SIZES.map(s => <button key={s.v} onClick={() => onUpdate({ fontSize: s.v })} style={btn(block.fontSize === s.v)} title={s.v}>{s.l}</button>)}
+          {sep}
+          <select value={block.fontFamily || ''} onChange={e => {
+            const f = FONTS.find(x => x.v === e.target.value);
+            if (f?.g) loadGoogleFont(f.g);
+            onUpdate({ fontFamily: e.target.value });
+          }}
+            style={{ background: '#0d1117', border: '1px solid #30363d', borderRadius: 4, color: '#c9d1d9', padding: '2px 5px', fontSize: '0.68rem', outline: 'none' }}>
+            <option value="">Font</option>
+            {FONTS.map(f => <option key={f.v} value={f.v}>{f.l}</option>)}
+          </select>
+          {sep}
+          <input type="color" value={block.color || '#000000'}
+            onChange={e => { onUpdate({ color: e.target.value }); document.execCommand('foreColor', false, e.target.value); }}
             title="Textfarbe"
-            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }}
-          />
-          {sep}
-          {SIZES.map(s => (
-            <button key={s.v} onClick={() => onUpdate({ fontSize: s.v })} style={btn(block.fontSize === s.v)} title={s.v}>
-              {s.l}
-            </button>
-          ))}
+            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }} />
           {sep}
         </>
       )}
 
-      {/* BUTTON spezifisch */}
+      {/* BUTTON */}
       {block.type === 'button' && (
         <>
           {[{ v: 'primary', l: 'P' }, { v: 'outline', l: 'O' }, { v: 'ghost', l: 'G' }].map(o => (
@@ -1726,48 +1731,38 @@ function FloatingBlockToolbar({ block, onUpdate, onDelete, onDuplicate }: {
             <button key={s.v} onClick={() => onUpdate({ size: s.v })} style={btn(block.size === s.v)}>{s.l}</button>
           ))}
           {sep}
-       <input
-            type="color"
-            value={block.bgColor || '#3b82f6'}
-            onChange={e => onUpdate({ bgColor: e.target.value })}
-            title="Button-Hintergrund"
-            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }}
-          />
-          <input
-            type="color"
-            value={block.textColor || '#ffffff'}
-            onChange={e => onUpdate({ textColor: e.target.value })}
-            title="Button-Textfarbe"
-            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }}
-          />
+          {RADII.map(r => <button key={r.v} onClick={() => onUpdate({ borderRadius: r.v })} style={btn(block.borderRadius === r.v)} title={r.v}>{r.l}</button>)}
+          {sep}
+          <input type="color" value={block.bgColor || '#3b82f6'} onChange={e => onUpdate({ bgColor: e.target.value })} title="Button-Hintergrund"
+            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }} />
+          <input type="color" value={block.textColor || '#ffffff'} onChange={e => onUpdate({ textColor: e.target.value })} title="Button-Textfarbe"
+            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1, background: 'none' }} />
           {sep}
         </>
       )}
-      {/* IMAGE spezifisch */}
+
+      {/* IMAGE */}
       {block.type === 'image' && (
         <>
           {['25%', '50%', '75%', '100%'].map(w => (
             <button key={w} onClick={() => onUpdate({ width: w })} style={btn(block.width === w)}>{w}</button>
           ))}
           {sep}
-        </>
-      )}
-
-      {/* Badge Farbe */}
-      {block.type === 'badge' && (
-        <>
-          <input
-            type="color"
-            value={block.color || '#3b82f6'}
-            onChange={e => onUpdate({ color: e.target.value })}
-            title="Farbe"
-            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1 }}
-          />
+          {RADII.map(r => <button key={r.v} onClick={() => onUpdate({ borderRadius: r.v })} style={btn(block.borderRadius === r.v)} title={r.v}>{r.l}</button>)}
           {sep}
         </>
       )}
 
-      {/* Icon Größe */}
+      {/* BADGE */}
+      {block.type === 'badge' && (
+        <>
+          <input type="color" value={block.color || '#3b82f6'} onChange={e => onUpdate({ color: e.target.value })} title="Farbe"
+            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1 }} />
+          {sep}
+        </>
+      )}
+
+      {/* ICON */}
       {block.type === 'icon' && (
         <>
           {[{ v: '2rem', l: 'S' }, { v: '3rem', l: 'M' }, { v: '4rem', l: 'L' }, { v: '6rem', l: 'XL' }].map(s => (
@@ -1777,12 +1772,67 @@ function FloatingBlockToolbar({ block, onUpdate, onDelete, onDuplicate }: {
         </>
       )}
 
-      {/* Duplizieren + Löschen */}
+      {/* DIVIDER */}
+      {block.type === 'divider' && (
+        <>
+          {['solid', 'dashed', 'dotted'].map(s => (
+            <button key={s} onClick={() => onUpdate({ style: s })} style={btn(block.style === s)}>{s}</button>
+          ))}
+          {sep}
+          <input type="color" value={block.color || '#e5e7eb'} onChange={e => onUpdate({ color: e.target.value })} title="Farbe"
+            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1 }} />
+          {sep}
+        </>
+      )}
+
+      {/* SPACER */}
+      {block.type === 'spacer' && (
+        <>
+          {['1rem', '2rem', '3rem', '4rem', '6rem'].map(h => (
+            <button key={h} onClick={() => onUpdate({ height: h })} style={btn(block.height === h)} title={h}>{h.replace('rem', '')}</button>
+          ))}
+          {sep}
+        </>
+      )}
+
+      {/* LIST */}
+      {block.type === 'list' && (
+        <>
+          {[{ v: 'check', l: '✓' }, { v: 'bullet', l: '•' }, { v: 'number', l: '1.' }, { v: 'arrow', l: '→' }].map(o => (
+            <button key={o.v} onClick={() => onUpdate({ style: o.v })} style={btn(block.style === o.v)} title={o.v}>{o.l}</button>
+          ))}
+          {sep}
+        </>
+      )}
+
+      {/* GRID-TYPEN: Spalten-Umschalter */}
+      {isGrid && (
+        <>
+          <span style={{ fontSize: '0.65rem', color: '#6e7681', fontWeight: 600, marginRight: 2 }}>Cols:</span>
+          {[1, 2, 3, 4].map(n => (
+            <button key={n} onClick={() => onUpdate({ columns: n })} style={btn(block.columns === n)}>{n}</button>
+          ))}
+          {sep}
+        </>
+      )}
+
+      {/* NEWSLETTER-FORM / CONTACT-FORM — Button-Farbe */}
+      {(block.type === 'newsletter-form' || block.type === 'contact-form') && (
+        <>
+          <input type="color" value={block.btnBgColor || '#3b82f6'} onChange={e => onUpdate({ btnBgColor: e.target.value })} title="Button-Hintergrund"
+            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1 }} />
+          <input type="color" value={block.btnTextColor || '#ffffff'} onChange={e => onUpdate({ btnTextColor: e.target.value })} title="Button-Textfarbe"
+            style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid #30363d', cursor: 'pointer', padding: 1 }} />
+          {sep}
+        </>
+      )}
+
       <button onClick={onDuplicate} style={btn()} title="Duplizieren">⧉</button>
       <button onClick={onDelete} style={btn(false, true)} title="Löschen">✕</button>
     </div>
   );
 }
+
 function InlineAddBlock({ sectionId, onAdd }: { sectionId: string; onAdd: (sectionId: string, type: string) => void }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -2030,6 +2080,46 @@ function InlineEditable({ as: Tag = 'div', value, isHtml, onSave, style, placeho
     />
   );
 }
+// ==================== ITEM OVERLAY HELPERS ====================
+
+function ItemOverlay({ isSelected, canEdit, onClick, onDelete, children }: {
+  isSelected: boolean; canEdit: boolean; onClick: () => void; onDelete: () => void; children: React.ReactNode;
+}) {
+  return (
+    <div
+      onClick={e => { if (!canEdit) return; e.stopPropagation(); onClick(); }}
+      style={{
+        position: 'relative',
+        cursor: canEdit ? 'pointer' : 'inherit',
+        outline: isSelected ? '2px solid #58a6ff' : 'none',
+        outlineOffset: 4,
+        borderRadius: 6,
+      }}
+      onMouseEnter={e => { if (canEdit && !isSelected) e.currentTarget.style.outline = '1px dashed rgba(88,166,255,0.4)'; }}
+      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.outline = 'none'; }}
+    >
+      {children}
+      {canEdit && isSelected && (
+        <button onClick={e => { e.stopPropagation(); onDelete(); }}
+          style={{ position: 'absolute', top: -10, right: -10, width: 22, height: 22, borderRadius: '50%', background: '#f85149', border: '2px solid #fff', color: '#fff', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 15, boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}
+          title="Löschen">✕</button>
+      )}
+    </div>
+  );
+}
+
+function AddItemBtn({ onClick, label }: { onClick: () => void; label: string }) {
+  return (
+    <div style={{ textAlign: 'center', marginTop: 14 }}>
+      <button onClick={e => { e.stopPropagation(); onClick(); }}
+        style={{ padding: '6px 16px', background: 'rgba(35,134,54,0.1)', border: '1px dashed #238636', borderRadius: 6, color: '#238636', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(35,134,54,0.2)')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'rgba(35,134,54,0.1)')}>
+        + {label}
+      </button>
+    </div>
+  );
+}
 // ==================== CANVAS SECTION PREVIEW ====================
 
 function CanvasSectionPreview({ section, isSelected, onClick, settings, deviceMode, selectedBlockId, onBlockClick, onBlockUpdate, onAddBlock }: {
@@ -2048,7 +2138,8 @@ const btnText = styling?.buttonTextColor || '#ffffff';
   const isMobile = deviceMode !== 'desktop';
   const mob = styling?.mobile || {};
   const isLocked = !!styling?.isLocked;
-
+const [selectedItemIdx, setSelectedItemIdx] = useState<number | null>(null);
+useEffect(() => { setSelectedItemIdx(null); }, [selectedBlockId]);
   const headingSize = (isMobile && mob.headingSize) ? mob.headingSize : (styling?.headingSize || 'clamp(1.75rem, 4vw, 3rem)');
 const wrapStyle: React.CSSProperties = {
     ...getSectionStyle(styling, deviceMode),
@@ -2193,97 +2284,220 @@ case 'columns': {
     </div>
   );
 }
-
-    // ── KOMPLEX ──
-case 'feature-grid':
+case 'feature-grid': {
+  const isBlockSelected = selectedBlockId === block.id;
+  const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
   return (
-    <div key={block.id} style={{ marginBottom: '1rem' }}>
+    <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 3}, 1fr)`, gap: '1rem' }}>
         {(block.items || []).map((item: any, i: number) => (
-          <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', textAlign: 'center' }}>
-            {item.icon && <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>}
-            <h3 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.95rem' }}>{item.title}</h3>
-            <p style={{ fontSize: '0.8rem', opacity: 0.7, margin: 0 }}>{item.description}</p>
-            {item.price && <p style={{ fontWeight: 700, color: primary, marginTop: '0.5rem', fontSize: '0.9rem' }}>{item.price}</p>}
-          </div>
+          <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
+            onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+            onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
+            <div style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', textAlign: 'center' }}>
+              {item.icon && <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>}
+              <h3 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.95rem' }}>{item.title}</h3>
+              <p style={{ fontSize: '0.8rem', opacity: 0.7, margin: 0 }}>{item.description}</p>
+              {item.price && <p style={{ fontWeight: 700, color: primary, marginTop: '0.5rem', fontSize: '0.9rem' }}>{item.price}</p>}
+            </div>
+            {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
+              <FloatingItemEditor block={block} itemIndex={i}
+                onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+                onClose={() => setSelectedItemIdx(null)} />
+            )}
+          </ItemOverlay>
         ))}
       </div>
+      {isBlockSelected && onBlockUpdate && (
+        <AddItemBtn label="Feature hinzufügen"
+          onClick={() => updateItems([...(block.items || []), { icon: '⭐', title: 'Neu', description: 'Beschreibung' }])} />
+      )}
     </div>
   );
-case 'stat-grid':
+}
+
+case 'stat-grid': {
+  const isBlockSelected = selectedBlockId === block.id;
+  const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
   return (
-    <div key={block.id} style={{ marginBottom: '1rem' }}>
+    <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 4}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
         {(block.items || []).map((item: any, i: number) => (
-          <div key={i}>
+          <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
+            onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+            onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
             <div style={{ fontSize: isMobile ? '1.75rem' : '2.25rem', fontWeight: 800, color: primary }}>{item.value}</div>
             <div style={{ fontWeight: 600, margin: '0.2rem 0 0.1rem', fontSize: '0.9rem' }}>{item.label}</div>
             {item.description && <div style={{ opacity: 0.6, fontSize: '0.75rem' }}>{item.description}</div>}
-          </div>
+            {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
+              <FloatingItemEditor block={block} itemIndex={i}
+                onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+                onClose={() => setSelectedItemIdx(null)} />
+            )}
+          </ItemOverlay>
         ))}
       </div>
+      {isBlockSelected && onBlockUpdate && (
+        <AddItemBtn label="Statistik hinzufügen"
+          onClick={() => updateItems([...(block.items || []), { value: '0', label: 'Neu', description: '' }])} />
+      )}
     </div>
   );
-case 'testimonial-grid':
+}
+
+case 'testimonial-grid': {
+  const isBlockSelected = selectedBlockId === block.id;
+  const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
   return (
-    <div key={block.id} style={{ marginBottom: '1rem' }}>
+    <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 2}, 1fr)`, gap: '1rem' }}>
         {(block.items || []).map((item: any, i: number) => (
-          <div key={i} style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', fontStyle: 'italic' }}>
-            <p style={{ margin: '0 0 0.75rem', fontSize: '0.875rem' }}>„{item.text}"</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              {item.image && <div style={{ width: 36, height: 36, borderRadius: '50%', background: primary, overflow: 'hidden', flexShrink: 0 }}><img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
-              <div>
-                <p style={{ fontWeight: 600, fontStyle: 'normal', margin: 0, fontSize: '0.85rem' }}>{item.name}</p>
-                {item.role && <p style={{ opacity: 0.6, fontStyle: 'normal', margin: 0, fontSize: '0.75rem' }}>{item.role}</p>}
+          <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
+            onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+            onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
+            <div style={{ padding: '1.25rem', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.05)', fontStyle: 'italic' }}>
+              <p style={{ margin: '0 0 0.75rem', fontSize: '0.875rem' }}>„{item.text}"</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                {item.image && <div style={{ width: 36, height: 36, borderRadius: '50%', background: primary, overflow: 'hidden', flexShrink: 0 }}><img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+                <div>
+                  <p style={{ fontWeight: 600, fontStyle: 'normal', margin: 0, fontSize: '0.85rem' }}>{item.name}</p>
+                  {item.role && <p style={{ opacity: 0.6, fontStyle: 'normal', margin: 0, fontSize: '0.75rem' }}>{item.role}</p>}
+                </div>
               </div>
             </div>
-          </div>
+            {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
+              <FloatingItemEditor block={block} itemIndex={i}
+                onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+                onClose={() => setSelectedItemIdx(null)} />
+            )}
+          </ItemOverlay>
         ))}
       </div>
+      {isBlockSelected && onBlockUpdate && (
+        <AddItemBtn label="Bewertung hinzufügen"
+          onClick={() => updateItems([...(block.items || []), { name: 'Name', role: 'Rolle', text: 'Bewertung', image: '' }])} />
+      )}
     </div>
   );
-case 'team-grid':
+}
+
+case 'team-grid': {
+  const isBlockSelected = selectedBlockId === block.id;
+  const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
   return (
-    <div key={block.id} style={{ marginBottom: '1rem' }}>
+    <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 3}, 1fr)`, gap: '1.5rem', textAlign: 'center' }}>
         {(block.items || []).map((item: any, i: number) => (
-          <div key={i}>
+          <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
+            onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+            onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
             <div style={{ width: 64, height: 64, borderRadius: '50%', background: primary, margin: '0 auto 0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.5rem', overflow: 'hidden' }}>
               {item.image ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
             </div>
             <h3 style={{ fontWeight: 600, margin: '0 0 0.15rem', fontSize: '0.9rem' }}>{item.name}</h3>
             <p style={{ opacity: 0.6, fontSize: '0.8rem', margin: 0 }}>{item.role}</p>
-          </div>
+            {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
+              <FloatingItemEditor block={block} itemIndex={i}
+                onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+                onClose={() => setSelectedItemIdx(null)} />
+            )}
+          </ItemOverlay>
         ))}
       </div>
+      {isBlockSelected && onBlockUpdate && (
+        <AddItemBtn label="Person hinzufügen"
+          onClick={() => updateItems([...(block.items || []), { name: 'Name', role: 'Rolle', bio: '', image: '' }])} />
+      )}
     </div>
   );
+}
 
-case 'faq-list':
+case 'faq-list': {
+  const isBlockSelected = selectedBlockId === block.id;
+  const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
   return (
-    <div key={block.id} style={{ marginBottom: '1rem' }}>
+    <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
       {(block.items || []).map((item: any, i: number) => (
-        <div key={i} style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', padding: '0.875rem 0' }}>
-          <h4 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.9rem' }}>{item.question}</h4>
-          <p style={{ fontSize: '0.82rem', opacity: 0.7, margin: 0 }}>{item.answer}</p>
-        </div>
+        <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
+          onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+          onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
+          <div style={{ borderBottom: '1px solid rgba(0,0,0,0.1)', padding: '0.875rem 0' }}>
+            <h4 style={{ fontWeight: 600, margin: '0 0 0.25rem', fontSize: '0.9rem' }}>{item.question}</h4>
+            <p style={{ fontSize: '0.82rem', opacity: 0.7, margin: 0 }}>{item.answer}</p>
+          </div>
+          {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
+            <FloatingItemEditor block={block} itemIndex={i}
+              onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+              onClose={() => setSelectedItemIdx(null)} />
+          )}
+        </ItemOverlay>
       ))}
+      {isBlockSelected && onBlockUpdate && (
+        <AddItemBtn label="FAQ hinzufügen"
+          onClick={() => updateItems([...(block.items || []), { question: 'Neue Frage?', answer: 'Antwort.' }])} />
+      )}
     </div>
   );
+}
 
-    case 'image-grid':
-      return (
-        <div key={block.id} style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 3}, 1fr)`, gap: '0.75rem' }}>
-            {(block.images || []).map((img: any, i: number) => (
-              <div key={i} style={{ aspectRatio: '1', borderRadius: '0.5rem', overflow: 'hidden', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '1.75rem' }}>
-                {img?.url ? <img src={img.url} alt={img.alt || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '🖼️'}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
+// pricing-grid fehlt noch im Code → jetzt hinzufügen (war vorher in 'items: content.plans' Fallback)
+case 'pricing-grid': {
+  const isBlockSelected = selectedBlockId === block.id;
+  const updateItems = (items: any[]) => onBlockUpdate?.(section.id, block.id, { items });
+  return (
+    <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${block.columns || 2}, 1fr)`, gap: '1rem' }}>
+        {(block.items || []).map((item: any, i: number) => (
+          <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
+            onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+            onDelete={() => { updateItems((block.items || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
+            <div style={{ padding: '1.5rem', borderRadius: '0.75rem', background: item.highlighted ? primary : 'rgba(0,0,0,0.05)', color: item.highlighted ? '#fff' : 'inherit', textAlign: 'center', border: item.highlighted ? `2px solid ${primary}` : '2px solid transparent' }}>
+              <h3 style={{ fontWeight: 700, fontSize: '1.1rem', margin: '0 0 0.5rem' }}>{item.title}</h3>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0.5rem 0' }}>{item.price}<span style={{ fontSize: '0.8rem', fontWeight: 400, opacity: 0.7 }}>/{item.interval}</span></div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '1rem 0', fontSize: '0.82rem', textAlign: 'left' }}>
+                {(item.features || []).map((f: string, k: number) => <li key={k} style={{ margin: '0.35rem 0' }}>✓ {f}</li>)}
+              </ul>
+              <div style={{ display: 'inline-block', padding: '0.5rem 1.25rem', background: item.highlighted ? '#fff' : btnBg, color: item.highlighted ? primary : btnText, borderRadius: '0.5rem', fontWeight: 600, fontSize: '0.85rem' }}>{item.buttonText || 'Wählen'}</div>
+            </div>
+            {selectedItemIdx === i && isBlockSelected && onBlockUpdate && (
+              <FloatingItemEditor block={block} itemIndex={i}
+                onUpdate={updates => onBlockUpdate(section.id, block.id, updates)}
+                onClose={() => setSelectedItemIdx(null)} />
+            )}
+          </ItemOverlay>
+        ))}
+      </div>
+      {isBlockSelected && onBlockUpdate && (
+        <AddItemBtn label="Paket hinzufügen"
+          onClick={() => updateItems([...(block.items || []), { title: 'Paket', price: '€0', interval: 'Monat', features: ['Feature'], buttonText: 'Wählen', highlighted: false }])} />
+      )}
+    </div>
+  );
+}
+
+case 'image-grid': {
+  const isBlockSelected = selectedBlockId === block.id;
+  const updateImages = (images: any[]) => onBlockUpdate?.(section.id, block.id, { images });
+  return (
+    <div key={block.id} style={{ marginBottom: '1rem', position: 'relative' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : `repeat(${block.columns || 3}, 1fr)`, gap: '0.75rem' }}>
+        {(block.images || []).map((img: any, i: number) => (
+          <ItemOverlay key={i} isSelected={selectedItemIdx === i && isBlockSelected} canEdit={isBlockSelected}
+            onClick={() => setSelectedItemIdx(selectedItemIdx === i ? null : i)}
+            onDelete={() => { updateImages((block.images || []).filter((_: any, j: number) => j !== i)); setSelectedItemIdx(null); }}>
+            <div style={{ aspectRatio: '1', borderRadius: '0.5rem', overflow: 'hidden', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.3)', fontSize: '1.75rem' }}>
+              {img?.url ? <img src={img.url} alt={img.alt || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '🖼️'}
+            </div>
+          </ItemOverlay>
+        ))}
+      </div>
+      {isBlockSelected && onBlockUpdate && (
+        <AddItemBtn label="Bild hinzufügen"
+          onClick={() => updateImages([...(block.images || []), { url: '', alt: '' }])} />
+      )}
+    </div>
+  );
+}
 
     case 'contact-form':
       return (

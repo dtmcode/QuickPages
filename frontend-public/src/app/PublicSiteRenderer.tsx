@@ -940,8 +940,7 @@ ${html}
         );
       }
 
-      case 'freestyle': {
-  const blocks: any[] = ((content as any)?.blocks || []).sort((a: any, b: any) => a.order - b.order);
+
       case 'freestyle': {
   const blocks: any[] = ((content as any)?.blocks || []).sort((a: any, b: any) => a.order - b.order);
   const cw = styling?.containerWidth;
