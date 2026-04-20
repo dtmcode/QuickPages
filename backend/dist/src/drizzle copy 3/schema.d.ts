@@ -97,7 +97,7 @@ export declare const tenants: import("drizzle-orm/pg-core").PgTableWithColumns<{
             tableName: "tenants";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "business" | "enterprise" | "starter";
+            data: "business" | "starter" | "enterprise";
             driverParam: string;
             notNull: true;
             hasDefault: true;
@@ -274,7 +274,7 @@ export declare const subscriptions: import("drizzle-orm/pg-core").PgTableWithCol
             tableName: "subscriptions";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "business" | "enterprise" | "starter";
+            data: "business" | "starter" | "enterprise";
             driverParam: string;
             notNull: true;
             hasDefault: false;
@@ -5752,7 +5752,7 @@ export declare const templates: import("drizzle-orm/pg-core").PgTableWithColumns
             tableName: "templates";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "landing" | "custom" | "blog" | "shop" | "business" | "portfolio";
+            data: "landing" | "custom" | "blog" | "business" | "shop" | "portfolio";
             driverParam: string;
             notNull: true;
             hasDefault: false;
@@ -6325,7 +6325,7 @@ export declare const websiteTemplates: import("drizzle-orm/pg-core").PgTableWith
             tableName: "website_templates";
             dataType: "string";
             columnType: "PgEnumColumn";
-            data: "landing" | "custom" | "restaurant" | "blog" | "shop" | "business" | "portfolio" | "saas" | "agency";
+            data: "landing" | "custom" | "restaurant" | "blog" | "business" | "shop" | "portfolio" | "agency" | "saas";
             driverParam: string;
             notNull: true;
             hasDefault: false;

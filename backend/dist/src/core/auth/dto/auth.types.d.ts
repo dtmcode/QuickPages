@@ -3,11 +3,7 @@ export declare enum UserRole {
     ADMIN = "admin",
     USER = "user"
 }
-export declare enum PackageType {
-    STARTER = "starter",
-    BUSINESS = "business",
-    ENTERPRISE = "enterprise"
-}
+export type PackageType = string;
 export declare class User {
     id: string;
     email: string;
@@ -24,7 +20,7 @@ export declare class Tenant {
     name: string;
     slug: string;
     domain?: string;
-    package: PackageType;
+    package: string;
     shopTemplate?: string;
     isActive: boolean;
     createdAt: Date;

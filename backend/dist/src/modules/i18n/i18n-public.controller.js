@@ -23,6 +23,15 @@ let I18nPublicController = class I18nPublicController {
     async getTranslations(slug, locale) {
         return this.i18nService.getPublicTranslations(slug, locale || 'de');
     }
+    getSectionTranslations(slug, locale, ids) {
+        const sectionIds = (ids || '')
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean);
+        if (!sectionIds.length)
+            return Promise.resolve({});
+        return this.i18nService.getPublicSectionTranslations(slug, locale || 'de', sectionIds);
+    }
 };
 exports.I18nPublicController = I18nPublicController;
 __decorate([
@@ -33,6 +42,15 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], I18nPublicController.prototype, "getTranslations", null);
+__decorate([
+    (0, common_1.Get)('sections'),
+    __param(0, (0, common_1.Param)('tenant')),
+    __param(1, (0, common_1.Query)('locale')),
+    __param(2, (0, common_1.Query)('ids')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], I18nPublicController.prototype, "getSectionTranslations", null);
 exports.I18nPublicController = I18nPublicController = __decorate([
     (0, common_1.Controller)('api/public/:tenant/i18n'),
     __metadata("design:paramtypes", [i18n_service_1.I18nService])

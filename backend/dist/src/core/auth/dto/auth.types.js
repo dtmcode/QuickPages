@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BrandingResult = exports.UpdateBrandingInput = exports.SuccessResponse = exports.CurrentUserResponse = exports.AuthResponse = exports.Tenant = exports.User = exports.PackageType = exports.UserRole = void 0;
+exports.BrandingResult = exports.UpdateBrandingInput = exports.SuccessResponse = exports.CurrentUserResponse = exports.AuthResponse = exports.Tenant = exports.User = exports.UserRole = void 0;
 const graphql_1 = require("@nestjs/graphql");
 var UserRole;
 (function (UserRole) {
@@ -17,14 +17,7 @@ var UserRole;
     UserRole["ADMIN"] = "admin";
     UserRole["USER"] = "user";
 })(UserRole || (exports.UserRole = UserRole = {}));
-var PackageType;
-(function (PackageType) {
-    PackageType["STARTER"] = "starter";
-    PackageType["BUSINESS"] = "business";
-    PackageType["ENTERPRISE"] = "enterprise";
-})(PackageType || (exports.PackageType = PackageType = {}));
 (0, graphql_1.registerEnumType)(UserRole, { name: 'UserRole' });
-(0, graphql_1.registerEnumType)(PackageType, { name: 'PackageType' });
 let User = class User {
     id;
     email;
@@ -104,7 +97,7 @@ __decorate([
     __metadata("design:type", String)
 ], Tenant.prototype, "domain", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => PackageType),
+    (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], Tenant.prototype, "package", void 0);
 __decorate([

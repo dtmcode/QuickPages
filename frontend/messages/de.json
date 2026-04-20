@@ -1,0 +1,138 @@
+{
+  "nav": {
+    "features": "Features",
+    "comparison": "Vergleich",
+    "packages": "Pakete",
+    "addons": "Add-ons",
+    "faq": "FAQ",
+    "login": "Anmelden",
+    "cta": "Kostenlos testen",
+    "menu": "Menü"
+  },
+  "hero": {
+    "badge": "DSGVO-konform · Made in Germany · Keine US-Cloud",
+    "title": "Eine Plattform.",
+    "titleHighlight": "Alles was du brauchst.",
+    "subtitle": "Website Builder, Blog, Shop, Terminbuchung und Newsletter — ohne Plugin-Chaos, ohne Agentur, ohne Vorkenntnisse. Ab €9/Monat.",
+    "ctaPrimary": "14 Tage kostenlos testen",
+    "ctaSecondary": "Pakete vergleichen →",
+    "trust": "Keine Kreditkarte · Jederzeit kündbar · Server in Deutschland",
+    "statTime": "< 5 Min",
+    "statTimeLabel": "bis zur fertigen Seite",
+    "statPrice": "€9",
+    "statPriceLabel": "Einstiegspreis/Monat",
+    "statModules": "9 Module",
+    "statModulesLabel": "in einer Plattform",
+    "statDsgvo": "100%",
+    "statDsgvoLabel": "DSGVO-konform"
+  },
+  "features": {
+    "title": "Alles in einer Plattform",
+    "subtitle": "Kein Plugin-Chaos. Keine 10 verschiedenen Tools. Alles funktioniert zusammen — und ist DSGVO-konform.",
+    "items": [
+      { "icon": "🎨", "title": "Website Builder", "desc": "Drag & Drop mit fertigen Sections. Hero, Features, Galerie, Kontakt – kein Code." },
+      { "icon": "📝", "title": "Blog & CMS", "desc": "Rich-Text-Editor, Kategorien, geplante Veröffentlichungen, Kommentare." },
+      { "icon": "🛒", "title": "Online-Shop", "desc": "Produkte, Warenkorb, Checkout. Stripe-Zahlungen: Karte, SEPA, Apple Pay." },
+      { "icon": "📅", "title": "Terminbuchung", "desc": "Services & Verfügbarkeiten definieren. Kunden buchen online. Bestätigungen automatisch." },
+      { "icon": "📧", "title": "Newsletter", "desc": "Kampagnen versenden, Öffnungsraten tracken, Empfänger nach Tags filtern." },
+      { "icon": "📋", "title": "Form Builder", "desc": "10 Feldtypen: Text, E-Mail, Dropdown, Checkbox, Datum. Alle Einsendungen gespeichert." },
+      { "icon": "🤖", "title": "AI Content", "desc": "KI schreibt Blogtexte, verbessert Formulierungen, übersetzt Inhalte." },
+      { "icon": "📊", "title": "Analytics", "desc": "Datenschutzkonform. Keine Cookies. Referrer, Geräte, Verweildauer, CSV-Export." },
+      { "icon": "🌐", "title": "Mehrsprachigkeit", "desc": "Deine Website in bis zu 13 Sprachen. Besucher wählen automatisch." }
+    ]
+  },
+  "steps": {
+    "title": "In 3 Schritten online",
+    "subtitle": "Vom leeren Browser zur fertigen Website — ohne Agentur, ohne Code.",
+    "items": [
+      { "n": "01", "title": "Registrieren", "desc": "Account erstellen, Paket wählen. 14 Tage kostenlos testen — keine Kreditkarte." },
+      { "n": "02", "title": "Gestalten", "desc": "Template wählen, Texte & Bilder einfügen, Farben anpassen — alles per Drag & Drop." },
+      { "n": "03", "title": "Online gehen", "desc": "Domain verbinden und live gehen. Änderungen jederzeit, sofort sichtbar." }
+    ]
+  },
+  "comparison": {
+    "title": "myquickpage vs. Alternativen",
+    "subtitle": "WordPress braucht 12 Plugins. Shopify kann keinen Blog. Wir können alles — in einer Plattform.",
+    "colFeature": "Feature",
+    "rows": [
+      { "feature": "Website Builder", "us": true, "wp": "⚠ Plugins nötig", "shopify": "⚠ Nur Shop" },
+      { "feature": "Blog & CMS", "us": true, "wp": true, "shopify": "⚠ Eingeschränkt" },
+      { "feature": "Online-Shop", "us": true, "wp": "⚠ WooCommerce", "shopify": true },
+      { "feature": "Terminbuchung", "us": true, "wp": "⚠ Plugin €€€", "shopify": false },
+      { "feature": "Newsletter", "us": true, "wp": "⚠ Mailchimp extra", "shopify": "⚠ Mailchimp extra" },
+      { "feature": "Form Builder", "us": true, "wp": "⚠ Plugin", "shopify": false },
+      { "feature": "Analytics (DSGVO)", "us": true, "wp": false, "shopify": false },
+      { "feature": "Hosting inklusive", "us": true, "wp": false, "shopify": true },
+      { "feature": "DSGVO Made in Germany", "us": true, "wp": false, "shopify": false },
+      { "feature": "Preis ab", "us": "€9/mo", "wp": "€15+/mo", "shopify": "€29/mo" }
+    ]
+  },
+  "packages": {
+    "title": "Ein Paket für jeden Bedarf",
+    "subtitle": "Starte klein, erweitere mit Add-ons, wechsle hoch wenn du wächst.",
+    "cta": "Jetzt starten"
+  },
+  "addons": {
+    "title": "Add-ons: Nur was du brauchst",
+    "subtitle": "Aktiviere einzelne Module — jederzeit dazu buchen oder kündigen. Kein Paket-Upgrade nötig.",
+    "note": "Alle Add-ons sind monatlich kündbar · Keine Mindestlaufzeit · Sofort aktiv",
+    "from": "ab",
+    "items": [
+      { "icon": "🛒", "name": "Shop Modul", "price": "€15/mo", "desc": "Produkte, Warenkorb, Stripe", "from": "Business" },
+      { "icon": "📧", "name": "Newsletter", "price": "€9/mo", "desc": "Bis 500 Empfänger", "from": "Creator" },
+      { "icon": "📅", "name": "Booking", "price": "€9/mo", "desc": "Online-Terminbuchung", "from": "Creator" },
+      { "icon": "🤖", "name": "AI Content", "price": "€9/mo", "desc": "500 KI-Anfragen/Monat", "from": "Business" },
+      { "icon": "📋", "name": "Form Builder", "price": "€5/mo", "desc": "10 Feldtypen, unbegrenzt", "from": "Creator" },
+      { "icon": "🌐", "name": "Mehrsprachigkeit", "price": "€5/mo", "desc": "Bis 13 Sprachen", "from": "Business" },
+      { "icon": "👥", "name": "Extra Benutzer", "price": "€3/mo", "desc": "Pro zusätzlichem Account", "from": "Alle" }
+    ]
+  },
+  "trust": {
+    "title": "DSGVO-konform. Made in Germany.",
+    "subtitle": "Wir entwickeln und betreiben myquickpage in Deutschland. Deine Daten verlassen nie die EU.",
+    "items": [
+      { "icon": "🇩🇪", "title": "Server in Deutschland", "desc": "Gehostet auf deutschen Servern. Keine US-Cloud, kein Datentransfer in Drittländer." },
+      { "icon": "🔒", "title": "Privacy by Design", "desc": "Analytics ohne Cookies. Keine Tracking-Pixel. Keine Datenweitergabe an Dritte." },
+      { "icon": "📋", "title": "Rechtssicher", "desc": "Impressum, Datenschutz und Cookie-Banner automatisch mitgeliefert und aktuell gehalten." }
+    ]
+  },
+  "faq": {
+    "title": "Häufige Fragen",
+    "items": [
+      { "q": "Brauche ich technisches Wissen?", "a": "Nein. Der Drag & Drop Editor funktioniert ohne Code. Template wählen, Texte anpassen, fertig." },
+      { "q": "Was passiert nach den 14 Tagen?", "a": "Du kannst das Paket deiner Wahl wählen. Keine automatische Abbuchung ohne deine Bestätigung." },
+      { "q": "Kann ich meine eigene Domain verbinden?", "a": "Ja, ab dem Creator-Paket. DNS-Einstellungen bei deinem Anbieter, fertig in wenigen Minuten." },
+      { "q": "Ist die Plattform DSGVO-konform?", "a": "Ja. Server in Deutschland, keine US-Cloud-Dienste, Privacy-by-Design. Unsere Analytics tracken ohne Cookies." },
+      { "q": "Kann ich jederzeit kündigen?", "a": "Ja, monatlich kündbar. Keine Mindestlaufzeit, keine versteckten Gebühren." },
+      { "q": "Kann ich später auf ein größeres Paket wechseln?", "a": "Ja, jederzeit mit einem Klick. Alle deine Inhalte bleiben erhalten." }
+    ]
+  },
+  "cta": {
+    "title": "Bereit für deine Website?",
+    "subtitle": "Starte heute kostenlos. Keine Kreditkarte, keine Bindung — nur deine neue Website.",
+    "primary": "14 Tage kostenlos testen",
+    "secondary": "Pakete ansehen",
+    "note": "Page-Paket ab €9/Monat · Jederzeit kündbar · DSGVO-konform"
+  },
+  "footer": {
+    "tagline": "Website Builder, CMS, Shop und mehr — eine Plattform für deutsches Business. DSGVO-konform, Made in Germany.",
+    "colProduct": "Produkt",
+    "colCompany": "Unternehmen",
+    "colLegal": "Legal",
+    "rights": "© 2026 myquickpage. Alle Rechte vorbehalten.",
+    "serverNote": "Server in Deutschland · DSGVO-konform",
+    "links": {
+      "features": "Features",
+      "packages": "Pakete",
+      "addons": "Add-ons",
+      "comparison": "Vergleich",
+      "about": "Über uns",
+      "blog": "Blog",
+      "contact": "Kontakt",
+      "privacy": "Datenschutz",
+      "terms": "AGB",
+      "imprint": "Impressum",
+      "cookies": "Cookie-Einstellungen"
+    }
+  }
+}

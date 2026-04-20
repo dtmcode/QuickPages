@@ -1498,12 +1498,6 @@ type PackageLimitsType {
   users: Int!
 }
 
-enum PackageType {
-  BUSINESS
-  ENTERPRISE
-  STARTER
-}
-
 type Page {
   content: String
   createdAt: DateTime!
@@ -1902,7 +1896,7 @@ type Tenant {
   id: ID!
   isActive: Boolean!
   name: String!
-  package: PackageType!
+  package: String!
   shopTemplate: String
   slug: String!
 }

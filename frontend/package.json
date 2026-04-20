@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack -p 3001",
     "build": "next build --turbopack",
     "start": "next start -p 3001",
-    "lint": "eslint"
+    "lint": "eslint",
+    "translate": "ts-node --transpile-only scripts/translate.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.11.8",
@@ -30,6 +31,7 @@
     "js-cookie": "^3.0.5",
     "lucide-react": "^1.8.0",
     "next": "15.5.4",
+    "next-intl": "^4.9.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "rxjs": "^7.8.2"

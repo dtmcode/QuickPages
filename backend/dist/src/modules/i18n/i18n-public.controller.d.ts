@@ -13,4 +13,5 @@ export declare class I18nPublicController {
         defaultLocale: any;
         enabledLocales: any;
     }>;
+    getSectionTranslations(slug: string, locale: string, ids: string): Promise<Record<string, Record<string, string>>>;
 }

@@ -14,8 +14,9 @@ interface I18nContextType {
 interface I18nData {
   locale: string;
   defaultLocale: string;
-  enabledLocales: Array<{ code: string; name: string; flag: string }>;
-  translations: Record<string, string>;
+  enabledLocales: string[]; 
+  translations?: Record<string, string>;
+  ui?: Record<string, string>;
 }
 
 // ==================== CONTEXT ====================
@@ -63,9 +64,32 @@ export function I18nProvider({ tenant, children }: I18nProviderProps) {
       const res = await fetch(`${API_URL}/api/public/${tenant}/i18n?locale=${loc}`);
       if (!res.ok) return;
       const data: I18nData = await res.json();
-      setTranslations(data.translations || {});
-      setDefaultLocale(data.defaultLocale || 'de');
-      setEnabledLocales(data.enabledLocales || []);
+    const LOCALE_META: Record<string, { name: string; flag: string }> = {
+  de: { name: 'Deutsch', flag: '🇩🇪' },
+  en: { name: 'English', flag: '🇬🇧' },
+  fr: { name: 'Français', flag: '🇫🇷' },
+  es: { name: 'Español', flag: '🇪🇸' },
+  it: { name: 'Italiano', flag: '🇮🇹' },
+  nl: { name: 'Nederlands', flag: '🇳🇱' },
+  pl: { name: 'Polski', flag: '🇵🇱' },
+  tr: { name: 'Türkçe', flag: '🇹🇷' },
+  pt: { name: 'Português', flag: '🇵🇹' },
+  ru: { name: 'Русский', flag: '🇷🇺' },
+  ar: { name: 'العربية', flag: '🇸🇦' },
+  ja: { name: '日本語', flag: '🇯🇵' },
+  zh: { name: '中文', flag: '🇨🇳' },
+};
+
+setTranslations(data.ui || data.translations || {});
+setDefaultLocale(data.defaultLocale || 'de');
+// string[] → {code, name, flag}[]
+const mapped = (data.enabledLocales || ['de']).map(code => ({
+
+  code,
+  name: LOCALE_META[code]?.name || code,
+  flag: LOCALE_META[code]?.flag || '🌐',
+}));
+setEnabledLocales(mapped);
     } catch {
       console.error('i18n: Fehler beim Laden der Übersetzungen');
     } finally {

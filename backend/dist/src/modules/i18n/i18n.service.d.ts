@@ -30,4 +30,5 @@ export declare class I18nService {
         defaultLocale: any;
         enabledLocales: any;
     }>;
+    getPublicSectionTranslations(tenantSlug: string, locale: string, sectionIds: string[]): Promise<Record<string, Record<string, string>>>;
 }
